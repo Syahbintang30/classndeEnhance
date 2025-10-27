@@ -118,6 +118,13 @@ Route::get('/topics/{topic}/stream', function ($topic) {
     }
 
     if ($topicModel->bunny_guid) {
+        // If bunny_guid accidentally contains a full URL (some imports/store may do this),
+        // return it directly instead of treating it as a GUID. This avoids producing
+        // malformed URLs like https://video.b-cdn.net/https://.../playlist.m3u8
+        if (preg_match('#^https?://#i', $topicModel->bunny_guid)) {
+            return response()->json(['url' => $topicModel->bunny_guid]);
+        }
+
         $signed = BunnyController::signUrl($topicModel->bunny_guid, 300);
         if ($signed) return response()->json(['url' => $signed]);
         return response()->json(['url' => BunnyController::cdnUrl($topicModel->bunny_guid)]);
