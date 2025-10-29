@@ -235,15 +235,27 @@
             <div class="nav-wrap">
                 <div class="nav-inner">
                     <div style="display:flex;align-items:center;gap:16px">
-                        {{-- hide the center navbar logo on kelas pages only (sidebar logo remains) --}}
-                        @if (!request()->is('kelas*') && !request()->routeIs('kelas.*'))
+                        {{--
+                            Show the center navbar logo on most pages. Historically we hid the center
+                            logo on all `kelas.*` routes (sidebar logo remained) which also hid it on
+                            payment/thankyou pages. Restore it for the payment flow so the logo remains
+                            visible during booking/payment UX.
+                        --}}
+                        @php
+                            // Default: show logo unless it's an explicit admin/audit or other special page
+                            $showCenterLogo = true;
+                            // Keep hiding on admin audit pages (handled by outer conditions),
+                            // but if you want to hide on a specific kelas subpage add checks here.
+                            // Previously we hid on any route under 'kelas.*' — that hid the
+                            // payment flow too. To preserve payment UX, allow these routes.
+                            if (request()->routeIs('kelas.show') || request()->routeIs('kelas.content')) {
+                                $showCenterLogo = false; // keep hidden on lesson viewer pages
+                            }
+                        @endphp
+                        @if ($showCenterLogo)
                             <a href="{{ url('/ndeofficial') }}" aria-label="NDE Home"
                                 style="display:inline-flex;align-items:center;">
-                                {{-- Use <picture> with WebP source and PNG fallback to avoid missing-logo when WebP isn't served --}}
-                                <picture>
-                                    <source srcset="{{ asset('compro/img/ndelogo.webp') }}" type="image/webp">
-                                    <img class="nav-logo" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
-                                </picture>
+                                <img class="nav-logo" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
                             </a>
                         @endif
                         <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav"
