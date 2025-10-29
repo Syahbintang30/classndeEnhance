@@ -621,64 +621,6 @@ const locationChart = new Chart(document.getElementById('locationChart'), {
 
 </script>
 
-<!-- Mobile navbar dropdown behaviour and styles -->
-<style>
-  /* Show mobile hamburger and make menu vertical on small screens */
-  @media (max-width: 991px) {
-    .toggle-mobile-but { display: inline-block; }
-    .main-nav .main-menu { display: none; flex-direction: column; gap: 6px; padding: 10px 12px; }
-    .main-nav.open .main-menu { display: flex; }
-    .main-menu .list-inline-item { display: block; padding: 10px 8px; }
-    .main-menu .list-inline-item a, .main-menu .list-inline-item { width:100%; }
-    /* Slight background for dropdown so links are readable */
-    .main-nav.open .main-menu { background: rgba(0,0,0,0.45); border-radius: 6px; margin-top:8px; }
-    /* Make header not overlap the dropdown when opened */
-    header.header { z-index: 20; }
-    /* Improve touch target for hamburger */
-    .mobile-but { display:inline-block; padding:8px; }
-    .mobile-but .lines { width:26px; height:3px; background:#fff; position:relative; display:block; }
-    .mobile-but .lines:before, .mobile-but .lines:after { content: ''; position:absolute; left:0; width:26px; height:3px; background:#fff; }
-    .mobile-but .lines:before { top:-8px; }
-    .mobile-but .lines:after { top:8px; }
-    .mobile-but.open .lines { background:transparent; }
-    .mobile-but.open .lines:before { transform: rotate(45deg); top:0; }
-    .mobile-but.open .lines:after { transform: rotate(-45deg); top:0; }
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function(){
-    var mobileBut = document.querySelector('.mobile-but');
-    var mainNav = document.querySelector('.main-nav');
-    var menuLinks = document.querySelectorAll('.main-menu a');
-    if (!mobileBut || !mainNav) return;
-
-    mobileBut.addEventListener('click', function(e){
-      e.preventDefault();
-      mainNav.classList.toggle('open');
-      mobileBut.classList.toggle('open');
-    });
-
-    // Close menu when clicking a link (mobile)
-    menuLinks.forEach(function(link){
-      link.addEventListener('click', function(){
-        if (mainNav.classList.contains('open')) {
-          mainNav.classList.remove('open');
-          mobileBut.classList.remove('open');
-        }
-      });
-    });
-
-    // Close when clicking outside
-    document.addEventListener('click', function(e){
-      if (!mainNav.contains(e.target) && !e.target.closest('.mobile-but') && mainNav.classList.contains('open')) {
-        mainNav.classList.remove('open');
-        mobileBut.classList.remove('open');
-      }
-    });
-  });
-</script>
-
 
         <!-- Google analytics -->
         <!-- End google analytics -->
