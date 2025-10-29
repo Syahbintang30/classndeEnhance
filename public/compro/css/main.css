@@ -226,9 +226,11 @@ Created by : mutationthemes
 	height: 1.5rem;
 	position: absolute;
 	right: 15px;
-	top: -39px;
-	z-index: 1000;
+	/* keep default top suitable for desktop; mobile override applied in media query */
+	top: 12px;
+	z-index: 10001; /* ensure mobile button is above hero overlays */
 	display: none;
+	cursor: pointer;
 }
 .mobile-but .lines {
 	transform: translate(0px, 10px) rotate(0deg);
@@ -808,7 +810,12 @@ ol.playlist .col-lg-6 a {
 		margin-top: .5rem;
 	}
 	.mobile-but {
-		display: block;
+		display: block !important;
+		/* ensure hamburger is placed inside the header box on small screens so it's clickable */
+		top: 12px !important;
+		right: 18px !important;
+		z-index: 10001 !important;
+		cursor: pointer;
 	}
 	.main-nav ul {
 		display: none;
