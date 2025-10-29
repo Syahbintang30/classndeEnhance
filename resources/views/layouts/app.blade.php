@@ -239,7 +239,11 @@
                         @if (!request()->is('kelas*') && !request()->routeIs('kelas.*'))
                             <a href="{{ url('/ndeofficial') }}" aria-label="NDE Home"
                                 style="display:inline-flex;align-items:center;">
-                                <img class="nav-logo" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
+                                {{-- Use <picture> with WebP source and PNG fallback to avoid missing-logo when WebP isn't served --}}
+                                <picture>
+                                    <source srcset="{{ asset('compro/img/ndelogo.webp') }}" type="image/webp">
+                                    <img class="nav-logo" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
+                                </picture>
                             </a>
                         @endif
                         <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav"
