@@ -4,11 +4,11 @@
 <div class="container" style="max-width:900px;margin-top:24px">
     @if($hasPackage)
         <div class="steps" style="justify-content:center;margin-bottom:18px">
-            <div class="step"><i class="fa fa-info"></i></div>
+            <div class="step"><i class="icon-info" aria-hidden="true"></i></div>
             <div class="line"></div>
-            <div class="step active"><i class="fa-solid fa-credit-card" aria-hidden="true"></i></div>
+            <div class="step active"><i class="icon-credit-card" aria-hidden="true"></i></div>
             <div class="line"></div>
-            <div class="step"><i class="fa fa-check"></i></div>
+            <div class="step"><i class="icon-check" aria-hidden="true"></i></div>
         </div>
 
         <div class="card">

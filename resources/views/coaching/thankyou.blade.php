@@ -18,11 +18,11 @@
     <div class="thank-page">
         <div style="width:100%;max-width:980px;">
             <div class="steps" aria-hidden="true">
-                <div class="step complete"><i class="fa fa-info"></i></div>
+                <div class="step complete"><i class="icon-info" aria-hidden="true"></i></div>
                 <div class="line"></div>
-                <div class="step complete"><i class="fa-solid fa-credit-card" aria-hidden="true"></i></div>
+                <div class="step complete"><i class="icon-credit-card" aria-hidden="true"></i></div>
                 <div class="line"></div>
-                <div class="step complete"><i class="fa fa-check"></i></div>
+                <div class="step complete"><i class="icon-check" aria-hidden="true"></i></div>
             </div>
 
             @php

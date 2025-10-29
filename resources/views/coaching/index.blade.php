@@ -103,7 +103,7 @@
                 <h1 style="font-weight:600;font-size:28px;margin-bottom:12px">You don't have any sessions yet</h1>
                 <p style="opacity:0.85;margin-bottom:22px;line-height:1.5">Choose your preferred date and time to book a session. Secure your spot and start your learning journey today. Pick a date, lock your spot, and get ready to play!</p>
                 <div>
-                    <a href="{{ route('coaching.checkout') }}" class="btn primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:24px;"> <i class="fa fa-ticket" aria-hidden="true"></i> BUY A TICKET</a>
+                    <a href="{{ route('coaching.checkout') }}" class="btn primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:24px;"> <i class="icon-ticket" aria-hidden="true"></i> BUY A TICKET</a>
                 </div>
             </div>
         </div>
