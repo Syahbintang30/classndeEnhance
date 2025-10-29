@@ -98,12 +98,12 @@
                         </div>
                         <div class="col-lg-10 text-right">
               <nav class="main-nav">
-                <div class="toggle-mobile-but">
-                  <a href="#" class="mobile-but" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <div class="lines"></div>
+                <div class="toggle-mobile-but" aria-hidden="false">
+                  <a href="#" class="mobile-but" role="button" aria-label="Toggle main navigation" aria-expanded="false">
+                    <div class="lines" aria-hidden="true"></div>
                   </a>
                 </div>
-                <ul id="main-menu" class="main-menu list-inline">
+                <ul class="main-menu list-inline" role="navigation" aria-label="Main navigation" aria-hidden="false">
                                     <li><a class="scroll list-inline-item" href="#wrapper">Home</a></li>
                                     <li><a class="scroll list-inline-item" href="#about">About</a></li>
                                     <li><a class="scroll list-inline-item" href="#discography">Partnerships</a></li> 
@@ -621,47 +621,6 @@ const locationChart = new Chart(document.getElementById('locationChart'), {
 
 </script>
 
-// Mobile hamburger toggle for main menu
-(function(){
-  function qs(sel){return document.querySelector(sel)}
-  var toggleWrap = qs('.toggle-mobile-but');
-  var mobileBut = qs('.mobile-but');
-  var menu = qs('#main-menu');
-  if (!mobileBut || !menu || !toggleWrap) return;
-
-  function setAria(expanded){
-    mobileBut.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  }
-
-  mobileBut.addEventListener('click', function(e){
-    e.preventDefault();
-    menu.classList.toggle('active');
-    toggleWrap.classList.toggle('active');
-    setAria(menu.classList.contains('active'));
-  });
-
-  // Close menu when a link is clicked (useful for anchor links)
-  Array.prototype.slice.call(menu.querySelectorAll('a')).forEach(function(a){
-    a.addEventListener('click', function(){
-      if (menu.classList.contains('active')){
-        menu.classList.remove('active');
-        toggleWrap.classList.remove('active');
-        setAria(false);
-      }
-    });
-  });
-
-  // Close when clicking outside
-  document.addEventListener('click', function(e){
-    if (!menu.classList.contains('active')) return;
-    var target = e.target;
-    if (!menu.contains(target) && !toggleWrap.contains(target)){
-      menu.classList.remove('active');
-      toggleWrap.classList.remove('active');
-      setAria(false);
-    }
-  });
-})();
 
         <!-- Google analytics -->
         <!-- End google analytics -->

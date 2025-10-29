@@ -77,6 +77,39 @@
 
     });
 
+    // Mobile hamburger toggle: open/close the main menu on small screens
+    $('.mobile-but').on('click', function(e){
+        e.preventDefault();
+        var toggleWrap = $(this).closest('.toggle-mobile-but');
+        var menu = $('.main-menu');
+        toggleWrap.toggleClass('active');
+        menu.toggleClass('active');
+        // update aria-expanded on the toggle button
+        var expanded = $(this).attr('aria-expanded') === 'true';
+        $(this).attr('aria-expanded', (!expanded).toString());
+    });
+
+    // Close mobile menu when a navigation link is clicked (for single-page smooth scroll)
+    $(document).on('click', '.main-menu a', function(){
+        var w = $(window).width();
+        if (w <= 990) {
+            $('.main-menu').removeClass('active');
+            $('.toggle-mobile-but').removeClass('active');
+            $('.mobile-but').attr('aria-expanded','false');
+        }
+    });
+
+    // Close menu with Escape key on mobile
+    $(document).on('keydown', function(e){
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            if ($('.main-menu').hasClass('active')) {
+                $('.main-menu').removeClass('active');
+                $('.toggle-mobile-but').removeClass('active');
+                $('.mobile-but').attr('aria-expanded','false');
+            }
+        }
+    });
+
 
 
     // Append images as css background
