@@ -201,11 +201,11 @@
                 <div class="col-lg-10 text-right">
                     <nav class="main-nav">
                         <div class="toggle-mobile-but">
-                            <a href="#" class="mobile-but" aria-label="Toggle navigation" aria-expanded="false">
-                                <div class="lines" aria-hidden="true"></div>
+                            <a href="#" class="mobile-but">
+                                <div class="lines"></div>
                             </a>
                         </div>
-                        <ul class="main-menu list-inline" role="navigation" aria-label="Main navigation" aria-hidden="true">
+                        <ul class="main-menu list-inline" role="navigation" aria-label="Main navigation">
                             <li><a class="scroll list-inline-item" href="#wrapper" title="Nde Official Homepage">Home</a>
                             </li>
                             <li><a class="scroll list-inline-item" href="#about"
@@ -901,12 +901,7 @@
             // Toggle menu saat hamburger diklik (hanya di mobile)
             mobileBut.addEventListener("click", (e) => {
                 e.preventDefault();
-                const headerEl = document.querySelector('.header');
-                const isActive = mainMenu.classList.toggle("active");
-                // set header state (fallback) and ARIA attributes for accessibility
-                if (headerEl) headerEl.classList.toggle('nav-open', isActive);
-                try { mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false'); } catch (e) {}
-                try { mainMenu.setAttribute('aria-hidden', isActive ? 'false' : 'true'); } catch (e) {}
+                mainMenu.classList.toggle("active");
             });
 
             // Auto close menu saat klik item menu di mobile
@@ -1022,11 +1017,7 @@
                 if (!mobileBut || !mainMenu) return;
                 mobileBut.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const headerEl = document.querySelector('.header');
-                    const isActive = mainMenu.classList.toggle('active');
-                    if (headerEl) headerEl.classList.toggle('nav-open', isActive);
-                    try { mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false'); } catch(e) {}
-                    try { mainMenu.setAttribute('aria-hidden', isActive ? 'false' : 'true'); } catch(e) {}
+                    mainMenu.classList.toggle('active');
                 });
                 mainMenu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
                     if (window.innerWidth <= 990) mainMenu.classList.remove('active');
