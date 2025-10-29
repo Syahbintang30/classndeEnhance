@@ -224,9 +224,10 @@ Created by : mutationthemes
 
 .mobile-but {
 	height: 1.5rem;
-	position: absolute;
-	right: 15px;
-	top: 12px;
+	position: absolute; 
+	right: 15px; 
+	/* place the hamburger inside the header (visible and clickable on mobile) */
+	top: 14px; 
 	z-index: 1000;
 	display: none;
 }
@@ -1457,7 +1458,12 @@ ol.playlist .col-lg-6 a {
 
 /* Insight Cards Row */
 .dashboard-insight-row {
-  display: flex;
+	display: flex;
+
+/* Ensure header-level state can also show the menu reliably (fallback for JS that toggles header class) */
+.header.nav-open .main-menu {
+	display: flex !important;
+}
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
