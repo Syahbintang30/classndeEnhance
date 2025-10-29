@@ -188,7 +188,9 @@ Created by : mutationthemes
 	position: fixed;
 	top: 0;
 	width: 100%;
-	z-index: 999;
+	/* Raise header above most page elements so nav is clickable on mobile */
+	z-index: 2000;
+	pointer-events: auto;
 }
 .header .logo img {
     max-height: 60px; /* atau sesuai kebutuhan */
@@ -199,11 +201,13 @@ Created by : mutationthemes
 }
 
 .navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    transition: top 0.3s ease-in-out;
-    z-index: 999;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	transition: top 0.3s ease-in-out;
+	/* ensure navbar sits above other layers (mobile overlays, hero, etc) */
+	z-index: 2000;
+	pointer-events: auto;
 }
 
 .header .logo {
@@ -226,11 +230,11 @@ Created by : mutationthemes
 	height: 1.5rem;
 	position: absolute;
 	right: 15px;
-	/* keep default top suitable for desktop; mobile override applied in media query */
+	/* place the hamburger inside the header area so it's reliably clickable on mobile */
 	top: 12px;
-	z-index: 10001; /* ensure mobile button is above hero overlays */
+	z-index: 2200;
 	display: none;
-	cursor: pointer;
+	pointer-events: auto;
 }
 .mobile-but .lines {
 	transform: translate(0px, 10px) rotate(0deg);
@@ -810,12 +814,7 @@ ol.playlist .col-lg-6 a {
 		margin-top: .5rem;
 	}
 	.mobile-but {
-		display: block !important;
-		/* ensure hamburger is placed inside the header box on small screens so it's clickable */
-		top: 12px !important;
-		right: 18px !important;
-		z-index: 10001 !important;
-		cursor: pointer;
+		display: block;
 	}
 	.main-nav ul {
 		display: none;
@@ -1549,7 +1548,9 @@ ol.playlist .col-lg-6 a {
 }
 .main-nav {
 	position: relative;
-	z-index: 1000; /* Pastikan menu di atas elemen lain */
+	/* bring nav above page content and overlays */
+	z-index: 2100; /* Pastikan menu di atas elemen lain */
+	pointer-events: auto;
 }
 /* Default: sembunyikan hamburger, tampilkan menu horizontal */
 @media (min-width: 991px) {
