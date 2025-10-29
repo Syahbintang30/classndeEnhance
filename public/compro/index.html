@@ -17,25 +17,6 @@
   <link href="//fonts.googleapis.com/css?family=Inter:300,400,500,600,700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/ndelogo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
-  <style>
-    /* Navbar collapse background for mobile/tablet (below lg) */
-    .header .navbar { position: relative; }
-    @media (max-width: 991.98px) {
-      .header .navbar-collapse {
-        background: rgba(0,0,0,0.92);
-        padding: 12px;
-        border-radius: 8px;
-        position: absolute;
-        top: 64px; /* place below header bar */
-        left: 12px;
-        right: 12px;
-        z-index: 1050;
-      }
-      .header .navbar-collapse .nav-link { color: #fff !important; padding: 8px 12px; }
-      /* Slightly enlarge toggler for easier touch */
-      .navbar-toggler { padding: 0.35rem 0.6rem; }
-    }
-  </style>
 </head>
 
 <body>
@@ -104,35 +85,42 @@
                 </ul>
             </div>
             <!--End main slider-->
-      <!--Header: Bootstrap responsive navbar -->
-      <header class="header stopping">
-        <div class="container">
-          <nav class="navbar navbar-expand-lg navbar-dark p-0">
-            <div class="container-fluid px-0">
-              <a class="navbar-brand d-flex align-items-center" href="#wrapper">
-                <img src="img/ndelogo.png" alt="NDE" style="height:44px;" />
-              </a>
-
-              <!-- Toggler visible on mobile/tablet (collapsed below lg) -->
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-
-              <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-                  <li class="nav-item"><a class="nav-link scroll" href="#wrapper">Home</a></li>
-                  <li class="nav-item"><a class="nav-link scroll" href="#about">About</a></li>
-                  <li class="nav-item"><a class="nav-link scroll" href="#discography">Partnerships</a></li>
-                  <li class="nav-item"><a class="nav-link scroll" href="#registerclass">Exposure</a></li>
-                  <li class="nav-item"><a class="nav-link scroll" href="#contact">Contact</a></li>
-                  <li class="nav-item"><a class="nav-link scroll" href="#courses">Courses</a></li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </header>
-      <!--End header-->
+            <!--Header-->
+            <header class="header stopping">
+                <!--Container-->
+                <div class="container ">
+                    <!--Row-->
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <a class="scroll logo" href="#wrapper">
+                                <img class="mb-0" src="img/ndelogo.png" alt="">
+                            </a>
+                        </div>
+                        <div class="col-lg-10 text-right">
+                            <nav class="main-nav">
+                                <div class="toggle-mobile-but">
+                                    <a href="#" class="mobile-but">
+                                        <div class="lines"></div>
+                                    </a>
+                                </div>
+                                <ul class="main-menu list-inline">
+                                    <li><a class="scroll list-inline-item" href="#wrapper">Home</a></li>
+                                    <li><a class="scroll list-inline-item" href="#about">About</a></li>
+                                    <li><a class="scroll list-inline-item" href="#discography">Partnerships</a></li> 
+                                    <li><a class="scroll list-inline-item" href="#registerclass">Exposure</a></li>
+                                    <!-- <li><a class="scroll list-inline-item" href="#tour">Tours</a></li>
+                                    <li><a class="scroll list-inline-item" href="#gallery">Gallery</a></li>
+                                    <li><a class="scroll list-inline-item" href="#blog">News</a></li> -->
+                                    <li><a class="scroll list-inline-item" href="#contact">Contact</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <!--End row-->
+                </div>
+                <!--End container-->
+            </header>
+            <!--End header-->
         </section>
         <!--End hero section-->
         <!--About section-->
@@ -146,18 +134,6 @@
                         <div class="block-content text-center">
                             <h1 class="uppercase mb-0">A Different <br> WAY TO LEARN GUITAR</h1>
                             <p class="mt-2 lead w-95">"There’s a difference between knowing how to play and knowing what to say with your sound." </p>
-    <script>
-      // Auto-close bootstrap mobile collapse when a nav link is clicked (only for small viewports)
-      document.addEventListener('DOMContentLoaded', function(){
-        try {
-          var nav = document.getElementById('mainNavbar');
-          if (!nav) return;
-          var collapseInstance = bootstrap.Collapse.getOrCreateInstance(nav);
-          var links = nav.querySelectorAll('.nav-link');
-          links.forEach(function(l){ l.addEventListener('click', function(){ if (window.innerWidth < 992) collapseInstance.hide(); }); });
-        } catch(e) { console.warn('Collapse auto-close script skipped:', e); }
-      });
-    </script>
                             <img class="sing mb-0" src="img/ttd-nde.png" alt="">
                         </div>
                     </div>
@@ -564,10 +540,8 @@
 <a class="block-top scroll hover-effect" href="#wrapper"><i class="icon-angle-up"></i></a>
 
         <!-- End wrapper-->
-  <!--Javascript-->
-  <!-- Bootstrap JS (bundle includes collapse) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/jquery-1.12.4.min.js"></script>
+        <!--Javascript-->
+        <script src="js/jquery-1.12.4.min.js"></script>
         <script src="js/jquery.flexslider-min.js"></script>
         <script src="js/smooth-scroll.js"></script>
         <script src="js/jquery.magnific-popup.min.js"></script>
@@ -645,6 +619,64 @@ const locationChart = new Chart(document.getElementById('locationChart'), {
 });
 
 
+</script>
+
+<!-- Mobile navbar dropdown behaviour and styles -->
+<style>
+  /* Show mobile hamburger and make menu vertical on small screens */
+  @media (max-width: 991px) {
+    .toggle-mobile-but { display: inline-block; }
+    .main-nav .main-menu { display: none; flex-direction: column; gap: 6px; padding: 10px 12px; }
+    .main-nav.open .main-menu { display: flex; }
+    .main-menu .list-inline-item { display: block; padding: 10px 8px; }
+    .main-menu .list-inline-item a, .main-menu .list-inline-item { width:100%; }
+    /* Slight background for dropdown so links are readable */
+    .main-nav.open .main-menu { background: rgba(0,0,0,0.45); border-radius: 6px; margin-top:8px; }
+    /* Make header not overlap the dropdown when opened */
+    header.header { z-index: 20; }
+    /* Improve touch target for hamburger */
+    .mobile-but { display:inline-block; padding:8px; }
+    .mobile-but .lines { width:26px; height:3px; background:#fff; position:relative; display:block; }
+    .mobile-but .lines:before, .mobile-but .lines:after { content: ''; position:absolute; left:0; width:26px; height:3px; background:#fff; }
+    .mobile-but .lines:before { top:-8px; }
+    .mobile-but .lines:after { top:8px; }
+    .mobile-but.open .lines { background:transparent; }
+    .mobile-but.open .lines:before { transform: rotate(45deg); top:0; }
+    .mobile-but.open .lines:after { transform: rotate(-45deg); top:0; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var mobileBut = document.querySelector('.mobile-but');
+    var mainNav = document.querySelector('.main-nav');
+    var menuLinks = document.querySelectorAll('.main-menu a');
+    if (!mobileBut || !mainNav) return;
+
+    mobileBut.addEventListener('click', function(e){
+      e.preventDefault();
+      mainNav.classList.toggle('open');
+      mobileBut.classList.toggle('open');
+    });
+
+    // Close menu when clicking a link (mobile)
+    menuLinks.forEach(function(link){
+      link.addEventListener('click', function(){
+        if (mainNav.classList.contains('open')) {
+          mainNav.classList.remove('open');
+          mobileBut.classList.remove('open');
+        }
+      });
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e){
+      if (!mainNav.contains(e.target) && !e.target.closest('.mobile-but') && mainNav.classList.contains('open')) {
+        mainNav.classList.remove('open');
+        mobileBut.classList.remove('open');
+      }
+    });
+  });
 </script>
 
 
