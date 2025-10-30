@@ -12,16 +12,7 @@
       </svg>
     </div>
     <h1 class="title">Pembayaran Berhasil</h1>
-    <p class="lead">
-      Terima kasih! Transaksi dengan ID <strong>{{ $orderId }}</strong> telah <span class="status-pill ok">TERKONFIRMASI</span>.
-      @if(isset($package) && $package)
-        Akses paket Anda sudah aktif.
-      @elseif(isset($ticket) && $ticket)
-        Tiket coaching Anda sudah aktif — silakan jadwalkan sesi untuk mendapatkan umpan balik personal dari coach.
-      @else
-        Akses Anda sudah aktif.
-      @endif
-    </p>
+    <p class="lead">Terima kasih! Transaksi dengan ID <strong>{{ $orderId }}</strong> telah <span class="status-pill ok">TERKONFIRMASI</span>. Akses paket Anda sudah aktif.</p>
 
     <div class="info-grid" style="margin-top:8px">
       <div class="info-item"><span>Order ID</span><strong>{{ $orderId }}</strong></div>
@@ -31,19 +22,17 @@
       @endif
       @if(isset($package) && $package)
         <div class="info-item" style="grid-column: span 2;"><span>Paket</span><strong>{{ $package->name }}</strong></div>
-      @elseif(isset($ticket) && $ticket)
-        <div class="info-item" style="grid-column: span 2;"><span>Paket</span><strong>Coaching Ticket</strong></div>
       @endif
     </div>
 
-  @if(isset($package) && $package)
+    @if(isset($package) && $package)
       @php
         $slug = $package->slug ?? null;
         $courseSlugs = ['beginner','intermediate'];
         $coachingSlug = config('coaching.coaching_package_slug','coaching-ticket');
       @endphp
       <div class="section-block">
-  @if(in_array($slug, $courseSlugs))
+        @if(in_array($slug, $courseSlugs))
           <h3 class="section-head">Siap Belajar</h3>
           <p class="section-text">Anda sekarang memiliki akses penuh ke paket <strong>{{ $package->name }}</strong>. Mulai dari pelajaran pertama dan lanjutkan secara bertahap untuk hasil terbaik.</p>
           <div class="actions center">
@@ -53,13 +42,13 @@
               <a href="{{ route('registerclass') }}" class="btn-primary">Lihat Kelas</a>
             @endif
           </div>
-  @elseif($slug === 'upgrade-intermediate')
+        @elseif($slug === 'upgrade-intermediate')
           <h3 class="section-head">Upgrade Selesai</h3>
           <p class="section-text">Anda telah berhasil upgrade ke paket <strong>Intermediate</strong>. Eksplor materi baru untuk meningkatkan skill Anda.</p>
           <div class="actions center">
             <a href="{{ route('registerclass') }}" class="btn-primary">Masuk Ke Intermediate</a>
           </div>
-  @elseif($slug === $coachingSlug)
+        @elseif($slug === $coachingSlug)
           <h3 class="section-head">Tiket Coaching Aktif</h3>
           <p class="section-text">Tiket personal coaching Anda sudah siap. Jadwalkan sesi supaya dapat umpan balik langsung dari coach.</p>
           <div class="actions center">
@@ -67,16 +56,7 @@
           </div>
         @endif
       </div>
-      @elseif(isset($ticket) && $ticket)
-        <div class="section-block">
-          <h3 class="section-head">Tiket Coaching Aktif</h3>
-          <p class="section-text">Tiket personal coaching Anda sudah siap. Jadwalkan sesi supaya dapat umpan balik langsung dari coach.</p>
-          <div class="actions center">
-            <a href="{{ route('coaching.index') }}" class="btn-primary">Jadwalkan Sesi</a>
-            <a href="{{ route('coaching.upcoming') }}" class="btn-outline">Lihat Tiket Saya</a>
-          </div>
-        </div>
-      @endif
+    @endif
 
     <div class="divider"></div>
 
