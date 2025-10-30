@@ -771,6 +771,79 @@ img, svg { filter: none !important; }
 
 /* End global admin theme overrides */
 
+/* ================================
+   Mobile responsive tweaks (global)
+   Target: improve usability on phones
+   ================================ */
+@media (max-width: 767.98px) {
+    /* tighten navbar padding and make brand visible */
+    .admin-nav .nav-inner {
+        padding: 12px 10px;
+        gap: 8px;
+    }
+    .admin-nav .navbar-brand {
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+    .admin-nav .nav-links a {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* cards, spacing */
+    .card-table { padding: 12px !important; }
+    .card { border-radius: 8px; }
+
+    /* tables: make them horizontally scrollable and reduce padding */
+    .custom-table, .light-custom-table, table.table {
+        display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .custom-table thead th, .light-custom-table th, .table thead th {
+        padding: 0.6rem 0.8rem;
+        font-size: 13px;
+    }
+    .custom-table td, .light-custom-table td, .table td {
+        padding: 0.6rem 0.8rem;
+        font-size: 14px;
+    }
+
+    /* action buttons: make touch targets larger and wrap */
+    .actions .icon-btn { font-size: 1.4rem; padding: 10px; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* inputs & selects full width */
+    .form-control, .form-select, .select-menu .select-btn, .select-menu .options .option { width: 100% !important; }
+    .select-menu .select-btn { padding: 12px; height: auto; min-height: 44px; }
+
+    /* buttons: make primary and add full-width variant for small screens */
+    .btn-add, .btn-submit, .btn-back { width: 100%; display: block; padding: 10px 12px; }
+
+    /* pagination spacing */
+    .pagination { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* modal content max width */
+    .modal_content { max-width: 92%; padding: 16px; }
+
+    /* reduce header sizes in lists */
+    .header h2 { font-size: 18px; }
+    .header p { font-size: 13px; }
+
+    /* ensure table action columns don't overflow layout badly */
+    .custom-table td.actions, .light-custom-table td.actions { white-space: nowrap; }
+
+    /* reduce top container margin for more vertical space */
+    .container.my-4 { margin-top: 0.75rem !important; margin-bottom: 0.75rem !important; }
+}
+
+@media (max-width: 991.98px) and (min-width: 768px) {
+    /* tablet mid-size adjustments */
+    .admin-nav .nav-inner { padding: 14px 12px; }
+    .custom-table thead th, .custom-table td { padding: 0.8rem 1rem; }
+}
+
 /* === Overrides for list groups, alerts and small components (Payment Methods page) === */
 .list-group {
     background: transparent !important;
