@@ -1120,4 +1120,37 @@
             }
         })();
     </script>
+
+    <script>
+        // Fallback: delegated listener for mobile hamburger/touch so the menu opens
+        // even if DOM structure changed by upstream SEO edits. This does NOT modify any SEO content.
+        (function() {
+            function toggleMobileMenuFromButton(btn) {
+                if (!btn) return;
+                const mainMenu = document.querySelector('.main-menu');
+                if (!mainMenu) return;
+                const isActive = mainMenu.classList.toggle('active');
+                const wrapper = btn.closest('.toggle-mobile-but');
+                if (wrapper) wrapper.classList.toggle('active', isActive);
+                btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            }
+
+            // Use event delegation to catch clicks/touches on the hamburger even if markup moved
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest && e.target.closest('.mobile-but');
+                if (!btn) return;
+                e.preventDefault();
+                toggleMobileMenuFromButton(btn);
+            }, true);
+
+            // Also listen for touchstart for certain mobile browsers that consume click
+            document.addEventListener('touchstart', function(e) {
+                const btn = e.target.closest && e.target.closest('.mobile-but');
+                if (!btn) return;
+                // preventDefault may interfere with scrolling; only prevent when necessary
+                e.preventDefault();
+                toggleMobileMenuFromButton(btn);
+            }, { passive: false, capture: true });
+        })();
+    </script>
 @endpush
