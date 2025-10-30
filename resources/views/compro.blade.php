@@ -200,8 +200,8 @@
                 </div>
                 <div class="col-lg-10 text-right">
                     <nav class="main-nav">
-                        <div class="toggle-mobile-but">
-                            <a href="#" class="mobile-but">
+                        <div class="toggle-mobile-but" style="z-index:10002">
+                            <a href="javascript:void(0)" class="mobile-but" role="button" aria-expanded="false" aria-label="Toggle navigation">
                                 <div class="lines"></div>
                             </a>
                         </div>
@@ -901,7 +901,12 @@
             // Toggle menu saat hamburger diklik (hanya di mobile)
             mobileBut.addEventListener("click", (e) => {
                 e.preventDefault();
-                mainMenu.classList.toggle("active");
+                const isActive = mainMenu.classList.toggle("active");
+                // Toggle visual state of the hamburger wrapper
+                const wrapper = mobileBut.closest('.toggle-mobile-but');
+                if (wrapper) wrapper.classList.toggle('active', isActive);
+                // Update ARIA expanded state
+                mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false');
             });
 
             // Auto close menu saat klik item menu di mobile
@@ -909,6 +914,9 @@
                 link.addEventListener("click", () => {
                     if (window.innerWidth <= 990) {
                         mainMenu.classList.remove("active");
+                        const wrapper = mobileBut.closest('.toggle-mobile-but');
+                        if (wrapper) wrapper.classList.remove('active');
+                        mobileBut.setAttribute('aria-expanded', 'false');
                     }
                 });
             });
@@ -1017,10 +1025,18 @@
                 if (!mobileBut || !mainMenu) return;
                 mobileBut.addEventListener('click', (e) => {
                     e.preventDefault();
-                    mainMenu.classList.toggle('active');
+                    const isActive = mainMenu.classList.toggle('active');
+                    const wrapper = mobileBut.closest('.toggle-mobile-but');
+                    if (wrapper) wrapper.classList.toggle('active', isActive);
+                    mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false');
                 });
                 mainMenu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-                    if (window.innerWidth <= 990) mainMenu.classList.remove('active');
+                    if (window.innerWidth <= 990) {
+                        mainMenu.classList.remove('active');
+                        const wrapper = mobileBut.closest('.toggle-mobile-but');
+                        if (wrapper) wrapper.classList.remove('active');
+                        mobileBut.setAttribute('aria-expanded', 'false');
+                    }
                 }));
             });
         })();
