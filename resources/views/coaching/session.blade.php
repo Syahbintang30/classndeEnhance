@@ -355,10 +355,26 @@ waitForTwilio().then(function(){
                 tile.appendChild(nameTag);
 
                 participant.tracks.forEach(publication => {
-                    if (publication.track) tile.appendChild(publication.track.attach());
+                    if (publication.track) {
+                        try {
+                            // remove any previously attached elements for this track to avoid duplicates
+                            publication.track.detach().forEach(el => { try { el.remove(); } catch(e){} });
+                        } catch(e) { /* ignore */ }
+                        try {
+                            const attached = publication.track.attach();
+                            if (Array.isArray(attached)) attached.forEach(a => tile.appendChild(a)); else tile.appendChild(attached);
+                        } catch(e) { /* ignore attach errors */ }
+                    }
                 });
                 participant.on('trackSubscribed', track => {
-                    tile.appendChild(track.attach());
+                    try {
+                        // ensure we don't accumulate duplicate media elements
+                        track.detach().forEach(el => { try { el.remove(); } catch(e){} });
+                    } catch(e) { /* ignore */ }
+                    try {
+                        const attached = track.attach();
+                        if (Array.isArray(attached)) attached.forEach(a => tile.appendChild(a)); else tile.appendChild(attached);
+                    } catch(e) { /* ignore attach errors */ }
                     setParticipantIndicators(participant, true, track.kind === 'video' ? true : false);
                     // if it's an audio track, start monitoring to show speaking indicator
                     if (track.kind === 'audio') {
