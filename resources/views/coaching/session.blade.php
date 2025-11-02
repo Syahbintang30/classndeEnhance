@@ -323,71 +323,6 @@ waitForTwilio().then(function(){
 
             const remoteContainer = document.getElementById('remote-media');
 
-            // Helpers for safe attach/detach of Twilio tracks to avoid frozen video elements
-            function detachAndRemoveTrackElements(track) {
-                try {
-                    const els = track.detach();
-                    if (Array.isArray(els)) {
-                        els.forEach(el => {
-                            try {
-                                if (el && el.parentNode) el.parentNode.removeChild(el);
-                                else if (el && typeof el.remove === 'function') el.remove();
-                            } catch (e) { /* ignore remove errors */ }
-                        });
-                    }
-                } catch (e) {
-                    // fallback: try to remove any elements matching data-track-sid
-                    try {
-                        const sid = track && (track.sid || track.trackSid);
-                        if (sid) {
-                            document.querySelectorAll('[data-track-sid="' + sid + '"]').forEach(n => n.remove());
-                        }
-                    } catch (ex) { /* ignore */ }
-                }
-            }
-
-            function attachTrackToTile(track, tile, participant) {
-                try {
-                    // remove existing elements for this track to avoid duplicates
-                    const sid = track && (track.sid || track.trackSid || '');
-                    if (sid) {
-                        tile.querySelectorAll('[data-track-sid="' + sid + '"]').forEach(n => n.remove());
-                    }
-                    const elements = track.attach();
-                    elements.forEach(el => {
-                        try {
-                            if (el && el.setAttribute) {
-                                el.setAttribute('data-track-sid', sid || '');
-                                el.setAttribute('data-participant-sid', participant.sid || '');
-                                el.classList && el.classList.add('participant-media');
-                                if (el.tagName && el.tagName.toLowerCase() === 'video') {
-                                    el.autoplay = true; el.playsInline = true; el.muted = false;
-                                }
-                            }
-                            tile.appendChild(el);
-                        } catch (e) { /* ignore per-element errors */ }
-                    });
-                    return elements;
-                } catch (e) { return []; }
-            }
-
-            function showPlaceholderForTile(tile) {
-                try {
-                    let ph = tile.querySelector('.tile-placeholder');
-                    if (!ph) {
-                        ph = document.createElement('div'); ph.className = 'tile-placeholder'; ph.textContent = 'Camera off';
-                        tile.appendChild(ph);
-                    }
-                    ph.style.display = '';
-                } catch (e) { }
-            }
-
-            function removePlaceholderForTile(tile) {
-                try {
-                    const ph = tile.querySelector('.tile-placeholder'); if (ph) ph.remove();
-                } catch (e) { }
-            }
-
             function addParticipantToList(participant, muted=false) {
                 const ul = document.getElementById('participant-list');
                 if (!ul) return; // participant list was removed from DOM
@@ -418,53 +353,70 @@ waitForTwilio().then(function(){
                 nameTag.className = 'tile-name';
                 nameTag.textContent = participant.identity || participant.sid;
                 tile.appendChild(nameTag);
-                // Attach currently subscribed tracks safely
-                participant.tracks.forEach(publication => {
-                    if (publication.track) {
-                        attachTrackToTile(publication.track, tile, participant);
-                        if (publication.track.kind === 'audio') startVolumeMonitorForTrack(publication.track, tile);
+
+                // Helper: recompute audio/video presence and update indicators
+                function refreshParticipantIndicators() {
+                    try {
+                        const hasAudio = Array.from(participant.tracks.values()).some(pub => pub.track && pub.track.kind === 'audio' && (pub.track.isEnabled !== false));
+                        const hasVideo = Array.from(participant.tracks.values()).some(pub => pub.track && pub.track.kind === 'video' && (pub.track.isEnabled !== false));
+                        setParticipantIndicators(participant, hasAudio, hasVideo);
+                    } catch (e) { /* ignore */ }
+                }
+
+                // Helper: attach a subscribed track exactly once and wire disabled/enabled
+                function attachTrack(track) {
+                    // prevent duplicate DOM nodes by ensuring no existing attached element for this track in this tile
+                    try {
+                        const already = Array.from(tile.querySelectorAll(track.kind === 'video' ? 'video' : 'audio'))
+                            .some(el => el._twilioTrackSid === (track.sid || track.trackSid));
+                        if (!already) {
+                            const el = track.attach();
+                            // mark element with track sid to avoid duplicates
+                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
+                            tile.appendChild(el);
+                        }
+                    } catch (_) {}
+
+                    refreshParticipantIndicators();
+                    if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
+
+                    // When a track is disabled (e.g., camera off), detach its DOM elements to avoid frozen frames
+                    track.on('disabled', () => {
+                        try {
+                            track.detach().forEach(el => el.remove());
+                        } catch(e) {}
+                        refreshParticipantIndicators();
+                        if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
+                    });
+                    // Re-attach when enabled again
+                    track.on('enabled', () => {
+                        try {
+                            const el = track.attach();
+                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
+                            tile.appendChild(el);
+                        } catch(e) {}
+                        refreshParticipantIndicators();
+                        if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
+                    });
+                }
+
+                function detachTrack(track) {
+                    try { track.detach().forEach(el => el.remove()); } catch(e) {}
+                    refreshParticipantIndicators();
+                    if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
+                }
+
+                // Use publication-level events to avoid double-attach and to handle unsubscribed cleanly
+                function wirePublication(publication) {
+                    if (publication.isSubscribed && publication.track) {
+                        attachTrack(publication.track);
                     }
-                });
+                    publication.on('subscribed', attachTrack);
+                    publication.on('unsubscribed', detachTrack);
+                }
 
-                participant.on('trackSubscribed', track => {
-                    debug('trackSubscribed ' + participant.sid + ' kind=' + track.kind + ' sid=' + (track.sid||track.trackSid));
-                    removePlaceholderForTile(tile);
-                    attachTrackToTile(track, tile, participant);
-                    setParticipantIndicators(participant, true, track.kind === 'video');
-                    if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
-                    updateGridClass(); updateVideoAreaTwoParticipantClass();
-                });
-
-                // When remote participant disables their track (turns camera off)
-                // we must detach and remove stale <video> elements to avoid freeze frames.
-                participant.on('trackDisabled', track => {
-                    debug('trackDisabled ' + participant.sid + ' kind=' + track.kind + ' sid=' + (track.sid||track.trackSid));
-                    try { detachAndRemoveTrackElements(track); } catch(e){}
-                    if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
-                    setParticipantIndicators(participant, true, track.kind === 'video' ? false : true);
-                    showPlaceholderForTile(tile);
-                    updateGridClass(); updateVideoAreaTwoParticipantClass();
-                });
-
-                participant.on('trackEnabled', track => {
-                    debug('trackEnabled ' + participant.sid + ' kind=' + track.kind + ' sid=' + (track.sid||track.trackSid));
-                    removePlaceholderForTile(tile);
-                    attachTrackToTile(track, tile, participant);
-                    if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
-                    setParticipantIndicators(participant, true, track.kind === 'video');
-                    updateGridClass(); updateVideoAreaTwoParticipantClass();
-                });
-
-                participant.on('trackUnsubscribed', track => {
-                    debug('trackUnsubscribed ' + participant.sid + ' kind=' + track.kind + ' sid=' + (track.sid||track.trackSid));
-                    try { detachAndRemoveTrackElements(track); } catch(e){}
-                    if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
-                    setParticipantIndicators(participant, false, track.kind === 'video' ? false : false);
-                    // show placeholder for video removal
-                    if (track.kind === 'video') showPlaceholderForTile(tile);
-                    updateGridClass(); updateVideoAreaTwoParticipantClass();
-                });
-
+                participant.tracks.forEach(wirePublication);
+                participant.on('trackPublished', wirePublication);
                 remoteContainer.appendChild(tile);
             }
 
