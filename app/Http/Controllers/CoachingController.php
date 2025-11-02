@@ -58,11 +58,26 @@ class CoachingController extends Controller
             }
             return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Invalid datetime format, expected YYYY-MM-DD HH:MM:SS'])->withInput();
         }
-        if ($dt->lt(now()->addMinutes(5))) {
-            if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Booking time must be at least 5 minutes in the future']]], 422);
+        // Allow creating a booking for a slot that has already started as long as the session
+        // hasn't finished. This permits users to book in-progress sessions (e.g. slot 01:00,
+        // user books at 01:10) and still join if admin accepts. The session length is
+        // configurable via coaching.session_length_minutes (default 60).
+        $sessionLength = config('coaching.session_length_minutes', 60);
+        $now = now();
+        try {
+            $endWindow = $dt->copy()->addMinutes($sessionLength);
+            if ($now->gt($endWindow)) {
+                if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
+                    return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Booking time is in the past and cannot be booked']]], 422);
+                }
+                return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time is in the past and cannot be booked'])->withInput();
             }
-            return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time must be at least 5 minutes in the future'])->withInput();
+        } catch (\Throwable $e) {
+            // If anything goes wrong comparing times, reject to be safe
+            if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
+                return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Invalid booking time']]], 422);
+            }
+            return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Invalid booking time'])->withInput();
         }
         if ($dt->gt(now()->addMonths(6))) {
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {

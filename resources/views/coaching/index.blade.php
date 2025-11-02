@@ -466,7 +466,7 @@
             // navigation intentionally disabled to keep current month pinned
         });
 
-        form && form.addEventListener('submit', function (e) {
+        form && form.addEventListener('submit', async function (e) {
             const bookingInput = document.getElementById('booking_time');
             if (!bookingInput || !bookingInput.value) {
                 e.preventDefault();
@@ -481,8 +481,49 @@
                 // Also pass along the notes
                 const notes = encodeURIComponent(document.getElementById('session_notes').value);
                 window.location.href = `{{ route('coaching.checkout') }}?schedule=${schedule}&notes=${notes}`;
+                return;
             }
-            // If user has a ticket, allow the form to submit normally to coaching.book route
+
+            // If user has a ticket, submit via fetch so we can display immediate feedback
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Booking...';
+
+            const payload = new URLSearchParams();
+            payload.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            payload.append('booking_time', bookingInput.value);
+            payload.append('notes', document.getElementById('session_notes').value || '');
+
+            try {
+                const resp = await fetch('{{ route('coaching.book') }}', {
+                    method: 'POST',
+                    body: payload.toString(),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                });
+                if (resp.ok) {
+                    const json = await resp.json().catch(() => null);
+                    // success — redirect to thank you or booking page
+                    if (json && json.booking) {
+                        window.location.href = `{{ route('coaching.thankyou') }}?booking=${json.booking}`;
+                        return;
+                    }
+                    // fallback: reload
+                    window.location.reload();
+                } else {
+                    const json = await resp.json().catch(() => null);
+                    console.error('Booking failed', json || resp.statusText);
+                    // Friendly message for users
+                    const msg = (json && json.errors) ? Object.values(json.errors).flat().join('\n') : 'Failed to create booking. The slot may be full or invalid.';
+                    alert(msg);
+                }
+            } catch (err) {
+                console.error('Booking request failed', err);
+                alert('Failed to create booking due to network or server error. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm & Use 1 Ticket';
+            }
         });
 
         // --- INITIALIZATION ---
