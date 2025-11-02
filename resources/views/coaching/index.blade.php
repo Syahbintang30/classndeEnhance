@@ -239,9 +239,7 @@
             }
         }
 
-    // --- UI RENDERING & LOGIC ---
-    // session length from server (minutes)
-    const sessionLength = {{ config('coaching.session_length_minutes', 60) }};
+        // --- UI RENDERING & LOGIC ---
         async function renderMonth(dt) {
             const year = dt.getFullYear();
             const month = dt.getMonth();
@@ -281,79 +279,57 @@
                     btn.disabled = true;
                 } else {
                     const remaining = (availMap[btn.dataset.date] || 0);
-                    times.forEach(t => {
+                    if (remaining <= 0) {
                         btn.classList.add('disabled');
                         btn.disabled = true;
                         // do not attach click handler for fully booked days
                     } else {
                         const badge = document.createElement('span');
                         badge.className = 'date-badge';
+                        badge.textContent = remaining > 9 ? '9+' : remaining;
+                        btn.appendChild(badge);
 
-                        // Determine if the slot has already fully passed (end of session < now)
-                        // Build a local Date for the slot (t is 'HH:MM', dateStr is 'YYYY-MM-DD')
-                        let disabledDueToPast = false;
-                        try {
-                            // Convert 'YYYY-MM-DD' + 'T' + 'HH:MM:SS' into a local Date
-                            const slotIso = `${dateStr}T${t}:00`;
-                            const slotDt = new Date(slotIso);
-                            const slotEnd = new Date(slotDt.getTime() + (sessionLength * 60 * 1000));
-                            const nowLocal = new Date();
-                            // If the session already ended, mark disabled
-                            if (slotEnd.getTime() <= nowLocal.getTime()) {
-                                disabledDueToPast = true;
-                            }
-                        } catch (err) {
-                            // parsing error: do not disable based on time
-                            console.warn('Failed to parse slot datetime', err);
-                        }
-
-                        // If server returns remaining and it's zero, mark disabled. If the slot key is missing, treat as disabled.
-                        if (typeof s.remaining !== 'undefined' && s.remaining <= 0) {
-                            b.classList.add('disabled');
-                            b.disabled = true;
-                        }
-
-                        // Disable if the session has already ended
-                        if (disabledDueToPast) {
-                            b.classList.add('disabled');
-                            b.disabled = true;
-                            // add a small hint for users
-                            const hint = document.createElement('span');
-                            hint.textContent = ' (sudah lewat)';
-                            hint.style.marginLeft = '8px';
-                            hint.style.fontSize = '11px';
-                            hint.style.opacity = '0.8';
-                            hint.style.color = '#ff8a8a';
-                            b.appendChild(hint);
-                        }
+                        btn.addEventListener('click', async () => {
+                            document.querySelectorAll('.calendar .day.active').forEach(x => x.classList.remove('active'));
                             btn.classList.add('active');
                             selectedDate = btn.dataset.date;
-                            const tag = document.createElement('span');
-                            tag.textContent = 'Your booking';
-                            tag.style.marginLeft = '8px';
-                            tag.style.fontSize = '11px';
-                            tag.style.padding = '2px 6px';
-                            tag.style.borderRadius = '10px';
-                            tag.style.background = 'rgba(100, 200, 255, 0.15)';
-                            tag.style.border = '1px solid rgba(100, 200, 255, 0.35)';
-                            tag.style.color = '#cfe9ff';
-                            b.appendChild(tag);
-                            b.classList.add('mine');
+                            selectedTime = null; // Reset time when date changes
+
+                            // Show step 2 and hide step 3
+                            step2El.style.display = 'block';
+                            step3El.style.display = 'none';
+                            step2El.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                            await loadTimesForDate(selectedDate);
+                            updateSummaryAndButtonState();
+                        });
+                    }
                 }
-                            // Only attach click handler if not disabled (either by capacity or past)
-                            if (!b.disabled) {
-                                b.addEventListener('click', () => {
-                                    selectedTime = b.dataset.time;
-                                    document.querySelectorAll('#timeSuggestions .time.selected').forEach(x => x.classList.remove('selected'));
-                                    b.classList.add('selected');
+                daysEl.appendChild(btn);
+            }
+        }
 
-                                    // Show step 3
-                                    step3El.style.display = 'block';
-                                    step3El.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        async function loadTimesForDate(dateStr) {
+            timeSuggestions.innerHTML = '<p style="opacity: 0.7;">Loading available times...</p>';
+            try {
+                const resp = await fetch('{{ route('coaching.availability') }}?date=' + dateStr, { credentials: 'same-origin' });
+                if (!resp.ok) throw new Error('Network response was not ok');
+                const json = await resp.json();
+                timeSuggestions.innerHTML = ''; // Clear loading message
 
-                                    updateSummaryAndButtonState();
-                                });
-                            }
+                // Determine the list of times to render. Prefer admin-configured allowedSlotTimes when provided.
+                let times = [];
+                if (Array.isArray(allowedSlotTimes) && allowedSlotTimes.length > 0) {
+                    times = allowedSlotTimes.slice();
+                } else {
+                    times = Object.keys(json.slots || {}).sort();
+                }
+
+                if (times.length === 0) {
+                    timeSuggestions.innerHTML = '<p style="opacity: 0.7;">No available times for this date.</p>';
+                    return;
+                }
+
                 times.forEach(t => {
                     const s = (json.slots && typeof json.slots[t] !== 'undefined') ? json.slots[t] : { remaining: 0 };
                     const b = document.createElement('button');
