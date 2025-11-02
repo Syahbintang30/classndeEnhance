@@ -33,7 +33,6 @@
                 <th>Email</th>
                 <th>Package</th>
                 <th>Available / Total</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +41,10 @@
                     <td>{{ $u->name }}</td>
                     <td>{{ $u->email }}</td>
                     <td>
-                        @if($u->package_id && isset($rolePackages[$u->package_id]))
+                        {{-- Prefer actual package relation from DB; fallback to rolePackages if needed --}}
+                        @if($u->package)
+                            {{ $u->package->name }}
+                        @elseif($u->package_id && isset($rolePackages[$u->package_id]))
                             {{ $rolePackages[$u->package_id]->name }}
                         @else
                             -
@@ -56,17 +58,11 @@
                         @endphp
                         <span class="{{ $badgeClass }}">{{ $avail }} / {{ $total }}</span>
                     </td>
-                    <td class="actions">
-                        <form action="{{ route('admin.users.edit', $u->id) }}" method="GET" class="d-inline">
-                            <button class="icon-btn ph-duotone ph-pencil-simple-line" 
-                            onmouseover="this.style.color='#ffbc6b'"onmouseout="this.style.color=''"
-                            onclick="event.stopPropagation()"></button>
-                        </form>
-                    </td>
+                    {{-- Actions removed per request --}}
                 </tr>
             @empty
                 <tr style="pointer-events: none; background: transparent;">
-                    <td colspan="5" class="text-center pt-5">Belum ada users</td>
+                    <td colspan="4" class="text-center pt-5">Belum ada users</td>
                 </tr>
             @endforelse
         </tbody>

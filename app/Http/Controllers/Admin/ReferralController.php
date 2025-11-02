@@ -64,6 +64,7 @@ class ReferralController extends Controller
     public function userPackages(Request $request)
     {
         $users = User::orderBy('name')
+            ->with('package')
             ->withCount(['coachingTickets as available_tickets_count' => function($q){ $q->where('is_used', false); }])
             ->withCount(['coachingTickets as total_tickets_count'])
             ->paginate(50);
