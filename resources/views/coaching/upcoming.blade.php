@@ -95,6 +95,11 @@
         border: none;
         font-weight: 600;
     }
+    /* history (past) booking box: darker, lower-contrast */
+    .slot.history { background: rgba(0,0,0,0.45) !important; border-color: rgba(255,255,255,0.03) !important; }
+    .slot.history .topic { color: rgba(255,255,255,0.95); }
+    .slot.history .muted, .slot.history .meta { color: rgba(255,255,255,0.75); }
+    .slot.history .status-badge { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.06); }
     .btn-reschedule { background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:8px }
 
     /* Responsive adjustments */
@@ -156,10 +161,12 @@
             @foreach($sortedBookings as $index => $b)
                 @php
                     $dt = \Carbon\Carbon::parse($b->booking_time);
+                    $now = \Carbon\Carbon::now();
+                    $isPast = $dt->lessThan($now);
                     $dtLocal = $dt->format('Y-m-d H:i:s');
                     $sessionUrl = route('coaching.session', ['booking' => $b->id]);
                 @endphp
-                <div class="slot">
+                <div class="slot{{ $isPast ? ' history' : '' }}">
                     <div class="card-body">
                         <div class="info">
                             {{-- show session number if available, otherwise use sequential index --}}
@@ -168,16 +175,29 @@
                                 $sessionLabel = 'Session ' . ($index + 1);
                             @endphp
                             <div class="topic">{{ $sessionLabel }}@if(!empty($b->topic)) - {{ $b->topic }}@endif
-                                @php $s = strtolower($b->status); @endphp
-                                @if($s === 'rejected')
-                                    <span class="status-badge rejected">DITOLAK</span>
-                                @elseif($s === 'pending')
-                                    <span class="status-badge pending">PENDING</span>
-                                @elseif($s === 'accepted' || $s === 'scheduled')
-                                    <span class="status-badge scheduled">DIJADWALKAN</span>
-                                @else
-                                    <span class="status-badge finished">SELESAI</span>
-                                @endif
+                                    @php
+                                        $s = strtolower($b->status);
+                                        // If the booking time is already in the past, treat it as finished for presentation
+                                        if ($isPast) {
+                                            $badgeClass = 'finished';
+                                            $badgeText = 'selesai';
+                                        } else {
+                                            if ($s === 'rejected') {
+                                                $badgeClass = 'rejected';
+                                                $badgeText = 'reschedule jadwal kamu';
+                                            } else if ($s === 'pending') {
+                                                $badgeClass = 'pending';
+                                                $badgeText = 'Menunggu persetujuan admin';
+                                            } else if ($s === 'accepted' || $s === 'scheduled') {
+                                                $badgeClass = 'scheduled';
+                                                $badgeText = 'dijadwalkan';
+                                            } else {
+                                                $badgeClass = 'finished';
+                                                $badgeText = 'selesai';
+                                            }
+                                        }
+                                    @endphp
+                                    <span class="status-badge {{ $badgeClass }}">{{ $badgeText }}</span>
                             </div>
 
                             <div class="muted"><span class="label">Jadwal:</span> {{ $dt->translatedFormat('d F Y') }}, {{ $dt->format('H:i') }} WIB</div>
