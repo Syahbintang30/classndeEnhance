@@ -162,7 +162,15 @@
                 @php
                     $dt = \Carbon\Carbon::parse($b->booking_time);
                     $now = \Carbon\Carbon::now();
-                    $isPast = $dt->lessThan($now);
+                    // Treat booking as finished only when the session end time has passed.
+                    // Session length is configurable via coaching.session_length_minutes (default 60).
+                    $sessionLength = config('coaching.session_length_minutes', 60);
+                    try {
+                        $isPast = $dt->copy()->addMinutes($sessionLength)->lt($now);
+                    } catch (\Throwable $e) {
+                        // Fallback: if any error, do not mark as past to avoid prematurely showing 'selesai'
+                        $isPast = false;
+                    }
                     $dtLocal = $dt->format('Y-m-d H:i:s');
                     $sessionUrl = route('coaching.session', ['booking' => $b->id]);
                 @endphp
