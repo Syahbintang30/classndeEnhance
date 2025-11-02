@@ -367,26 +367,34 @@ waitForTwilio().then(function(){
                 function attachTrack(track) {
                     // prevent duplicate DOM nodes by ensuring no existing attached element for this track in this tile
                     try {
-                        const already = Array.from(tile.querySelectorAll(track.kind === 'video' ? 'video' : 'audio'))
-                            .some(el => el._twilioTrackSid === (track.sid || track.trackSid));
-                        if (!already) {
-                            const el = track.attach();
-                            // mark element with track sid to avoid duplicates
-                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
-                            tile.appendChild(el);
-                        }
+                        // First, remove any stale elements for this track sid to avoid duplicates
+                        const sid = (track.sid || track.trackSid);
+                        Array.from(tile.querySelectorAll(track.kind === 'video' ? 'video' : 'audio'))
+                            .filter(el => el._twilioTrackSid === sid)
+                            .forEach(el => { try { el.remove(); } catch(_) {} });
+
+                        const el = track.attach();
+                        // mark element with track sid to avoid duplicates
+                        try { el._twilioTrackSid = sid; } catch(e){}
+                        tile.appendChild(el);
                     } catch (_) {}
 
                     refreshParticipantIndicators();
                     if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
 
-                    // When a track is disabled (e.g., camera off), detach its DOM elements to avoid frozen frames
+                    // When a track is disabled or bandwidth-switchedOff, detach its DOM elements to avoid frozen frames
                     track.on('disabled', () => {
                         try {
                             track.detach().forEach(el => el.remove());
                         } catch(e) {}
                         refreshParticipantIndicators();
                         if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
+                    });
+                    track.on('switchedOff', () => {
+                        try {
+                            track.detach().forEach(el => el.remove());
+                        } catch(e) {}
+                        refreshParticipantIndicators();
                     });
                     // Re-attach when enabled again
                     track.on('enabled', () => {
@@ -397,6 +405,14 @@ waitForTwilio().then(function(){
                         } catch(e) {}
                         refreshParticipantIndicators();
                         if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
+                    });
+                    track.on('switchedOn', () => {
+                        try {
+                            const el = track.attach();
+                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
+                            tile.appendChild(el);
+                        } catch(e) {}
+                        refreshParticipantIndicators();
                     });
                 }
 
@@ -413,6 +429,13 @@ waitForTwilio().then(function(){
                     }
                     publication.on('subscribed', attachTrack);
                     publication.on('unsubscribed', detachTrack);
+                    // Also handle remote enable/disable events bubbling on publication
+                    publication.on('trackEnabled', () => {
+                        if (publication.track) attachTrack(publication.track);
+                    });
+                    publication.on('trackDisabled', () => {
+                        if (publication.track) detachTrack(publication.track);
+                    });
                 }
 
                 participant.tracks.forEach(wirePublication);
