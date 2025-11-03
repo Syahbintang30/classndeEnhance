@@ -363,57 +363,40 @@ waitForTwilio().then(function(){
                     } catch (e) { /* ignore */ }
                 }
 
-                // Helper: attach a subscribed track exactly once and wire disabled/enabled
+                                // GANTI FUNGSI LAMA ANDA DENGAN INI
+                // (Fungsi ini harus tetap berada di dalam function attachParticipant)
+
                 function attachTrack(track) {
                     // prevent duplicate DOM nodes by ensuring no existing attached element for this track in this tile
                     try {
-                        // First, remove any stale elements for this track sid to avoid duplicates
+                        // Pastikan tile ada sebelum menambahkan elemen
+                        const tile = document.getElementById(participant.sid);
+                        if (!tile) {
+                            debug('Cannot attach track, participant tile not found: ' + participant.sid);
+                            return;
+                        }
+
                         const sid = (track.sid || track.trackSid);
+                        
+                        // Pertama, hapus semua elemen lama untuk track ini untuk menghindari duplikat
                         Array.from(tile.querySelectorAll(track.kind === 'video' ? 'video' : 'audio'))
                             .filter(el => el._twilioTrackSid === sid)
                             .forEach(el => { try { el.remove(); } catch(_) {} });
 
+                        // Sekarang pasang elemen yang baru
                         const el = track.attach();
-                        // mark element with track sid to avoid duplicates
+                        
+                        // tandai elemen dengan track sid
                         try { el._twilioTrackSid = sid; } catch(e){}
+                        
                         tile.appendChild(el);
-                    } catch (_) {}
+                    } catch (e) {
+                        debug('Error attaching track ' + (track.sid || '') + ': ' + e.message);
+                    }
 
+                    // Panggil fungsi refresh dan volume monitor (seperti di kode asli Anda)
                     refreshParticipantIndicators();
                     if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
-
-                    // When a track is disabled or bandwidth-switchedOff, detach its DOM elements to avoid frozen frames
-                    track.on('disabled', () => {
-                        try {
-                            track.detach().forEach(el => el.remove());
-                        } catch(e) {}
-                        refreshParticipantIndicators();
-                        if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
-                    });
-                    track.on('switchedOff', () => {
-                        try {
-                            track.detach().forEach(el => el.remove());
-                        } catch(e) {}
-                        refreshParticipantIndicators();
-                    });
-                    // Re-attach when enabled again
-                    track.on('enabled', () => {
-                        try {
-                            const el = track.attach();
-                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
-                            tile.appendChild(el);
-                        } catch(e) {}
-                        refreshParticipantIndicators();
-                        if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
-                    });
-                    track.on('switchedOn', () => {
-                        try {
-                            const el = track.attach();
-                            try { el._twilioTrackSid = (track.sid || track.trackSid); } catch(e){}
-                            tile.appendChild(el);
-                        } catch(e) {}
-                        refreshParticipantIndicators();
-                    });
                 }
 
                 function detachTrack(track) {
