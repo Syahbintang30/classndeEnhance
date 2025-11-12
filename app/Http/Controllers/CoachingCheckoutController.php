@@ -54,9 +54,8 @@ class CoachingCheckoutController extends Controller
         } catch (\Throwable $e) {
             return response()->json(['error' => 'schedule must be in format YYYY-MM-DD HH:MM:SS'], 422);
         }
-        if ($dt->lt(now()->addMinutes(10))) {
-            return response()->json(['error' => 'Selected schedule must be at least 10 minutes in the future'], 422);
-        }
+        // Previously enforced a minimum 10-minute lead time; removed to allow booking an in-progress slot
+        // Example: booking at 10:05 for a 10:00 schedule is now permitted.
         if ($dt->gt(now()->addMonths(6))) {
             return response()->json(['error' => 'Selected schedule is too far in the future'], 422);
         }
