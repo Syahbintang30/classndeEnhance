@@ -91,7 +91,7 @@
                                 <button id="payBtn" class="btn btn-primary wide" {{ $hasPackage ? '' : 'disabled' }}>Pay with Midtrans</button>
                             </div>
 
-                            <div class="muted" style="margin-top:8px;font-size:12px;">Harga dapat diubah oleh Admin di Admin → Packages.</div>
+                            <div class="muted" style="margin-top:8px;font-size:12px;"> </div>
                         </div>
                     </div>
                 </div>
