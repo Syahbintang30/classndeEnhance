@@ -81,9 +81,17 @@ class TwilioService
 	 */
 	public function generateIdentity($user): string
 	{
+		// Prefer a human-friendly identity for the video UI
 		if (is_string($user)) return $user;
-		if (is_object($user) && isset($user->id)) {
-			return 'user-' . $user->id;
+		if (is_object($user)) {
+			// Show real name if available, otherwise email, else fallback to user-<id>
+			$name = null;
+			try { $name = isset($user->name) && $user->name ? (string)$user->name : null; } catch (\Throwable $e) { $name = null; }
+			$email = null;
+			try { $email = isset($user->email) && $user->email ? (string)$user->email : null; } catch (\Throwable $e) { $email = null; }
+			if ($name) return $name; // keep it simple and readable on tiles
+			if ($email) return $email;
+			if (isset($user->id)) return 'user-' . $user->id;
 		}
 		try {
 			return 'guest-' . bin2hex(random_bytes(4));
