@@ -107,9 +107,10 @@ class CoachingController extends Controller
                 // capacity is implicitly 1 per admin design (one person per slot)
                 $capacity = 1;
 
-                // count existing bookings (pending or accepted) for that slot
-                $qb = CoachingBooking::whereDate('booking_time', $date)
-                        ->whereTime('booking_time', $time);
+        // count existing bookings (only active ones: pending or accepted) for that slot
+        $qb = CoachingBooking::whereDate('booking_time', $date)
+            ->whereTime('booking_time', $time)
+            ->whereIn('status', ['pending','accepted']);
 
                 // use row locking only when the driver supports it (mysql, pgsql)
                 $driver = null;

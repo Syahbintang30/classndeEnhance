@@ -36,6 +36,10 @@ class CoachingBookingController extends Controller
             $bookingsForCounts = $bookingsQuery->get();
             
             foreach ($bookingsForCounts as $booking) {
+                // Only count active bookings towards "Taken": pending or accepted
+                if (! in_array(strtolower($booking->status), ['pending','accepted'])) {
+                    continue;
+                }
                 $carbon = Carbon::parse($booking->booking_time);
                 $day = $carbon->toDateString();
                 $time = $carbon->format('H:i');
@@ -138,6 +142,13 @@ class CoachingBookingController extends Controller
         $booking->status = 'rejected';
         $booking->admin_note = $request->input('reason') ?? 'Admin not available, please reschedule';
         $booking->save();
+
+        // Invalidate cached availability for this date so the freed slot is visible immediately
+        try {
+            $dt = \Carbon\Carbon::parse($booking->booking_time);
+            $key = 'coaching_avail_range:' . $dt->toDateString() . ':' . $dt->toDateString();
+            \Illuminate\Support\Facades\Cache::forget($key);
+        } catch (\Throwable $e) { /* ignore cache errors */ }
 
         // notify user about rejection and reason
         try {
