@@ -183,87 +183,101 @@ waitForTwilio().then(function(){
         let localVideoPublication = null;
         let localAudioPublication = null;
 
+        // Helper to get the attached local video element
+        function getLocalVideoEl() {
+            const lm = document.getElementById('local-media');
+            if (!lm) return null;
+            return lm.querySelector('video');
+        }
+
+        // CAMERA: toggle using track.enable(true/false) without publish/unpublish churn.
         async function enableCamera() {
             try {
                 if (!localVideoTrack) {
+                    // Create once if permissions were previously denied or track stopped due to hangup
                     localVideoTrack = await createLocalVideoTrack();
                     const localMedia = document.getElementById('local-media');
-                    localMedia.innerHTML = '';
-                    localMedia.appendChild(localVideoTrack.attach());
-                }
-                // if room is active, publish track
-                if (room && room.localParticipant) {
-                    if (!localVideoPublication) {
+                    if (localMedia && !getLocalVideoEl()) {
+                        localMedia.appendChild(localVideoTrack.attach());
+                    }
+                    // Initial publish only if we have a room and haven't published yet
+                    if (room && room.localParticipant && !localVideoPublication) {
                         try {
                             localVideoPublication = await room.localParticipant.publishTrack(localVideoTrack);
-                            debug('Published local video');
-                        } catch (e) {
-                            debug('Publish video failed: ' + e.message);
-                        }
+                            debug('Initial local video published');
+                        } catch (e) { debug('Initial video publish failed: ' + e.message); }
                     }
                 }
-                btnCamera.classList.remove('muted');
+                if (localVideoTrack && typeof localVideoTrack.enable === 'function') {
+                    localVideoTrack.enable(true);
+                }
+                // Show video element
+                const v = getLocalVideoEl(); if (v) v.style.display = '';
+                const lm = document.getElementById('local-media');
+                if (lm) { const ph = lm.querySelector('.placeholder-camera-off'); if (ph) ph.style.display = 'none'; }
+                btnCamera && btnCamera.classList.remove('muted');
                 ctlCam && ctlCam.classList.remove('muted');
-            } catch (err) {
-                debug('Failed to enable camera: ' + (err && err.message));
-            }
+            } catch (err) { debug('enableCamera error: ' + (err && err.message)); }
         }
 
         function disableCamera() {
             try {
-                // if published, unpublish
-                if (room && room.localParticipant && localVideoPublication) {
-                    try { room.localParticipant.unpublishTrack(localVideoPublication.track || localVideoTrack); } catch (e) { /* ignore */ }
-                    localVideoPublication = null;
+                if (localVideoTrack && typeof localVideoTrack.enable === 'function') {
+                    localVideoTrack.enable(false); // do not stop/unpublish, just disable
                 }
-                if (localVideoTrack) {
-                    try { localVideoTrack.stop(); } catch (e) { }
-                    localVideoTrack = null;
+                // Hide the video element instead of destroying it
+                const v = getLocalVideoEl(); if (v) v.style.display = 'none';
+                const lm = document.getElementById('local-media');
+                if (lm) {
+                    let ph = lm.querySelector('.placeholder-camera-off');
+                    if (!ph) {
+                        ph = document.createElement('div');
+                        ph.className = 'placeholder-camera-off';
+                        ph.textContent = 'Camera off';
+                        ph.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:14px;opacity:0.7;';
+                        lm.appendChild(ph);
+                    }
+                    ph.style.display = 'flex';
                 }
-                const localMedia = document.getElementById('local-media');
-                if (localMedia) localMedia.innerHTML = '<div class="placeholder">Camera off</div>';
-                btnCamera.classList.add('muted');
+                btnCamera && btnCamera.classList.add('muted');
                 ctlCam && ctlCam.classList.add('muted');
-            } catch (err) { debug('Failed to disable camera: ' + (err && err.message)); }
+            } catch (err) { debug('disableCamera error: ' + (err && err.message)); }
         }
 
+        // MIC: toggle using track.enable(true/false) while keeping publication stable.
         async function enableMic() {
             try {
                 if (!localAudioTrack) {
                     localAudioTrack = await createLocalAudioTrack();
-                }
-                if (room && room.localParticipant) {
-                    if (!localAudioPublication) {
+                    if (room && room.localParticipant && !localAudioPublication) {
                         try {
                             localAudioPublication = await room.localParticipant.publishTrack(localAudioTrack);
-                            debug('Published local audio');
-                            // start monitoring local audio activity
-                            startVolumeMonitorForTrack(localAudioTrack, document.getElementById('local-media'));
-                        } catch (e) { debug('Publish audio failed: ' + e.message); }
+                            debug('Initial local audio published');
+                        } catch (e) { debug('Initial audio publish failed: ' + e.message); }
                     }
                 }
+                if (localAudioTrack && typeof localAudioTrack.enable === 'function') {
+                    localAudioTrack.enable(true);
+                }
+                // Start volume monitor when enabled
+                startVolumeMonitorForTrack(localAudioTrack, document.getElementById('local-media'));
                 btnMic && btnMic.classList.remove('muted');
                 ctlMic && ctlMic.classList.remove('muted');
                 updateLocalMicIndicator(false);
-            } catch (err) { debug('Failed to enable mic: ' + (err && err.message)); }
+            } catch (err) { debug('enableMic error: ' + (err && err.message)); }
         }
 
         function disableMic() {
             try {
-                if (room && room.localParticipant && localAudioPublication) {
-                    try { room.localParticipant.unpublishTrack(localAudioPublication.track || localAudioTrack); } catch (e) { }
-                    localAudioPublication = null;
-                    // stop monitoring local audio
-                    stopVolumeMonitorForTrack(localAudioTrack);
+                if (localAudioTrack && typeof localAudioTrack.enable === 'function') {
+                    localAudioTrack.enable(false); // just disable, keep publication
                 }
-                if (localAudioTrack) {
-                    try { localAudioTrack.stop(); } catch (e) { }
-                    localAudioTrack = null;
-                }
+                // Stop volume monitoring while muted
+                stopVolumeMonitorForTrack(localAudioTrack);
                 btnMic && btnMic.classList.add('muted');
                 ctlMic && ctlMic.classList.add('muted');
                 updateLocalMicIndicator(true);
-            } catch (err) { debug('Failed to disable mic: ' + (err && err.message)); }
+            } catch (err) { debug('disableMic error: ' + (err && err.message)); }
         }
 
         btnCamera && btnCamera.addEventListener('click', function(){
@@ -354,75 +368,23 @@ waitForTwilio().then(function(){
                 nameTag.textContent = participant.identity || participant.sid;
                 tile.appendChild(nameTag);
 
-                // Helper: recompute audio/video presence and update indicators
-                function refreshParticipantIndicators() {
-                    try {
-                        const hasAudio = Array.from(participant.tracks.values()).some(pub => pub.track && pub.track.kind === 'audio' && (pub.track.isEnabled !== false));
-                        const hasVideo = Array.from(participant.tracks.values()).some(pub => pub.track && pub.track.kind === 'video' && (pub.track.isEnabled !== false));
-                        setParticipantIndicators(participant, hasAudio, hasVideo);
-                    } catch (e) { /* ignore */ }
-                }
-
-                                // GANTI FUNGSI LAMA ANDA DENGAN INI
-                // (Fungsi ini harus tetap berada di dalam function attachParticipant)
-
-                function attachTrack(track) {
-                    // prevent duplicate DOM nodes by ensuring no existing attached element for this track in this tile
-                    try {
-                        // Pastikan tile ada sebelum menambahkan elemen
-                        const tile = document.getElementById(participant.sid);
-                        if (!tile) {
-                            debug('Cannot attach track, participant tile not found: ' + participant.sid);
-                            return;
-                        }
-
-                        const sid = (track.sid || track.trackSid);
-                        
-                        // Pertama, hapus semua elemen lama untuk track ini untuk menghindari duplikat
-                        Array.from(tile.querySelectorAll(track.kind === 'video' ? 'video' : 'audio'))
-                            .filter(el => el._twilioTrackSid === sid)
-                            .forEach(el => { try { el.remove(); } catch(_) {} });
-
-                        // Sekarang pasang elemen yang baru
-                        const el = track.attach();
-                        
-                        // tandai elemen dengan track sid
-                        try { el._twilioTrackSid = sid; } catch(e){}
-                        
-                        tile.appendChild(el);
-                    } catch (e) {
-                        debug('Error attaching track ' + (track.sid || '') + ': ' + e.message);
+                participant.tracks.forEach(publication => {
+                    if (publication.track) tile.appendChild(publication.track.attach());
+                });
+                participant.on('trackSubscribed', track => {
+                    tile.appendChild(track.attach());
+                    setParticipantIndicators(participant, true, track.kind === 'video' ? true : false);
+                    // if it's an audio track, start monitoring to show speaking indicator
+                    if (track.kind === 'audio') {
+                        startVolumeMonitorForTrack(track, tile);
                     }
-
-                    // Panggil fungsi refresh dan volume monitor (seperti di kode asli Anda)
-                    refreshParticipantIndicators();
-                    if (track.kind === 'audio') startVolumeMonitorForTrack(track, tile);
-                }
-
-                function detachTrack(track) {
-                    try { track.detach().forEach(el => el.remove()); } catch(e) {}
-                    refreshParticipantIndicators();
+                });
+                participant.on('trackUnsubscribed', track => {
+                    track.detach().forEach(el => el.remove());
+                    setParticipantIndicators(participant, false, track.kind === 'video' ? false : false);
+                    // stop audio monitor when unsubscribed
                     if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
-                }
-
-                // Use publication-level events to avoid double-attach and to handle unsubscribed cleanly
-                function wirePublication(publication) {
-                    if (publication.isSubscribed && publication.track) {
-                        attachTrack(publication.track);
-                    }
-                    publication.on('subscribed', attachTrack);
-                    publication.on('unsubscribed', detachTrack);
-                    // Also handle remote enable/disable events bubbling on publication
-                    publication.on('trackEnabled', () => {
-                        if (publication.track) attachTrack(publication.track);
-                    });
-                    publication.on('trackDisabled', () => {
-                        if (publication.track) detachTrack(publication.track);
-                    });
-                }
-
-                participant.tracks.forEach(wirePublication);
-                participant.on('trackPublished', wirePublication);
+                });
                 remoteContainer.appendChild(tile);
             }
 
