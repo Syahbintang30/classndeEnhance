@@ -368,8 +368,39 @@ waitForTwilio().then(function(){
                 nameTag.textContent = participant.identity || participant.sid;
                 tile.appendChild(nameTag);
 
+                function ensureRemoteCamPlaceholder(){
+                    let ph = tile.querySelector('.placeholder-camera-off');
+                    if (!ph) {
+                        ph = document.createElement('div');
+                        ph.className = 'placeholder-camera-off';
+                        ph.textContent = 'Camera off';
+                        ph.style.cssText = 'display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:14px;opacity:0.7;';
+                        tile.appendChild(ph);
+                    }
+                    return ph;
+                }
+
+                function setVideoVisibilityForTrack(track, enabled){
+                    try {
+                        const vids = tile.querySelectorAll('video');
+                        vids.forEach(v => v.style.display = enabled ? '' : 'none');
+                        const ph = ensureRemoteCamPlaceholder();
+                        ph.style.display = enabled ? 'none' : 'flex';
+                        // update small indicator badge as well
+                        setParticipantIndicators(participant, true, !!enabled);
+                    } catch (e) { /* ignore */ }
+                }
+
                 participant.tracks.forEach(publication => {
-                    if (publication.track) tile.appendChild(publication.track.attach());
+                    if (publication.track) {
+                        const el = publication.track.attach();
+                        tile.appendChild(el);
+                        if (publication.track.kind === 'video') {
+                            // initialize state in case remote already disabled
+                            const currentEnabled = (typeof publication.track.isEnabled !== 'undefined') ? publication.track.isEnabled : true;
+                            setVideoVisibilityForTrack(publication.track, !!currentEnabled);
+                        }
+                    }
                 });
                 participant.on('trackSubscribed', track => {
                     tile.appendChild(track.attach());
@@ -377,6 +408,22 @@ waitForTwilio().then(function(){
                     // if it's an audio track, start monitoring to show speaking indicator
                     if (track.kind === 'audio') {
                         startVolumeMonitorForTrack(track, tile);
+                    } else if (track.kind === 'video') {
+                        // watch for remote camera enable/disable events
+                        const apply = () => {
+                            const enabled = (typeof track.isEnabled !== 'undefined') ? track.isEnabled : true;
+                            setVideoVisibilityForTrack(track, !!enabled);
+                        };
+                        try {
+                            track.on('disabled', () => setVideoVisibilityForTrack(track, false));
+                            track.on('enabled', () => setVideoVisibilityForTrack(track, true));
+                            // also react to bandwidth switch events
+                            if (typeof track.on === 'function') {
+                                track.on('switchedOff', () => setVideoVisibilityForTrack(track, false));
+                                track.on('switchedOn', () => setVideoVisibilityForTrack(track, true));
+                            }
+                        } catch (e) { /* ignore */ }
+                        apply();
                     }
                 });
                 participant.on('trackUnsubscribed', track => {
@@ -385,6 +432,11 @@ waitForTwilio().then(function(){
                     // stop audio monitor when unsubscribed
                     if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
                 });
+                // participant-level events as a fallback for some SDK versions
+                try {
+                    participant.on('trackDisabled', pub => { if (pub && pub.track && pub.track.kind === 'video') setVideoVisibilityForTrack(pub.track, false); });
+                    participant.on('trackEnabled', pub => { if (pub && pub.track && pub.track.kind === 'video') setVideoVisibilityForTrack(pub.track, true); });
+                } catch (e) { /* ignore */ }
                 remoteContainer.appendChild(tile);
             }
 
