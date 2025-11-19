@@ -177,14 +177,12 @@
         ].join(';');
         overlay.innerHTML = `
             <div id=\"snap-embed-dialog\" style=\"width:440px;max-width:96vw;height:720px;max-height:92vh;background:#fff;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);\">
-                <button id=\"snap-embed-close\" aria-label=\"Close\" title=\"Close\" style=\"position:absolute;top:-16px;right:-16px;width:36px;height:36px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#ffffff;color:#111;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer;z-index:2\">&times;</button>
                 <div id=\"snap-embed\" style=\"position:absolute;inset:0;\"></div>
             </div>`;
         document.body.appendChild(overlay);
         overlay.addEventListener('click', function(e){
             if (e.target && e.target.id === 'snap-embed-overlay') hideSnapEmbed();
         });
-        overlay.querySelector('#snap-embed-close').addEventListener('click', hideSnapEmbed);
         function hideSnapEmbed(){ overlay.style.display='none'; try{ document.getElementById('snap-embed').innerHTML=''; }catch(_){} }
         window.__hideSnapEmbed = hideSnapEmbed;
         window.__showSnapEmbed = function(){ overlay.style.display='flex'; };
@@ -482,7 +480,6 @@
     #snap-embed-overlay { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
     #snap-embed { overflow: hidden; border-radius: inherit; }
     #snap-embed iframe { width: 100% !important; height: 100% !important; border: 0 !important; display: block; background: #fff; }
-    #snap-embed-close:hover { filter: brightness(0.95); }
     @media (min-width: 1200px) {
         #snap-embed-dialog { width: 520px; height: 760px; }
     }
