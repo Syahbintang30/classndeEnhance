@@ -164,6 +164,38 @@
 @endphp
 <script src="{{ $midtransHost }}/snap/snap.js" data-client-key="{{ $midtransClientKey }}"></script>
 <script>
+    // Custom centered modal to host Midtrans Snap in EMBED mode
+    (function ensureSnapModal(){
+        if (document.getElementById('snap-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'snap-modal';
+        modal.setAttribute('aria-hidden','true');
+        modal.style.cssText = 'position:fixed;inset:0;display:none;z-index:10000;';
+        modal.innerHTML = `
+            <div id="snap-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.55)"></div>
+            <div role="dialog" aria-modal="true" aria-label="Payment"
+                style="position:relative;display:flex;align-items:center;justify-content:center;height:100%;padding:16px;">
+                <div class="snap-dialog" style="width:min(480px,94vw);height:min(88vh,820px);background:#fff;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,0.6);overflow:hidden;position:relative;">
+                    <button id="snap-close" aria-label="Close"
+                        style="position:absolute;right:10px;top:8px;background:transparent;border:none;font-size:22px;line-height:1;cursor:pointer;color:#111">×</button>
+                    <div id="snap-embed" style="width:100%;height:100%;overflow:auto;"></div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        // Close handlers
+        modal.addEventListener('click', function(e){
+            if (e.target && (e.target.id === 'snap-backdrop' || e.target.id === 'snap-close')) hideSnapModal();
+        });
+        function hideSnapModal(){
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden','true');
+            try { document.body.style.overflow = ''; } catch(_){}
+            const emb = document.getElementById('snap-embed');
+            if (emb) emb.innerHTML = '';
+        }
+        window.__hideSnapModal = hideSnapModal; // expose for callbacks
+    })();
+
     // Use app modal component: inject content into modal container and open
     function showInAppModal(html){
         const container = document.getElementById('payment-modal-content');
@@ -215,20 +247,34 @@
             body: JSON.stringify(payload)
         }).then(r => r.json()).then(json => {
             if (json.snap_token) {
-                snap.pay(json.snap_token, {
+                // Show our centered modal and embed Snap inside it
+                try {
+                    var modal = document.getElementById('snap-modal');
+                    var emb = document.getElementById('snap-embed');
+                    if (emb) emb.innerHTML = '';
+                    if (modal) {
+                        modal.style.display = 'block';
+                        modal.setAttribute('aria-hidden','false');
+                        document.body.style.overflow = 'hidden';
+                    }
+                } catch(_){}
+
+                snap.embed(json.snap_token, {
                     onSuccess: function(result){
                         try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
                         try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
                         // start polling server until webhook processed (settlement)
                         startPollingForSettlement(result);
+                        try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ }
                     },
                     onPending: function(result){
                         try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
                         try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
                         // pending may transition to settlement; also start polling
                         startPollingForSettlement(result);
+                        // keep modal open; user may still need instructions
                     },
-                    onError: function(err){ alert('Payment Failed. Please try again.'); },
+                    onError: function(err){ alert('Payment Failed. Please try again.'); try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ } },
                     onClose: function(){
                         // User closed the Midtrans popup without completing payment.
                         // Keep them on the payment page and show a small notice with retry instructions.
@@ -249,9 +295,10 @@
                                     pd.appendChild(notice);
                                 }
                             }
+                            try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ }
                         } catch(e) { console.error('onClose handler failed', e); }
                     }
-                });
+                }, { embedId: 'snap-embed' });
             } else {
                 alert('Failed to process payment. Please try again in a moment.');
             }
