@@ -152,7 +152,7 @@
 
 <!-- Back button moved to page bottom -->
 <div style="max-width:1100px;margin:12px auto 40px;display:flex;justify-content:flex-end;padding:0 16px;">
-    <a href="{{ url()->previous() ?: route('registerclass') }}" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.02)">Back</a>
+    <a href="{{ route('registerclass') }}" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.02)" aria-label="Back to package selection">Back</a>
 </div>
 
 @endsection
