@@ -150,8 +150,8 @@ class KelasController extends Controller
         $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
         $package = $packageId ? Package::find($packageId) : null;
 
-        // package price is canonical; fallback to a sensible default
-        $price = (int) ($package->price ?? 125000);
+        // package price is canonical; avoid misleading hardcoded fallback
+        $price = (int) ($package->price ?? 0);
         // qty can be passed as query param (guests) or request; default 1
         $qty = (int) (request()->input('package_qty') ?: session('pre_register.package_qty') ?: 1);
 
@@ -211,46 +211,92 @@ class KelasController extends Controller
         $user = Auth::user();
         $packages = Package::orderBy('price')->get();
 
-        // determine package from request or user's existing package
-        $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
-        $package = $packageId ? Package::find($packageId) : null;
+        // Prefer restoring an existing in-flight order by order_id (pending/failed) so amounts are accurate
+        $existingOrderId = request()->query('order_id') ?? request()->query('orderId');
 
-        // package price is canonical; fallback to a sensible default
-        $price = (int) ($package->price ?? 125000);
-        $qty = (int) (request()->input('package_qty') ?: session('pre_register.package_qty') ?: 1);
-
-        $rawAmount = $price * max(1, $qty);
-        $appliedReferralPercent = 0;
-        $referralCode = session('pre_register.referral') ?: request()->input('referral');
-        if (! empty($referralCode)) {
-            $refUser = \App\Models\User::where('referral_code', $referralCode)->first();
-            $dbVal = \App\Models\Setting::get('referral.discount_percent', null);
-            $discountPercent = $dbVal !== null ? (int) $dbVal : (int) config('referral.discount_percent', 2);
-            if ($refUser) {
-                $appliedReferralPercent = (int) $discountPercent;
+        $package = null;
+        $order = null;
+        if ($existingOrderId) {
+            // 1) If a Transaction already exists (e.g., capture/settlement recorded), use it
+            $txn = \App\Models\Transaction::where('order_id', $existingOrderId)->latest()->first();
+            if ($txn) {
+                $package = $txn->package_id ? Package::find($txn->package_id) : null;
+                $order = [
+                    'order_id' => $existingOrderId,
+                    'gross_amount' => (int) ($txn->amount ?? 0),
+                    'original_amount' => (int) ($txn->original_amount ?? ($txn->amount ?? 0)),
+                    'applied_referral_percent' => 0,
+                    'referral_code' => null,
+                    'item_details' => [
+                        ['id' => $package ? 'package-'.$package->id : 'lesson-'.$lesson->id, 'price' => (int) ($txn->amount ?? 0), 'quantity' => 1, 'name' => $package ? $package->name : $lesson->title],
+                    ],
+                    'customer_details' => [
+                        'first_name' => $user->name ?? '',
+                        'email' => $user->email ?? '',
+                        'phone' => $user->phone ?? '',
+                    ],
+                ];
+            } else {
+                // 2) Pending orders live only in cache; restore their payload for accurate display
+                try {
+                    $cached = \Illuminate\Support\Facades\Cache::get('pending_txn:' . $existingOrderId);
+                } catch (\Throwable $e) { $cached = null; }
+                if (is_array($cached)) {
+                    $package = isset($cached['package_id']) && $cached['package_id'] ? Package::find($cached['package_id']) : null;
+                    $order = [
+                        'order_id' => $existingOrderId,
+                        'gross_amount' => (int) ($cached['amount'] ?? 0),
+                        'original_amount' => (int) ($cached['original_amount'] ?? ($cached['amount'] ?? 0)),
+                        'applied_referral_percent' => (int) ($cached['applied_referral_percent'] ?? 0),
+                        'referral_code' => $cached['referral_code'] ?? null,
+                        'item_details' => [
+                            ['id' => $package ? 'package-'.$package->id : 'lesson-'.$lesson->id, 'price' => (int) ($cached['amount'] ?? 0), 'quantity' => 1, 'name' => $package ? $package->name : $lesson->title],
+                        ],
+                        'customer_details' => [
+                            'first_name' => $user->name ?? '',
+                            'email' => $user->email ?? '',
+                            'phone' => $user->phone ?? '',
+                        ],
+                    ];
+                }
             }
         }
 
-        $grossAmount = $rawAmount;
-        if ($appliedReferralPercent > 0) {
-            $grossAmount = (int) round($rawAmount * (100 - $appliedReferralPercent) / 100);
-        }
+        // If no cached/existing order, compute from request/package selection as before (no arbitrary default price)
+        if (! $order) {
+            $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
+            $package = $packageId ? Package::find($packageId) : null;
+            $qty = (int) (request()->input('package_qty') ?: session('pre_register.package_qty') ?: 1);
+            $price = (int) ($package->price ?? 0); // avoid misleading hardcoded fallback
 
-        $order = [
-            'order_id' => \App\Services\OrderIdGenerator::generate('nde'),
-            'gross_amount' => $grossAmount,
-            'original_amount' => $rawAmount,
-            'applied_referral_percent' => $appliedReferralPercent,
-            'referral_code' => $referralCode,
-            'item_details' => [
-                ['id' => $package ? 'package-'.$package->id : 'lesson-'.$lesson->id, 'price' => (int) ($price * (100 - $appliedReferralPercent) / 100), 'quantity' => max(1, $qty), 'name' => $package ? $package->name : $lesson->title . ($appliedReferralPercent ? (' (Referral ' . $appliedReferralPercent . '%)') : '')],
-            ],
-            'customer_details' => [
-                'first_name' => $user->name ?? '',
-                'email' => $user->email ?? '',
-                'phone' => $user->phone ?? '',
-            ],
-        ];
+            $rawAmount = $price * max(1, $qty);
+            $appliedReferralPercent = 0;
+            $referralCode = session('pre_register.referral') ?: request()->input('referral');
+            if (! empty($referralCode)) {
+                $refUser = \App\Models\User::where('referral_code', $referralCode)->first();
+                $dbVal = \App\Models\Setting::get('referral.discount_percent', null);
+                $discountPercent = $dbVal !== null ? (int) $dbVal : (int) config('referral.discount_percent', 2);
+                if ($refUser) { $appliedReferralPercent = (int) $discountPercent; }
+            }
+
+            $grossAmount = $appliedReferralPercent > 0 ? (int) round($rawAmount * (100 - $appliedReferralPercent) / 100) : (int) $rawAmount;
+
+            $order = [
+                'order_id' => \App\Services\OrderIdGenerator::generate('nde'),
+                'gross_amount' => $grossAmount,
+                'original_amount' => $rawAmount,
+                'applied_referral_percent' => $appliedReferralPercent,
+                'referral_code' => $referralCode,
+                'item_details' => [
+                    ['id' => $package ? 'package-'.$package->id : 'lesson-'.$lesson->id, 'price' => (int) ($price * (100 - $appliedReferralPercent) / 100), 'quantity' => max(1, $qty), 'name' => $package ? $package->name : $lesson->title . ($appliedReferralPercent ? (' (Referral ' . $appliedReferralPercent . '%)') : '')],
+                ],
+                'customer_details' => [
+                    'first_name' => $user->name ?? '',
+                    'email' => $user->email ?? '',
+                    'phone' => $user->phone ?? '',
+                ],
+            ];
+        }
 
     $midtrans = config('services.midtrans');
         $methods = \App\Models\PaymentMethod::where('is_active', true)->orderBy('name')->get();
