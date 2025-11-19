@@ -164,38 +164,6 @@
 @endphp
 <script src="{{ $midtransHost }}/snap/snap.js" data-client-key="{{ $midtransClientKey }}"></script>
 <script>
-    // Custom centered modal to host Midtrans Snap in EMBED mode
-    (function ensureSnapModal(){
-        if (document.getElementById('snap-modal')) return;
-        const modal = document.createElement('div');
-        modal.id = 'snap-modal';
-        modal.setAttribute('aria-hidden','true');
-        modal.style.cssText = 'position:fixed;inset:0;display:none;z-index:10000;';
-        modal.innerHTML = `
-            <div id="snap-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.55)"></div>
-            <div role="dialog" aria-modal="true" aria-label="Payment"
-                style="position:relative;display:flex;align-items:center;justify-content:center;height:100%;padding:16px;">
-                <div class="snap-dialog" style="width:min(480px,94vw);height:min(88vh,820px);background:#fff;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,0.6);overflow:hidden;position:relative;">
-                    <button id="snap-close" aria-label="Close"
-                        style="position:absolute;right:10px;top:8px;background:transparent;border:none;font-size:22px;line-height:1;cursor:pointer;color:#111">×</button>
-                    <div id="snap-embed" style="width:100%;height:100%;overflow:auto;"></div>
-                </div>
-            </div>`;
-        document.body.appendChild(modal);
-        // Close handlers
-        modal.addEventListener('click', function(e){
-            if (e.target && (e.target.id === 'snap-backdrop' || e.target.id === 'snap-close')) hideSnapModal();
-        });
-        function hideSnapModal(){
-            modal.style.display = 'none';
-            modal.setAttribute('aria-hidden','true');
-            try { document.body.style.overflow = ''; } catch(_){}
-            const emb = document.getElementById('snap-embed');
-            if (emb) emb.innerHTML = '';
-        }
-        window.__hideSnapModal = hideSnapModal; // expose for callbacks
-    })();
-
     // Use app modal component: inject content into modal container and open
     function showInAppModal(html){
         const container = document.getElementById('payment-modal-content');
@@ -243,54 +211,32 @@
 
         fetch("/api/midtrans/create", {
             method: 'POST',
-            headers: {
-                'Content-Type':'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-            },
-            credentials: 'same-origin',
+            headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content},
             body: JSON.stringify(payload)
-        }).then(async r => {
-            // Try to parse JSON safely; if not OK, throw with body text for debugging
-            let json = null; let text = '';
-            try { json = await r.json(); } catch(e) { try { text = await r.text(); } catch(_){} }
-            if (!r.ok) {
-                throw new Error((json && (json.error || json.message)) || text || ('HTTP '+r.status));
-            }
-            return json;
-        }).then(json => {
-            if (json.snap_token) {
-                // Show our centered modal and embed Snap inside it
-                try {
-                    var modal = document.getElementById('snap-modal');
-                    var emb = document.getElementById('snap-embed');
-                    if (emb) emb.innerHTML = '';
-                    if (modal) {
-                        modal.style.display = 'block';
-                        modal.setAttribute('aria-hidden','false');
-                        document.body.style.overflow = 'hidden';
-                    }
-                } catch(_){}
+        }).then(r => r.json()).then(json => {
+            if (!json.snap_token) { alert('Failed to process payment. Please try again in a moment.'); return; }
 
+            // Prefer EMBED MODE in a small centered modal so it doesn't cover the whole screen
+            try {
+                openSnapModal();
                 snap.embed(json.snap_token, {
+                    embedId: 'snap-container',
                     onSuccess: function(result){
                         try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
                         try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                        // start polling server until webhook processed (settlement)
+                        closeSnapModal();
                         startPollingForSettlement(result);
-                        try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ }
                     },
                     onPending: function(result){
                         try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
                         try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                        // pending may transition to settlement; also start polling
+                        // keep modal open until settlement or user closes
                         startPollingForSettlement(result);
-                        // keep modal open; user may still need instructions
                     },
-                    onError: function(err){ alert('Payment Failed. Please try again.'); try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ } },
+                    onError: function(err){ console.error(err); alert('Payment Failed. Please try again.'); closeSnapModal(); },
                     onClose: function(){
-                        // User closed the Midtrans popup without completing payment.
-                        // Keep them on the payment page and show a small notice with retry instructions.
+                        // User closed the embedded snap without completing payment
+                        closeSnapModal();
                         try {
                             var pd = document.getElementById('payment-details-display');
                             if (pd) {
@@ -308,12 +254,17 @@
                                     pd.appendChild(notice);
                                 }
                             }
-                            try { window.__hideSnapModal && window.__hideSnapModal(); } catch(_){ }
                         } catch(e) { console.error('onClose handler failed', e); }
                     }
-                }, { embedId: 'snap-embed' });
-            } else {
-                alert('Failed to process payment. Please try again in a moment.');
+                });
+            } catch (e) {
+                console.warn('Falling back to snap.pay popup due to embed error', e);
+                snap.pay(json.snap_token, {
+                    onSuccess: function(result){ try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){}; try { document.getElementById('payment-complete-form').submit(); } catch(e){}; startPollingForSettlement(result); },
+                    onPending: function(result){ try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){}; try { document.getElementById('payment-complete-form').submit(); } catch(e){}; startPollingForSettlement(result); },
+                    onError: function(err){ alert('Payment Failed. Please try again.'); },
+                    onClose: function(){ /* keep page as-is */ }
+                });
             }
         }).catch(e => { console.error(e); alert('A network error occurred. Please check your connection and try again.'); });
     });
@@ -473,6 +424,27 @@
         } catch(e) {}
         poll();
     }
+
+    // --- Snap Embedded Modal helpers ---
+    function openSnapModal(){
+        var overlay = document.getElementById('snapModal');
+        if (!overlay) return;
+        overlay.style.display = 'flex';
+        // trap focus rudimentarily
+        try { overlay.querySelector('#snapClose')?.focus(); } catch(e){}
+    }
+    function closeSnapModal(){
+        var overlay = document.getElementById('snapModal');
+        if (!overlay) return;
+        overlay.style.display = 'none';
+        var container = document.getElementById('snap-container');
+        if (container) container.innerHTML = '';
+    }
+    document.addEventListener('click', function(e){
+        var btn = e.target && e.target.id === 'snapClose';
+        if (btn) { closeSnapModal(); }
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeSnapModal(); });
 </script>
 @endpush
 
@@ -505,4 +477,15 @@
             <!-- dynamic content injected here -->
         </div>
     </x-modal>
+
+    <!-- Lightweight centered modal for Midtrans Snap EMBED mode -->
+    <div id="snapModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;">
+        <div role="dialog" aria-modal="true" aria-label="Complete Payment" style="width:92%;max-width:520px;background:#0e0e0e;border:1px solid rgba(255,255,255,0.06);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,0.6);">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <strong>Complete Payment</strong>
+                <button id="snapClose" aria-label="Close" title="Close" style="background:transparent;border:none;color:#fff;padding:6px;cursor:pointer">✕</button>
+            </div>
+            <div id="snap-container" style="padding:10px;min-height:520px;max-height:80vh;overflow:auto;"></div>
+        </div>
+    </div>
 @endsection
