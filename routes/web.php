@@ -195,8 +195,9 @@ Route::middleware('auth')->group(function(){
 });
 
 // Require login to create Midtrans Snap token (account-first checkout)
+// Allow guest to create Snap token (guest checkout). CSRF + rate-limit still apply.
 Route::post('/api/midtrans/create', [App\Http\Controllers\MidtransController::class, 'createSnapToken'])
-    ->middleware(['auth','throttle:30,1']);
+    ->middleware(['throttle:30,1']);
 
 Route::post('/payments/midtrans-notify', [App\Http\Controllers\PaymentController::class, 'midtransNotification'])
     // Detach this route from the default 'web' stack so no session/CSRF is applied at all

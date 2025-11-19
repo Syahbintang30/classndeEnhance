@@ -243,9 +243,22 @@
 
         fetch("/api/midtrans/create", {
             method: 'POST',
-            headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content},
+            headers: {
+                'Content-Type':'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+            },
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
-        }).then(r => r.json()).then(json => {
+        }).then(async r => {
+            // Try to parse JSON safely; if not OK, throw with body text for debugging
+            let json = null; let text = '';
+            try { json = await r.json(); } catch(e) { try { text = await r.text(); } catch(_){} }
+            if (!r.ok) {
+                throw new Error((json && (json.error || json.message)) || text || ('HTTP '+r.status));
+            }
+            return json;
+        }).then(json => {
             if (json.snap_token) {
                 // Show our centered modal and embed Snap inside it
                 try {
