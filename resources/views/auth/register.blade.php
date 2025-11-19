@@ -3,15 +3,32 @@
 @section('title', 'Register')
 
 @section('content')
-<div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:40px;background:#000;color:#fff;">
+<div class="register-page" style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#fff;">
     <style>
-        /* Ensure password eye icon is visible and sized */
+        /* Layout: mobile-first responsive register page */
+        .register-wrap { width:100%; max-width:1100px; display:flex; gap:24px; flex-direction:column; }
+        .register-left { flex:1; padding:24px; border-radius:10px; background:#090909; border:1px solid #222; }
+        .register-right { width:100%; padding:24px; border-radius:10px; background:linear-gradient(180deg,#0a0a0a,#050505); border:1px solid #111; }
+
+        /* Medium screens: two-columns with sidebar width */
+        @media (min-width: 900px) {
+            .register-wrap { flex-direction:row; }
+            .register-right { width:340px; }
+        }
+
+        /* Inputs and controls */
         .password-toggle svg { width: 18px; height: 18px; display: block; opacity: 0.95; }
         .password-toggle { line-height: 0; color:#e5e5e5; }
         .password-field-inline .password-toggle { z-index: 5; }
+
+        /* Improve tap targets and spacing on small screens */
+        @media (max-width: 480px) {
+            .register-left, .register-right { padding:18px; }
+            .register-actions { text-align:center; }
+        }
     </style>
-    <div style="width:900px;display:flex;gap:24px;">
-        <div style="flex:1;padding:28px;border-radius:8px;background:#090909;border:1px solid #222;">
+    <div class="register-wrap">
+        <div class="register-left">
             <h2 style="margin:0 0 8px 0;font-size:22px">Create account</h2>
             <p style="opacity:0.7;margin-bottom:16px">Sign up to access lessons and booking features.</p>
 
@@ -44,8 +61,8 @@
                     @error('email')<div style="color:#ff6b6b;margin-top:6px">{{ $message }}</div>@enderror
                 </div>
 
-                <div style="display:flex;gap:12px;margin-bottom:12px">
-                    <div style="flex:1">
+                <div class="password-grid" style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:240px">
                         <label style="display:block;margin-bottom:6px">Password</label>
                         <div class="password-field-inline" style="position:relative">
                             <input name="password" type="password" required style="width:100%;padding:12px 40px 12px 12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
@@ -58,7 +75,7 @@
                             Password must be at least 8 characters and include a mix of letters and numbers.
                         </div>
                     </div>
-                    <div style="flex:1">
+                    <div style="flex:1;min-width:240px">
                         <label style="display:block;margin-bottom:6px">Confirm</label>
                         <div class="password-field-inline" style="position:relative">
                             <input name="password_confirmation" type="password" required style="width:100%;padding:12px 40px 12px 12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
@@ -69,13 +86,13 @@
                     </div>
                 </div>
 
-                <div style="text-align:right">
+                <div class="register-actions" style="text-align:right">
                     <button type="submit" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;border:none;font-weight:700;">REGISTER</button>
                 </div>
             </form>
         </div>
 
-        <div style="width:340px;padding:28px;border-radius:8px;background:linear-gradient(180deg,#0a0a0a,#050505);border:1px solid #111;">
+        <div class="register-right">
             <h3 style="margin-top:0">Already have an account?</h3>
             <p style="opacity:0.75">If you already registered, login to continue.</p>
             <a href="{{ route('login') }}" style="display:inline-block;margin-top:18px;padding:10px 18px;border-radius:22px;background:transparent;border:1px solid #fff;color:#fff;text-decoration:none;font-weight:600;">Login</a>
