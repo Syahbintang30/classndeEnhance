@@ -15,10 +15,25 @@
     </div>
 </div>
 
-<div style="padding:40px;color:#fff;">
-    <div style="display:flex;gap:40px;align-items:flex-start;max-width:1100px;margin:0 auto;">
+<div class="payment-page" style="padding:24px;color:#fff;">
+    <style>
+        /* Mobile-first responsive layout for payment page */
+        .payment-wrap { display:flex; flex-direction:column; gap:24px; max-width:1100px; margin:0 auto; }
+        .payment-left { flex:1; width:100%; }
+        .payment-right { flex:1; width:100%; }
+        .order-card { max-width:unset; }
+        @media (min-width: 900px) {
+            .payment-wrap { flex-direction:row; gap:40px; align-items:flex-start; }
+            .order-card { max-width:420px; }
+        }
+        /* Tighten paddings on small screens */
+        @media (max-width: 480px) {
+            .payment-page { padding:16px; }
+        }
+    </style>
+    <div class="payment-wrap">
         <!-- Left: Order Summary -->
-        <div style="flex:1;max-width:360px;border:1px solid rgba(255,255,255,0.06);padding:20px;border-radius:6px;background:rgba(0,0,0,0.2)">
+        <div class="payment-left order-card" style="border:1px solid rgba(255,255,255,0.06);padding:20px;border-radius:6px;background:rgba(0,0,0,0.2)">
             <h3 style="margin-bottom:8px">Your Order is Ready</h3>
             <div style="display:flex;justify-content:space-between;margin:16px 0">
                 <div>
@@ -74,7 +89,7 @@
         </div>
 
         <!-- Right: Payment options -->
-        <div style="flex:1;">
+        <div class="payment-right">
             <h3 style="margin-bottom:12px">Choose Your Payment Method</h3>
             <div class="payment-grid-container" id="payment-methods-list" data-total="{{ $order['gross_amount'] }}" data-order-id="{{ $order['order_id'] }}">
             @foreach($methods as $m)
@@ -121,7 +136,7 @@
             </div>
 
             <div style="margin-top:24px; margin-bottom:18px">
-                <button id="pay-button" style="background:#007bff;border-radius:999px;padding:14px 32px;color:#fff;border:none;font-weight:700; font-size: 16px; cursor:pointer; width: 100%; max-width: 300px;">PAY & Start Learning</button>
+                <button id="pay-button" style="background:#007bff;border-radius:999px;padding:14px 32px;color:#fff;border:none;font-weight:700; font-size: 16px; cursor:pointer; width: 100%; max-width: 340px;">PAY & Start Learning</button>
             </div>
 
             <div style="margin-top:36px">
@@ -136,8 +151,8 @@
 </div>
 
 <!-- Back button moved to page bottom -->
-<div style="max-width:1100px;margin:12px auto 40px;display:flex;justify-content:flex-end;">
-    <a href="{{ url()->previous() ?: route('registerclass') }}" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.02)">Back</a>
+<div style="max-width:1100px;margin:12px auto 40px;display:flex;justify-content:flex-end;padding:0 16px;">
+    <a href="{{ url()->previous() ?: route('registerclass') }}" style="color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.02)">Back</a>
 </div>
 
 @endsection
