@@ -5,8 +5,8 @@
 @section('content')
 
 
-<div style="display:flex;justify-content:center;padding-top:18px;">
-    <div class="steps" role="tablist" aria-label="Booking steps" style="display:flex;align-items:center;gap:12px;max-width:720px;width:100%;justify-content:center;">
+<div class="steps-wrap" style="display:flex;justify-content:center;padding-top:18px;padding-left:18px;padding-right:18px;">
+    <div class="steps" role="tablist" aria-label="Booking steps" style="display:flex;align-items:center;gap:12px;max-width:780px;width:100%;justify-content:center;margin:0 auto;">
     <div class="step" title="Info"><i class="icon-info" aria-hidden="true"></i><span class="sr-only">Info</span></div>
         <div class="line" aria-hidden="true"></div>
     <div class="step active" aria-current="step" title="Payment"><i class="icon-credit-card" aria-hidden="true"></i><span class="sr-only">Payment</span></div>
@@ -456,6 +456,15 @@
     .step.active { background:#fff;color:#000;border-color:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.45); transform: translateY(-4px); }
     .steps .line { flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px; }
     .step i { font-size:20px; line-height:1; }
+
+    /* Centering and safe gutters so it doesn't hug edges */
+    .steps-wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+    @media (max-width: 600px) {
+        .steps-wrap { padding: 0 24px; }
+        .steps { gap: 10px; }
+        .step { width: 52px; height: 52px; }
+        .steps .line { height: 2px; }
+    }
 
     /* Style tambahan untuk tombol bayar agar lebih menonjol */
     #pay-button:hover {
