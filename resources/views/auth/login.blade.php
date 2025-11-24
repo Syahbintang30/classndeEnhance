@@ -38,7 +38,7 @@
                             @if(session('error'))
                                 <div class="alert-title">{{ session('error') }}</div>
                             @else
-                                <div class="alert-title">Login gagal. Periksa email atau password.</div>
+                                <div class="alert-title">Login failed. Please check your email or password.</div>
                             @endif
                             {{-- Optionally show field validation messages (if any) as a concise list below the title --}}
                             @if($errors->any())
@@ -68,7 +68,7 @@
                             @php
                                 $msg = $message;
                                 if(str_contains(strtolower($msg), 'these credentials do not match')) {
-                                    $msg = 'Email atau password tidak cocok.';
+                                    $msg = 'Email or password is incorrect.';
                                 }
                             @endphp
                             <div class="field-error">
@@ -85,9 +85,9 @@
                     <label class="field">
                         <span class="label-text">Password</span>
                         <div class="password-field">
-                            <input name="password" type="password" required 
+                                   <input name="password" type="password" required 
                                    class="input @error('password') input-error @enderror" 
-                                   placeholder="Masukkan password Anda" />
+                                   placeholder="Enter your password" />
                             <button type="button" class="password-toggle" aria-label="Toggle password visibility">
                                 <!-- eye (visible) icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -111,17 +111,17 @@
                     <div class="form-meta">
                         <label class="remember">
                             <input type="checkbox" name="remember" />
-                            <span>Ingat saya</span>
+                            <span>Remember me</span>
                         </label>
                         @if(Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="forgot">Lupa kata sandi?</a>
+                            <a href="{{ route('password.request') }}" class="forgot">Forgot your password?</a>
                         @endif
                     </div>
 
                     <div class="actions">
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
                             <i class="fas fa-sign-in-alt"></i>
-                            Masuk Sekarang
+                            Sign In Now
                         </button>
                     </div>
                 </form>
@@ -130,11 +130,11 @@
 
         <aside class="signup-card">
             <div>
-                <h2>Pengguna Baru?</h2>
-                <p class="muted">Buat akun gratis untuk mulai belajar dan memesan sesi coaching.</p>
+                <h2>New here?</h2>
+                <p class="muted">Create a free account to start learning and book coaching sessions.</p>
                 <a href="{{ route('registerclass') }}" class="btn btn-outline">
                     <i class="fas fa-user-plus"></i>
-                    Daftar Sekarang
+                    Register Now
                 </a>
             </div>
         </aside>
