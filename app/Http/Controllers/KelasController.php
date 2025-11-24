@@ -71,7 +71,7 @@ class KelasController extends Controller
                                 'name' => 'Upgrade Intermediate',
                                 'slug' => 'upgrade-intermediate',
                                 'price' => $diff,
-                                'description' => 'Upgrade from Beginner to Intermediate — bayar selisih harga saja.',
+                                'description' => 'Upgrade from Beginner to Intermediate — pay only the price difference.',
                                 'benefits' => "Upgrade fee to move from Beginner to Intermediate.",
                                 'image' => null,
                             ]);
@@ -316,7 +316,7 @@ class KelasController extends Controller
     // only happen once the payment reaches 'settlement'. Keep a lightweight
     // acknowledgement and redirect the user to the payment UI where the
     // settlement will be processed via webhook / client polling.
-    return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'package_id' => $request->input('package_id')])->with('info', 'Silakan lanjutkan pembayaran untuk menyelesaikan pembelian. Akses paket akan diberikan setelah pembayaran terkonfirmasi.');
+    return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'package_id' => $request->input('package_id')])->with('info', 'Please proceed to payment to complete your purchase. Package access will be granted after payment is confirmed.');
     }
 
     /**
@@ -542,7 +542,7 @@ class KelasController extends Controller
             // Include order_id so client-side polling or waiting UI can pick it up.
             if (! in_array($lowerStat, ['settlement','capture','success'])) {
             return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'order_id' => $orderId])
-                ->with('info', 'Pembayaran belum dikonfirmasi. Silakan selesaikan atau tunggu konfirmasi di halaman pembayaran.');
+                ->with('info', 'Payment not yet confirmed. Please complete or wait for confirmation on the payment page.');
             }
         }
 
@@ -572,7 +572,7 @@ class KelasController extends Controller
         if (! $hasSettlement) {
             // If we haven't recorded settlement yet, keep user on payment page
             return redirect()->route('kelas.payment', ['lesson' => $lesson->id])
-                ->with('error', 'Pembayaran belum dikonfirmasi. Silakan selesaikan pembayaran di halaman pembayaran.');
+                ->with('error', 'Payment not yet confirmed. Please complete the payment on the payment page.');
         }
 
         $package = null;
