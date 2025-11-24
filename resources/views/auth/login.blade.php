@@ -60,9 +60,9 @@
                     @csrf
                     <label class="field">
                         <span class="label-text">Email</span>
-                        <input name="email" type="email" value="{{ old('email') }}" required autofocus 
+                           <input name="email" type="email" value="{{ old('email') }}" required autofocus 
                                class="input @error('email') input-error @enderror" 
-                               placeholder="Masukkan email Anda" />
+                               placeholder="Enter your email" />
                         @error('email')
                             {{-- Hide Laravel's default English 'These credentials...' message and prefer localized text when appropriate --}}
                             @php
