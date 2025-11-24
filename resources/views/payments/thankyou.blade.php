@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title','Pembayaran Berhasil')
+@section('title','Payment Successful')
 
 @section('content')
 <div class="pay-wrapper">
@@ -11,17 +11,17 @@
         <path d="M40.2 21.4L26.64 35 19.8 28.16" stroke="#34D399" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <h1 class="title">Pembayaran Berhasil</h1>
-    <p class="lead">Terima kasih! Transaksi dengan ID <strong>{{ $orderId }}</strong> telah <span class="status-pill ok">TERKONFIRMASI</span>. Akses paket Anda sudah aktif.</p>
+    <h1 class="title">Payment Successful</h1>
+    <p class="lead">Thank you! Transaction with ID <strong>{{ $orderId }}</strong> is <span class="status-pill ok">CONFIRMED</span>. Your package access is now active.</p>
 
     <div class="info-grid" style="margin-top:8px">
       <div class="info-item"><span>Order ID</span><strong>{{ $orderId }}</strong></div>
       @if(isset($txn) && $txn)
         <div class="info-item"><span>Status</span><strong class="status-pill ok">{{ strtoupper($txn->status) }}</strong></div>
-        <div class="info-item"><span>Jumlah</span><strong>Rp {{ number_format($txn->amount ?? $txn->original_amount ?? 0,0,',','.') }}</strong></div>
+        <div class="info-item"><span>Amount</span><strong>Rp {{ number_format($txn->amount ?? $txn->original_amount ?? 0,0,',','.') }}</strong></div>
       @endif
       @if(isset($package) && $package)
-        <div class="info-item" style="grid-column: span 2;"><span>Paket</span><strong>{{ $package->name }}</strong></div>
+        <div class="info-item" style="grid-column: span 2;"><span>Package</span><strong>{{ $package->name }}</strong></div>
       @endif
     </div>
 
@@ -33,26 +33,26 @@
       @endphp
       <div class="section-block">
         @if(in_array($slug, $courseSlugs))
-          <h3 class="section-head">Siap Belajar</h3>
-          <p class="section-text">Anda sekarang memiliki akses penuh ke paket <strong>{{ $package->name }}</strong>. Mulai dari pelajaran pertama dan lanjutkan secara bertahap untuk hasil terbaik.</p>
+          <h3 class="section-head">Ready to Learn</h3>
+          <p class="section-text">You now have full access to the <strong>{{ $package->name }}</strong> package. Start from the first lesson and progress gradually for the best results.</p>
           <div class="actions center">
             @if(isset($firstLesson) && $firstLesson)
-              <a href="{{ route('kelas.show', $firstLesson->id) }}" class="btn-primary">Mulai Belajar</a>
+              <a href="{{ route('kelas.show', $firstLesson->id) }}" class="btn-primary">Start Learning</a>
             @else
-              <a href="{{ route('registerclass') }}" class="btn-primary">Lihat Kelas</a>
+              <a href="{{ route('registerclass') }}" class="btn-primary">View Classes</a>
             @endif
           </div>
         @elseif($slug === 'upgrade-intermediate')
-          <h3 class="section-head">Upgrade Selesai</h3>
-          <p class="section-text">Anda telah berhasil upgrade ke paket <strong>Intermediate</strong>. Eksplor materi baru untuk meningkatkan skill Anda.</p>
+          <h3 class="section-head">Upgrade Complete</h3>
+          <p class="section-text">You have successfully upgraded to the <strong>Intermediate</strong> package. Explore the new material to improve your skills.</p>
           <div class="actions center">
-            <a href="{{ route('registerclass') }}" class="btn-primary">Masuk Ke Intermediate</a>
+            <a href="{{ route('registerclass') }}" class="btn-primary">Go To Intermediate</a>
           </div>
         @elseif($slug === $coachingSlug)
-          <h3 class="section-head">Tiket Coaching Aktif</h3>
-          <p class="section-text">Tiket personal coaching Anda sudah siap. Jadwalkan sesi supaya dapat umpan balik langsung dari coach.</p>
+          <h3 class="section-head">Active Coaching Ticket</h3>
+          <p class="section-text">Your personal coaching ticket is ready. Schedule a session to get direct feedback from a coach.</p>
           <div class="actions center">
-            <a href="{{ route('coaching.index') }}" class="btn-primary">Jadwalkan Sesi</a>
+            <a href="{{ route('coaching.index') }}" class="btn-primary">Schedule Session</a>
           </div>
         @endif
       </div>
@@ -66,30 +66,30 @@
         <div class="extra-content">
           @php $user = auth()->user(); @endphp
           @if($user && !empty($user->referral_code))
-            <div style="font-size:13px;opacity:.85;margin-bottom:6px">Bagikan kode referral Anda:</div>
+            <div style="font-size:13px;opacity:.85;margin-bottom:6px">Share your referral code:</div>
             <div class="copy-row">
               <code id="refcode">{{ $user->referral_code }}</code>
               <button type="button" class="btn-copy" data-target="refcode">Copy</button>
             </div>
-            <div class="tiny">Teman Anda mendapat diskon, Anda dapat bonus.</div>
+            <div class="tiny">Your friend gets a discount, you earn a bonus.</div>
           @else
-            <div class="tiny" style="opacity:.7">Kode referral akan muncul setelah profil lengkap.</div>
+            <div class="tiny" style="opacity:.7">Referral code will appear once your profile is complete.</div>
           @endif
         </div>
       </div>
       <div class="extra-box">
-        <div class="extra-head">Bantuan</div>
+        <div class="extra-head">Help</div>
         <div class="extra-content">
-          <div class="tiny" style="margin-bottom:8px">Ada kendala akses?</div>
+          <div class="tiny" style="margin-bottom:8px">Having access issues?</div>
           <a href="mailto:support@domain.com" class="link-text">Email Support</a>
         </div>
       </div>
     </div>
 
     <div class="actions" style="margin-top:34px;justify-content:center">
-      <a href="{{ route('registerclass') }}" class="btn-outline">Kembali ke Beranda</a>
+      <a href="{{ route('registerclass') }}" class="btn-outline">Back to Home</a>
       @if(isset($txn) && $txn && isset($txn->user_id) && $txn->user_id && isset($package) && $package)
-        <a href="{{ route('kelas.show', $firstLesson->id ?? ($lesson->id ?? 1)) }}" class="btn-outline">Masuk Materi</a>
+        <a href="{{ route('kelas.show', $firstLesson->id ?? ($lesson->id ?? 1)) }}" class="btn-outline">Go to Lessons</a>
       @endif
     </div>
   </div>

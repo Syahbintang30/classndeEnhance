@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title','Menunggu Pembayaran')
+@section('title','Waiting for Payment')
 
 @section('content')
 <div class="pay-wrapper">
@@ -8,31 +8,31 @@
         <div class="icon-wrap" aria-hidden="true">
             <div class="spinner"></div>
         </div>
-        <h1 class="title">Menunggu Konfirmasi Pembayaran</h1>
-        <p class="lead">Kami telah menerima detail transaksi Anda. Sistem sedang menunggu konfirmasi dari penyedia pembayaran. Halaman ini akan <strong>memperbarui otomatis</strong> atau Anda bisa cek manual.</p>
+        <h1 class="title">Waiting for Payment Confirmation</h1>
+        <p class="lead">We have received your transaction details. The system is waiting for confirmation from the payment provider. This page will <strong>auto refresh</strong> or you can check manually.</p>
 
         @if(isset($transaction))
             <div class="info-grid">
                 <div class="info-item"><span>Order ID</span><strong id="order-id">{{ $transaction->order_id }}</strong></div>
                 <div class="info-item"><span>Status</span><strong id="txn-status" class="status-pill waiting">{{ strtoupper($transaction->status) }}</strong></div>
-                <div class="info-item"><span>Jumlah</span><strong>Rp {{ number_format($transaction->amount ?? $transaction->original_amount ?? 0,0,',','.') }}</strong></div>
+                <div class="info-item"><span>Amount</span><strong>Rp {{ number_format($transaction->amount ?? $transaction->original_amount ?? 0,0,',','.') }}</strong></div>
             </div>
 
             @php $resp = is_string($transaction->midtrans_response ?? null) ? json_decode($transaction->midtrans_response, true) : (array) ($transaction->midtrans_response ?? []); @endphp
             @if(!empty($resp) && ( !empty($resp['va_numbers']) || !empty($resp['permata_va_number']) || !empty($resp['payment_type']) || !empty($resp['payment_code']) ))
                 <div class="pay-instructions">
-                    <div class="instr-head">Instruksi Pembayaran</div>
-                    @if(!empty($resp['payment_type']))<div class="instr-row">Metode: <strong>{{ strtoupper($resp['payment_type']) }}</strong></div>@endif
+                    <div class="instr-head">Payment Instructions</div>
+                    @if(!empty($resp['payment_type']))<div class="instr-row">Method: <strong>{{ strtoupper($resp['payment_type']) }}</strong></div>@endif
                     @if(!empty($resp['permata_va_number']))<div class="instr-row">Permata VA: <strong>{{ $resp['permata_va_number'] }}</strong></div>@endif
                     @if(!empty($resp['va_numbers']) && is_array($resp['va_numbers']))
                         @foreach($resp['va_numbers'] as $va)
                             <div class="instr-row">{{ strtoupper($va['bank']) }} VA: <strong>{{ $va['va_number'] }}</strong></div>
                         @endforeach
                     @endif
-                    @if(!empty($resp['payment_code']))<div class="instr-row">Kode Pembayaran: <strong>{{ $resp['payment_code'] }}</strong></div>@endif
+                    @if(!empty($resp['payment_code']))<div class="instr-row">Payment Code: <strong>{{ $resp['payment_code'] }}</strong></div>@endif
                     @if(!empty($resp['actions']) && is_array($resp['actions']))
                         @foreach($resp['actions'] as $act)
-                            @if(!empty($act['url']))<a target="_blank" href="{{ $act['url'] }}" class="btn-outline small" style="margin-top:8px">Buka Instruksi Lengkap</a>@endif
+                            @if(!empty($act['url']))<a target="_blank" href="{{ $act['url'] }}" class="btn-outline small" style="margin-top:8px">Open Full Instructions</a>@endif
                         @endforeach
                     @endif
                 </div>
@@ -40,11 +40,11 @@
         @endif
 
         <div class="actions">
-            <button id="check-status" class="btn-primary">Cek Status Sekarang</button>
-            <a href="{{ route('registerclass') }}" class="btn-outline">Kembali ke Beranda</a>
+            <button id="check-status" class="btn-primary">Check Status Now</button>
+            <a href="{{ route('registerclass') }}" class="btn-outline">Back to Home</a>
         </div>
         <div id="status-message" class="hint" aria-live="polite"></div>
-        <div class="hint" style="margin-top:14px">Jika status belum berubah setelah Anda menyelesaikan pembayaran, tunggu beberapa detik atau klik tombol cek status.</div>
+        <div class="hint" style="margin-top:14px">If the status has not updated after you complete payment, wait a few seconds or click the check status button.</div>
     </div>
 </div>
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if(!orderId) return;
         if(manual){ attempt = 0; interval = 3000; }
         try {
-            msg.textContent = manual ? 'Memeriksa status...' : 'Memeriksa...';
+            msg.textContent = manual ? 'Checking status...' : 'Checking...';
             const res = await fetch('{{ route('payments.status') }}?order_id=' + encodeURIComponent(orderId));
             const j = await res.json();
             const rawStatus = (j.status || (j.transaction ? j.transaction.status : null) || 'unknown');
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function(){
             msg.textContent = 'Status: ' + rawStatus;
             if(['settlement','capture','success'].includes(String(rawStatus).toLowerCase())){
                 polling = false;
-                msg.textContent = 'Pembayaran terkonfirmasi. Mengarahkan...';
+                msg.textContent = 'Payment confirmed. Redirecting...';
                     // if autologin token present (guest flow), redirect via autologin endpoint
                     if(j.autologin_token){
                         setTimeout(function(){ window.location.href = '/payments/autologin?token=' + encodeURIComponent(j.autologin_token) + '&order_id=' + encodeURIComponent(orderId); }, 600);
@@ -111,14 +111,14 @@ document.addEventListener('DOMContentLoaded', function(){
                     }
                 return;
             }
-        } catch(e){ msg.textContent = 'Gagal memeriksa (' + (e.message||e) + ')'; }
+        } catch(e){ msg.textContent = 'Failed to check (' + (e.message||e) + ')'; }
     }
 
     async function loop(){
         if(!polling) return;
         attempt++;
         await checkStatus(false);
-        if(attempt >= maxAttempts){ polling=false; msg.textContent += ' (Berhenti otomatis)'; return; }
+        if(attempt >= maxAttempts){ polling=false; msg.textContent += ' (Stopped automatically)'; return; }
         // backoff sampai 10s
         interval = Math.min(10000, interval + 1000);
         setTimeout(loop, interval);

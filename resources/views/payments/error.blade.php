@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title','Pembayaran Gagal')
+@section('title','Payment Failed')
 
 @section('content')
 <div class="pay-wrapper">
@@ -8,15 +8,15 @@
         <div class="icon-wrap" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
         </div>
-        <h1 class="title">Pembayaran Gagal / Belum Terselesaikan</h1>
-        <p class="lead">{{ $message ?? 'Transaksi belum berhasil dikonfirmasi. Jika Anda sudah membayar, silakan coba cek status atau hubungi support.' }}</p>
+        <h1 class="title">Payment Failed / Not Completed</h1>
+        <p class="lead">{{ $message ?? 'The transaction has not been confirmed yet. If you already paid, please try checking the status or contact support.' }}</p>
 
         <div class="actions">
-            <a href="{{ url()->previous() ?: route('registerclass') }}" class="btn-outline">Kembali</a>
-            <a href="{{ route('registerclass') }}" class="btn-primary">Pilih Paket Lain</a>
-            <a href="mailto:support@guitarclassbynde.id?subject=Support%20Pembayaran" class="btn-ghost">Hubungi Support</a>
+            <a href="{{ url()->previous() ?: route('registerclass') }}" class="btn-outline">Back</a>
+            <a href="{{ route('registerclass') }}" class="btn-primary">Choose Another Package</a>
+            <a href="mailto:support@guitarclassbynde.id?subject=Support%20Pembayaran" class="btn-ghost">Contact Support</a>
         </div>
-        <div class="hint">Jika Anda sudah melakukan transfer/scan QR namun status masih belum berubah setelah beberapa menit, kirimkan bukti pembayaran ke email support beserta <strong>Order ID</strong>.</div>
+        <div class="hint">If you already transferred/scanned the QR but the status has not changed after a few minutes, send proof of payment to support along with the <strong>Order ID</strong>.</div>
     </div>
 </div>
 

@@ -59,7 +59,7 @@ class PaymentRedirectController extends Controller
         }
 
         if (! $txn) {
-            return view('payments.error', ['message' => 'Transaksi tidak ditemukan. Jika pembayaran sukses, server webhook mungkin belum memprosesnya. Silakan cek kembali nanti atau hubungi support.']);
+            return view('payments.error', ['message' => 'Transaction not found. If the payment succeeded, the webhook server may not have processed it yet. Please check again later or contact support.']);
         }
 
         // Try to update remote once if not settled
@@ -122,7 +122,7 @@ class PaymentRedirectController extends Controller
      */
     public function error(Request $request)
     {
-        $msg = $request->query('message') ?? 'Pembayaran gagal atau dibatalkan.';
+        $msg = $request->query('message') ?? 'Payment failed or was canceled.';
         return view('payments.error', ['message' => $msg]);
     }
 
