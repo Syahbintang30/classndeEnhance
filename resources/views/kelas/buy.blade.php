@@ -138,10 +138,9 @@
                                 $beginner = \App\Models\Package::where('slug','beginner')->first();
                                 $intermediate = \App\Models\Package::where('slug','intermediate')->first();
                             @endphp
-                            <div style="margin-top:8px;font-size:13px;opacity:0.85">Catatan: Hanya untuk pemilik paket <strong>Beginner</strong>.</div>
-                                <div style="margin-top:8px;font-size:13px;opacity:0.85">Note: Only for existing <strong>Beginner</strong> package owners.</div>
+                            <div style="margin-top:8px;font-size:13px;opacity:0.85">Note: Only for owners of the <strong>Beginner</strong> package.</div>
                             @if($beginner && $intermediate)
-                                <div style="margin-top:6px;font-size:13px;opacity:0.85">Harga Beginner: Rp {{ number_format($beginner->price,0,',','.') }} &nbsp;•&nbsp; Harga Intermediate: Rp {{ number_format($intermediate->price,0,',','.') }}</div>
+                                <div style="margin-top:6px;font-size:13px;opacity:0.85">Beginner Price: Rp {{ number_format($beginner->price,0,',','.') }} &nbsp;•&nbsp; Intermediate Price: Rp {{ number_format($intermediate->price,0,',','.') }}</div>
                             @endif
                         @endif
                     </div>
@@ -156,9 +155,8 @@
             <!-- ensure a global package qty hidden input exists for both guest and logged-in flows -->
             <input type="hidden" name="package_qty" value="1" id="selected_package_qty_input" />
                 @guest
-            <h2 style="font-size:20px;margin-bottom:12px">Buat Akun untuk Melanjutkan</h2>
-            <h2 style="font-size:20px;margin-bottom:12px">Create an Account to Continue</h2>
-            <p style="opacity:0.7;margin-bottom:12px">Select a package on the left, then create an account or log in to proceed to secure payment.</p>
+            <h2 style="font-size:20px;margin-bottom:12px">Create An Account To Continue</h2>
+            <p style="opacity:0.7;margin-bottom:12px">Choose a class on the left, then create an account or log in to proceed to secure payment.</p>
 
             <!-- hidden values for selection (kept for JS compatibility) -->
             <input type="hidden" name="selected_package" value="" id="selected_package_input" />
@@ -166,33 +164,26 @@
             <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
 
             <div style="margin-bottom:12px">
-                <label style="display:block;margin-bottom:6px">Kode Referral (opsional)</label>
                 <label style="display:block;margin-bottom:6px">Referral Code (optional)</label>
                 <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Enter referral code or leave blank" style="width:100%;padding:12px;background:transparent;border:1px solid #333;color:#fff !important;border-radius:4px;" />
-                                <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to receive a discount.</div>
-                                    <div style="font-size:13px;opacity:0.8">Selected package</div>
-                                <div style="font-size:12px;color:rgba(255,255,255,0.6)">Click another card to change package</div>
                 @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
-                <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">Jika Anda punya kode referral, masukkan untuk mendapatkan diskon.</div>
+                <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to get a discount.</div>
             </div>
 
             <!-- Selected package preview for guests -->
             <div id="selected_package_preview" style="margin-bottom:14px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center">
                 <div>
-                    <div style="font-size:13px;opacity:0.8">Kelas dipilih</div>
+                    <div style="font-size:13px;opacity:0.8">Selected package</div>
                     <div id="selected_package_name" style="font-weight:700;margin-top:4px">-</div>
                     <div id="selected_package_price_display" style="font-size:13px;opacity:0.85;margin-top:4px">Rp -</div>
-                    <div id="selected_package_original_price_display" style="font-size:12px;opacity:0.6;margin-top:6px;display:none">Harga asli: Rp -</div>
                     <div id="selected_package_original_price_display" style="font-size:12px;opacity:0.6;margin-top:6px;display:none">Original price: Rp -</div>
                     <div id="selected_package_discount_display" style="font-size:12px;color:#b8f0c6;margin-top:6px;display:none">Referral discount: -</div>
-                                <a id="guest_register_btn" href="{{ route('register') }}" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-weight:700;text-decoration:none">REGISTER</a>
-                                    <div style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;color:#ffd9d9;">No materials are available for payment yet. Please check back later.</div>
                 </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.6)">Klik kartu lain untuk ganti kelas</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.6)">Click another card to change the package</div>
             </div>
 
             <div style="text-align:right;display:flex;gap:10px;justify-content:flex-end">
-                <a id="guest_register_btn" href="{{ route('register') }}" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-weight:700;text-decoration:none">DAFTAR</a>
+                <a id="guest_register_btn" href="{{ route('register') }}" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-weight:700;text-decoration:none">REGISTER</a>
             </div>
                 @else
             <h2 style="font-size:20px;margin-bottom:12px">Personal Details</h2>
@@ -204,7 +195,7 @@
                 @if($paymentBase)
                     {{-- continue button moved below the selected package preview to improve UX for logged-in users --}}
                 @else
-                    <div style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;color:#ffd9d9;">Belum ada materi tersedia untuk pembayaran. Silakan kembali lagi nanti.</div>
+                    <div style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;color:#ffd9d9;">No material available for payment. Please check back later.</div>
                 @endif
             </div>
 
@@ -213,15 +204,10 @@
                 @if(empty($uid))
                     <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
                     <div style="margin-top:12px;margin-bottom:12px">
-                        <label style="display:block;margin-bottom:6px">Kode Referral (opsional)</label>
                         <label style="display:block;margin-bottom:6px">Referral Code (optional)</label>
                         <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Enter referral code or leave blank" style="width:100%;padding:12px;background:transparent;border:1px solid #333;color:#fff !important;border-radius:4px;" />
-                                                <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to receive a discount.</div>
-                                            if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Name is required.'; }
-                                            if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Name is too long (max 255 characters).'; }
-                                            if (confirmError) { confirmError.style.display = 'block'; confirmError.textContent = 'Password confirmation does not match.'; }
                         @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
-                        <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">Jika Anda punya kode referral, masukkan untuk mendapatkan diskon.</div>
+                        <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to get a discount.</div>
                     </div>
                 @endif
 
@@ -642,13 +628,13 @@ document.addEventListener('DOMContentLoaded', function(){
                     const v = String(nameInput.value || '').trim();
                     if (!v) {
                         e.preventDefault();
-                        if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Nama wajib diisi.'; }
+                        if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Name is required.'; }
                         nameInput.focus();
                         return false;
                     }
                     if (v.length > 255) {
                         e.preventDefault();
-                        if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Nama terlalu panjang (maks 255 karakter).'; }
+                        if (nameError) { nameError.style.display = 'block'; nameError.textContent = 'Name is too long (max 255 characters).'; }
                         nameInput.focus();
                         return false;
                     }
@@ -658,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 // password confirmation
                 if (pwd && pwdc && pwd.value !== pwdc.value) {
                     e.preventDefault();
-                    if (confirmError) { confirmError.style.display = 'block'; confirmError.textContent = 'Konfirmasi password tidak cocok.'; }
+                    if (confirmError) { confirmError.style.display = 'block'; confirmError.textContent = 'Password confirmation does not match.'; }
                     pwd.focus();
                     return false;
                 }
@@ -716,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             async function validate(code){
-                if(!code) { if(hint) hint.textContent = 'If you have a referral code, enter it to receive a discount.'; updatePricesWithDiscount(0); return; }
+                if(!code) { if(hint) hint.textContent = 'If you have a referral code, enter it to get a discount.'; updatePricesWithDiscount(0); return; }
                 try{
                     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                     const res = await fetch('/referral/validate', { method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN': token}, body: JSON.stringify({ code }) });
@@ -730,12 +716,12 @@ document.addEventListener('DOMContentLoaded', function(){
                     } else {
                         // clear last validated state when invalid
                         try { window.lastReferralCode = null; window.lastReferralDiscountPercent = 0; } catch(e){}
-                        if(hint) hint.textContent = 'Invalid referral code.';
+                        if(hint) hint.textContent = 'Referral code is not valid.';
                         updatePricesWithDiscount(0);
                     }
                 } catch (err) {
                     console.error('referral validate error', err);
-                    if(hint) hint.textContent = 'An error occurred while validating the referral code';
+                    if(hint) hint.textContent = 'An error occurred while validating referral code';
                     updatePricesWithDiscount(0);
                 }
             }

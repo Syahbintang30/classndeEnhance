@@ -37,17 +37,17 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $messages = [
-            'name.required' => 'Nama wajib diisi.',
-            'name.max' => 'Nama terlalu panjang (maks 255 karakter).',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.max' => 'Email terlalu panjang (maks 255 karakter).',
-            'email.unique' => 'Email sudah terdaftar. Jika ini milik Anda, silakan login atau gunakan fitur lupa password.',
-            'password.required' => 'Password wajib diisi.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'password.min' => 'Password harus minimal :min karakter.',
-            'phone.max' => 'Nomor telepon terlalu panjang.',
-            'selected_package.exists' => 'Pilihan paket tidak valid.',
+            'name.required' => 'Name is required.',
+            'name.max' => 'Name is too long (max 255 characters).',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Email format is invalid.',
+            'email.max' => 'Email is too long (max 255 characters).',
+            'email.unique' => 'Email is already registered. If this is yours, please log in or use forgot password.',
+            'password.required' => 'Password is required.',
+            'password.confirmed' => 'Password confirmation does not match.',
+            'password.min' => 'Password must be at least :min characters.',
+            'phone.max' => 'Phone number is too long.',
+            'selected_package.exists' => 'Selected package is invalid.',
         ];
 
         $request->validate([
@@ -107,7 +107,7 @@ class RegisteredUserController extends Controller
                 if ($refCodeSession) { $request->session()->forget('referral'); }
             } else if ($request->filled('referral')) {
                 // Only error when an explicit invalid code was typed into the form
-                return redirect()->back()->withInput()->withErrors(['referral' => 'Kode referral tidak valid. Periksa kembali kode yang Anda masukkan.']);
+                return redirect()->back()->withInput()->withErrors(['referral' => 'Referral code is not valid. Please check the code you entered.']);
             }
         }
 
