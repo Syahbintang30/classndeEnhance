@@ -4,7 +4,10 @@
 
 @section('content')
     <div class="profile-container">
-        <h2 style="margin:0 0 18px 0">Edit Profile</h2>
+        <div style="margin-bottom:32px">
+            <h1 style="margin:0 0 8px; font-size:42px; line-height:1.1; letter-spacing:-0.03em; font-weight:900; background:linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Profil Saya</h1>
+            <p style="margin:0; color:#888; font-size:15px;">Kelola informasi akun dan keamanan Anda</p>
+        </div>
 
         <style>
             /* Layout container tweaks */
@@ -39,8 +42,10 @@
                Keep centered but flexible; reduce gaps on small screens */
 
             /* Sections should not overflow; use full available width on small screens */
-            .profile-section{width:100%;max-width:720px;margin:0 auto;background:linear-gradient(180deg,#070707,#0c0c0c);padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-sizing:border-box}
-            @media (max-width:640px){ .profile-section{padding:14px;margin:0 6px;border-radius:10px} }
+            .profile-section{width:100%;max-width:720px;margin:0 auto;background:linear-gradient(180deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);backdrop-filter:blur(10px);padding:28px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+            .profile-section h3{color:#fff;font-weight:800;letter-spacing:-0.02em}
+            .profile-section p{color:#a3a3a3;font-size:14px}
+            @media (max-width:640px){ .profile-section{padding:20px;margin:0 6px;border-radius:14px} }
 
             .profile-form{max-width:520px;margin:0 auto;width:100%}
             @media (max-width:520px){ .profile-form{padding:0 6px;width:100%} }
@@ -113,21 +118,21 @@
                     @csrf
                     @method('patch')
 
-                    <div style="margin-bottom:12px">
-                        <label for="name" style="display:block;font-weight:700;margin-bottom:6px">Name</label>
-                        <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255" style="width:100%;padding:10px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.04);color:#fff">
-                        @if($errors->has('name'))<div style="color:#ffb4b4;margin-top:6px">{{ $errors->first('name') }}</div>@endif
+                    <div style="margin-bottom:16px">
+                        <label for="name" style="display:block;font-weight:700;margin-bottom:8px;font-size:14px">Nama Lengkap</label>
+                        <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255" style="width:100%;padding:12px 14px;border-radius:10px;background:rgba(10,10,10,0.4);border:1px solid rgba(255,255,255,0.06);color:#fff;font-size:14px;transition:all 0.2s ease">
+                        @if($errors->has('name'))<div style="color:#ff9999;margin-top:6px;font-size:13px">{{ $errors->first('name') }}</div>@endif
                     </div>
 
-                    <div style="margin-bottom:12px">
-                        <label for="email" style="display:block;font-weight:700;margin-bottom:6px">Email</label>
-                        <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255" style="width:100%;padding:10px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.04);color:#fff">
-                        @if($errors->has('email'))<div style="color:#ffb4b4;margin-top:6px">{{ $errors->first('email') }}</div>@endif
+                    <div style="margin-bottom:16px">
+                        <label for="email" style="display:block;font-weight:700;margin-bottom:8px;font-size:14px">Email</label>
+                        <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255" style="width:100%;padding:12px 14px;border-radius:10px;background:rgba(10,10,10,0.4);border:1px solid rgba(255,255,255,0.06);color:#fff;font-size:14px;transition:all 0.2s ease">
+                        @if($errors->has('email'))<div style="color:#ff9999;margin-top:6px;font-size:13px">{{ $errors->first('email') }}</div>@endif
                     </div>
 
                     <div class="actions-row">
-                        <button type="submit" style="background:#111;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">Save</button>
-                        <a href="{{ route('profile') }}" style="color:rgba(255,255,255,0.6);text-decoration:none;padding:8px">Cancel</a>
+                        <button type="submit" style="background:linear-gradient(90deg,#00d4ff 0%,#0099ff 100%);border:none;padding:12px 20px;border-radius:10px;color:#000;font-weight:700;cursor:pointer;font-size:14px;transition:all 0.2s ease">Simpan Perubahan</button>
+                        <a href="{{ route('profile') }}" style="color:rgba(255,255,255,0.6);text-decoration:none;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s ease;font-weight:600">Batal</a>
                     </div>
                     
                     {{-- hidden native file input (kept inside form) --}}
@@ -164,7 +169,7 @@
             </section>
 
             {{-- Password update --}}
-            <section id="password" style="width:100%;max-width:720px;margin:0 auto;background:linear-gradient(180deg,#070707,#0c0c0c);padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)">
+            <section id="password" style="width:100%;max-width:720px;margin:0 auto;background:linear-gradient(180deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);backdrop-filter:blur(10px);padding:28px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 32px rgba(0,0,0,0.3)">
                 <h3 style="margin:0 0 12px 0">Update Password</h3>
                 <p style="margin:0 0 16px;color:rgba(255,255,255,0.65)">Ensure your account is using a long, random password to stay secure.</p>
 
@@ -215,8 +220,8 @@
                     </div>
 
                     <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
-                        <button type="submit" style="background:#111;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">Save</button>
-                        <a href="{{ route('profile') }}" style="color:rgba(255,255,255,0.6);text-decoration:none;padding:8px">Cancel</a>
+                        <button type="submit" style="background:linear-gradient(90deg,#00d4ff 0%,#0099ff 100%);border:none;padding:12px 20px;border-radius:10px;color:#000;font-weight:700;cursor:pointer;font-size:14px;transition:all 0.2s ease">Simpan</button>
+                        <a href="{{ route('profile') }}" style="color:rgba(255,255,255,0.6);text-decoration:none;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s ease;font-weight:600">Batal</a>
                     </div>
                 </form>
             </section>

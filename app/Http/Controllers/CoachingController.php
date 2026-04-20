@@ -372,15 +372,26 @@ class CoachingController extends Controller
             'meta' => 'nullable|array',
         ]);
 
-        // append event details into booking->notes so events are centralized
+        // Append human-friendly timeline notes and avoid noisy raw telemetry strings.
         try {
-            $meta = $data['meta'] ?? null;
-            $line = '[' . now()->toDateTimeString() . '] ' . ($data['event'] ?? 'event');
-            if ($meta && is_array($meta)) {
-                $line .= ' ' . json_encode($meta);
+            $event = strtolower(trim((string) ($data['event'] ?? 'event')));
+            $line = null;
+
+            if ($event === 'session_end_clicked') {
+                $line = '[' . now()->toDateTimeString() . '] Meeting selesai';
+            } elseif ($event === 'session_ended_by_admin') {
+                $line = '[' . now()->toDateTimeString() . '] Meeting selesai (diakhiri admin)';
+            } elseif ($event === 'connect_error') {
+                // Keep connect errors in server logs only, not in user-facing notes.
+                logger()->warning('Coaching connect_error event', ['booking_id' => $booking->id, 'meta' => $data['meta'] ?? null]);
+            } else {
+                $line = '[' . now()->toDateTimeString() . '] ' . ($data['event'] ?? 'event');
             }
-            $booking->notes = trim(($booking->notes ? $booking->notes . "\n\n" : '') . $line);
-            $booking->save();
+
+            if ($line) {
+                $booking->notes = trim(($booking->notes ? $booking->notes . "\n\n" : '') . $line);
+                $booking->save();
+            }
         } catch (\Throwable $e) {
             logger()->warning('Failed to append event to booking notes', ['err' => $e->getMessage()]);
         }

@@ -3,167 +3,160 @@
 @section('title', 'Register')
 
 @section('content')
-<div class="register-page" style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#fff;">
-    <style>
-        /* Layout: mobile-first responsive register page */
-        .register-wrap { width:100%; max-width:1100px; display:flex; gap:24px; flex-direction:column; }
-        .register-left { flex:1; padding:24px; border-radius:10px; background:#090909; border:1px solid #222; }
-        .register-right { width:100%; padding:24px; border-radius:10px; background:linear-gradient(180deg,#0a0a0a,#050505); border:1px solid #111; }
+<div class="cyber-auth-page">
+    <div class="cyber-auth-bg"></div>
+    <div class="cyber-auth-overlay"></div>
 
-        /* Medium screens: two-columns with sidebar width */
-        @media (min-width: 900px) {
-            .register-wrap { flex-direction:row; }
-            .register-right { width:340px; }
-        }
+    <header class="cyber-auth-header">
+        <a href="{{ route('compro') }}" class="cyber-brand" aria-label="ClassNDE home">
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo" class="cyber-brand-logo">
+        </a>
+        <nav class="cyber-nav">
+            <a href="{{ route('registerclass') }}">Courses</a>
+            <a href="{{ route('login') }}">Sign in</a>
+            <a href="{{ route('register') }}" class="btn-nav active">Register</a>
+        </nav>
+    </header>
 
-        /* Inputs and controls */
-        .password-toggle svg { width: 18px; height: 18px; display: block; opacity: 0.95; }
-        .password-toggle { line-height: 0; color:#e5e5e5; }
-        .password-field-inline .password-toggle { z-index: 5; }
+    <div class="cyber-auth-layout">
+        <div class="cyber-auth-left" aria-hidden="true"></div>
 
-        /* Improve tap targets and spacing on small screens */
-        @media (max-width: 480px) {
-            .register-left, .register-right { padding:18px; }
-            .register-actions { text-align:center; }
-        }
-    </style>
-    <div class="register-wrap">
-        <div class="register-left">
-            <h2 style="margin:0 0 8px 0;font-size:22px">Create account</h2>
-            <p style="opacity:0.7;margin-bottom:16px">Sign up to access lessons and booking features.</p>
+        <section class="cyber-auth-right">
+            <div class="cyber-card">
+                <p class="cyber-kicker">ClassNDE Portal</p>
+                <h1>Create Account</h1>
+                <p class="cyber-subtitle">Sign up with Google or continue with email registration.</p>
 
-            <form method="POST" action="{{ route('register') }}" id="registerForm">
-                @csrf
-                {{-- Alert area: show validation errors and helpful guidance --}}
+                <a href="{{ route('auth.google.redirect') }}" class="cyber-btn google">
+                    <svg viewBox="0 0 24 24" class="g-icon" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                    </svg>
+                    Sign Up with Google
+                </a>
+
+                <div class="cyber-divider"><span>Or continue with email</span></div>
+
                 @if(session('status'))
-                    <div style="background:#0b2f0b;padding:10px;border-radius:6px;margin-bottom:12px;color:#b6f2b6">{{ session('status') }}</div>
+                    <div class="cyber-alert success">{{ session('status') }}</div>
                 @endif
+
                 @if($errors->any())
-                    <div style="background:#2b0b0b;padding:12px;border-radius:8px;margin-bottom:12px;color:#ffd9d9">
-                        <strong>Registration issues:</strong>
-                        <ul style="margin-top:8px;padding-left:18px">
+                    <div class="cyber-alert error">
+                        <ul>
                             @foreach($errors->all() as $err)
                                 <li>{{ $err }}</li>
                             @endforeach
                         </ul>
-                        <div style="margin-top:8px;font-size:13px;opacity:0.9">Common causes: email already registered, passwords don't match, or password does not meet complexity requirements.</div>
                     </div>
                 @endif
-                <div style="margin-bottom:12px">
-                    <label style="display:block;margin-bottom:6px">Name</label>
-                    <input name="name" type="text" value="{{ old('name') }}" required style="width:100%;padding:12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
-                    @error('name')<div style="color:#ff6b6b;margin-top:6px">{{ $message }}</div>@enderror
-                </div>
 
-                <div style="margin-bottom:12px">
-                    <label style="display:block;margin-bottom:6px">Email</label>
-                    <input id="email" name="email" type="email" value="{{ old('email') }}" required style="width:100%;padding:12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
-                    @error('email')<div style="color:#ff6b6b;margin-top:6px">{{ $message }}</div>@enderror
-                </div>
+                <form method="POST" action="{{ route('register') }}" id="registerForm" class="cyber-form">
+                    @csrf
+                    <label for="register-name" class="cyber-label">Name</label>
+                    <input id="register-name" name="name" type="text" value="{{ old('name') }}" required class="cyber-input @error('name') input-error @enderror" placeholder="Enter your name" />
 
-                <div class="password-grid" style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:240px">
-                        <label style="display:block;margin-bottom:6px">Password</label>
-                        <div class="password-field-inline" style="position:relative">
-                            <input name="password" type="password" required style="width:100%;padding:12px 40px 12px 12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
-                            <button type="button" class="password-toggle" aria-label="Show password" title="Show password" aria-pressed="false" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#e5e5e5;padding:6px;cursor:pointer;z-index:5;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        @error('password')<div style="color:#ff6b6b;margin-top:6px">{{ $message }}</div>@enderror
-                        <div id="passwordHelp" style="margin-top:8px;font-size:13px;opacity:0.85">
-                            Password must be at least 8 characters and include a mix of letters and numbers.
-                        </div>
+                    <label for="register-email" class="cyber-label">Email</label>
+                    <input id="register-email" name="email" type="email" value="{{ old('email') }}" required class="cyber-input @error('email') input-error @enderror" placeholder="Enter your email" />
+
+                    <label for="register-password" class="cyber-label">Password</label>
+                    <div class="cyber-password-wrap">
+                        <input id="register-password" name="password" type="password" required class="cyber-input @error('password') input-error @enderror" placeholder="Create password" />
+                        <button type="button" class="cyber-toggle" data-target="register-password" aria-label="Toggle password visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
                     </div>
-                    <div style="flex:1;min-width:240px">
-                        <label style="display:block;margin-bottom:6px">Confirm</label>
-                        <div class="password-field-inline" style="position:relative">
-                            <input name="password_confirmation" type="password" required style="width:100%;padding:12px 40px 12px 12px;border-radius:6px;background:transparent;border:1px solid #333;color:#fff;" />
-                            <button type="button" class="password-toggle" aria-label="Show password" title="Show password" aria-pressed="false" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#e5e5e5;padding:6px;cursor:pointer;z-index:5;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
+
+                    <label for="register-password-confirmation" class="cyber-label">Confirm Password</label>
+                    <div class="cyber-password-wrap">
+                        <input id="register-password-confirmation" name="password_confirmation" type="password" required class="cyber-input" placeholder="Repeat password" />
+                        <button type="button" class="cyber-toggle" data-target="register-password-confirmation" aria-label="Toggle password visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
                     </div>
-                </div>
 
-                <div class="register-actions" style="text-align:right">
-                    <button type="submit" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;border:none;font-weight:700;">REGISTER</button>
-                </div>
-            </form>
-        </div>
+                    <button type="submit" class="cyber-btn primary">Create Account</button>
+                </form>
 
-        <div class="register-right">
-            <h3 style="margin-top:0">Already have an account?</h3>
-            <p style="opacity:0.75">If you already registered, login to continue.</p>
-            <a href="{{ route('login') }}" style="display:inline-block;margin-top:18px;padding:10px 18px;border-radius:22px;background:transparent;border:1px solid #fff;color:#fff;text-decoration:none;font-weight:600;">Login</a>
-        </div>
-            <script>
-                // small toggle logic for register page
-                document.addEventListener('click', function(e){
-                    var btn = e.target.closest && e.target.closest('.password-toggle');
-                    if(!btn) return;
-                    var field = btn.closest('.password-field-inline');
-                    if(!field) return;
-                    var input = field.querySelector('input');
-                    if(!input) return;
-                    var eye = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-                    var eyeOff = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.7 21.7 0 0 1 5-5"></path><path d="M1 1l22 22"></path></svg>';
-                    if(input.type === 'password'){
-                        input.type = 'text';
-                        btn.innerHTML = eyeOff;
-                        btn.setAttribute('aria-label','Hide password');
-                        btn.setAttribute('title','Hide password');
-                        btn.setAttribute('aria-pressed','true');
-                    } else {
-                        input.type = 'password';
-                        btn.innerHTML = eye;
-                        btn.setAttribute('aria-label','Show password');
-                        btn.setAttribute('title','Show password');
-                        btn.setAttribute('aria-pressed','false');
-                    }
-                });
-                // Client-side password confirmation and basic strength feedback
-                (function(){
-                    var form = document.getElementById('registerForm');
-                    if(!form) return;
-                    var pwd = form.querySelector('input[name=password]');
-                    var confirm = form.querySelector('input[name=password_confirmation]');
-                    var help = document.getElementById('passwordHelp');
-
-                    function scorePassword(p){
-                        var score = 0;
-                        if(!p) return 0;
-                        if(p.length >= 8) score += 1;
-                        if(/[A-Z]/.test(p)) score += 1;
-                        if(/[0-9]/.test(p)) score += 1;
-                        if(/[^A-Za-z0-9]/.test(p)) score += 1;
-                        return score;
-                    }
-
-                    function updateHelp(){
-                        if(!pwd) return;
-                        var s = scorePassword(pwd.value);
-                        var text = 'Password must be at least 8 characters.';
-                        if(s <= 1) { help.style.color = '#ffd3d3'; help.textContent = text + ' (too weak)'; }
-                        else if(s === 2) { help.style.color = '#ffe7c4'; help.textContent = 'Fair — consider adding numbers or symbols.'; }
-                        else if(s >= 3) { help.style.color = '#c9f7d6'; help.textContent = 'Good password.'; }
-                    }
-
-                    pwd && pwd.addEventListener('input', updateHelp);
-
-                    form.addEventListener('submit', function(e){
-                        if(pwd && confirm && pwd.value !== confirm.value){
-                            e.preventDefault();
-                            alert('Passwords do not match. Please confirm your password correctly.');
-                            confirm.focus();
-                            return false;
-                        }
-                        // basic client-side email duplicate hint: if email value looks like existing (server-side enforced)
-                        return true;
-                    });
-                })();
-            </script>
-
-        </div>
+                <p class="cyber-footer">Already have an account? <a href="{{ route('login') }}">Sign in here</a></p>
+            </div>
+        </section>
+    </div>
 </div>
+
+<style>
+    .cyber-auth-page { position: relative; min-height: 100vh; overflow: hidden; color: #e2e8f0; }
+    .cyber-auth-bg { position: absolute; inset: 0; background: url('{{ asset('compro/img/ndehero.webp') }}') center/cover no-repeat; transform: scale(1.02); }
+    .cyber-auth-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(2, 6, 23, 0.82) 0%, rgba(15, 23, 42, 0.4) 52%, rgba(2, 6, 23, 0.84) 100%); }
+    .cyber-auth-header { position: absolute; top: 0; left: 0; right: 0; z-index: 5; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+    .cyber-brand { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; text-decoration: none; }
+    .cyber-brand-logo { width: 42px; height: 42px; object-fit: contain; display: block; }
+    .cyber-nav { display: inline-flex; align-items: center; gap: 18px; }
+    .cyber-nav a { color: rgba(226, 232, 240, 0.9); text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; height: 42px; }
+    .cyber-nav a.active { color: #0f172a; background: rgba(255, 255, 255, 0.92); border-radius: 999px; padding: 0 14px; }
+    .cyber-nav .btn-nav { padding: 0 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: #0f172a; }
+
+    .cyber-auth-layout { position: relative; z-index: 2; min-height: 100vh; display: flex; }
+    .cyber-auth-left { flex: 1; }
+    .cyber-auth-right { width: min(520px, 100%); margin-left: auto; display: flex; align-items: center; justify-content: center; padding: 100px 24px 24px; }
+
+    .cyber-card { width: 100%; border-radius: 26px; background: rgba(15, 23, 42, 0.36); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 22px 48px rgba(2, 6, 23, 0.45); padding: 28px; }
+    .cyber-kicker { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #a5b4fc; }
+    .cyber-card h1 { margin: 0; font-size: 40px; line-height: 1.02; color: #fff; }
+    .cyber-subtitle { margin: 8px 0 18px; font-size: 14px; color: rgba(226, 232, 240, 0.78); }
+
+    .cyber-alert { border-radius: 12px; padding: 10px 12px; font-size: 13px; margin-bottom: 12px; border: 1px solid transparent; }
+    .cyber-alert ul { margin: 0; padding-left: 16px; }
+    .cyber-alert.success { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.45); color: #d1fae5; }
+    .cyber-alert.error { background: rgba(239, 68, 68, 0.2); border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
+
+    .cyber-form { display: grid; gap: 10px; }
+    .cyber-label { font-size: 13px; font-weight: 600; color: rgba(226, 232, 240, 0.92); }
+    .cyber-input { width: 100%; min-height: 47px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(15, 23, 42, 0.44); color: #fff; padding: 0 14px; outline: none; transition: .2s ease; }
+    .cyber-input::placeholder { color: rgba(226, 232, 240, 0.46); }
+    .cyber-input:focus { border-color: rgba(129, 140, 248, 0.75); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); background: rgba(15, 23, 42, 0.62); }
+    .cyber-input.input-error { border-color: rgba(248, 113, 113, 0.75); }
+
+    .cyber-password-wrap { position: relative; }
+    .cyber-password-wrap .cyber-input { padding-right: 44px; }
+    .cyber-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: rgba(203, 213, 225, 0.72); padding: 5px; cursor: pointer; }
+    .cyber-toggle svg { width: 18px; height: 18px; }
+
+    .cyber-btn { width: 100%; min-height: 47px; border-radius: 12px; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; font-size: 14px; font-weight: 700; transition: .2s ease; cursor: pointer; }
+    .cyber-btn.primary { background: #f8fafc; color: #0f172a; }
+    .cyber-btn.primary:hover { transform: translateY(-1px); background: #fff; }
+    .cyber-divider { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+    .cyber-divider::before, .cyber-divider::after { content: ''; height: 1px; flex: 1; background: rgba(255, 255, 255, 0.2); }
+    .cyber-divider span { font-size: 12px; color: rgba(226, 232, 240, 0.65); }
+    .cyber-btn.google { border-color: rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .cyber-btn.google:hover { background: rgba(255, 255, 255, 0.14); }
+    .g-icon { width: 18px; height: 18px; }
+
+    .cyber-footer { margin: 14px 0 0; font-size: 13px; text-align: center; color: rgba(226, 232, 240, 0.72); }
+    .cyber-footer a { color: #fff; font-weight: 700; text-decoration: none; }
+    .cyber-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+        .cyber-auth-header { padding: 16px 16px; }
+        .cyber-brand,
+        .cyber-brand-logo { width: 36px; height: 36px; }
+        .cyber-nav a:not(.btn-nav) { display: none; }
+        .cyber-auth-layout { min-height: 100vh; }
+        .cyber-auth-right { width: 100%; padding: 92px 16px 20px; }
+        .cyber-card h1 { font-size: 34px; }
+    }
+</style>
+
+<script>
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('.cyber-toggle');
+        if (!btn) return;
+        var target = btn.getAttribute('data-target');
+        var input = document.getElementById(target);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+    });
+</script>
 @endsection

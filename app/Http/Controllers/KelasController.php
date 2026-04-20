@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Package;
 use App\Models\CoachingTicket;
+use App\Models\CoachingBooking;
 use App\Models\Transaction;
+use App\Models\TopicProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\CoachingTicketService;
@@ -13,8 +15,141 @@ use Illuminate\Support\Facades\Log;
 
 class KelasController extends Controller
 {
+    /**
+     * Single entry point for LMS navigation.
+     * - Guest: redirect to login
+        * - Auth with access: redirect to first available lesson/topic
+        * - Auth without access: redirect to access-pending status page
+     */
+    public function lmsEntry(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if (($user->is_admin ?? false) || ($user->is_superadmin ?? false)) {
+            $targetUrl = $this->resolveFirstCourseTargetUrl();
+            if ($targetUrl) {
+                return redirect()->to($targetUrl);
+            }
+            return redirect()->route('compro');
+        }
+
+        if (! $user->hasLmsAccess()) {
+            return redirect()->route('lms.pending');
+        }
+
+        // Redirect to the first course lesson instead of dashboard
+        $firstLesson = Lesson::where('type', 'course')
+            ->orderBy('position')
+            ->first();
+
+        if ($firstLesson) {
+            return redirect()->route('kelas.show', ['lesson' => $firstLesson->id]);
+        }
+
+        return redirect()->route('lms.dashboard');
+    }
+
+    /**
+     * Premium customer dashboard with modules and learning progress.
+     */
+    public function customerDashboard(Request $request)
+    {
+        $user = $request->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
+            return redirect()->route('lms.pending');
+        }
+
+        $courseLessons = Lesson::where('type', 'course')
+            ->with(['topics' => function ($q) { $q->orderBy('position'); }])
+            ->orderBy('position')
+            ->get();
+
+        $courseTopics = $courseLessons->flatMap(function ($lesson) {
+            return $lesson->topics;
+        })->values();
+
+        $courseTopicIds = $courseTopics->pluck('id')->values();
+        $totalTopics = $courseTopics->count();
+
+        $completedTopicIds = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('topic_progresses')) {
+            $progressRows = TopicProgress::query()
+                ->where('user_id', $user->id)
+                ->whereIn('topic_id', $courseTopicIds)
+                ->get(['topic_id', 'completed', 'watched_seconds']);
+
+            $completedTopicIds = $progressRows
+                ->where('completed', true)
+                ->pluck('topic_id')
+                ->unique()
+                ->values();
+        }
+
+        $completedTopics = $completedTopicIds->count();
+        $progressPercent = $totalTopics > 0 ? (int) round(($completedTopics / $totalTopics) * 100) : 0;
+
+        $nextTopic = $courseTopics->first(function ($topic) use ($completedTopicIds) {
+            return ! $completedTopicIds->contains($topic->id);
+        });
+
+        $firstLesson = $courseLessons->first();
+        $firstTopic = $firstLesson?->topics?->first();
+        $resumeLesson = $nextTopic ? $nextTopic->lesson : $firstLesson;
+        $resumeTopic = $nextTopic ?: $firstTopic;
+
+        $coursesUrl = $resumeLesson
+            ? route('kelas.show', ['lesson' => $resumeLesson->id]) . ($resumeTopic ? ('?topic=' . $resumeTopic->id) : '')
+            : route('compro');
+
+        $upcomingCoachingCount = CoachingBooking::query()
+            ->where('user_id', $user->id)
+            ->where('status', '!=', 'cancelled')
+            ->where('booking_time', '>=', now())
+            ->count();
+
+        $availableTicketCount = CoachingTicket::query()
+            ->where('user_id', $user->id)
+            ->where('is_used', false)
+            ->count();
+
+        return view('lms.dashboard', [
+            'progressPercent' => $progressPercent,
+            'completedTopics' => $completedTopics,
+            'totalTopics' => $totalTopics,
+            'coursesUrl' => $coursesUrl,
+            'hasSongTutorialAccess' => $user->hasIntermediateAccess(),
+            'upcomingCoachingCount' => $upcomingCoachingCount,
+            'availableTicketCount' => $availableTicketCount,
+        ]);
+    }
+
     public function index()
     {
+    // Enforce new user flow: register/login first, then choose package + checkout.
+    if (! Auth::check()) {
+        return redirect()->route('register', ['redirect_to' => route('registerclass')]);
+    }
+
+    // Logged-in users without package should remain on package chooser (checkout flow).
+    // Only users that already have access should go to LMS entry.
+    $authUser = Auth::user();
+
+    if (($authUser->is_admin ?? false) || ($authUser->is_superadmin ?? false)) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($authUser->hasLmsAccess()) {
+        return redirect()->route('lms.entry');
+    }
+
     // Dashboard becomes the buy/home page showing package options
     // Prefer lessons of type 'course' on the buy page; gracefully fallback if none
     $lessons = Lesson::where('type', 'course')->with(['topics' => function($q){ $q->orderBy('position'); }])->orderBy('position')->get();
@@ -103,6 +238,15 @@ class KelasController extends Controller
 
     public function show(Lesson $lesson)
     {
+        $user = Auth::user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
+            return redirect()->route('lms.pending');
+        }
+
         // load topics ordered by position
         $lesson->load(['topics' => function($q){ $q->orderBy('position'); }]);
         // also provide list of all lessons for sidebar navigation
@@ -123,6 +267,15 @@ class KelasController extends Controller
      */
     public function content(Lesson $lesson)
     {
+        $user = Auth::user();
+        if (! $user) {
+            abort(401);
+        }
+
+        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
+            abort(403);
+        }
+
         // Only return content for lessons of type 'course'
         if ($lesson->type !== 'course') {
             // return an empty partial so AJAX consumers gracefully handle it
@@ -447,7 +600,7 @@ class KelasController extends Controller
                             }
                             $firstTicketId = !empty($createdTickets) && isset($createdTickets[0]) ? $createdTickets[0]->id : null;
                             if ($package && isset($package->slug) && in_array($package->slug, $beginnerSlugs)) {
-                                return redirect()->route('kelas.thankyou', ['lesson' => $lesson->id])->with(['ticket_id' => $firstTicketId]);
+                                return $this->redirectAfterSuccessfulPayment($lesson, $firstTicketId);
                             }
                         } else {
                             // pending: do not write DB transaction here. The webhook will
@@ -455,7 +608,14 @@ class KelasController extends Controller
                             // page / client polling will check transactionStatus endpoint.
                         }
                     } else {
-                        $existing->midtrans_response = array_merge(is_string($existing->midtrans_response) ? (json_decode($existing->midtrans_response, true) ?: []) : (array) $existing->midtrans_response, $data ?: []);
+                        $existingResponse = $existing->midtrans_response;
+                        if (is_string($existingResponse)) {
+                            $existingResponse = json_decode($existingResponse, true) ?: [];
+                        }
+                        if (! is_array($existingResponse)) {
+                            $existingResponse = [];
+                        }
+                        $existing->midtrans_response = array_merge($existingResponse, $data ?: []);
                         if ($txnStatus) {
                             $lower = strtolower((string) $txnStatus);
                                 $existing->status = in_array($lower, ['settlement','capture','success']) ? 'settlement' : 'pending';
@@ -517,8 +677,8 @@ class KelasController extends Controller
                                         if ($percentApplied > 0 && $user) { \App\Services\ReferralService::redeemUnits($user, $percentApplied, (string) $orderId); }
                                     }
                                     $firstTicketId = !empty($createdTickets) && isset($createdTickets[0]) ? $createdTickets[0]->id : null;
-                                    if ($package && isset($package->slug) && in_array($package->slug, $beginnerSlugs)) {
-                                        return redirect()->route('kelas.thankyou', ['lesson' => $lesson->id])->with(['ticket_id' => $firstTicketId]);
+                                    if ($package && isset($package->slug) && in_array($package->slug, $beginnerSlugs)) { 
+                                        return $this->redirectAfterSuccessfulPayment($lesson, $firstTicketId);
                                     }
                                 }
                         }
@@ -535,7 +695,7 @@ class KelasController extends Controller
             if (in_array($lowerStat, ['settlement','capture','success'])) {
                 // client already reported settlement; the grant logic above will have
                 // executed. Redirect to centralized thankyou page.
-                return redirect()->route('payments.thankyou', ['lesson' => $lesson->id, 'order_id' => $orderId]);
+                return $this->redirectAfterSuccessfulPayment($lesson, $firstTicketId, $orderId);
             }
 
             // If client reports pending/not-paid, keep the user on the payment page (do not redirect to thankyou)
@@ -546,7 +706,100 @@ class KelasController extends Controller
             }
         }
 
-        return redirect()->route('kelas.thankyou', ['lesson' => $lesson->id])->with(['ticket_id' => $firstTicketId]);
+        return $this->redirectAfterSuccessfulPayment($lesson, $firstTicketId, $orderId ?? null);
+    }
+
+    /**
+     * In local development, send the user straight into the LMS lesson page after payment.
+     * Production can keep the legacy thank-you flow until that is ready to switch.
+     */
+    protected function redirectAfterSuccessfulPayment(Lesson $lesson, $ticketId = null, ?string $orderId = null)
+    {
+        $shouldOpenLms = app()->environment('local') || filter_var(env('PAYMENT_REDIRECT_TO_LMS', true), FILTER_VALIDATE_BOOLEAN);
+
+        if ($shouldOpenLms) {
+            $targetLessonId = (int) env('PAYMENT_LMS_LESSON_ID', 0);
+            $targetTopicId = (int) env('PAYMENT_LMS_TOPIC_ID', 0);
+
+            $targetLesson = null;
+            if ($targetLessonId > 0) {
+                $targetLesson = Lesson::with(['topics' => function ($query) {
+                    $query->orderBy('position');
+                }])->find($targetLessonId);
+            }
+
+            if (! $targetLesson) {
+                $targetLesson = Lesson::where('type', 'course')->orderBy('position')->with(['topics' => function ($query) {
+                    $query->orderBy('position');
+                }])->first();
+            }
+
+            if ($targetLesson) {
+                $targetTopic = null;
+                if ($targetTopicId > 0) {
+                    $targetTopic = $targetLesson->topics->firstWhere('id', $targetTopicId);
+                }
+                if (! $targetTopic) {
+                    $targetTopic = $targetLesson->topics->first();
+                }
+                $targetUrl = url('/kelas/' . $targetLesson->id);
+                if ($targetTopic) {
+                    $targetUrl .= '?topic=' . $targetTopic->id;
+                }
+                if ($ticketId) {
+                    return redirect()->to($targetUrl)->with(['ticket_id' => $ticketId]);
+                }
+                return redirect()->to($targetUrl);
+            }
+        }
+
+        $payload = ['lesson' => $lesson->id];
+        if ($orderId) {
+            $payload['order_id'] = $orderId;
+        }
+
+        return redirect()->route('payments.thankyou', $payload)->with(['ticket_id' => $ticketId]);
+    }
+
+    /**
+     * Resolve first course lesson/topic URL for LMS home.
+     */
+    protected function resolveFirstCourseTargetUrl(): ?string
+    {
+        $targetLessonId = (int) env('PAYMENT_LMS_LESSON_ID', 0);
+        $targetTopicId = (int) env('PAYMENT_LMS_TOPIC_ID', 0);
+
+        $targetLesson = null;
+        if ($targetLessonId > 0) {
+            $targetLesson = Lesson::with(['topics' => function ($query) {
+                $query->orderBy('position');
+            }])->find($targetLessonId);
+        }
+
+        if (! $targetLesson) {
+            $targetLesson = Lesson::where('type', 'course')->orderBy('position')->with(['topics' => function ($query) {
+                $query->orderBy('position');
+            }])->first();
+        }
+
+        if (! $targetLesson) {
+            return null;
+        }
+
+        $targetTopic = null;
+        if ($targetTopicId > 0) {
+            $targetTopic = $targetLesson->topics->firstWhere('id', $targetTopicId);
+        }
+        if (! $targetTopic) {
+            $targetTopic = $targetLesson->topics->first();
+        }
+
+        $targetUrl = url('/kelas/' . $targetLesson->id);
+        if ($targetTopic) {
+            $targetUrl .= '?topic=' . $targetTopic->id;
+        }
+
+        return $targetUrl;
     }
 
     /**

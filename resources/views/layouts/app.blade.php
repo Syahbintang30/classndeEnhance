@@ -49,12 +49,20 @@
 </head>
 
 <body>
-    {{-- hide the global app navbar on the company profile page (route name: compro), on coaching session pages, on song tutorial viewer, and on admin audit pages --}}
-    @if (Route::currentRouteName() !== 'compro' &&
-            !request()->routeIs('coaching.session') &&
-            !request()->routeIs('song.tutorial.show') &&
-            !request()->routeIs('admin.audit.*') &&
-            !request()->is('admin/audit*'))
+    {{-- hide the global app navbar on pages that provide their own dedicated header --}}
+    @php
+        $hideGlobalNav = Route::currentRouteName() === 'compro'
+            || request()->routeIs('coaching.session')
+            || request()->routeIs('song.tutorial.show')
+            || request()->routeIs('admin.audit.*')
+            || request()->is('admin/audit*')
+            || request()->routeIs('login')
+            || request()->routeIs('register')
+            || request()->routeIs('password.*')
+            || request()->routeIs('verification.*');
+    @endphp
+
+    @if (! $hideGlobalNav)
         <!-- Top navigation (modern glass) -->
         <nav class="global-nav" aria-label="Main navigation">
             <style>
@@ -250,9 +258,6 @@
                                     stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </button>
-                        @php
-                            $firstLessonId = \App\Models\Lesson::orderBy('position')->value('id');
-                        @endphp
                     </div>
 
                     <div id="main-nav" class="nav-links" role="navigation">
@@ -264,9 +269,8 @@
                             $hasPackage = false;
                             if (auth()->check()) {
                                 $u = auth()->user();
-                                // Use configurable method instead of hardcoded package_id == 2
-                                $showSongTutorial = $u->hasIntermediateAccess();
-                                $hasPackage = !empty($u->package_id);
+                                $hasPackage = $u->hasLmsAccess();
+                                $showSongTutorial = $hasPackage;
                             }
                         @endphp
 
@@ -276,24 +280,21 @@
                             <a href="{{ route('registerclass') }}"
                                 class="{{ request()->routeIs('registerclass') ? 'active' : '' }}">Courses</a>
                         @else
-                            <a href="{{ url('/ndeofficial') }}"
-                                class="{{ request()->is('ndeofficial*') ? 'active' : '' }}">Home</a>
-                            <a href="{{ route('registerclass') }}"
-                                class="{{ request()->routeIs('registerclass') ? 'active' : '' }}">Courses</a>
-
-                            {{-- Only show lesson/coaching/song tutorial links to authenticated users who have a package --}}
+                            {{-- Only show coaching/song tutorial links to authenticated users who have a package --}}
                             @auth
-                                @if ($firstLessonId)
-                                    <a href="{{ route('kelas.show', $firstLessonId) }}"
-                                        class="{{ request()->routeIs('kelas.show') ? 'active' : '' }}">Lesson</a>
-                                @else
-                                    <a href="{{ route('registerclass') }}">Lesson</a>
-                                @endif
+                                <a href="{{ route('lms.dashboard') }}"
+                                    class="{{ request()->routeIs('lms.dashboard') ? 'active' : '' }}">Home</a>
+                            @endauth
+                            <a href="{{ route('lms.entry') }}"
+                                class="{{ request()->routeIs('kelas.show') || request()->routeIs('lms.entry') ? 'active' : '' }}">Courses</a>
+
+                            {{-- Only show coaching/song tutorial links to authenticated users who have a package --}}
+                            @auth
                                 <a href="{{ $coachingLink }}"
                                     class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
                                 @if ($showSongTutorial)
                                     <a href="{{ route('song.tutorial.index') }}"
-                                        class="{{ request()->routeIs('song.tutorial.index') ? 'active' : '' }}">Song
+                                        class="{{ request()->routeIs('song.tutorial.*') ? 'active' : '' }}">Song
                                         Tutorial</a>
                                 @endif
                             @endauth

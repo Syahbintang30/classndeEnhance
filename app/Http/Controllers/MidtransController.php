@@ -24,7 +24,7 @@ class MidtransController extends Controller
         if (empty($data['gross_amount'])) {
             return response()->json(['error' => 'gross_amount is required'], 422);
         }
-        $serverKey = config('services.midtrans.server_key');
+        $serverKey = trim((string) config('services.midtrans.server_key'));
         if (! $serverKey) {
             return response()->json(['error' => 'Midtrans server key not configured'], 500);
         }

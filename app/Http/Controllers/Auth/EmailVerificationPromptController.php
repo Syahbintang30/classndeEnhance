@@ -14,8 +14,24 @@ class EmailVerificationPromptController extends Controller
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
-    return $request->user()->hasVerifiedEmail()
-            ? redirect()->intended(route('registerclass'))
-            : view('auth.verify-email');
+        $user = $request->user();
+
+        if (($user->is_admin ?? false) || ($user->is_superadmin ?? false)) {
+            return redirect()->intended(url('/admin'));
+        }
+
+        if (empty($user->google_id)) {
+            return view('auth.verify-email');
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        $defaultRoute = method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()
+            ? route('lms.entry')
+            : route('registerclass');
+
+        return redirect()->intended($defaultRoute);
     }
 }

@@ -1,82 +1,456 @@
 @extends('layouts.app')
 
-@section('title', ' Kelas Guitar')
+@section('title', 'Kelas Guitar')
 
 @section('content')
 <style>
-/* Responsive adjustments for lesson listing page */
-.kelas-container { box-sizing: border-box; }
-.sidebar { transition: transform .22s ease, visibility .22s ease; }
-/* ensure sidebar keeps approx 250px on larger screens even when inline styles are present */
-.sidebar[style] { width: 250px; }
-@media (max-width: 900px) {
-    .kelas-container { display: block !important; }
-    .sidebar { width: 100% !important; max-width: none !important; border-right: none !important; border-bottom:1px solid rgba(255,255,255,0.04); padding:12px !important; }
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 290px; transform: translateX(-110%); background: #0b0b0b; z-index: 1200; overflow-y: auto; }
-    .sidebar.active { transform: translateX(0); }
-    .main-wrapper { margin-left: 0 !important; padding: 12px !important; }
-    /* backdrop element style (created in JS) */
-    #sidebar-backdrop { position: fixed; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); opacity: 0; visibility: hidden; transition: opacity .18s ease; z-index: 1100; }
-    #sidebar-backdrop.visible { opacity: 1; visibility: visible; }
-    /* small header toggle button */
-    .mobile-sidebar-toggle { display:inline-flex; align-items:center; gap:8px; background:transparent; border:1px solid rgba(255,255,255,0.06); padding:8px 10px; border-radius:8px; color:inherit; cursor:pointer; }
-}
-@media (min-width: 901px) {
-    .mobile-sidebar-toggle { display:none; }
-}
+    /* Hide global navbar and show LMS navbar */
+    body > nav { display: none; }
+    
+    /* Custom LMS Navbar */
+    .lms-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .lms-navbar-left {
+        display: flex;
+        align-items: center;
+        width: 280px;
+    }
+
+    .lms-home-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e0e0e0;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-home-link:hover {
+        color: #fff;
+    }
+
+    .lms-navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .lms-nav-link {
+        color: #a0a0a0;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-nav-link:hover {
+        color: #fff;
+    }
+
+    .lms-nav-link.active {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    /* Professional LMS Layout */
+    * { box-sizing: border-box; }
+
+    .kelas-container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        background: #0a0a0a;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        overflow-y: auto;
+        padding: 0;
+        position: relative;
+        z-index: 5;
+    }
+
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    
+    .sidebar-logo {
+        display: none;
+    }
+    
+    .sidebar-logo a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+    }
+    
+    .sidebar-logo img {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+    }
+    
+    .lesson-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        cursor: pointer;
+        color: #e0e0e0;
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .lesson-header:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+    
+    .lesson-block.active .lesson-header {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+    
+    .lesson-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .lesson-arrow {
+        display: inline-block;
+        font-size: 22px;
+        line-height: 1;
+        font-weight: 700;
+        color: #d8d8d8;
+        transition: transform 0.2s ease;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: none;
+    }
+    
+    .topic-list.active {
+        display: block;
+    }
+    
+    .topic-item .topic-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px 10px 42px;
+        color: #a0a0a0;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        border-left: 2px solid transparent;
+        cursor: pointer;
+    }
+
+    .topic-check {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        accent-color: #00d4ff;
+        pointer-events: none;
+        opacity: 0.35;
+    }
+
+    .topic-item.completed .topic-check {
+        opacity: 1;
+    }
+
+    .topic-item.completed .topic-box {
+        color: #d7f6ff;
+    }
+    
+    .topic-item:hover .topic-box {
+        background: rgba(255, 255, 255, 0.04);
+        color: #d0d0d0;
+    }
+    
+    .topic-item.selected .topic-box {
+        background: rgba(255, 255, 255, 0.08);
+        border-left-color: #888;
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    /* Home Button Floating - HIDDEN */
+    .home-float-btn {
+        display: none;
+    }
+    
+    /* Main Content Area */
+    .main-wrapper {
+        flex: 1;
+        padding: 0;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .content {
+        padding: 14px 56px 28px 56px;
+        max-width: 1120px;
+        margin: 0 auto;
+    }
+    
+    .main-wrapper::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .main-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+    
+    #video-title {
+        font-size: 30px;
+        font-weight: 900;
+        margin: 0 0 12px 0;
+        color: #fff;
+        letter-spacing: -0.02em;
+        text-align: center;
+    }
+    
+    #video-description {
+        font-size: 15px;
+        color: #a0a0a0;
+        margin: 0 0 28px 0;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    .player-wrapper {
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    #player {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        min-height: unset !important;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        background: #000;
+    }
+
+    .video-placeholder {
+        background-size: cover;
+        background-position: center;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    .custom-play-btn {
+        width: 86px;
+        height: 86px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .custom-play-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-42%, -50%);
+        width: 0;
+        height: 0;
+        border-left: 22px solid #fff;
+        border-top: 14px solid transparent;
+        border-bottom: 14px solid transparent;
+    }
+
+    .video-controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 14px;
+    }
+
+    .video-nav-btn {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 10px;
+        height: 30px;
+        min-width: 92px;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+    }
+
+    .video-nav-btn .label {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .video-nav-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2.5;
+    }
+
+    #btn-prev.video-nav-btn {
+        background: linear-gradient(180deg, #b7b7b7 0%, #9f9f9f 100%);
+        color: #0f0f0f;
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    #btn-next.video-nav-btn {
+        background: linear-gradient(180deg, #111316 0%, #090a0c 100%);
+        color: #fff;
+    }
+
+    .video-nav-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+    }
+
+    .video-nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+        .kelas-container { flex-direction: column; }
+        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .main-wrapper { padding: 0; }
+        .content { padding: 14px 16px 22px 16px; }
+        #video-title { font-size: 24px; }
+        .video-nav-btn {
+            min-width: 88px;
+            height: 34px;
+            font-size: 13px;
+            padding: 0 9px;
+            border-radius: 10px;
+            gap: 6px;
+        }
+        .video-nav-btn .label { font-size: 13px; }
+        .video-nav-btn svg {
+            width: 13px;
+            height: 13px;
+        }
+    }
 </style>
 
-<div class="kelas-container" style="display: flex;">
-    <!-- Sidebar -->
-    <aside class="sidebar" style="width: 250px; border-right:1px solid #ccc; padding:1rem;">
-    <div class="logo-container" style="margin-bottom:1rem; display:flex; align-items:center; justify-content:center;">
-            <a href="{{ route('registerclass') }}">
-                <img src="{{ asset('compro/img/ndelogo.png') }}" class="nav-home-btn" alt="Nde Logo">
-            </a>
-        </div>
+<!-- Custom LMS Navbar -->
+<nav class="lms-navbar">
+    <div class="lms-navbar-left">
+        <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+    </div>
+    
+    <div class="lms-navbar-right">
+        <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
+        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
+        @php $user = auth()->user(); @endphp
+        @if($user && $user->hasLmsAccess())
+            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
+        @endif
+    </div>
+</nav>
 
-        <ul class="menu" style="list-style:none; padding:0;">
+<div class="kelas-container" style="display: flex;">
+
+    <aside class="sidebar" style="width: 280px;">
+        <ul class="menu" style="list-style:none; padding:0; margin:0; padding-top: 0;">
             @forelse($lessons as $ls)
-                <li class="lesson-block" style="margin-bottom:0.5rem;">
-                        <a href="{{ route('kelas.show', $ls->id) }}" class="lesson-header" style="display:flex;align-items:center;cursor:pointer;padding:0.25rem 0;justify-content:space-between;text-decoration:none;">
-                            <div class="lesson-left" style="display:flex;align-items:center;">
-                                <span class="lesson-logo" style="width:28px;height:28px;margin-right:12px;display:inline-flex;align-items:center;justify-content:center;background:#222;border-radius:6px;font-size:14px;line-height:24px;text-align:center;color:#fff">♫</span>
-                                <span class="lesson-title">{{ $ls->title }}</span>
-                            </div>
-                            <div class="lesson-right">
-                                <span class="lesson-arrow" style="display:inline-block;width:18px;text-align:center;">▾</span>
-                            </div>
-                        </a>
+                <li class="lesson-block">
+                    <a href="{{ route('kelas.show', $ls->id) }}" class="lesson-header">
+                        <div class="lesson-left">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                            {{ $ls->title }}
+                        </div>
+                        <span class="lesson-arrow">▸</span>
+                    </a>
                     @php $topics = $ls->topics ?? collect(); @endphp
-                    <ul class="topic-list" style="list-style:none;padding-left:26px;display:none;">
+                    <ul class="topic-list">
                         @forelse($topics as $topic)
                             <li class="topic-item" 
                                 data-bunny-guid="{{ $topic->bunny_guid }}"
                                 data-description="{{ $topic->description }}"
-                                data-topic-id="{{ $topic->id }}"
-                                style="padding:6px 0; display:flex; align-items:center;">
-                                <div class="topic-box">{{ $topic->title }}</div>
+                                data-topic-id="{{ $topic->id }}">
+                                <div class="topic-box">
+                                    <input type="checkbox" class="topic-check" disabled>
+                                    <span>{{ $topic->title }}</span>
+                                </div>
                             </li>
                         @empty
-                            <li class="topic-item disabled" style="padding-left:1rem; color:#999;">No topics available</li>
                         @endforelse
                     </ul>
                 </li>
             @empty
-                <li>Tidak ada lesson tersedia</li>
             @endforelse
         </ul>
     </aside>
 
     <!-- Main Content -->
-    <div class="main-wrapper" style="flex:1; padding:1rem;">
-    <!-- local navbar removed to use global navbar from layouts.app -->
-
-        <!-- Mobile: sidebar open button -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <button class="mobile-sidebar-toggle" onclick="toggleSidebar()" aria-label="Open menu">☰ Menu</button>
-        </div>
-
+    <div class="main-wrapper" style="flex:1;">
+        <!-- Home Button Floating -->
+        <a href="/ndeofficial" class="home-float-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
 
         <!-- Topik Content -->
         <main class="content">
@@ -124,6 +498,8 @@ let player = null; // for YT player or placeholder
 let hlsInstance = null; // for hls.js instance
 let currentTopicId = null;
 let progressTimer = null;
+let lastProgressSentAt = 0;
+const completionPostedTopics = new Set();
 
 function isYouTubeUrl(url){ return /youtu\.be\/|youtube\.com\/.+v=/.test(url || ''); }
 
@@ -158,13 +534,109 @@ function loadTopicVideo(url, topicId, title, description){
     if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
 }
 
-// progress tracking disabled by configuration. reportProgress is a no-op to avoid calling backend.
-function reportProgress(markComplete = false){ /* no-op */ }
+function getCurrentPlaybackSeconds(){
+    const html5 = document.getElementById('html5-player');
+    if (html5 && Number.isFinite(html5.currentTime)) {
+        return Math.max(0, Math.floor(html5.currentTime));
+    }
+    try {
+        if (player && typeof player.getCurrentTime === 'function') {
+            return Math.max(0, Math.floor(player.getCurrentTime() || 0));
+        }
+    } catch (e) {}
+    return 0;
+}
+
+function getCurrentPlaybackDuration(){
+    const html5 = document.getElementById('html5-player');
+    if (html5 && Number.isFinite(html5.duration) && html5.duration > 0) {
+        return Math.floor(html5.duration);
+    }
+    return 0;
+}
+
+function setTopicCompletedUI(topicId, completed){
+    if(!topicId) return;
+    const el = document.querySelector('.topic-item[data-topic-id="' + topicId + '"]');
+    if(!el) return;
+    el.classList.toggle('completed', !!completed);
+    const checkbox = el.querySelector('.topic-check');
+    if(checkbox) checkbox.checked = !!completed;
+    if(completed) completionPostedTopics.add(String(topicId));
+}
+
+function reportProgress(markComplete = false){
+    if(!currentTopicId) return;
+
+    const topicKey = String(currentTopicId);
+    if(markComplete && completionPostedTopics.has(topicKey)) return;
+
+    const now = Date.now();
+    if(!markComplete && now - lastProgressSentAt < 5000) return;
+    if(!markComplete) lastProgressSentAt = now;
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/api/topics/' + currentTopicId + '/progress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': csrf,
+        },
+        body: JSON.stringify({
+            watched_seconds: getCurrentPlaybackSeconds(),
+            duration_seconds: getCurrentPlaybackDuration(),
+            completed: !!markComplete,
+        })
+    }).then(async (res) => {
+        if(!res.ok) return;
+        const data = await res.json();
+        setTopicCompletedUI(currentTopicId, !!data.completed);
+    }).catch(() => {});
+}
+
+function maybeCompleteByThreshold(videoEl){
+    if(!videoEl || !currentTopicId) return;
+    const duration = Number(videoEl.duration || 0);
+    const current = Number(videoEl.currentTime || 0);
+    if(!Number.isFinite(duration) || duration <= 0) return;
+
+    const threshold = Math.max(1, duration * 0.95);
+    if(current >= threshold){
+        reportProgress(true);
+    }
+}
+
+function fetchTopicProgress(topicId){
+    if(!topicId) return;
+    fetch('/api/topics/' + topicId + '/progress', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(async (res) => {
+        if(!res.ok) return;
+        const data = await res.json();
+        setTopicCompletedUI(topicId, !!data.completed);
+    }).catch(() => {});
+}
+
+function onPlayerStateChange(event){
+    if(!window.YT || !event) return;
+    if(event.data === YT.PlayerState.PLAYING){
+        if(progressTimer) clearInterval(progressTimer);
+        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
+    } else if(event.data === YT.PlayerState.PAUSED){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(false);
+    } else if(event.data === YT.PlayerState.ENDED){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(true);
+    }
+}
 
 function createHtml5PlayerAndPlay(streamUrl, topicId){
     // ensure container
     const container = document.getElementById('player');
     if(!container) return;
+    if(topicId) currentTopicId = String(topicId);
     // remove any previous html5 player
     let v = document.getElementById('html5-player');
     if(v){ try{ v.pause(); }catch(e){} v.remove(); }
@@ -184,13 +656,12 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
         if(window.Hls && Hls.isSupported()){
             const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v);
             hls.on(Hls.Events.MANIFEST_PARSED, function(){
-                // progress tracking disabled: just play
-                v.play().catch(()=>{});
+                // Don't autoplay - user must click play
             });
         } else {
             // native HLS (iOS) or MP4
             v.src = streamUrl;
-            v.addEventListener('loadedmetadata', function once(){ v.removeEventListener('loadedmetadata', once); v.play().catch(()=>{}); });
+            // Don't autoplay - user must click play
         }
     };
 
@@ -207,9 +678,25 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
     }
 
     // wire events for progress reporting
-        v.addEventListener('play', function(){ const sp = document.getElementById('ajax-spinner'); if(sp) sp.classList.remove('show'); });
-    v.addEventListener('pause', function(){ /* progress disabled */ });
-    v.addEventListener('ended', function(){ /* progress disabled */ });
+    v.addEventListener('play', function(){
+        const sp = document.getElementById('ajax-spinner'); if(sp) sp.classList.remove('show');
+        if(progressTimer) clearInterval(progressTimer);
+        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
+    });
+    v.addEventListener('pause', function(){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(false);
+    });
+    v.addEventListener('timeupdate', function(){
+        maybeCompleteByThreshold(v);
+    });
+    v.addEventListener('seeked', function(){
+        maybeCompleteByThreshold(v);
+    });
+    v.addEventListener('ended', function(){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(true);
+    });
 }
 
 function destroyHtml5Player(){
@@ -279,6 +766,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // force stop player/timers
     function forceStopAll(){
         try{
+            const html5 = document.getElementById('html5-player');
+            if(html5) maybeCompleteByThreshold(html5);
+            reportProgress(false);
             if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
             if(player && typeof player.stopVideo === 'function'){ try{ player.stopVideo(); }catch(e){} }
             if(player && typeof player.destroy === 'function'){ try{ player.destroy(); }catch(e){} }
@@ -290,7 +780,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // initialize sidebar interactions (toggle/restore open state)
     function initSidebar(){
         const open = getOpenLessons();
-        document.querySelectorAll('.lesson-block').forEach(block => {
+        const openLessonId = Array.isArray(open) && open.length ? open[0] : null;
+        const lessonBlocks = document.querySelectorAll('.lesson-block');
+
+        function closeOtherLessons(activeBlock){
+            lessonBlocks.forEach(otherBlock => {
+                if(otherBlock === activeBlock) return;
+                const otherTopics = otherBlock.querySelector('.topic-list');
+                const otherArrow = otherBlock.querySelector('.lesson-arrow');
+                if(otherTopics) otherTopics.style.display = 'none';
+                otherBlock.classList.remove('active');
+                if(otherArrow) otherArrow.textContent = '▸';
+            });
+        }
+
+        lessonBlocks.forEach(block => {
             const a = block.querySelector('.lesson-header');
             const arrow = block.querySelector('.lesson-arrow');
             const topics = block.querySelector('.topic-list');
@@ -298,10 +802,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const lessonId = href ? href.split('/').filter(Boolean).pop() : null;
 
             // restore open state
-            if(lessonId && open.includes(lessonId)){
+            if(lessonId && lessonId === openLessonId){
                 if(topics) topics.style.display = 'block';
                 block.classList.add('active');
                 if(arrow) arrow.textContent = '▾';
+            } else {
+                if(topics) topics.style.display = 'none';
+                block.classList.remove('active');
+                if(arrow) arrow.textContent = '▸';
             }
 
             // arrow click toggles expand without navigation
@@ -309,14 +817,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 arrow.addEventListener('click', (ev) => {
                     ev.preventDefault(); ev.stopPropagation();
                     const isHidden = window.getComputedStyle(topics).display === 'none';
-                    topics.style.display = isHidden ? 'block' : 'none';
-                    block.classList.toggle('active', isHidden);
-                    arrow.textContent = isHidden ? '▾' : '▸';
-                    // persist
-                    const openNow = getOpenLessons();
-                    if(isHidden){ if(!openNow.includes(lessonId)) openNow.push(lessonId); }
-                    else { const idx = openNow.indexOf(lessonId); if(idx>-1) openNow.splice(idx,1); }
-                    setOpenLessons(openNow);
+                    if(isHidden){
+                        closeOtherLessons(block);
+                        topics.style.display = 'block';
+                        block.classList.add('active');
+                        arrow.textContent = '▾';
+                        setOpenLessons(lessonId ? [lessonId] : []);
+                    } else {
+                        topics.style.display = 'none';
+                        block.classList.remove('active');
+                        arrow.textContent = '▸';
+                        setOpenLessons([]);
+                    }
                 });
             }
 
@@ -327,14 +839,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 ev.preventDefault();
                 // toggle topics visible state
                 const isHidden = window.getComputedStyle(topics).display === 'none';
-                topics.style.display = isHidden ? 'block' : 'none';
-                block.classList.toggle('active', isHidden);
-                if(arrow) arrow.textContent = isHidden ? '▾' : '▸';
-                // persist open state
-                const openNow = getOpenLessons();
-                if(isHidden){ if(lessonId && !openNow.includes(lessonId)) openNow.push(lessonId); }
-                else { if(lessonId){ const idx = openNow.indexOf(lessonId); if(idx>-1) openNow.splice(idx,1); } }
-                setOpenLessons(openNow);
+                if(isHidden){
+                    closeOtherLessons(block);
+                    topics.style.display = 'block';
+                    block.classList.add('active');
+                    if(arrow) arrow.textContent = '▾';
+                    setOpenLessons(lessonId ? [lessonId] : []);
+                } else {
+                    topics.style.display = 'none';
+                    block.classList.remove('active');
+                    if(arrow) arrow.textContent = '▸';
+                    setOpenLessons([]);
+                }
             });
 
             // hover intent: start a short timer then prefetch partial
@@ -380,9 +896,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // progress markers disabled: do not fetch per-topic progress from server
-    document.querySelectorAll('.topic-item[data-topic-id]').forEach(item => {
-            // no-op
+        // Load completion markers for topic list
+        document.querySelectorAll('.topic-item[data-topic-id]').forEach(item => {
+            fetchTopicProgress(item.getAttribute('data-topic-id'));
         });
 
         // play button behavior
@@ -393,6 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ytId = placeholder ? placeholder.getAttribute('data-video-id') : null;
                 const streamUrlAttr = placeholder ? placeholder.getAttribute('data-stream-url') : null;
                 const topicId = placeholder ? placeholder.getAttribute('data-topic-id') : null;
+                if(topicId) currentTopicId = String(topicId);
 
                 // If we have a stream URL attribute already, use it
                 if(streamUrlAttr){
@@ -582,6 +1099,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function navigateTopic(lessonId, topicId, videoUrl, pushState=true){
         try{
             forceStopAll();
+            if(topicId) currentTopicId = String(topicId);
             const spinner = document.getElementById('ajax-spinner'); if(spinner){ spinner.style.display='flex'; setTimeout(()=>spinner.classList.add('show'),10); }
             // update placeholder and start playback after creating player
             const placeholder = document.getElementById('video-placeholder');
@@ -662,147 +1180,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }catch(e){}
     });
+
+    window.addEventListener('pagehide', function(){
+        try{
+            const html5 = document.getElementById('html5-player');
+            if(html5) maybeCompleteByThreshold(html5);
+            reportProgress(false);
+        }catch(e){}
+    });
 });
 </script>
 @endsection
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/kelas.css') }}">
-<!-- Poppins font for buttons (kept) -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-.kelas-container { display:flex; }
-.sidebar { width:250px; border-right:1px solid #222; padding:1rem; background:#0f0f0f; position:fixed; top:0; left:0; height:100vh; z-index:10001; }
-.lesson-title { font-weight:400; margin-top:0; font-size:15px; color:#cfcfcf; }
-.lesson-block .lesson-title { transition: color .12s ease, font-weight .12s ease; }
-.lesson-block.active .lesson-title { color:#fff; font-weight:700; }
-.topic-item { cursor:pointer; padding-left:1rem; font-size:13px; color:#bfbfbf; }
-.topic-item.disabled { color:#999; cursor:default; }
-.main-wrapper { flex:1; padding:1rem; margin-left:250px; }
-.topic-item.completed { color: #9fd19f; }
-
-/* Use Roboto font for page */
-body, .main-wrapper, .sidebar, .kelas-container { font-family: 'Inter', 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-
-/* Video placeholder & play button */
-.video-placeholder { background-size: cover; background-position: center; position:relative; display:flex; align-items:center; justify-content:center; }
-.custom-play-btn {
-    width:96px; height:96px; border-radius:50%; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.6);
-    position:relative; display:flex; align-items:center; justify-content:center;
-}
-.custom-play-btn:before {
-    content:''; display:block; width:0; height:0; border-left:28px solid #fff; border-top:18px solid transparent; border-bottom:18px solid transparent; position:relative; margin-left:6px;
-}
-
-/* Player wrapper to match example size and style (use aspect-ratio so iframe fills frame) */
-.player-wrapper { max-width:1100px; margin:1rem auto; }
-.player-wrapper #player { width:100%; aspect-ratio:16/9; position:relative; border-radius:14px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.6); border:1px solid rgba(255,255,255,0.04); }
-.player-wrapper iframe, .player-wrapper .video-placeholder { position:absolute; top:0; left:0; width:100%; height:100%; }
-/* ensure placeholder is below actual video/iframe */
-.player-wrapper .video-placeholder { z-index:1; }
-.player-wrapper iframe { z-index:3; }
-
-/* Position headline/subheadline aligned with navigation (same vertical offset)
-   Keep headline near top and horizontally aligned with main content */
-.main-wrapper .navbar { margin-bottom:1rem; }
-.main-wrapper .content { padding-top:1rem; }
-.video-meta { margin-bottom:1.5rem; }
-
-/* Prevent long subtitle/title text from creating horizontal scroll */
-#video-description, .video-meta, .video-meta * {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    overflow: visible;
-    word-break: break-word;
-    white-space: normal; /* allow wrapping */
-    max-width: 100%;
-}
-
-/* Collapsible sidebar styles - improved alignment */
-.lesson-header { padding: 8px 6px; margin-bottom:2px; border-radius:6px; }
-.lesson-arrow { width:18px; display:inline-block; color:#bbb; margin-left:6px; }
-.lesson-logo { background:#222; color:#fff; display:inline-flex; align-items:center; justify-content:center; }
-.topic-list { margin-top:2px; }
-
-/* visual highlight left strip when active - simple clean style */
-.lesson-block.active > .lesson-header { position:relative; }
-.lesson-block.active > .lesson-header:before { 
-    content:''; position:absolute; left:-12px; top:2px; bottom:2px; 
-    width:3px; background:#fff; border-radius:2px; 
-}
-
-/* hover/active styles */
-.lesson-header:hover { background: rgba(255,255,255,0.02); }
-.lesson-block.active .lesson-title { color:#fff; }
-
-/* Stylish Next/Back buttons */
-.video-controls { display:flex; gap:12px; justify-content:center; margin-top:12px; }
-.video-nav-btn {
-    font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    display:inline-flex; align-items:center; gap:10px;
-    font-weight:700; font-size:16px; padding:12px 20px; border-radius:12px; border:0; cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease;
-    position:relative; overflow:hidden;
-}
-.video-nav-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
-.video-nav-btn#btn-prev { background: linear-gradient(180deg,#ffffff,#f2f2f2); color:#111; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
-.video-nav-btn#btn-next { background: linear-gradient(180deg,#111,#0a0a0a); color:#fff; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.04); }
-.video-nav-btn#btn-prev:hover:not(:disabled){ transform: translateY(-4px); box-shadow: 0 26px 60px rgba(0,0,0,0.35); }
-.video-nav-btn#btn-next:hover:not(:disabled){ transform: translateY(-4px); box-shadow: 0 26px 80px rgba(0,0,0,0.5); }
-.video-nav-btn#btn-prev:active, .video-nav-btn#btn-next:active{ transform: translateY(-2px); }
-
-/* icon sizing inside buttons */
-.video-nav-btn svg{ width:18px;height:18px;display:inline-block;}
-.video-nav-btn .label{display:inline-block}
-
-/* shine effect */
-.video-nav-btn::after{ content:''; position:absolute; left:-60%; top:0; width:40%; height:100%; background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(255,255,255,0.18), rgba(255,255,255,0.06)); transform: skewX(-18deg) translateX(0); transition: transform .9s ease; pointer-events:none; }
-.video-nav-btn:hover::after{ transform: translateX(200%); }
-
-/* ripple effect */
-.ripple { position:absolute; border-radius:999px; transform:scale(0); background: rgba(255,255,255,0.14); animation:ripple .6s linear; pointer-events:none; }
-@keyframes ripple { to { transform: scale(6); opacity:0; } }
-
-
-/* connector lines for nested topics - clean text-only style */
-.topic-list { position:relative; padding-left:28px; margin-top:8px; }
-.topic-item { 
-    position:relative; padding:8px 12px 8px 28px; border-radius:4px;
-    transition: background-color 0.15s ease; display:flex; align-items:center; line-height:1.35; text-indent:0; word-break:break-word; white-space:normal;
-}
-.topic-item:hover { background:rgba(255,255,255,0.04); }
-.topic-item.selected { 
-    color:#fff; font-weight:600; background:rgba(255,255,255,0.08);
-    border-left:3px solid #fff; padding-left:19px;
-}
-/* topic box padding */
-.topic-box { padding:8px 12px; }
-/* Responsive: mobile-friendly layout */
-@media (max-width: 900px) {
-    .kelas-container { flex-direction:row; }
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 300px; max-width: 80%; transform: translateX(-110%); transition: transform .28s ease; z-index: 10001; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-    .sidebar.active { transform: translateX(0); }
-    /* backdrop when sidebar is open */
-    #sidebar-backdrop { position:fixed; inset:0; background: rgba(0,0,0,0.5); opacity:0; transition: opacity .22s ease; z-index:1100; display:none; }
-    #sidebar-backdrop.visible { display:block; opacity:1; }
-    /* collapse lesson arrow area and increase tap targets */
-    .lesson-header { padding: 12px 10px; }
-    .topic-item { padding: 10px 14px 10px 34px; }
-    .main-wrapper { padding: 0.75rem; }
-    .player-wrapper { max-width: 100%; margin: 0.5rem 0; }
-    .player-wrapper #player { border-radius:10px; }
-    /* make navbar smaller and burger obvious */
-    .navbar { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; }
-    .nav-left .burger { font-size:20px; padding:8px 10px; border-radius:8px; }
-    /* ensure content area uses full width when sidebar hidden */
-    body:not(.sidebar-open) .main-wrapper { margin-left:0; }
-}
-
-@media (max-width: 480px) {
-    .lesson-title { font-size:14px; }
-    .topic-item { font-size:14px; }
-    .video-nav-btn { padding:10px 14px; font-size:15px; }
-    .custom-play-btn { width:72px; height:72px; }
-}
-</style>
-@endpush

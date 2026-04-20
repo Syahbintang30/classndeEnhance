@@ -247,16 +247,23 @@
 
 
     // Instagram feed setup
-
-    var instaFeed = new Instafeed({
-        get: 'user',
-        userId: '8525288462',
-        accessToken: '8525288462.c89df6a.5ee63eddf7f148bb9cc56a56edbdc00e',
-        limit: 8,
-        resolution: 'standard_resolution',
-        template: '<li class="list-inline-item"><a class="hover-effect" target="_blank" href="{{link}}"><img src="{{image}}" /></a></li>'
-    });
-    instaFeed.run();
+    if (typeof Instafeed !== 'undefined' && document.getElementById('instafeed')) {
+        try {
+            var instaFeed = new Instafeed({
+                get: 'user',
+                userId: '8525288462',
+                accessToken: '8525288462.c89df6a.5ee63eddf7f148bb9cc56a56edbdc00e',
+                limit: 8,
+                resolution: 'standard_resolution',
+                template: '<li class="list-inline-item"><a class="hover-effect" target="_blank" href="{{link}}"><img src="{{image}}" /></a></li>'
+            });
+            instaFeed.run();
+        } catch (error) {
+            if (window.console && console.warn) {
+                console.warn('Instafeed init skipped:', error);
+            }
+        }
+    }
 
 
 

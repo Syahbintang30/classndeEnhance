@@ -32,44 +32,103 @@ class ContentSecurityPolicyMiddleware
      */
     private function buildCSPDirectives(Request $request): string
     {
-        $baseDirectives = [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://cdn.tailwindcss.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com",
-            "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com https://cdnjs.cloudflare.com https://use.fontawesome.com https://cdn.jsdelivr.net data:",
-            "img-src 'self' data: blob: https: http:",
-            "media-src 'self' blob: https://video.bunnycdn.com https://*.bunnycdn.com https://*.b-cdn.net",
-            "connect-src 'self' https://api.midtrans.com https://app.midtrans.com https://video.bunnycdn.com https://*.bunnycdn.com wss: ws:",
-            "frame-src 'self' https://app.midtrans.com https://api.midtrans.com",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "frame-ancestors 'self'",
-            "upgrade-insecure-requests"
+        $directives = [
+            'default-src' => ["'self'"],
+            'script-src' => [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
+                'https://code.jquery.com',
+                'https://stackpath.bootstrapcdn.com',
+                'https://cdn.tailwindcss.com',
+                'https://app.midtrans.com',
+                'https://app.sandbox.midtrans.com',
+                'https://api.instagram.com',
+                'https://syndication.twitter.com',
+                'https://platform.twitter.com',
+            ],
+            // Explicit script-src-elem avoids fallback ambiguity in browser console.
+            'script-src-elem' => [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
+                'https://code.jquery.com',
+                'https://stackpath.bootstrapcdn.com',
+                'https://cdn.tailwindcss.com',
+                'https://app.midtrans.com',
+                'https://app.sandbox.midtrans.com',
+                'https://api.instagram.com',
+                'https://syndication.twitter.com',
+                'https://platform.twitter.com',
+            ],
+            'style-src' => [
+                "'self'",
+                "'unsafe-inline'",
+                'https://fonts.googleapis.com',
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
+                'https://stackpath.bootstrapcdn.com',
+            ],
+            'font-src' => [
+                "'self'",
+                'https://fonts.gstatic.com',
+                'https://fonts.googleapis.com',
+                'https://cdnjs.cloudflare.com',
+                'https://use.fontawesome.com',
+                'https://cdn.jsdelivr.net',
+                'data:',
+            ],
+            'img-src' => ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+            'media-src' => ["'self'", 'blob:', 'https://video.bunnycdn.com', 'https://*.bunnycdn.com', 'https://*.b-cdn.net'],
+            'connect-src' => [
+                "'self'",
+                'https://api.midtrans.com',
+                'https://app.midtrans.com',
+                'https://api.sandbox.midtrans.com',
+                'https://app.sandbox.midtrans.com',
+                'https://video.bunnycdn.com',
+                'https://*.bunnycdn.com',
+                'https://*.b-cdn.net',
+                'https://api.instagram.com',
+                'https://syndication.twitter.com',
+                'https://platform.twitter.com',
+                'wss:',
+                'ws:',
+            ],
+            'frame-src' => ["'self'", 'https://app.midtrans.com', 'https://api.midtrans.com', 'https://app.sandbox.midtrans.com', 'https://api.sandbox.midtrans.com'],
+            'object-src' => ["'none'"],
+            'base-uri' => ["'self'"],
+            'form-action' => ["'self'"],
+            'frame-ancestors' => ["'self'"],
         ];
 
-        // Add specific directives for admin pages
-        if ($request->is('admin/*')) {
-            $baseDirectives[] = "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com";
-        }
-
-        // Add specific directives for payment pages
-        if ($request->is('*/payment*') || $request->is('registerclass/*/payment*')) {
-            $baseDirectives[] = "frame-src 'self' https://app.midtrans.com https://api.midtrans.com https://app.sandbox.midtrans.com";
-            $baseDirectives[] = "connect-src 'self' https://api.midtrans.com https://app.midtrans.com https://api.sandbox.midtrans.com";
-        }
-
-        // Relax CSP specifically for the coaching session page to allow Twilio SDK and signaling
+        // Relax CSP specifically for the coaching session page to allow Twilio SDK and signaling.
         if ($request->is('coaching/session/*')) {
-            $baseDirectives = array_map(function($d){ return $d; }, $baseDirectives);
-            // Add Twilio SDK sources for scripts
-            $baseDirectives[] = "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://media.twiliocdn.com https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com";
-            // Allow Twilio signaling and media websocket connections
-            $baseDirectives[] = "connect-src 'self' https://api.twilio.com https://video.twilio.com wss: ws: https://media.twiliocdn.com https://*.twilio.com";
+            $directives['script-src'] = array_merge($directives['script-src'], ['https://media.twiliocdn.com']);
+            $directives['script-src-elem'] = array_merge($directives['script-src-elem'], ['https://media.twiliocdn.com']);
+            $directives['connect-src'] = array_merge($directives['connect-src'], [
+                'https://api.twilio.com',
+                'https://video.twilio.com',
+                'https://media.twiliocdn.com',
+                'https://*.twilio.com',
+            ]);
         }
 
-        // Join all directives
-        return implode('; ', $baseDirectives);
+        $parts = [];
+        foreach ($directives as $name => $sources) {
+            $uniq = array_values(array_unique(array_filter($sources)));
+            $parts[] = $name . ' ' . implode(' ', $uniq);
+        }
+        $parts[] = 'upgrade-insecure-requests';
+
+        return implode('; ', $parts);
     }
 
     /**

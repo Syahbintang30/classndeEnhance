@@ -114,5 +114,6 @@ class WebhookSecurityMiddleware
                 abort(403, 'Missing X-Twilio-Signature header');
             }
         }
+
     }
 }

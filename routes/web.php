@@ -22,16 +22,22 @@ Route::get('/', function () {
     return redirect(route('compro'));
 });
 
-Route::get('/registerclass', [KelasController::class, 'index'])->middleware('rate.limit:default')->name('registerclass');
+Route::get('/checkout', [KelasController::class, 'index'])->middleware('rate.limit:default')->name('registerclass');
+Route::redirect('/registerclass', '/checkout');
 Route::get('/dashboard', function () { return redirect(route('registerclass')); })->name('dashboard');
-Route::get('/kelas', function () { return redirect(route('registerclass')); })->name('kelas');
-Route::get('/registerclass/{lesson}', [KelasController::class, 'show'])->name('kelas.show');
-Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'])->name('kelas.content');
+Route::get('/lms', [KelasController::class, 'lmsEntry'])->name('lms.entry');
+Route::get('/lms/dashboard', [KelasController::class, 'customerDashboard'])->middleware(['auth', 'verified'])->name('lms.dashboard');
+Route::get('/lms/access-pending', function () {
+    return view('lms.access-pending');
+})->middleware('auth')->name('lms.pending');
+Route::get('/kelas', [KelasController::class, 'lmsEntry'])->name('kelas');
+Route::get('/registerclass/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified'])->name('kelas.show');
+Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified'])->name('kelas.content');
 
 // Friendly URLs used by client-side navigation: support direct requests to /kelas/{lesson}
 // so a browser refresh doesn't return 404 when the JS pushState uses /kelas/...
-Route::get('/kelas/{lesson}', [KelasController::class, 'show']);
-Route::get('/kelas/{lesson}/content', [KelasController::class, 'content']);
+Route::get('/kelas/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified']);
+Route::get('/kelas/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified']);
 
 Route::get('/song-tutorial/index', [App\Http\Controllers\SongTutorialController::class, 'indexLanding'])->name('song.tutorial.index');
 Route::get('/song-tutorial', [App\Http\Controllers\SongTutorialController::class, 'index'])->name('song.tutorial');
@@ -40,7 +46,119 @@ Route::get('/song-tutorial/{lesson}/content', [App\Http\Controllers\SongTutorial
 
 Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureAdminOrSuper::class, 'audit.log'])->group(function () {
     Route::get('/', function(){
-        return redirect(route('admin.lessons.index'));
+        $user = auth()->user();
+        $isSuperadmin = (bool) ($user->is_superadmin ?? false);
+        $successStatuses = ['settlement', 'capture', 'success', 'paid', 'settled'];
+
+        $now = now();
+        $monthStart = $now->copy()->startOfMonth();
+        $prevMonthStart = $now->copy()->subMonthNoOverflow()->startOfMonth();
+        $prevMonthEnd = $now->copy()->subMonthNoOverflow()->endOfMonth();
+
+        $stats = [
+            'lessons' => \App\Models\Lesson::count(),
+            'topics' => \App\Models\Topic::count(),
+            'packages' => \App\Models\Package::count(),
+            'users' => \App\Models\User::count(),
+            'pending_bookings' => \App\Models\CoachingBooking::where('status', 'pending')->count(),
+            'today_transactions' => \App\Models\Transaction::whereDate('created_at', now()->toDateString())->count(),
+            'today_revenue' => \App\Models\Transaction::whereDate('created_at', now()->toDateString())
+                ->whereIn('status', $successStatuses)
+                ->sum('amount'),
+        ];
+
+        $monthlyOrderCounts = \App\Models\Transaction::query()
+            ->selectRaw('MONTH(created_at) as month_num, COUNT(*) as total')
+            ->whereYear('created_at', $now->year)
+            ->groupBy('month_num')
+            ->pluck('total', 'month_num');
+
+        $monthlyRevenue = \App\Models\Transaction::query()
+            ->selectRaw('MONTH(created_at) as month_num, SUM(amount) as total')
+            ->whereYear('created_at', $now->year)
+            ->whereIn('status', $successStatuses)
+            ->groupBy('month_num')
+            ->pluck('total', 'month_num');
+
+        $chartBars = collect(range(1, 12))->map(function ($m) use ($monthlyRevenue) {
+            $monthValue = (int) ($monthlyRevenue[$m] ?? 0);
+            return [
+                'key' => $m,
+                'label' => \Carbon\Carbon::create()->month($m)->locale('id')->translatedFormat('M'),
+                'value' => $monthValue,
+            ];
+        });
+
+        $maxBarValue = max(1, (int) $chartBars->max('value'));
+        $chartBars = $chartBars->map(function ($bar) use ($maxBarValue) {
+            $rawHeight = $bar['value'] > 0 ? (int) round(($bar['value'] / $maxBarValue) * 100) : 8;
+            $bar['height'] = max(8, min(100, $rawHeight));
+            return $bar;
+        })->values();
+
+        $currentMonthRevenue = (int) ($monthlyRevenue[$now->month] ?? 0);
+        $prevMonthRevenue = (int) ($monthlyRevenue[$prevMonthStart->month] ?? 0);
+        $monthlyTarget = $prevMonthRevenue > 0 ? $prevMonthRevenue : max(1, $currentMonthRevenue);
+        $targetPercent = $monthlyTarget > 0 ? round(min(100, ($currentMonthRevenue / $monthlyTarget) * 100), 2) : 0;
+
+        $kpiUsersCurrent = \App\Models\User::where('created_at', '>=', $monthStart)->count();
+        $kpiUsersPrev = \App\Models\User::whereBetween('created_at', [$prevMonthStart, $prevMonthEnd])->count();
+        $kpiOrdersCurrent = \App\Models\Transaction::where('created_at', '>=', $monthStart)->count();
+        $kpiOrdersPrev = \App\Models\Transaction::whereBetween('created_at', [$prevMonthStart, $prevMonthEnd])->count();
+        $kpiLessonsCurrent = \App\Models\Lesson::where('created_at', '>=', $monthStart)->count();
+        $kpiLessonsPrev = \App\Models\Lesson::whereBetween('created_at', [$prevMonthStart, $prevMonthEnd])->count();
+
+        $calcDelta = function (int $current, int $previous): float {
+            if ($previous <= 0) {
+                return $current > 0 ? 100.0 : 0.0;
+            }
+            return round((($current - $previous) / $previous) * 100, 1);
+        };
+
+        $kpiDeltas = [
+            'users' => $calcDelta($kpiUsersCurrent, $kpiUsersPrev),
+            'orders' => $calcDelta($kpiOrdersCurrent, $kpiOrdersPrev),
+            'lessons' => $calcDelta($kpiLessonsCurrent, $kpiLessonsPrev),
+        ];
+
+        $dashboardMetrics = [
+            'chart_bars' => $chartBars,
+            'month_labels' => [
+                'current' => $monthStart->translatedFormat('F Y'),
+                'previous' => $prevMonthStart->translatedFormat('F Y'),
+            ],
+            'month_orders' => [
+                'current' => (int) ($monthlyOrderCounts[$now->month] ?? 0),
+                'previous' => (int) ($monthlyOrderCounts[$prevMonthStart->month] ?? 0),
+            ],
+            'month_revenue' => [
+                'current' => $currentMonthRevenue,
+                'previous' => $prevMonthRevenue,
+            ],
+            'target' => [
+                'value' => $monthlyTarget,
+                'percent' => $targetPercent,
+            ],
+            'kpi_deltas' => $kpiDeltas,
+        ];
+
+        $recentTransactions = \App\Models\Transaction::with(['user', 'package'])
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        $recentAudits = collect();
+        if ($isSuperadmin && \Illuminate\Support\Facades\Schema::hasTable('audit_trails')) {
+            $recentAudits = \App\Models\AuditTrail::query()->latest()->limit(8)->get();
+        }
+
+        return view('admin.dashboard', [
+            'isSuperadmin' => $isSuperadmin,
+            'stats' => $stats,
+            'dashboardMetrics' => $dashboardMetrics,
+            'recentTransactions' => $recentTransactions,
+            'recentAudits' => $recentAudits,
+        ]);
     })->name('dashboard');
     Route::resource('lessons', LessonController::class);
     Route::get('packages', [PackageController::class, 'index'])->name('packages.index');
@@ -154,7 +272,69 @@ Route::get('/promo-stream', function () {
     }
 });
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth', 'verified'])->group(function(){
+    Route::get('/api/topics/{topic}/progress', function ($topic) {
+        $topicModel = \App\Models\Topic::find($topic);
+        if (! $topicModel) {
+            return response()->json(['completed' => false, 'watched_seconds' => 0], 404);
+        }
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('topic_progresses')) {
+            return response()->json(['completed' => false, 'watched_seconds' => 0]);
+        }
+
+        $progress = \App\Models\TopicProgress::where('user_id', auth()->id())
+            ->where('topic_id', $topicModel->id)
+            ->first();
+
+        return response()->json([
+            'completed' => (bool) ($progress->completed ?? false),
+            'watched_seconds' => (int) ($progress->watched_seconds ?? 0),
+        ]);
+    })->name('topics.progress.show');
+
+    Route::post('/api/topics/{topic}/progress', function (\Illuminate\Http\Request $request, $topic) {
+        $topicModel = \App\Models\Topic::find($topic);
+        if (! $topicModel) {
+            return response()->json(['ok' => false, 'error' => 'topic_not_found'], 404);
+        }
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('topic_progresses')) {
+            return response()->json(['ok' => true, 'completed' => false, 'watched_seconds' => 0]);
+        }
+
+        $data = $request->validate([
+            'watched_seconds' => ['nullable', 'integer', 'min:0'],
+            'duration_seconds' => ['nullable', 'integer', 'min:0'],
+            'completed' => ['nullable', 'boolean'],
+        ]);
+
+        $incomingSeconds = (int) ($data['watched_seconds'] ?? 0);
+        $durationSeconds = (int) ($data['duration_seconds'] ?? 0);
+        $incomingCompleted = (bool) ($data['completed'] ?? false);
+
+        // Mark complete automatically if playback is at least 95% of the known duration.
+        if (! $incomingCompleted && $durationSeconds > 0) {
+            $incomingCompleted = $incomingSeconds >= max(1, (int) floor($durationSeconds * 0.95));
+        }
+
+        $progress = \App\Models\TopicProgress::firstOrNew([
+            'user_id' => auth()->id(),
+            'topic_id' => $topicModel->id,
+        ]);
+
+        $currentSeconds = (int) ($progress->watched_seconds ?? 0);
+        $progress->watched_seconds = max($currentSeconds, $incomingSeconds);
+        $progress->completed = (bool) (($progress->completed ?? false) || $incomingCompleted);
+        $progress->save();
+
+        return response()->json([
+            'ok' => true,
+            'completed' => (bool) $progress->completed,
+            'watched_seconds' => (int) $progress->watched_seconds,
+        ]);
+    })->middleware('throttle:120,1')->name('topics.progress.update');
+
     Route::get('/coaching', [CoachingController::class, 'index'])->name('coaching.index');
     Route::get('/coaching/availability', [CoachingController::class, 'availability'])->name('coaching.availability');
     Route::get('/coaching/availability-range', [CoachingController::class, 'availabilityRange'])->name('coaching.availability.range');
@@ -179,6 +359,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/coaching/caching/{caching}/note', [\App\Http\Controllers\CoachingController::class, 'updateCachingNote'])->name('coaching.caching.note');
     Route::get('/coaching/checkout', [CoachingCheckoutController::class, 'checkoutForm'])->name('coaching.checkout');
     Route::post('/coaching/checkout/create-order', [CoachingCheckoutController::class, 'createOrder'])->name('coaching.checkout.create');
+    Route::post('/coaching/checkout/finalize', [CoachingCheckoutController::class, 'finalizeOrder'])->name('coaching.checkout.finalize');
     Route::get('/coaching/session/{booking}', [CoachingController::class, 'joinSession'])->name('coaching.session');
     Route::get('/coaching/token/{booking}', [CoachingController::class, 'token'])->middleware('throttle:30,1')->name('coaching.token');
     Route::post('/coaching/{booking}/event', [CoachingController::class, 'logEvent'])->middleware('throttle:30,1')->name('coaching.event');
@@ -190,7 +371,7 @@ Route::get('/registerclass/{lesson}/buy', [App\Http\Controllers\KelasController:
 
 Route::post('/registerclass/{lesson}/payment/complete', [App\Http\Controllers\KelasController::class, 'paymentComplete'])->middleware('rate.limit:payment')->name('kelas.payment.complete');
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/registerclass/{lesson}/payment', [App\Http\Controllers\KelasController::class, 'payment'])->name('kelas.payment');
 });
 
@@ -198,6 +379,7 @@ Route::middleware('auth')->group(function(){
 // Allow guest to create Snap token (guest checkout). CSRF + rate-limit still apply.
 Route::post('/api/midtrans/create', [App\Http\Controllers\MidtransController::class, 'createSnapToken'])
     ->middleware(['throttle:30,1']);
+
 
 Route::post('/payments/midtrans-notify', [App\Http\Controllers\PaymentController::class, 'midtransNotification'])
     // Detach this route from the default 'web' stack so no session/CSRF is applied at all
@@ -259,7 +441,7 @@ Route::post('/vouchers/validate', function (\Illuminate\Http\Request $request) {
     return response()->json(['valid'=>true,'discount_percent'=>$v->discount_percent,'voucher_id'=>$v->id]);
 });
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->middleware('file.upload.security')->name('profile.update');

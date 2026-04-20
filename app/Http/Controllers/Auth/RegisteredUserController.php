@@ -122,12 +122,9 @@ class RegisteredUserController extends Controller
         ]);
     }
 
-    // Auto-login and redirect: prefer intended URL (payment) if captured, else go to package selection
-    $intended = $request->session()->pull('url.intended'); // pull removes it from session
+    // Keep user signed in and send them to verification notice directly.
     Auth::login($user);
-    if ($intended) {
-        return redirect()->to($intended);
-    }
-    return redirect()->route('registerclass');
+    return redirect()->route('verification.notice')
+        ->with('status', 'Registrasi berhasil. Lanjutkan verifikasi dengan Google menggunakan email yang sama untuk mengaktifkan akun.');
     }
 }

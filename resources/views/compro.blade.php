@@ -1,1156 +1,486 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nde Guitar Class - Premium Masterclass</title>
+    <meta name="description" content="Kuasai gitar dengan metode terstruktur lewat video HD, coaching 1-on-1, dan sistem belajar premium.">
+    <meta name="theme-color" content="#050505">
 
-@section('title', 'Nde Official - Guitar Sessions & Brand Ambassador | Content Creator Indonesia')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 
-@section('meta_description',
-    'Nde Official - Exclusive Guitar Sessions by Alfarezi (Nde). Brand Ambassador untuk Crafter & E <div
-        class="col-md-5 offset-md-1">
-        <div class="block-content text-center">
-            <h2 class="uppercase mb-4">About Nde - Alfarezi</h2>
-            <p class="mb-4">
-                I\'m <strong>Alfarezi</strong>, better known as <strong>Nde</strong> — a Gen Z content creator from
-                Indonesia passionate about music and TikTok covers. With over <strong>9.7M video views</strong>, I create
-                engaging guitar content and lifestyle videos that connect with today\'s youth.
-            </p>
-            <p class="mb-4">
-                As a Brand Ambassador for <strong>Crafter Guitars</strong> 🇰🇷 and <strong>Enya Guitars</strong> 🇨🇳, I
-                focus on delivering authentic, trend-driven content that brings value to both brands and my 1.2M+ engaged
-                followers across social media platforms.
-            </p>
-            <a class="btn btn-primary with-ico" href="https://wa.me/+6281273796646"
-                title="Contact Nde for business partnerships" aria-label="Contact Nde via WhatsApp for collaborations">
-                <i class="icon-user"></i> Work with Me
-            </a>
-        </div>
-    </div>Creator Gen Z Indonesia dengan 9.7M video views di TikTok.')
-
-@section('meta_keywords', 'Nde Official, Alfarezi, guitar sessions, brand ambassador, content creator, TikTok covers, Crafter guitars, Enya guitars, Indonesia musician, guitar lessons, guitar class, kelas gitar, kursus gitar, nde, tiktok gitar, guitar tiktok, guiter covers, how to play guitar, belajar gitar, belajar gitar dari nol')
-
-@section('og_title', 'Nde Official - Guitar Sessions & Brand Ambassador')
-@section('og_description', 'Exclusive Guitar Sessions by Nde. Brand Ambassador untuk Crafter & Enya dengan 9.7M video
-    views di TikTok. Join the class dan mulai perjalanan musikmu.')
-@section('og_image', asset('compro/img/ndehero.JPEG'))
-@section('og_url', url()->current())
-
-@push('head')
-    <!-- SEO Meta Tags -->
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Alfarezi (Nde)">
-    <meta name="revisit-after" content="7 days">
-    <meta name="language" content="Indonesian">
-    <meta name="geo.region" content="ID">
-    <meta name="geo.country" content="Indonesia">
-    <meta name="theme-color" content="#0F172A">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Nde Official">
-    <meta property="og:locale" content="id_ID">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-
-    <!-- Structured Data for Person/Musician -->
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": ["Person", "MusicGroup"],
-        "name": "Alfarezi",
-        "alternateName": "Nde",
-        "description": "Gen Z content creator from Indonesia passionate about music and TikTok covers",
-        "url": "{{ url()->current() }}",
-        "logo": "{{ asset('compro/img/ndelogo.webp') }}",
-        "image": "{{ asset('compro/img/ndehero.webp') }}",
-        "sameAs": [
-            "https://www.instagram.com/rizqie.alfarezi/",
-            "https://wa.me/+6281273796646"
-        ],
-        "jobTitle": "Content Creator & Brand Ambassador",
-        "worksFor": [
-            {
-            "@@type": "Organization",
-            "name": "Crafter Guitars"
-            },
-            {
-            "@@type": "Organization",
-            "name": "Enya Guitars"
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        background: '#050505',
+                        surface: '#0a0a0a',
+                        surfaceHover: '#141414',
+                        textDim: '#888888',
+                    }
+                }
             }
-        ],
-        "contactPoint": {
-            "@@type": "ContactPoint",
-            "telephone": "+6281273796646",
-            "contactType": "Business Inquiry",
-            "email": "alfaareeziii.business@gmail.com"
-        },
-        "address": {
-            "@@type": "PostalAddress",
-            "addressCountry": "Indonesia"
-        }
-    }
+        };
     </script>
 
-    <!-- Structured Data for Music Lessons -->
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "Course",
-        "name": "Exclusive Guitar Sessions by Nde",
-        "description": "Learn guitar with a different approach. There's a difference between knowing how to play and knowing what to say with your sound.",
-        "provider": {
-            "@@type": "Person",
-            "name": "Alfarezi (Nde)"
-        },
-        "courseMode": "Online",
-        "teaches": "Guitar Playing",
-        "inLanguage": "id",
-        "url": "{{ route('registerclass') }}"
-    }
-    </script>
-
-    <!-- Structured Data for Brand Partnerships -->
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "WebPage",
-        "name": "Nde Official - Brand Partnerships",
-        "description": "Brand Ambassador partnerships with major brands including Crafter, Enya, Nutrijel, Makarizo, Miniso, and more",
-        "mainEntity": {
-            "@@type": "Person",
-            "name": "Alfarezi (Nde)",
-            "hasOccupation": {
-            "@@type": "Occupation",
-            "name": "Brand Ambassador & Content Creator"
-            }
-        }
-    }
-    </script>
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{{ url()->current() }}">
-
-    <!-- Sitemap reference -->
-    <link rel="sitemap" type="application/xml" href="{{ url('/sitemap.xml') }}">
-
-    <!-- Hreflang for international SEO -->
-    <link rel="alternate" hreflang="id" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="en" href="{{ url()->current() }}">
-
-    <!-- Performance and loading hints -->
-    <link rel="preload" href="{{ asset('compro/img/ndehero.webp') }}" as="image">
-    <link rel="preload" href="{{ asset('compro/img/ndelogo.webp') }}" as="image">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-@endpush
-
-@push('styles')
     <style>
-        /* Full-bleed layout for /ndeofficial */
-        .wrapper,
-        .header {
-            max-width: none !important;
-            margin: 0 !important;
-            width: 100% !important;
+        body { background-color: #050505; }
+        .hero-glow {
+            position: absolute;
+            width: 80vw;
+            max-width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(5, 5, 5, 0) 70%);
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
         }
-
-        /* Make hero background truly edge-to-edge */
-        .hero .slides,
-        .hero .slides li {
-            width: 100%;
-        }
-
-        .hero .slides li {
-            height: 80vh !important;
-            min-height: 60vh;
-        }
-
-        @media (min-width: 992px) {
-            .hero .slides li {
-                height: 100vh !important;
-            }
-        }
-
-        .background-img {
-            left: 0;
-            right: 0;
-            width: 100%;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
-@endpush
+</head>
+<body class="font-sans text-gray-200 antialiased selection:bg-white/20 selection:text-white">
+    @php
+        $currentUser = auth()->user();
+        $isLoggedIn = (bool) $currentUser;
+        $hasCheckoutAccess = false;
+        if ($currentUser) {
+            $hasCheckoutAccess = $currentUser->hasLmsAccess();
+        }
 
-@section('content')
+        $lmsUrl = route('lms.entry');
+    @endphp
+    <nav class="fixed w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="flex items-center justify-between h-24 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-6">
+                <a href="#" class="flex items-center md:justify-self-start" aria-label="Nde Guitar Class Home">
+                    <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="h-14 w-auto object-contain">
+                </a>
 
-    <!-- Preloader -->
-    <div class="loader">
-        <div class="loader-inner">
-            <svg width="120" height="220" viewBox="0 0 100 100" class="loading-spinner" version="1.1"
-                xmlns="http://www.w3.org/2000/svg">
-                <circle class="spinner" cx="50" cy="50" r="21" fill="#141414" stroke-width="2" />
-            </svg>
-        </div>
-    </div>
-
-    <!-- Header (local header used for the compro theme) -->
-    <header class="header stopping">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-2">
-                    <a class="scroll logo" href="#wrapper">
-                        <img class="mb-0" src="{{ asset('compro/img/ndelogo.webp') }}" alt="Nde Logo">
-                    </a>
+                <div class="hidden md:flex items-center space-x-10 md:justify-self-center">
+                    <a href="#tentang" class="text-sm font-medium text-textDim hover:text-white transition-colors">Tentang Kelas</a>
+                    <a href="#fitur" class="text-sm font-medium text-textDim hover:text-white transition-colors">Sistem Belajar</a>
+                    <a href="#harga" class="text-sm font-medium text-textDim hover:text-white transition-colors">Harga</a>
                 </div>
-                <div class="col-lg-10 text-right">
-                    <nav class="main-nav">
-                        <div class="toggle-mobile-but" style="z-index:10002">
-                            <a href="javascript:void(0)" class="mobile-but" role="button" aria-expanded="false" aria-label="Toggle navigation">
-                                <div class="lines"></div>
-                            </a>
-                        </div>
-                        <ul class="main-menu list-inline" role="navigation" aria-label="Main navigation">
-                            <li><a class="scroll list-inline-item" href="#wrapper" title="Nde Official Homepage">Home</a>
-                            </li>
-                            <li><a class="scroll list-inline-item" href="#about"
-                                    title="About Nde - Guitar Instructor & Content Creator">About</a></li>
-                            <li><a class="scroll list-inline-item" href="#discography"
-                                    title="Brand Partnerships with Nde">Partnerships</a></li>
-                            <li><a class="scroll list-inline-item" href="#registerclass"
-                                    title="TikTok Analytics & Social Media Insights">Exposure</a></li>
-                            <li><a class="scroll list-inline-item" href="#contact"
-                                    title="Contact Nde for Guitar Lessons">Contact</a></li>
-                            <li><a class="list-inline-item" href="{{ url('/registerclass') }}"
-                                    title="Join Nde's Guitar Courses">Courses</a></li>
-                        </ul>
-                    </nav>
+
+                <div class="hidden md:flex items-center {{ $isLoggedIn ? 'gap-0' : 'gap-6' }} md:justify-self-end">
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="text-sm font-medium text-white hover:text-gray-300 transition-colors">Masuk LMS</a>
+                    @if (! $isLoggedIn)
+                        <a href="{{ url('/registerclass') }}" class="bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all transform hover:scale-105">
+                            Daftar Sekarang
+                        </a>
+                    @endif
+                </div>
+
+                <button id="mobile-menu-button" class="text-white md:hidden" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <div id="mobile-menu" class="md:hidden hidden pb-6 border-t border-white/10">
+                <div class="flex flex-col gap-4 pt-5">
+                    <a href="#tentang" class="text-sm font-medium text-textDim hover:text-white transition-colors">Tentang Kelas</a>
+                    <a href="#fitur" class="text-sm font-medium text-textDim hover:text-white transition-colors">Sistem Belajar</a>
+                    <a href="#harga" class="text-sm font-medium text-textDim hover:text-white transition-colors">Investasi</a>
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="text-sm font-medium text-white hover:text-gray-300 transition-colors">Masuk LMS</a>
+                    @if (! $isLoggedIn)
+                        <a href="{{ url('/registerclass') }}" class="inline-flex justify-center bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all">
+                            Daftar Sekarang
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
-    </header>
-
-    <!-- Breadcrumb Navigation (hidden but SEO-friendly) -->
-    <nav aria-label="Breadcrumb" class="sr-only">
-        <ol itemscope itemtype="https://schema.org/BreadcrumbList">
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ url('/') }}">
-                    <span itemprop="name">Home</span>
-                </a>
-                <meta itemprop="position" content="1" />
-            </li>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <span itemprop="name">Nde Official</span>
-                <meta itemprop="position" content="2" />
-            </li>
-        </ol>
     </nav>
 
-    <!-- Page wrapper -->
-    <div class="wrapper">
-        <!-- Hero Section -->
-        <section class="hero" role="banner">
-            <div class="main-slider slider flexslider">
-                <ul class="slides">
-                    <li>
-                        <div class="background-img overlay zoom">
-                            <img src="{{ asset('compro/img/ndehero.webp') }}"
-                                alt="Nde Official - Alfarezi playing guitar, Brand Ambassador Crafter and Enya guitars">
-                        </div>
-                        <div class="container hero-content">
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <div class="inner-hero">
-                                        <h1 class="large text-white mb-4">Nde Official
-                                        </h1>
-                                        <h2 class="uppercase h4">Exclusive Guitar Sessions by Nde</h2>
-                                        <p class="text-white mt-3 mb-4">Learn guitar with a different approach from
-                                            Indonesia's top content creator with 9.7M TikTok video views</p>
-                                        <a class="btn btn-primary mt-4" href="#about"
-                                            aria-label="Learn more about Nde Official guitar sessions">learn more</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="background-img overlay zoom">
-                            <img src="{{ asset('compro/img/ndehero2.webp') }}"
-                                alt="Nde Official Brand Ambassador - Open for partnerships with brands and companies">
-                        </div>
-                        <div class="container hero-content">
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <div class="inner-hero">
-                                        <h1 class="large text-white mb-4">Open for Brand Partnerships</h1>
-                                        <h2 class="uppercase h4">Content Creator, Influencer, Brand Ambassador Indonesia
-                                        </h2>
-                                        <p class="text-white mt-3">Partner with an experienced brand ambassador with millions of views and high engagement.</p>
-                                        <!-- <a class="video-play-but mt-4 popup-youtube" href="https://www.youtube.com/watch?v=Gc2en3nHxA4"></a> -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+    <section id="tentang" class="relative pt-40 pb-20 lg:pt-56 lg:pb-32 overflow-hidden px-6">
+        <div class="hero-glow"></div>
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-medium tracking-widest uppercase text-gray-400 mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                Pendaftaran Batch 4 Dibuka
             </div>
 
+            <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-tight mb-8">
+                Kuasai Gitar dengan<br>
+                <span class="italic text-gray-400">Metode Terstruktur.</span>
+            </h1>
 
-            <!-- About Section -->
-            <!-- About Section -->
-            <section id="about" class="about main brd-bottom" role="main">
-                <img class="pattern-center" src="{{ asset('compro/img/right-pattern.webp') }}"
-                    alt="Decorative pattern background">
-                <div class="container">
-                    <div class="row vertical-align">
-                        <div class="col-md-5">
-                            <div class="block-content text-center">
-                                <h1 class="uppercase mb-0">A Different <br> WAY TO LEARN GUITAR</h1>
-                                <p class="mt-2 lead w-95">"There's a difference between knowing how to play and knowing
-                                    what to say with your sound."</p>
-                                <img class="sing mb-0" src="{{ asset('compro/img/ttd-nde.webp') }}"
-                                    alt="Signature of Nde - Alfarezi guitar instructor">
-                            </div>
-                        </div>
-                        <div class="col-md-6 offset-md-1">
-                            <div class="block-content">
-                                <ul class="block-images row">
-                                    <li class="col-md-6 col-sm-6"><img src="{{ asset('compro/img/nde1.webp') }}"
-                                            alt="Nde Alfarezi playing acoustic guitar - Guitar instructor and content creator"
-                                            loading="lazy"></li>
-                                    <li class="col-md-6 col-sm-6"><img src="{{ asset('compro/img/nde2.webp') }}"
-                                            alt="Nde Alfarezi with electric guitar - Brand ambassador for guitar brands"
-                                            loading="lazy"></li>
-                                </ul>
-                            </div>
-                        </div>
+            <p class="text-lg md:text-xl text-textDim max-w-2xl mx-auto leading-relaxed mb-12 font-light">
+                Akses seumur hidup ke materi video kualitas tinggi, disempurnakan dengan sesi <strong class="text-white font-medium">1-on-1 Coaching</strong> untuk memastikan progres belajar Anda tidak pernah stagnan.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="w-full sm:w-auto bg-white text-black font-semibold px-8 py-4 rounded-full text-base transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                    {{ $isLoggedIn ? 'Masuk LMS' : 'Mulai Perjalanan Anda' }}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+                <a href="#video-preview" class="w-full sm:w-auto bg-transparent border border-white/20 text-white font-medium px-8 py-4 rounded-full text-base hover:bg-white/5 transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    Lihat Preview
+                </a>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto mt-24 border-y border-white/5 py-8">
+            <p class="text-center text-xs font-semibold tracking-widest text-textDim uppercase mb-6">Infrastruktur Teknologi Pendukung</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
+                    Bunny.net
+                </div>
+                <div class="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
+                    Twilio CPaaS
+                </div>
+                <div class="flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
+                    Midtrans
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="video-preview" class="py-20 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div id="promo-preview" class="relative w-full aspect-video bg-surface rounded-2xl overflow-hidden border border-white/10 shadow-2xl group cursor-pointer">
+                <img id="promo-preview-fallback" src="https://images.unsplash.com/photo-1549298240-0d8e60513026?q=80&w=2000&auto=format&fit=crop" alt="Preview Video" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition duration-500">
+                <div id="promo-preview-loading" class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                        <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     </div>
                 </div>
+                <video id="promo-preview-video" class="absolute inset-0 w-full h-full object-cover hidden" playsinline muted loop controls></video>
+            </div>
+            <p class="text-center text-textDim text-sm mt-6 font-light">Cuplikan materi kelas. Kualitas streaming didukung oleh Bunny.net</p>
+        </div>
+    </section>
 
-                <div class="gap-one-bottom-md"></div>
+    <section id="fitur" class="py-24 px-6 bg-surface/50 border-y border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="font-serif text-3xl md:text-4xl text-white mb-4">Sistem Belajar <span class="italic text-gray-400">Premium.</span></h2>
+                <p class="text-textDim max-w-2xl mx-auto">Platform ini dibangun khusus dengan teknologi terkini untuk memastikan pengalaman belajar yang interaktif dan tanpa hambatan.</p>
+            </div>
 
-                <div class="container">
-                    <div class="row vertical-align">
-                        <div class="col-md-6">
-                            <div class="block-content">
-                                <ul class="block-images row">
-                                    <li class="col-md-6 col-sm-6"><img src="{{ asset('compro/img/nde3.JPEG') }}"
-                                            alt="Nde Alfarezi performing with acoustic guitar - Professional guitar instructor"
-                                            loading="lazy"></li>
-                                    <li class="col-md-6 col-sm-6"><img src="{{ asset('compro/img/nde4.JPEG') }}"
-                                            alt="Nde Alfarezi content creator setup - Behind the scenes of TikTok guitar content creation"
-                                            loading="lazy"></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-5 offset-md-1">
-                            <div class="block-content text-center">
-                                <h1 class="uppercase mb-4">About Me</h1>
-                                <p class="mb-4">
-                                    I'm Alfarezi, better known as <strong>Nde</strong> — a Gen Z content creator from
-                                    Indonesia passionate about music and TikTok covers. I also share lifestyle content that
-                                    connects with today’s youth.
-                                </p>
-                                <p class="mb-4">
-                                    As a Brand Ambassador for <strong>Crafter</strong> 🇰🇷 and <strong>Enya</strong> 🇨🇳,
-                                    I focus on delivering engaging, trend-driven content that brings value to both brands
-                                    and followers.
-                                </p>
-                                <a class="btn btn-primary with-ico" href="https://wa.me/+6281273796646">
-                                    <i class="icon-user"></i> Work with Me
-                                </a>
-                            </div>
-                        </div>
+            <div class="grid md:grid-cols-3 gap-12 md:gap-8">
+                <div class="space-y-6 group">
+                    <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>
-                </div>
-            </section>
-
-            <!-- Partnership Section -->
-            <section id="discography" class="about main brd-bottom" role="region"
-                aria-labelledby="partnerships-heading">
-                <img class="pattern-center" src="{{ asset('compro/img/right-pattern.webp') }}"
-                    alt="Decorative pattern background">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-md-10 col-lg-9 mb-3.5">
-                            <div class="block-content text-center gap-one-bottom-md">
-                                <div class="block-title mb-5">
-                                    <h3 class="uppercase mb-1">Brand Partnerships</h3>
-                                    <h2 id="partnerships-heading" class="uppercase mb-0">Brand Ambassador Indonesia</h2>
-                                    <p class="mt-3">Trusted by major brands across Indonesia and Asia for authentic
-                                        content creation and brand representation</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Repeat this block for each partnership -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect" title="Kapal API - Brand Partnership with Nde">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/kapalapi.webp') }}"
-                                            alt="Kapal API brand partnership logo - Coffee brand collaboration with Nde content creator">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 2 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect" title="Gatsby Hair Brand Partnership">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/getsby.webp') }}"
-                                            alt="Gatsby hair brand logo - Brand partnership with Nde content creator">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 3 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect" title="Nutrijel Brand Collaboration">
-                                    <div class="block-album p-3 text-center">
-                                        <img src="{{ asset('compro/img/logopartnership/nutrijel.webp') }}"
-                                            alt="Nutrijel brand logo - Food and beverage brand partnership with Nde Indonesia"
-                                            class="img-fluid" style="max-height: 110px; object-fit: contain;">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 4 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect" title="Makarizo Hair Care Partnership">
-                                    <div class="block-album p-3 text-center">
-                                        <img src="{{ asset('compro/img/logopartnership/makarizo.webp') }}"
-                                            alt="Makarizo hair care brand logo - Beauty brand collaboration with Nde content creator"
-                                            class="img-fluid"
-                                            style="max-height: 85px; object-fit: contain; margin-top: 20px;">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 5 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3 text-center">
-                                        <img src="{{ asset('compro/img/logopartnership/miniso.webp') }}" alt="Miniso"
-                                            class="img-fluid" style="max-height: 110px; object-fit: contain;">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 6 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/garnier.webp') }}" alt="Garnier">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 7 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3 text-center">
-                                        <img src="{{ asset('compro/img/logopartnership/uniqlo.webp') }}" alt="uniqlo"
-                                            class="img-fluid"
-                                            style="max-height: 85px; object-fit: contain; margin-top: 20px;">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 8 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/maybellin.webp') }}" alt="maybeline">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 9 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/yupi.webp') }}" alt="yupi">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 10 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/pikopi.webp') }}" alt="pikopi">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 11 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3">
-                                        <img src="{{ asset('compro/img/logopartnership/tomoro.webp') }}" alt="tomoro">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 12 -->
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="block-content">
-                                <a href="" class="hover-effect">
-                                    <div class="block-album p-3 text-center">
-                                        <img src="{{ asset('compro/img/logopartnership/tugujogja.webp') }}" alt="Tugujogja"
-                                            class="img-fluid"
-                                            style="max-height: 1000px; object-fit: contain; margin-bottom: 20px;">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Add more partnerships as needed... -->
+                    <h3 class="font-serif text-2xl text-white">Video HD Tanpa Batas</h3>
+                    <p class="text-textDim leading-relaxed font-light">Materi video di-hosting secara privat menggunakan <span class="text-gray-300 font-medium">Bunny CDN</span>. Tonton berulang kali seumur hidup tanpa masalah buffering berlebih.</p>
                 </div>
 
-                <div class="row justify-content-center">
-                    <div class="col-12 col-lg-8 col-md-10 mt-5 mb-5">
-                        <div class="block-content gap-one-top-md text-center">
-                            <h2 class="mb-0">A proud part of My journey</h2><br>
-                            <h5 class="uppercase list-inline-item">I used to be one of the brand’s talents and ambassadors,
-                                sharing its vision with pride.</h5>
-                        </div>
+                <div class="space-y-6 group">
+                    <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
                     </div>
+                    <h3 class="font-serif text-2xl text-white">Live Coaching 1-on-1</h3>
+                    <p class="text-textDim leading-relaxed font-light">Punya kendala teknik? Jadwalkan sesi <span class="italic">Video Call</span> langsung dengan instruktur di dalam web. Didukung oleh teknologi <span class="text-gray-300 font-medium">Twilio WebRTC</span> yang jernih.</p>
                 </div>
+
+                <div class="space-y-6 group">
+                    <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="font-serif text-2xl text-white">Akses Kelas Otomatis</h3>
+                    <p class="text-textDim leading-relaxed font-light">Checkout terintegrasi penuh dengan <span class="text-gray-300 font-medium">Midtrans</span>. Bayar menggunakan QRIS, Gopay, atau Virtual Account, kelas Anda langsung terbuka otomatis detik itu juga.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="harga" class="py-32 px-6 relative bg-black">
+    <div class="max-w-4xl mx-auto text-center mb-16">
+        <h2 class="font-serif text-4xl md:text-5xl text-white mb-6">Pilih Level <span class="italic text-gray-400">Belajarmu.</span></h2>
+        <p class="text-gray-400 text-lg font-light">Investasi sekali untuk skill seumur hidup. Tanpa langganan bulanan.</p>
     </div>
-    </section>
 
-    <!-- Registerclass Section -->
-    <section id="registerclass" class="custom-dashboard-section py-5" role="region" aria-labelledby="insights-heading">
-        <div class="container">
-            <h2 id="insights-heading" class="text-center mb-5 fw-bold">TikTok Audience Insights - Nde Official Statistics
-            </h2>
-            <p class="text-center mb-4">Real performance data showcasing Nde's reach and engagement as a content creator
-                and brand ambassador</p>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        
+        <div class="flex-1 bg-surface border border-white/10 rounded-[2.5rem] p-8 text-center relative overflow-hidden shadow-2xl flex flex-col justify-between group transition-all hover:border-white/30">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[50px] pointer-events-none"></div>
+            
+            <div>
+                <span class="text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4 block">Essentials</span>
+                <h3 class="text-3xl font-serif text-white mb-2">Masterclass Pack</h3>
+                
+                <div class="flex justify-center items-end gap-1 my-8">
+                    <span class="text-4xl font-bold text-white tracking-tighter">Rp 200<span class="text-lg text-gray-400 font-normal">.rb</span></span>
+                </div>
 
-            <div class="row text-center mb-5" itemscope itemtype="https://schema.org/SocialMediaPosting">
-                <meta itemprop="author" content="Alfarezi (Nde)">
-                <meta itemprop="datePublished" content="{{ date('Y-m-d') }}">
-
-                <div class="col-md-3 mb-4">
-                    <div class="custom-card shadow p-4 rounded" itemprop="interactionStatistic" itemscope
-                        itemtype="https://schema.org/InteractionCounter">
-                        <meta itemprop="interactionType" content="https://schema.org/WatchAction">
-                        <meta itemprop="userInteractionCount" content="9700000">
-                        <h5 class="text-muted">Video Views</h5>
-                        <h3 class="fw-bold">9.7M</h3>
-                        <p style="color: #00FF77;">+4.2M (78.3%)</p>
+                <div class="space-y-4 mb-10 text-left">
+                    <div class="flex items-start gap-3 text-sm text-gray-300">
+                        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Akses 40+ Modul Masterclass (Video HD)</span>
                     </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="custom-card shadow p-4 rounded" itemprop="interactionStatistic" itemscope
-                        itemtype="https://schema.org/InteractionCounter">
-                        <meta itemprop="interactionType" content="https://schema.org/ViewAction">
-                        <meta itemprop="userInteractionCount" content="86000">
-                        <h5 class="text-muted">Profile Views</h5>
-                        <h3 class="fw-bold">86K</h3>
-                        <p style="color: #00FF77;">+46.5K (116.1%)</p>
+                    <div class="flex items-start gap-3 text-sm text-gray-300">
+                        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Library Song Breakdown (Tutorial Lagu)</span>
                     </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="custom-card shadow p-4 rounded" itemprop="interactionStatistic" itemscope
-                        itemtype="https://schema.org/InteractionCounter">
-                        <meta itemprop="interactionType" content="https://schema.org/LikeAction">
-                        <meta itemprop="userInteractionCount" content="1200000">
-                        <h5 class="text-muted">Likes</h5>
-                        <h3 class="fw-bold">1.2M</h3>
-                        <p style="color: #00FF77;">+710K (148.1%)</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="custom-card shadow p-4 rounded" itemprop="interactionStatistic" itemscope
-                        itemtype="https://schema.org/InteractionCounter">
-                        <meta itemprop="interactionType" content="https://schema.org/CommentAction">
-                        <meta itemprop="userInteractionCount" content="98000">
-                        <h5 class="text-muted">Comments</h5>
-                        <h3 class="fw-bold">98K</h3>
-                        <p style="color: #00FF77;">+40K (69.3%)</p>
+                    <div class="flex items-start gap-3 text-sm text-gray-300">
+                        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="font-bold text-white">Bonus: 1x Tiket Private Coaching</span>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="custom-card shadow p-4 rounded">
-                        <h5 class="mb-3">Gender Breakdown</h5>
-                        <canvas id="genderChart" class="dashboard-chart"></canvas>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="custom-card shadow p-4 rounded">
-                        <h5 class="mb-3">Top Locations</h5>
-                        <canvas id="locationChart" class="dashboard-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-            <!-- Promo video player (Bunny CDN) -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="custom-card shadow p-4 rounded">
-                        @if (!empty($promo_title))
-                            <h5 class="mb-3 text-center" style="color: #ddd; font-weight:600;">{{ $promo_title }}</h5>
-                        @endif
-                        <div id="promo-player-container"
-                            style="position:relative;padding-top:56.25%;background:#000;border-radius:6px;overflow:hidden;">
-                            @php
-                                $promoGuid = $promo_bunny_guid ?? null;
-                                $promoThumb = null;
-                                if ($promoGuid) {
-                                    try {
-                                        $meta = \App\Http\Controllers\BunnyController::getVideoStatus($promoGuid);
-                                        // Bunny metadata may include 'thumbnailFileName' or 'thumbnail' fields
-                                        $thumbFile = null;
-                                        if (!empty($meta['thumbnailFileName'])) {
-                                            $thumbFile = $meta['thumbnailFileName'];
-                                        } elseif (!empty($meta['thumbnail'])) {
-                                            $thumbFile = $meta['thumbnail'];
-                                        }
-                                        // fallback to 'thumbnail.jpg'
-                                        if (!$thumbFile) {
-                                            $thumbFile = 'thumbnail.jpg';
-                                        }
-                                        $promoThumb = \App\Http\Controllers\BunnyController::signThumbnailUrl(
-                                            $promoGuid,
-                                            300,
-                                            $thumbFile,
-                                        );
-                                    } catch (\Throwable $e) {
-                                        $promoThumb =
-                                            \App\Http\Controllers\BunnyController::cdnUrl($promoGuid) .
-                                            '/thumbnail.jpg';
-                                    }
-                                }
-                            @endphp
-                            <div id="promo-video-placeholder"
-                                style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background-size:cover;background-position:center;{{ $promoThumb ? "background-image:url('$promoThumb');" : '' }}">
-                                <button id="promo-play-button" class="btn btn-primary" aria-label="Play promo"
-                                    style="width:64px;height:64px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0;border:none;background:rgba(255,255,255,0.95);">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path d="M8 5v14l11-7L8 5z" fill="#000" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <!-- video element will be injected here -->
-                        </div>
-                    </div>
-                    <div class="text-center" style="margin-top:16px">
-                        <a href="{{ route('registerclass') }}" class="btn btn-primary with-ico"
-                            style="padding:10px 18px;border-radius:24px;" title="Daftar kelas guitar dengan Nde Official"
-                            aria-label="Register for Nde's guitar classes">
-                            <i class="icon-user"></i> Join Guitar Class
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <a href="{{ route('registerclass') }}" class="w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all">Pilih Paket</a>
         </div>
 
-        </div>
-    </section>
-    <!-- Contact Section -->
-    <section id="contact" class="contact main top bg-secondary text-white py-5" role="region"
-        aria-labelledby="contact-heading">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-9 text-center">
-                    <div class="block-title">
-                        <div class="text-center">
-                            <img src="{{ asset('compro/img/ndelogo.webp') }}"
-                                alt="Nde Official Logo - Contact for guitar lessons and brand partnerships"
-                                style="width: 45px;">
-                        </div>
-                        <h3 class="uppercase mb-2">Connect With Nde</h3>
-                        <h2 id="contact-heading" class="uppercase mb-0">Join The Guitar Class</h2>
+        <div class="flex-1 bg-white rounded-[2.5rem] p-10 text-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] flex flex-col justify-between transform lg:scale-105 z-10 border-4 border-white">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-1 bg-black text-white text-[10px] font-bold tracking-widest uppercase rounded-b-xl">Best Value</div>
+            
+            <div>
+                <span class="text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4 block">Recommended</span>
+                <h3 class="text-4xl font-serif text-black mb-2">Full Access Pro</h3>
+                
+                <div class="flex justify-center items-end gap-1 my-8">
+                    <span class="text-gray-400 line-through text-lg pb-1">Rp 300k</span>
+                    <span class="text-5xl font-bold text-black tracking-tighter">Rp 250<span class="text-xl text-gray-400 font-normal">.rb</span></span>
+                </div>
+
+                <div class="space-y-4 mb-10 text-left">
+                    <div class="flex items-start gap-3 text-sm text-gray-700">
+                        <svg class="w-5 h-5 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Semua Fitur Masterclass & Tutorial</span>
                     </div>
-                    <p class="mt-3">Join the exclusive guitar class and start your musical journey with Indonesia's top
-                        content creator. Contact Nde through any platform below for guitar lessons or business partnerships.
-                    </p>
+                    <div class="flex items-start gap-3 text-sm text-gray-700 font-bold">
+                        <svg class="w-5 h-5 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>2x Tiket Private Coaching (Hemat 50k)</span>
+                    </div>
+                    <div class="flex items-start gap-3 text-sm text-gray-700">
+                        <svg class="w-5 h-5 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Akses Komunitas Eksklusif Nde</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="row justify-content-center mt-5">
-                <div class="col-12 col-lg-10">
-                    <ul class="feature-list feature-list-sm text-center row gap-one-bottom-sm">
-                        <li class="col-sm-4 col-lg-4">
-                            <div class="card block-info text-center">
-                                <div class="card-body pt-0">
-                                    <h3 class="uppercase h2">WhatsApp</h3>
-                                    <p class="mb-0">
-                                        <em class="h5 mb-1 uppercase swap-color">Contact Nde Directly</em><br>
-                                        <a href="https://wa.me/+6281273796646" target="_blank" class="text-white"
-                                            title="Contact Nde via WhatsApp for guitar lessons and partnerships"
-                                            aria-label="WhatsApp contact for Nde guitar instructor">
-                                            +62 812-7379-6646
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li class="col-sm-4 col-lg-4">
-                            <div class="card block-info text-center">
-                                <div class="card-body pt-0">
-                                    <h3 class="uppercase h2">Email</h3>
-                                    <p class="mb-0">
-                                        <em class="h5 mb-1 uppercase swap-color">Business Inquiry</em><br>
-                                        <a href="mailto:alfaareeziii.business@gmail.com" class="text-white"
-                                            title="Email Nde for business partnerships and brand collaborations"
-                                            aria-label="Email contact for business inquiries with Nde">
-                                            alfaareeziii.business@gmail.com
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li class="col-sm-4 col-lg-4">
-                            <div class="card block-info text-center">
-                                <div class="card-body pt-0">
-                                    <h3 class="uppercase h2">Instagram</h3>
-                                    <p class="mb-0">
-                                        <em class="h5 mb-1 uppercase swap-color">Follow Nde Official</em><br>
-                                        <a href="https://www.instagram.com/rizqie.alfarezi/" target="_blank"
-                                            class="text-white"
-                                            title="Follow Nde on Instagram for guitar content and lifestyle updates"
-                                            aria-label="Nde Official Instagram profile">
-                                            @rizqie.alfarezi
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <a href="{{ route('registerclass') }}" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl">Dapatkan Akses Sekarang</a>
         </div>
-    </section>
 
+        <div class="flex-1 bg-surface border border-white/10 rounded-[2.5rem] p-8 text-center relative overflow-hidden shadow-2xl flex flex-col justify-between group transition-all hover:border-white/30">
+            <div>
+                <span class="text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4 block">Pay Per Session</span>
+                <h3 class="text-3xl font-serif text-white mb-2">1-on-1 Session</h3>
+                
+                <div class="flex justify-center items-end gap-1 my-8">
+                    <span class="text-4xl font-bold text-white tracking-tighter">Rp 100<span class="text-lg text-gray-400 font-normal">.rb</span></span>
+                </div>
 
+                <p class="text-gray-400 text-sm mb-8 px-4">Khusus buat lu yang cuma butuh sesi konsultasi privat atau koreksi teknik langsung bareng Nde.</p>
 
-    <!-- Footer -->
-    <footer class="footer pb-5 bg-secondary text-center text-white" role="contentinfo">
-        <div class="container">
-            <div class="row justify-content-center align-items-center">
-                <div class="col-md-12">
-                    <div class="block-content pt-4 brd-top">
-                        <!-- Footer navigation -->
-                        <nav class="footer-nav mb-4" aria-label="Footer navigation">
-                            <ul class="list-inline mb-3">
-                                <li class="list-inline-item"><a href="#about" class="text-white"
-                                        title="About Nde">About</a></li>
-                                <li class="list-inline-item">|</li>
-                                <li class="list-inline-item"><a href="#discography" class="text-white"
-                                        title="Brand Partnerships">Partnerships</a></li>
-                                <li class="list-inline-item">|</li>
-                                <li class="list-inline-item"><a href="{{ url('/registerclass') }}" class="text-white"
-                                        title="Guitar Courses">Courses</a></li>
-                                <li class="list-inline-item">|</li>
-                                <li class="list-inline-item"><a href="#contact" class="text-white"
-                                        title="Contact Nde">Contact</a></li>
-                            </ul>
-                        </nav>
-
-                        <!-- Social media links -->
-                        {{-- <div class="social-links mb-3">
-                            <a href="https://www.instagram.com/rizqie.alfarezi/" target="_blank" class="text-white me-3"
-                                title="Follow Nde on Instagram" aria-label="Nde's Instagram profile">Instagram</a>
-                            <a href="https://wa.me/+6281273796646" target="_blank" class="text-white"
-                                title="Contact Nde via WhatsApp" aria-label="WhatsApp contact">WhatsApp</a>
-                        </div> --}}
-
-                        <!-- Copyright and description -->
-                        <p class="mb-2"><strong>Nde Official</strong> - Guitar Sessions & Brand Ambassador Indonesia</p>
-                        <p class="mb-0 mt-3">&copy; 2025 Nde Official (Alfarezi). All rights reserved — Powered by
-                            <em>WardellTech</em></p>
-                        <p class="small mt-2 text-muted">Professional guitar instructor, content creator, and brand
-                            ambassador with 9.7M+ video views</p>
+                <div class="space-y-4 mb-10 text-left">
+                    <div class="flex items-start gap-3 text-sm text-gray-300">
+                        <svg class="w-5 h-5 text-white/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>1x Tiket Private Coaching (30-45 Menit)</span>
+                    </div>
+                    <div class="flex items-start gap-3 text-sm text-gray-300">
+                        <svg class="w-5 h-5 text-white/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Jadwal Fleksibel (Sesuai Ketersediaan)</span>
                     </div>
                 </div>
+            </div>
+
+            <a href="{{ route('registerclass') }}" class="w-full bg-white/5 text-white border border-white/10 font-semibold px-6 py-4 rounded-2xl hover:bg-white/20 transition-all">Beli Sesi Saja</a>
+        </div>
+
+    </div>
+</section>
+
+    <footer class="bg-[#07090d] border-t border-white/5 pt-16 pb-10 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-[1.35fr_repeat(4,minmax(0,1fr))] gap-8 items-start">
+                <div>
+                    <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="h-16 w-auto object-contain">
+                    <p class="mt-3 text-[13px] text-white/70 font-semibold tracking-[0.12em]">NDE GUITAR CLASS</p>
+                </div>
+
+                <nav class="flex flex-col gap-2" aria-label="Footer links group 1">
+                    <a href="#tentang" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">TENTANG KELAS</a>
+                    <a href="#fitur" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">SISTEM BELAJAR</a>
+                    <a href="#video-preview" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">VIDEO PREVIEW</a>
+                </nav>
+
+                <nav class="flex flex-col gap-2" aria-label="Footer links group 2">
+                    <a href="#harga" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HARGA PAKET</a>
+                    <a href="#harga" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">MASTERCLASS PACK</a>
+                    <a href="#harga" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">FULL ACCESS PRO</a>
+                </nav>
+
+                <nav class="flex flex-col gap-2" aria-label="Footer links group 3">
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">MASUK LMS</a>
+                    <a href="{{ url('/registerclass') }}" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">DAFTAR SEKARANG</a>
+                    <a href="{{ route('coaching.index') }}" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">BOOK COACHING</a>
+                </nav>
+
+                <nav class="flex flex-col gap-2" aria-label="Footer links group 4">
+                    <a href="mailto:support@guitarclassbynde.id?subject=Support%20NDE%20Guitar%20Class" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">EMAIL SUPPORT</a>
+                    <a href="https://wa.me/+6281273796646" target="_blank" rel="noopener" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">WHATSAPP ADMIN</a>
+                    <a href="{{ route('coaching.index') }}" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">BANTUAN COACHING</a>
+                    <a href="{{ url('/ndeofficial') }}" class="text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HALAMAN UTAMA</a>
+                </nav>
+            </div>
+
+            <div class="h-px mt-10 mb-14 bg-gradient-to-r from-white/15 via-white/20 to-white/15"></div>
+
+            <div class="flex flex-col items-center justify-center gap-4">
+                <div class="flex items-center gap-3" aria-label="Social links">
+                    <a href="{{ url('/ndeofficial') }}" aria-label="Website Home" class="w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M13.5 8H16V5h-2.5c-2.8 0-4.5 1.8-4.5 4.6V12H7v3h2v4h3v-4h2.6l.4-3H12V9.8c0-1.2.3-1.8 1.5-1.8z"/></svg>
+                    </a>
+                    <a href="{{ route('coaching.index') }}" aria-label="Coaching" class="w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M22 5.8c-.7.3-1.5.5-2.3.6.8-.5 1.4-1.2 1.7-2.2-.8.5-1.6.8-2.5 1-1.4-1.5-3.9-1.6-5.4-.1-.9.9-1.3 2.1-1.1 3.3-3.2-.2-6-1.7-7.9-4-.4.7-.6 1.5-.6 2.3 0 1.6.8 3 2 3.8-.6 0-1.2-.2-1.8-.5 0 2.2 1.5 4.1 3.7 4.5-.6.2-1.3.2-1.9.1.5 1.8 2.2 3 4 3.1-1.5 1.2-3.3 1.8-5.2 1.8H4c1.9 1.2 4.2 1.9 6.5 1.9 7.8 0 12-6.5 12-12.1v-.6c.8-.5 1.5-1.2 2-2z"/></svg>
+                    </a>
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" aria-label="Masuk LMS" class="w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M6 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4-7v3c3.9 0 7 3.1 7 7h3c0-5.5-4.5-10-10-10zm0-6v3c7.2 0 13 5.8 13 13h3C18 11.2 10.8 4 2 4z"/></svg>
+                    </a>
+                    <a href="{{ url('/registerclass') }}" aria-label="Daftar" class="w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M12 10.2v3.3h4.7c-.2 1.2-1.4 3.4-4.7 3.4-2.8 0-5.1-2.3-5.1-5.1S9.2 6.7 12 6.7c1.6 0 2.7.7 3.3 1.2l2.3-2.2C16.2 4.4 14.3 3.6 12 3.6 7.5 3.6 3.8 7.3 3.8 11.8S7.5 20 12 20c6.9 0 8.5-4.8 8.5-7.2 0-.5-.1-.9-.1-1.3H12z"/></svg>
+                    </a>
+                    <a href="mailto:support@guitarclassbynde.id?subject=Support%20NDE%20Guitar%20Class" aria-label="Email Support" class="w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M6 10.5A1.5 1.5 0 1 1 6 13.5 1.5 1.5 0 0 1 6 10.5zm6 0A1.5 1.5 0 1 1 12 13.5 1.5 1.5 0 0 1 12 10.5zm6 0A1.5 1.5 0 1 1 18 13.5 1.5 1.5 0 0 1 18 10.5z"/></svg>
+                    </a>
+                </div>
+
+                <p class="text-sm md:text-base text-white/80 font-semibold">&copy; {{ now()->year }} Nde Official. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <a class="block-top scroll hover-effect" href="#wrapper"><i class="icon-angle-up"></i></a>
-    </div>
-
-@endsection
-
-@push('scripts')
-    <!-- Scripts -->
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        const genderChart = new Chart(document.getElementById('genderChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Female', 'Male', 'Other'],
-                datasets: [{
-                    data: [50, 49, 1],
-                    backgroundColor: ['#0F172A', '#BE185D', '#6B21A8'],
-                    borderColor: '#1a1a1a',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#fff'
-                        }
-                    }
+        (function () {
+            var previewVideo = document.getElementById('promo-preview-video');
+            var fallbackImage = document.getElementById('promo-preview-fallback');
+            var loadingOverlay = document.getElementById('promo-preview-loading');
+            var previewCard = document.getElementById('promo-preview');
+
+            function showFallback() {
+                if (previewVideo) {
+                    previewVideo.classList.add('hidden');
+                    previewVideo.removeAttribute('src');
+                    try { previewVideo.pause(); } catch (e) {}
                 }
-            }
-        });
-
-        const locationChart = new Chart(document.getElementById('locationChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Indonesia', 'Philippines', 'Malaysia', 'Others'],
-                datasets: [{
-                    label: 'Audience (%)',
-                    data: [79.2, 9.5, 7.4, 1.4],
-                    backgroundColor: ['#1E3A8A', '#9D174D', '#7C3AED', '#F59E0B'],
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#fff'
-                        },
-                        grid: {
-                            color: 'rgba(255,255,255,0.1)'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            color: '#fff'
-                        },
-                        grid: {
-                            color: 'rgba(255,255,255,0.1)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#fff'
-                        }
-                    }
-                }
-            }
-        });
-
-        let lastScrollTop = 0;
-        const navbar = document.querySelector('.header');
-
-        window.addEventListener('scroll', function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > lastScrollTop) {
-                // Scroll ke bawah → sembunyikan
-                navbar.style.top = "-80px"; // tinggi navbar
-            } else {
-                // Scroll ke atas → tampilkan
-                navbar.style.top = "0";
+                if (fallbackImage) fallbackImage.classList.remove('hidden');
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
             }
 
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // biar nggak negatif
-        });
-        document.addEventListener("DOMContentLoaded", () => {
-            const mobileBut = document.querySelector(".mobile-but");
-            const mainMenu = document.querySelector(".main-menu");
-
-            if (!mobileBut || !mainMenu) return;
-
-            // Toggle menu saat hamburger diklik (hanya di mobile)
-            mobileBut.addEventListener("click", (e) => {
-                e.preventDefault();
-                const isActive = mainMenu.classList.toggle("active");
-                // Toggle visual state of the hamburger wrapper
-                const wrapper = mobileBut.closest('.toggle-mobile-but');
-                if (wrapper) wrapper.classList.toggle('active', isActive);
-                // Update ARIA expanded state
-                mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-            });
-
-            // Auto close menu saat klik item menu di mobile
-            mainMenu.querySelectorAll("a").forEach((link) => {
-                link.addEventListener("click", () => {
-                    if (window.innerWidth <= 990) {
-                        mainMenu.classList.remove("active");
-                        const wrapper = mobileBut.closest('.toggle-mobile-but');
-                        if (wrapper) wrapper.classList.remove('active');
-                        mobileBut.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            });
-        });
-    </script>
-
-    <script>
-        // Chart initialisation (keeps responsive behaviour)
-        (function() {
-            try {
-                const genderCtx = document.getElementById('genderChart');
-                if (genderCtx) {
-                    new Chart(genderCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: ['Female', 'Male', 'Other'],
-                            datasets: [{
-                                data: [50, 49, 1],
-                                backgroundColor: ['#0F172A', '#BE185D', '#6B21A8'],
-                                borderColor: '#1a1a1a',
-                                borderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    labels: {
-                                        color: '#fff'
-                                    }
-                                }
-                            }
-                        }
-                    });
+            function playStream(url) {
+                if (!previewVideo || !url) {
+                    showFallback();
+                    return;
                 }
 
-                const locCtx = document.getElementById('locationChart');
-                if (locCtx) {
-                    new Chart(locCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Indonesia', 'Philippines', 'Malaysia', 'Others'],
-                            datasets: [{
-                                label: 'Audience (%)',
-                                data: [79.2, 9.5, 7.4, 1.4],
-                                backgroundColor: ['#1E3A8A', '#9D174D', '#7C3AED', '#F59E0B'],
-                                borderRadius: 8
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                x: {
-                                    ticks: {
-                                        color: '#fff'
-                                    },
-                                    grid: {
-                                        color: 'rgba(255,255,255,0.1)'
-                                    }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100,
-                                    ticks: {
-                                        color: '#fff'
-                                    },
-                                    grid: {
-                                        color: 'rgba(255,255,255,0.1)'
-                                    }
-                                }
-                            },
-                            plugins: {
-                                legend: {
-                                    labels: {
-                                        color: '#fff'
-                                    }
-                                }
-                            }
-                        }
-                    });
+                if (fallbackImage) fallbackImage.classList.add('hidden');
+                if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+                previewVideo.classList.remove('hidden');
+
+                var useNativeHls = previewVideo.canPlayType('application/vnd.apple.mpegurl');
+
+                function startPlayback() {
+                    previewVideo.src = url;
+                    previewVideo.load();
+                    previewVideo.play().catch(function () {});
+                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 }
-            } catch (e) {
-                console.warn('Chart init failed', e);
-            }
-        })();
-    </script>
 
-    <script>
-        // Header hide-on-scroll and mobile menu toggle (kept compact)
-        (function() {
-            let lastScrollTop = 0;
-            const navbar = document.querySelector('.header');
-            if (navbar) {
-                window.addEventListener('scroll', function() {
-                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    navbar.style.top = scrollTop > lastScrollTop ? '-80px' : '0';
-                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const mobileBut = document.querySelector('.mobile-but');
-                const mainMenu = document.querySelector('.main-menu');
-                if (!mobileBut || !mainMenu) return;
-                mobileBut.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const isActive = mainMenu.classList.toggle('active');
-                    const wrapper = mobileBut.closest('.toggle-mobile-but');
-                    if (wrapper) wrapper.classList.toggle('active', isActive);
-                    mobileBut.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-                });
-                mainMenu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-                    if (window.innerWidth <= 990) {
-                        mainMenu.classList.remove('active');
-                        const wrapper = mobileBut.closest('.toggle-mobile-but');
-                        if (wrapper) wrapper.classList.remove('active');
-                        mobileBut.setAttribute('aria-expanded', 'false');
-                    }
-                }));
-            });
-        })();
-    </script>
-
-    <script>
-        // Promo player logic: fetch signed URL and play using HLS or native
-        (function() {
-            const playBtn = document.getElementById('promo-play-button');
-            const placeholder = document.getElementById('promo-video-placeholder');
-            const container = document.getElementById('promo-player-container');
-
-            async function fetchPromoUrl() {
-                try {
-                    const res = await fetch('/promo-stream');
-                    const j = await res.json();
-                    return j.url || null;
-                } catch (e) {
-                    console.warn('Failed to fetch promo stream', e);
-                    return null;
+                if (useNativeHls) {
+                    startPlayback();
+                    return;
                 }
-            }
 
-            function createAndPlay(url) {
-                if (!url) return;
-                const existing = document.getElementById('promo-html5-player');
-                if (existing) {
+                if (window.Hls) {
                     try {
-                        existing.pause();
-                    } catch (e) {}
-                    existing.remove();
-                }
-                const v = document.createElement('video');
-                v.id = 'promo-html5-player';
-                v.controls = true;
-                v.setAttribute('playsinline', '');
-                v.style.position = 'absolute';
-                v.style.top = '0';
-                v.style.left = '0';
-                v.style.width = '100%';
-                v.style.height = '100%';
-                v.style.zIndex = '2';
-                container.appendChild(v);
-                if (placeholder) placeholder.style.display = 'none';
+                        if (window._promoHls) {
+                            try { window._promoHls.destroy(); } catch (e) {}
+                            window._promoHls = null;
+                        }
 
-                const attach = () => {
-                    if (window.Hls && Hls.isSupported()) {
-                        const hls = new Hls();
+                        var hls = new Hls();
+                        window._promoHls = hls;
                         hls.loadSource(url);
-                        hls.attachMedia(v);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                            v.play().catch(() => {});
+                        hls.attachMedia(previewVideo);
+                        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                            previewVideo.play().catch(function () {});
+                            if (loadingOverlay) loadingOverlay.classList.add('hidden');
                         });
+                        hls.on(Hls.Events.ERROR, function (_, data) {
+                            if (data && data.fatal) {
+                                showFallback();
+                            }
+                        });
+                    } catch (e) {
+                        showFallback();
+                    }
+                    return;
+                }
+
+                var s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+                s.async = true;
+                s.onload = function () {
+                    if (window.Hls) {
+                        playStream(url);
                     } else {
-                        v.src = url;
-                        v.addEventListener('loadedmetadata', () => v.play().catch(() => {}));
+                        showFallback();
                     }
                 };
-
-                if (!window.Hls) {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-                    s.async = true;
-                    s.onload = attach;
-                    s.onerror = attach;
-                    document.head.appendChild(s);
-                } else attach();
+                s.onerror = showFallback;
+                document.head.appendChild(s);
             }
 
-            if (playBtn) {
-                playBtn.addEventListener('click', async function() {
-                    playBtn.disabled = true;
-                    playBtn.textContent = 'Loading...';
-                    const url = await fetchPromoUrl();
-                    if (!url) {
-                        playBtn.textContent = 'Unavailable';
-                        return;
+            fetch('{{ url('/promo-stream') }}', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(function (response) { return response.ok ? response.json() : null; })
+                .then(function (data) {
+                    if (data && data.url) {
+                        playStream(data.url);
+                    } else {
+                        showFallback();
                     }
-                    createAndPlay(url);
+                })
+                .catch(showFallback);
+
+            if (previewCard) {
+                previewCard.addEventListener('click', function () {
+                    if (previewVideo && previewVideo.paused) {
+                        previewVideo.play().catch(function () {});
+                    }
+                });
+            }
+        })();
+
+        (function () {
+            var button = document.getElementById('mobile-menu-button');
+            var menu = document.getElementById('mobile-menu');
+            if (button && menu) {
+                button.addEventListener('click', function () {
+                    var isHidden = menu.classList.contains('hidden');
+                    menu.classList.toggle('hidden');
+                    button.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+                });
+                menu.querySelectorAll('a[href^="#"]').forEach(function (link) {
+                    link.addEventListener('click', function () {
+                        menu.classList.add('hidden');
+                        button.setAttribute('aria-expanded', 'false');
+                    });
                 });
             }
         })();
     </script>
-
-    <script>
-        // Fallback: delegated listener for mobile hamburger/touch so the menu opens
-        // even if DOM structure changed by upstream SEO edits. This does NOT modify any SEO content.
-        (function() {
-            function toggleMobileMenuFromButton(btn) {
-                if (!btn) return;
-                const mainMenu = document.querySelector('.main-menu');
-                if (!mainMenu) return;
-                const isActive = mainMenu.classList.toggle('active');
-                const wrapper = btn.closest('.toggle-mobile-but');
-                if (wrapper) wrapper.classList.toggle('active', isActive);
-                btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-            }
-
-            // Use event delegation to catch clicks/touches on the hamburger even if markup moved
-            document.addEventListener('click', function(e) {
-                const btn = e.target.closest && e.target.closest('.mobile-but');
-                if (!btn) return;
-                e.preventDefault();
-                toggleMobileMenuFromButton(btn);
-            }, true);
-
-            // Also listen for touchstart for certain mobile browsers that consume click
-            document.addEventListener('touchstart', function(e) {
-                const btn = e.target.closest && e.target.closest('.mobile-but');
-                if (!btn) return;
-                // preventDefault may interfere with scrolling; only prevent when necessary
-                e.preventDefault();
-                toggleMobileMenuFromButton(btn);
-            }, { passive: false, capture: true });
-        })();
-    </script>
-@endpush
+</body>
+</html>

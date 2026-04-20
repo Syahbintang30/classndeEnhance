@@ -11,3 +11,38 @@
 /* Ensure open session button looks good on dark bg */
 .open-session-btn.disabled { opacity: 0.6; pointer-events: none; }
 
+/* Coaching bookings table alignment */
+.coaching-bookings-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+.coaching-bookings-table th,
+.coaching-bookings-table td {
+	vertical-align: top;
+}
+
+.coaching-bookings-table .cb-col-user { width: 17%; min-width: 180px; }
+.coaching-bookings-table .cb-col-notes { width: 20%; white-space: pre-wrap; word-break: break-word; }
+.coaching-bookings-table .cb-col-time { width: 16%; min-width: 180px; }
+.coaching-bookings-table .cb-col-status { width: 9%; }
+.coaching-bookings-table .cb-col-payment { width: 18%; min-width: 200px; word-break: break-word; }
+.coaching-bookings-table .cb-col-twilio { width: 14%; min-width: 180px; word-break: break-word; }
+.coaching-bookings-table .cb-col-actions {
+	width: 10%;
+	min-width: 120px;
+	white-space: nowrap;
+}
+
+.coaching-bookings-table .meeting-finished-badge {
+	font-size: 12px;
+	font-weight: 700;
+	padding: 6px 10px;
+}
+
+@media (max-width: 1200px) {
+	.coaching-bookings-table {
+		table-layout: auto;
+	}
+}
+

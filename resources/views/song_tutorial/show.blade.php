@@ -7,7 +7,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" style="width: 250px; border-right:1px solid #ccc; padding:1rem;">
     <div class="logo-container" style="margin-bottom:1rem; display:flex; align-items:center; justify-content:center;">
-            <a href="{{ route('song.tutorial') }}">
+            <a href="{{ route('compro') }}">
                 <img src="{{ asset('compro/img/ndelogo.png') }}" class="nav-home-btn" alt="Nde Logo">
             </a>
         </div>
@@ -100,6 +100,7 @@ let player = null; // for YT player or placeholder
 let hlsInstance = null; // for hls.js instance
 let currentTopicId = null;
 let progressTimer = null;
+let lastProgressSentAt = 0;
 
 function isYouTubeUrl(url){ return /youtu\.be\/|youtube\.com\/.+v=/.test(url || ''); }
 
@@ -134,8 +135,76 @@ function loadTopicVideo(url, topicId, title, description){
     if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
 }
 
-// progress tracking disabled by configuration. reportProgress is a no-op to avoid calling backend.
-function reportProgress(markComplete = false){ /* no-op */ }
+function getCurrentPlaybackSeconds(){
+    const html5 = document.getElementById('html5-player');
+    if (html5 && Number.isFinite(html5.currentTime)) {
+        return Math.max(0, Math.floor(html5.currentTime));
+    }
+    try {
+        if (player && typeof player.getCurrentTime === 'function') {
+            return Math.max(0, Math.floor(player.getCurrentTime() || 0));
+        }
+    } catch (e) {}
+    return 0;
+}
+
+function setTopicCompletedUI(topicId, completed){
+    if(!topicId) return;
+    const el = document.querySelector('.topic-item[data-topic-id="' + topicId + '"]');
+    if(!el) return;
+    el.classList.toggle('completed', !!completed);
+}
+
+function reportProgress(markComplete = false){
+    if(!currentTopicId) return;
+
+    const now = Date.now();
+    if(!markComplete && now - lastProgressSentAt < 5000) return;
+    if(!markComplete) lastProgressSentAt = now;
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/api/topics/' + currentTopicId + '/progress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': csrf,
+        },
+        body: JSON.stringify({
+            watched_seconds: getCurrentPlaybackSeconds(),
+            completed: !!markComplete,
+        })
+    }).then(async (res) => {
+        if(!res.ok) return;
+        const data = await res.json();
+        setTopicCompletedUI(currentTopicId, !!data.completed);
+    }).catch(() => {});
+}
+
+function fetchTopicProgress(topicId){
+    if(!topicId) return;
+    fetch('/api/topics/' + topicId + '/progress', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(async (res) => {
+        if(!res.ok) return;
+        const data = await res.json();
+        setTopicCompletedUI(topicId, !!data.completed);
+    }).catch(() => {});
+}
+
+function onPlayerStateChange(event){
+    if(!window.YT || !event) return;
+    if(event.data === YT.PlayerState.PLAYING){
+        if(progressTimer) clearInterval(progressTimer);
+        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
+    } else if(event.data === YT.PlayerState.PAUSED){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(false);
+    } else if(event.data === YT.PlayerState.ENDED){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(true);
+    }
+}
 
 function createHtml5PlayerAndPlay(streamUrl, topicId){
     // ensure container
@@ -160,7 +229,6 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
         if(window.Hls && Hls.isSupported()){
             const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v);
             hls.on(Hls.Events.MANIFEST_PARSED, function(){
-                // progress tracking disabled: just play
                 v.play().catch(()=>{});
             });
         } else {
@@ -183,9 +251,19 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
     }
 
     // wire events for progress reporting
-        v.addEventListener('play', function(){ const sp = document.getElementById('ajax-spinner'); if(sp) sp.classList.remove('show'); });
-    v.addEventListener('pause', function(){ /* progress disabled */ });
-    v.addEventListener('ended', function(){ /* progress disabled */ });
+    v.addEventListener('play', function(){
+        const sp = document.getElementById('ajax-spinner'); if(sp) sp.classList.remove('show');
+        if(progressTimer) clearInterval(progressTimer);
+        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
+    });
+    v.addEventListener('pause', function(){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(false);
+    });
+    v.addEventListener('ended', function(){
+        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+        reportProgress(true);
+    });
 }
 
 function destroyHtml5Player(){
@@ -255,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // force stop player/timers
     function forceStopAll(){
         try{
+            reportProgress(false);
             if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
             if(player && typeof player.stopVideo === 'function'){ try{ player.stopVideo(); }catch(e){} }
             if(player && typeof player.destroy === 'function'){ try{ player.destroy(); }catch(e){} }
@@ -266,7 +345,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // initialize sidebar interactions (toggle/restore open state)
     function initSidebar(){
         const open = getOpenLessons();
-        document.querySelectorAll('.lesson-block').forEach(block => {
+        const openLessonId = Array.isArray(open) && open.length ? open[0] : null;
+        const lessonBlocks = document.querySelectorAll('.lesson-block');
+
+        function closeOtherLessons(activeBlock){
+            lessonBlocks.forEach(otherBlock => {
+                if(otherBlock === activeBlock) return;
+                const otherTopics = otherBlock.querySelector('.topic-list');
+                const otherArrow = otherBlock.querySelector('.lesson-arrow');
+                if(otherTopics) otherTopics.style.display = 'none';
+                otherBlock.classList.remove('active');
+                if(otherArrow) otherArrow.textContent = '▸';
+            });
+        }
+
+        lessonBlocks.forEach(block => {
             const a = block.querySelector('.lesson-header');
             const arrow = block.querySelector('.lesson-arrow');
             const topics = block.querySelector('.topic-list');
@@ -274,10 +367,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const lessonId = href ? href.split('/').filter(Boolean).pop() : null;
 
             // restore open state
-            if(lessonId && open.includes(lessonId)){
+            if(lessonId && lessonId === openLessonId){
                 if(topics) topics.style.display = 'block';
                 block.classList.add('active');
                 if(arrow) arrow.textContent = '▾';
+            } else {
+                if(topics) topics.style.display = 'none';
+                block.classList.remove('active');
+                if(arrow) arrow.textContent = '▸';
             }
 
             // arrow click toggles expand without navigation
@@ -285,14 +382,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 arrow.addEventListener('click', (ev) => {
                     ev.preventDefault(); ev.stopPropagation();
                     const isHidden = window.getComputedStyle(topics).display === 'none';
-                    topics.style.display = isHidden ? 'block' : 'none';
-                    block.classList.toggle('active', isHidden);
-                    arrow.textContent = isHidden ? '▾' : '▸';
-                    // persist
-                    const openNow = getOpenLessons();
-                    if(isHidden){ if(!openNow.includes(lessonId)) openNow.push(lessonId); }
-                    else { const idx = openNow.indexOf(lessonId); if(idx>-1) openNow.splice(idx,1); }
-                    setOpenLessons(openNow);
+                    if(isHidden){
+                        closeOtherLessons(block);
+                        topics.style.display = 'block';
+                        block.classList.add('active');
+                        arrow.textContent = '▾';
+                        setOpenLessons(lessonId ? [lessonId] : []);
+                    } else {
+                        topics.style.display = 'none';
+                        block.classList.remove('active');
+                        arrow.textContent = '▸';
+                        setOpenLessons([]);
+                    }
                 });
             }
 
@@ -303,14 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 ev.preventDefault();
                 // toggle topics visible state
                 const isHidden = window.getComputedStyle(topics).display === 'none';
-                topics.style.display = isHidden ? 'block' : 'none';
-                block.classList.toggle('active', isHidden);
-                if(arrow) arrow.textContent = isHidden ? '▾' : '▸';
-                // persist open state
-                const openNow = getOpenLessons();
-                if(isHidden){ if(lessonId && !openNow.includes(lessonId)) openNow.push(lessonId); }
-                else { if(lessonId){ const idx = openNow.indexOf(lessonId); if(idx>-1) openNow.splice(idx,1); } }
-                setOpenLessons(openNow);
+                if(isHidden){
+                    closeOtherLessons(block);
+                    topics.style.display = 'block';
+                    block.classList.add('active');
+                    if(arrow) arrow.textContent = '▾';
+                    setOpenLessons(lessonId ? [lessonId] : []);
+                } else {
+                    topics.style.display = 'none';
+                    block.classList.remove('active');
+                    if(arrow) arrow.textContent = '▸';
+                    setOpenLessons([]);
+                }
             });
 
             // hover intent: start a short timer then prefetch partial
@@ -354,9 +459,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // progress markers disabled: do not fetch per-topic progress from server
-    document.querySelectorAll('.topic-item[data-topic-id]').forEach(item => {
-            // no-op
+        // Load completion markers for topic list
+        document.querySelectorAll('.topic-item[data-topic-id]').forEach(item => {
+            fetchTopicProgress(item.getAttribute('data-topic-id'));
         });
 
         // play button behavior

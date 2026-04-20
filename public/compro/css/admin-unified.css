@@ -1,0 +1,264 @@
+/* Unified admin visual layer
+   Applied across admin pages so modules match dashboard language. */
+
+.admin-shell {
+    --u-bg: #050505;
+    --u-surface: #0c0c0e;
+    --u-surface-soft: rgba(255, 255, 255, 0.02);
+    --u-border: rgba(255, 255, 255, 0.08);
+    --u-text: #f5f7fb;
+    --u-muted: #9aa3b2;
+    --u-primary: #1f6feb;
+    --u-success: #1ea971;
+    --u-warning: #facc15;
+    --u-danger: #ef4444;
+    --u-radius-sm: 10px;
+    --u-radius-md: 14px;
+    --u-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
+}
+
+.admin-shell .admin-content {
+    color: var(--u-text);
+}
+
+.admin-shell .admin-content .container,
+.admin-shell .admin-content .container-fluid {
+    max-width: 100%;
+}
+
+/* Page blocks */
+.admin-shell .admin-content .content-wrapper {
+    background: transparent;
+    border-radius: var(--u-radius-md);
+}
+
+.admin-shell .admin-content .header h2,
+.admin-shell .admin-content h1,
+.admin-shell .admin-content h2,
+.admin-shell .admin-content h3,
+.admin-shell .admin-content h4,
+.admin-shell .admin-content h5,
+.admin-shell .admin-content h6 {
+    color: var(--u-text);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.admin-shell .admin-content .header p,
+.admin-shell .admin-content p.text-muted,
+.admin-shell .admin-content .text-muted,
+.admin-shell .admin-content small.text-muted {
+    color: var(--u-muted) !important;
+}
+
+/* Cards */
+.admin-shell .admin-content .card,
+.admin-shell .admin-content .panel,
+.admin-shell .admin-content .box {
+    background: linear-gradient(180deg, rgba(16, 16, 18, 0.94), rgba(9, 9, 10, 0.94)) !important;
+    border: 1px solid var(--u-border) !important;
+    border-radius: var(--u-radius-md) !important;
+    box-shadow: var(--u-shadow);
+    color: var(--u-text) !important;
+}
+
+.admin-shell .admin-content .card .card-body {
+    background: transparent !important;
+}
+
+/* Forms */
+.admin-shell .admin-content .form-control,
+.admin-shell .admin-content .form-select,
+.admin-shell .admin-content textarea,
+.admin-shell .admin-content input[type="text"],
+.admin-shell .admin-content input[type="email"],
+.admin-shell .admin-content input[type="number"],
+.admin-shell .admin-content input[type="date"],
+.admin-shell .admin-content input[type="password"] {
+    min-height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--u-text) !important;
+}
+
+.admin-shell .admin-content .form-control::placeholder,
+.admin-shell .admin-content textarea::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-shell .admin-content .form-control:focus,
+.admin-shell .admin-content .form-select:focus,
+.admin-shell .admin-content textarea:focus {
+    border-color: rgba(99, 163, 255, 0.55) !important;
+    box-shadow: 0 0 0 0.15rem rgba(31, 111, 235, 0.2) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Buttons */
+.admin-shell .admin-content .btn {
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.admin-shell .admin-content .btn-primary {
+    background: var(--u-primary) !important;
+    border-color: #195bc2 !important;
+    color: #fff !important;
+}
+
+.admin-shell .admin-content .btn-primary:hover {
+    background: #1862d8 !important;
+    border-color: #1457bf !important;
+}
+
+.admin-shell .admin-content .btn-success {
+    background: var(--u-success) !important;
+    border-color: #19895d !important;
+}
+
+.admin-shell .admin-content .btn-danger {
+    background: var(--u-danger) !important;
+    border-color: #db3d3d !important;
+}
+
+.admin-shell .admin-content .btn-outline-primary,
+.admin-shell .admin-content .btn-outline-secondary,
+.admin-shell .admin-content .btn-outline-danger {
+    background: transparent !important;
+    color: var(--u-text) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.admin-shell .admin-content .btn-outline-primary:hover,
+.admin-shell .admin-content .btn-outline-secondary:hover,
+.admin-shell .admin-content .btn-outline-danger:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+}
+
+/* Badges */
+.admin-shell .admin-content .badge {
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: 0.15px;
+    padding: 0.35rem 0.55rem;
+}
+
+.admin-shell .admin-content .badge.bg-success {
+    background: var(--u-success) !important;
+}
+
+.admin-shell .admin-content .badge.bg-warning {
+    background: var(--u-warning) !important;
+    color: #111 !important;
+}
+
+.admin-shell .admin-content .badge.bg-danger {
+    background: var(--u-danger) !important;
+}
+
+.admin-shell .admin-content .badge.bg-secondary {
+    background: #3e4652 !important;
+}
+
+/* Tables */
+.admin-shell .admin-content .table-responsive {
+    border-radius: var(--u-radius-md);
+}
+
+.admin-shell .admin-content .table,
+.admin-shell .admin-content .custom-table,
+.admin-shell .admin-content .light-custom-table {
+    margin-bottom: 0;
+    color: var(--u-text) !important;
+}
+
+.admin-shell .admin-content .table thead th,
+.admin-shell .admin-content .custom-table thead th,
+.admin-shell .admin-content .light-custom-table thead th {
+    background: linear-gradient(180deg, rgba(16, 16, 19, 0.98), rgba(10, 10, 12, 0.98)) !important;
+    color: #fff !important;
+    border-bottom: 1px solid var(--u-border) !important;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin-shell .admin-content .table td,
+.admin-shell .admin-content .table th,
+.admin-shell .admin-content .custom-table td,
+.admin-shell .admin-content .custom-table th,
+.admin-shell .admin-content .light-custom-table td,
+.admin-shell .admin-content .light-custom-table th {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    vertical-align: top;
+}
+
+.admin-shell .admin-content .table.table-hover tbody tr:hover td,
+.admin-shell .admin-content .custom-table tbody tr:hover td,
+.admin-shell .admin-content .light-custom-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Tabs / subnav buttons */
+.admin-shell .admin-content .btn-group .btn,
+.admin-shell .admin-content .nav .btn,
+.admin-shell .admin-content .admin-subnav .btn {
+    border-radius: 9px;
+}
+
+/* Modal */
+.admin-shell .admin-content .modal-content,
+.admin-shell .admin-content .modal-inner,
+.admin-shell .admin-content .modal_content {
+    background: linear-gradient(180deg, #101113, #0b0c0f) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    color: var(--u-text) !important;
+}
+
+.admin-shell .admin-content .modal-header,
+.admin-shell .admin-content .modal-footer {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Pagination */
+.admin-shell .admin-content .pagination .page-link {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #e6ebf5 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    border-radius: 8px !important;
+}
+
+.admin-shell .admin-content .pagination .page-link:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-shell .admin-content .pagination .page-item.active .page-link {
+    background: var(--u-primary) !important;
+    border-color: #195bc2 !important;
+    color: #fff !important;
+}
+
+/* Settings page refinements */
+.admin-shell .admin-content .settings-clean-page .card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+
+.admin-shell .admin-content .settings-clean-page .form-label {
+    font-weight: 700;
+    color: #e8eef8;
+    margin-bottom: 0.35rem;
+}
+
+.admin-shell .admin-content .settings-clean-page .form-check-label {
+    font-weight: 700;
+    color: #ecf2ff;
+}
+
+.admin-shell .admin-content .settings-clean-page .form-check small,
+.admin-shell .admin-content .settings-clean-page small.text-muted {
+    font-size: 0.8rem;
+}

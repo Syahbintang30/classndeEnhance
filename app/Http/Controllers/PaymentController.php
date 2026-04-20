@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Transaction;
 use App\Models\UserPackage;
+use App\Models\CoachingTicket;
 use App\Models\Package;
 use App\Models\User;
 use App\Services\CoachingTicketService;
@@ -247,6 +248,25 @@ class PaymentController extends Controller
             $merged = array_merge($existing ?? [], $data ?: []);
             $txn->midtrans_response = $merged;
             $txn->status = $txnStatus;
+            if (empty($txn->package_id)) {
+                $candidatePackageId = null;
+                if (! empty($merged['package_id'])) {
+                    $candidatePackageId = (int) $merged['package_id'];
+                } elseif (! empty($merged['item_details'][0]['id']) && preg_match('/^package-(\d+)$/', (string) $merged['item_details'][0]['id'], $matches)) {
+                    $candidatePackageId = (int) ($matches[1] ?? 0);
+                }
+
+                if (empty($candidatePackageId)) {
+                    $cached = Cache::get('pending_txn:' . $orderId, null);
+                    if (is_array($cached) && ! empty($cached['package_id'])) {
+                        $candidatePackageId = (int) $cached['package_id'];
+                    }
+                }
+
+                if (! empty($candidatePackageId)) {
+                    $txn->package_id = $candidatePackageId;
+                }
+            }
             try { $txn->save(); if ($debug) { Log::info('Midtrans webhook: updated existing transaction (debug)', ['id' => $txn->id, 'order_id' => $orderId]); } } catch (\Throwable $e) {
                 Log::error('Midtrans webhook: failed to update txn on settlement', ['err' => $e->getMessage(), 'order_id' => $orderId]);
             }
@@ -294,6 +314,23 @@ class PaymentController extends Controller
                         if ($user && empty($user->package_id)) { $user->package_id = $txn->package_id; $user->save(); }
                         // Idempotent: top-up free_on_register tickets based on final package
                         if ($user) { CoachingTicketService::grantFreeOnRegister($user); }
+                        // For standalone coaching-ticket purchase, grant one purchasable ticket idempotently.
+                        try {
+                            $pkg = Package::find($txn->package_id);
+                            if ($user && $pkg && ($pkg->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+                                $source = 'midtrans:' . $orderId;
+                                $existsTicket = CoachingTicket::where('user_id', $user->id)
+                                    ->where('source', $source)
+                                    ->exists();
+                                if (! $existsTicket) {
+                                    CoachingTicket::create([
+                                        'user_id' => $user->id,
+                                        'is_used' => false,
+                                        'source' => $source,
+                                    ]);
+                                }
+                            }
+                        } catch (\Throwable $e) {}
                     } catch (\Throwable $e) {}
                 } else {
                     Log::warning('Midtrans webhook: upgrade-intermediate purchase not eligible, skipping grant', ['order_id' => $orderId, 'user_id' => $txn->user_id]);
@@ -313,6 +350,23 @@ class PaymentController extends Controller
                         if ($user && empty($user->package_id)) { $user->package_id = $txn->package_id; $user->save(); }
                         // Idempotent: top-up free_on_register tickets based on final package
                         if ($user) { CoachingTicketService::grantFreeOnRegister($user); }
+                        // For standalone coaching-ticket purchase, grant one purchasable ticket idempotently.
+                        try {
+                            $pkg = Package::find($txn->package_id);
+                            if ($user && $pkg && ($pkg->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+                                $source = 'midtrans:' . $orderId;
+                                $existsTicket = CoachingTicket::where('user_id', $user->id)
+                                    ->where('source', $source)
+                                    ->exists();
+                                if (! $existsTicket) {
+                                    CoachingTicket::create([
+                                        'user_id' => $user->id,
+                                        'is_used' => false,
+                                        'source' => $source,
+                                    ]);
+                                }
+                            }
+                        } catch (\Throwable $e) {}
                         // If this was a coaching-ticket buy with referral discount, redeem units now
                         try {
                             $pkg = Package::find($txn->package_id);
@@ -343,7 +397,7 @@ class PaymentController extends Controller
         if (! $txn) return response()->json(['status' => 'not_found']);
 
         $lower = strtolower((string) $txn->status);
-        if (in_array($lower, ['settlement','capture','success'])) {
+        if (in_array($lower, ['settlement','capture','success','paid','settled'])) {
             return response()->json(['status' => 'settlement']);
         }
         return response()->json(['status' => 'pending']);

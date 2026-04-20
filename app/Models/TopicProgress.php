@@ -9,6 +9,8 @@ class TopicProgress extends Model
 {
     use HasFactory;
 
+    protected $table = 'topic_progresses';
+
     protected $fillable = ['user_id', 'topic_id', 'watched_seconds', 'completed'];
 
     public function user()

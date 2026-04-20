@@ -146,6 +146,7 @@
                     <input type="hidden" name="midtrans_result" id="midtrans_result" value="" />
                 </form>
             </div>
+
         </div>
     </div>
 </div>
@@ -164,42 +165,10 @@
 @endphp
 <script src="{{ $midtransHost }}/snap/snap.js" data-client-key="{{ $midtransClientKey }}"></script>
 <script>
-    // Lightweight centered overlay for Snap embed (non-fullscreen)
-    (function ensureEmbedOverlay(){
-        if (document.getElementById('snap-embed-overlay')) return;
-        const overlay = document.createElement('div');
-        overlay.id = 'snap-embed-overlay';
-        overlay.style.cssText = [
-            'display:none',
-            'position:fixed','inset:0','z-index:999999',
-            'background:rgba(0,0,0,0.45)',
-            'align-items:center','justify-content:center','padding:16px'
-        ].join(';');
-        overlay.innerHTML = `
-            <div id=\"snap-embed-dialog\" style=\"width:440px;max-width:96vw;height:720px;max-height:92vh;background:#fff;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);\">
-                <div id=\"snap-embed\" style=\"position:absolute;inset:0;\"></div>
-            </div>`;
-        document.body.appendChild(overlay);
-        overlay.addEventListener('click', function(e){
-            if (e.target && e.target.id === 'snap-embed-overlay') hideSnapEmbed();
-        });
-        function hideSnapEmbed(){ overlay.style.display='none'; try{ document.getElementById('snap-embed').innerHTML=''; }catch(_){} }
-        window.__hideSnapEmbed = hideSnapEmbed;
-        window.__showSnapEmbed = function(){ overlay.style.display='flex'; };
-    })();
-
-    // Use app modal component: inject content into modal container and open
-    function showInAppModal(html){
-        const container = document.getElementById('payment-modal-content');
-        if (!container) return alert('Modal container not found');
-        container.innerHTML = html;
-        window.dispatchEvent(new CustomEvent('open-modal', { detail: 'payment-method-modal' }));
-    }
-
     // trigger initial update so server-applied referral is reflected in the UI
     try { updateTotalsAfterDiscounts(); } catch(e){}
 
-    // legacy manual handlers removed — all flows now use Midtrans via the PAY button
+    // Checkout flow uses Midtrans Snap popup
 
     document.getElementById('pay-button').addEventListener('click', function(){
         const selected = document.querySelector('input[name="payment_method"]:checked');
@@ -221,8 +190,6 @@
             payload.package_id = {{ $package->id }};
             payload.package_qty = {{ request()->input('package_qty') ?: 1 }};
             payload.package_unit_price = {{ $package->price }};
-            let pkgInput = document.createElement('input'); pkgInput.type='hidden'; pkgInput.name='package_id'; pkgInput.value='{{ $package->id }}'; document.getElementById('payment-complete-form').appendChild(pkgInput);
-            let qtyInput = document.createElement('input'); qtyInput.type='hidden'; qtyInput.name='package_qty'; qtyInput.value='{{ request()->input('package_qty') ?: 1 }}'; document.getElementById('payment-complete-form').appendChild(qtyInput);
         @else
             // if package_id was passed as query param (logged-in user flow)
             const urlParams = new URLSearchParams(window.location.search);
@@ -239,46 +206,27 @@
             body: JSON.stringify(payload)
         }).then(r => r.json()).then(json => {
             if (json.snap_token) {
-                try {
-                    // Show our centered overlay and embed Snap inside it
-                    if (window.__showSnapEmbed) window.__showSnapEmbed();
-                    snap.embed(json.snap_token, {
-                        embedId: 'snap-embed',
-                        onSuccess: function(result){
-                            try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
-                            try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                            if (window.__hideSnapEmbed) window.__hideSnapEmbed();
-                            startPollingForSettlement(result);
-                        },
-                        onPending: function(result){
-                            try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
-                            try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                            if (window.__hideSnapEmbed) window.__hideSnapEmbed();
-                            startPollingForSettlement(result);
-                        },
-                        onError: function(err){
-                            if (window.__hideSnapEmbed) window.__hideSnapEmbed();
-                            alert('Payment Failed. Please try again.');
-                        }
-                    });
-                } catch(e) {
-                    // Fallback to default popup if embed fails for any reason
-                    snap.pay(json.snap_token, {
-                        onSuccess: function(result){
-                            try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
-                            try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                            startPollingForSettlement(result);
-                        },
-                        onPending: function(result){
-                            try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch(e){ }
-                            try { document.getElementById('payment-complete-form').submit(); } catch(e){ }
-                            startPollingForSettlement(result);
-                        },
-                        onError: function(err){ alert('Payment Failed. Please try again.'); }
-                    });
-                }
+                snap.pay(json.snap_token, {
+                    onSuccess: function(result){
+                        try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
+                        document.getElementById('payment-complete-form').submit();
+                    },
+                    onPending: function(result){
+                        try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
+                        document.getElementById('payment-complete-form').submit();
+                    },
+                    onError: function(){
+                        alert('Payment Failed. Please try again.');
+                    },
+                    onClose: function(){
+                        // User closed popup without finishing payment.
+                    }
+                });
             } else {
-                alert('Failed to process payment. Please try again in a moment.');
+                const midtransError = json && json.body && Array.isArray(json.body.error_messages) && json.body.error_messages.length
+                    ? json.body.error_messages[0]
+                    : (json.message || json.error || 'Failed to process payment. Please try again in a moment.');
+                alert(midtransError);
             }
         }).catch(e => { console.error(e); alert('A network error occurred. Please check your connection and try again.'); });
     });
@@ -349,94 +297,11 @@
             if (voucherAmountEl) voucherAmountEl.textContent = '- Rp 0';
         }
 
-        // update displayed total
-        const totalEls = Array.from(document.querySelectorAll('[data-total]')).concat([]);
-        // update the visible Total Payment area inside the order card
-        const totalPaymentDisplay = document.querySelector('.flex-1 [style*="Total Payment:"]') || null;
-        // more reliable: find the Total Payment text by searching for the strong value near the 'Total Payment' label
-        const totalNode = Array.from(document.querySelectorAll('div')).find(d => d.textContent && d.textContent.trim().startsWith('Total Payment:'));
-        // fallback: directly update the large total value element by matching the number in the right place
-        try {
-            // There is an element with the total amount as the last strong text in the order card - use selector matching previous code
-            const orderCard = document.querySelector('div[style*="Your Order is Ready"]') || document.querySelector('div[style*="Your Order is Ready"]');
-        } catch(e){}
-
-        // simpler and safer: replace the last element that contained the gross total inside the left card
-        const leftCardTotals = document.querySelectorAll('div[style]');
-        // find the element that currently shows the gross_amount number (match formatted number from server)
-        const currentGrossFormatted = new Intl.NumberFormat('id-ID').format({{ $order['gross_amount'] }});
-
-        // Update the big total at the bottom of the card by selecting the element with the gross amount initially rendered
-        // We will search for element nodes that contain the server gross_amount string and replace their textContent
-        const serverGrossStr = 'Rp {{ number_format($order['gross_amount'],0,',','.') }}';
-    const totalEl = document.getElementById('total_payment_amount');
-    if (totalEl) totalEl.textContent = 'Rp ' + afterVoucher.toLocaleString('id-ID');
+        const totalEl = document.getElementById('total_payment_amount');
+        if (totalEl) totalEl.textContent = 'Rp ' + afterVoucher.toLocaleString('id-ID');
 
         // also update the data-total attribute so other scripts using it see current value
         try { dataEl.setAttribute('data-total', String(afterVoucher)); } catch(e){}
-    }
-
-    // ensure voucher code (if applied) is included in midtrans payload by intercepting fetch call — simpler: append hidden input to payment form when pay is clicked
-    document.getElementById('pay-button').addEventListener('click', function(){
-        // before original click handler runs, attach voucher hidden inputs if voucher applied
-        if (appliedVoucher) {
-            // ensure we don't duplicate inputs
-            const form = document.getElementById('payment-complete-form');
-            if (! form.querySelector('input[name="voucher_code"]')) {
-                const vi = document.createElement('input'); vi.type='hidden'; vi.name='voucher_code'; vi.value=appliedVoucher.code; form.appendChild(vi);
-            }
-            if (! form.querySelector('input[name="voucher_id"]')) {
-                const vii = document.createElement('input'); vii.type='hidden'; vii.name='voucher_id'; vii.value=appliedVoucher.id; form.appendChild(vii);
-            }
-        }
-    }, { once: true });
-
-    // Polling logic: query server-side status until settlement or timeout
-    function startPollingForSettlement(snapResult) {
-        var orderId = (snapResult && (snapResult.order_id || snapResult.orderId)) ? (snapResult.order_id || snapResult.orderId) : '{{ $order['order_id'] }}';
-        var lessonId = '{{ $lesson->id }}';
-        var maxMs = 2 * 60 * 1000; // 2 minutes
-        var start = Date.now();
-        var interval = 2000; // start 2s
-
-        function poll(){
-            fetch('/api/transactions/status?order_id=' + encodeURIComponent(orderId), { credentials: 'same-origin' })
-                .then(r => r.json()).then(json => {
-                    if (json && json.status === 'settlement') {
-                        // server recorded settlement; redirect to thankyou
-                        // Redirect to centralized payments thankyou route (handles settlement verification & rendering)
-                        window.location.href = '/payments/thankyou?order_id=' + encodeURIComponent(orderId);
-                        return;
-                    }
-                    // not yet settled
-                    if (Date.now() - start > maxMs) {
-                        // timeout: redirect to payment page with notice so user can retry or check later
-                        window.location.href = '/registerclass/' + lessonId + '/payment?order_id=' + encodeURIComponent(orderId);
-                        return;
-                    }
-                    // exponential backoff up to 5s
-                    interval = Math.min(5000, interval + 1000);
-                    setTimeout(poll, interval);
-                }).catch(e => {
-                    // on network error, retry until timeout
-                    if (Date.now() - start > maxMs) {
-                        window.location.href = '/registerclass/' + lessonId + '/payment?order_id=' + encodeURIComponent(orderId);
-                        return;
-                    }
-                    setTimeout(poll, interval);
-                });
-        }
-        // show a small message to user that we're waiting for confirmation
-        try {
-            var pd = document.getElementById('payment-details-display');
-            var waitEl = document.createElement('div');
-            waitEl.id = 'payment-waiting-for-webhook';
-            waitEl.style.marginTop = '12px';
-            waitEl.style.color = '#b8f0c6';
-            waitEl.innerText = 'Menunggu konfirmasi pembayaran... Mengarahkan Anda segera setelah pembayaran dikonfirmasi.';
-            pd.appendChild(waitEl);
-        } catch(e) {}
-        poll();
     }
 </script>
 @endpush
@@ -471,18 +336,6 @@
         transition: all 0.2s ease-in-out;
     }
 
-    /* Override for our Midtrans embedded dialog responsiveness */
-    @media (max-width: 480px) {
-        #snap-embed-dialog { width: 96vw; height: 90vh; border-radius: 10px; }
-    }
-
-    /* Fine-tune overlay and embed for crisp UI */
-    #snap-embed-overlay { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
-    #snap-embed { overflow: hidden; border-radius: inherit; }
-    #snap-embed iframe { width: 100% !important; height: 100% !important; border: 0 !important; display: block; background: #fff; }
-    @media (min-width: 1200px) {
-        #snap-embed-dialog { width: 520px; height: 760px; }
-    }
 </style>
 @endpush
 

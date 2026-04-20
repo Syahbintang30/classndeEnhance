@@ -34,7 +34,7 @@
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover light-custom-table mb-0">
+                    <table class="table table-hover light-custom-table coaching-bookings-table mb-0">
                         <thead>
                             <tr>
                                 <th>User</th>
@@ -49,14 +49,15 @@
                         <tbody>
                         @forelse($bookings as $b)
                             <tr>
-                                <td style="min-width:180px">
+                                <td class="cb-col-user">
                                     <div style="font-weight:700">{{ optional($b->user)->name }}</div>
                                     <div class="text-muted" style="font-size:13px">{{ optional($b->user)->email }} · {{ optional($b->user)->phone ?? '-' }}</div>
                                 </td>
-                                <td style="max-width:360px;white-space:pre-wrap;word-break:break-word">
+                                <td class="cb-col-notes">
                                     @php
-                                        // hide noisy telemetry events (connect_error / Permission denied) from admin listing
+                                        // hide noisy telemetry and render end-call events as a clean status badge
                                         $notes = $b->notes ?? '';
+                                        $hasMeetingFinished = false;
                                         if ($notes) {
                                             $lines = preg_split('/\r?\n/', trim($notes));
                                             $filtered = array_filter($lines, function($l) {
@@ -65,37 +66,57 @@
                                                 if (str_contains($low, 'connect_error') || str_contains($low, 'permission denied') || str_contains($low, 'notallowederror')) return false;
                                                 return true;
                                             });
-                                            $display = trim(implode("\n", array_slice($filtered, 0, 5)));
+
+                                            $clean = [];
+                                            foreach ($filtered as $line) {
+                                                $low = strtolower((string) $line);
+                                                if (str_contains($low, 'session_end_clicked') || str_contains($low, 'session_ended_by_admin')) {
+                                                    $hasMeetingFinished = true;
+                                                    continue;
+                                                }
+                                                $clean[] = $line;
+                                            }
+
+                                            $display = trim(implode("\n", array_slice($clean, 0, 5)));
                                             if (! $display) $display = '-';
                                         } else {
                                             $display = '-';
                                         }
                                     @endphp
-                                    {{ $display }}
+                                    @if($display !== '-')
+                                        <div>{{ $display }}</div>
+                                    @else
+                                        -
+                                    @endif
                                 </td>
-                                <td style="min-width:180px">
+                                <td class="cb-col-time">
                                     @php
                                         $bt = \Carbon\Carbon::parse($b->booking_time);
                                         $slotTime = $bt->format('H:i');
                                         $slotDate = $bt->toDateString();
                                         $key = $slotDate . ' ' . $slotTime;
                                         $taken = isset($slotCounts[$key]) ? $slotCounts[$key] : 0;
+                                        $sessionLength = (int) config('coaching.session_length_minutes', 60);
+                                        $sessionStart = $bt->copy();
+                                        $sessionEnd = $bt->copy()->addMinutes($sessionLength);
+                                        $isPastByTime = $sessionEnd->lt(now());
+                                        $isLiveWindow = now()->gte($sessionStart->copy()->subMinutes(10)) && now()->lte($sessionEnd);
                                     @endphp
                                     <div>{{ $bt->translatedFormat('j F Y') }}</div>
                                     <div class="text-muted" style="font-size:13px">{{ $bt->format('H:i') }} · Taken: {{ $taken }}</div>
                                     <div style="margin-top:6px"><span class="countdown" data-time-ms="{{ \Carbon\Carbon::parse($b->booking_time)->getTimestamp() * 1000 }}">-</span></div>
                                 </td>
-                                <td>
+                                <td class="cb-col-status">
                                     @php $s = strtolower($b->status); @endphp
                                     @if($s === 'accepted')
-                                        <span class="badge bg-success">Accepted</span>
+                                        <span class="badge bg-success">Approved</span>
                                     @elseif($s === 'rejected')
                                         <span class="badge bg-danger">Rejected</span>
                                     @else
                                         <span class="badge bg-warning">Pending</span>
                                     @endif
                                 </td>
-                                <td style="min-width:200px">
+                                <td class="cb-col-payment">
                                     @php
                                         $paymentInfo = null;
                                         if ($b->ticket && $b->ticket->source) {
@@ -133,7 +154,7 @@
                                         -
                                     @endif
                                 </td>
-                            <td style="min-width:180px">
+                            <td class="cb-col-twilio">
                                 @php $sessionUrl = url('/coaching/session/'.$b->id); $btLocal = \Carbon\Carbon::parse($b->booking_time)->format('Y-m-d H:i:s'); @endphp
                                 @if($b->twilio_room_sid)
                                     <div style="display:flex;flex-direction:column;gap:6px;">
@@ -148,7 +169,7 @@
                                     </form>
                                 @endif
                             </td>
-                            <td class="text-end">
+                            <td class="text-end cb-col-actions">
                                 @if(strtolower($b->status) === 'pending')
                                     <div class="d-flex justify-content-end align-items-center gap-2">
                                         <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/accept') }}" style="display:inline">@csrf
@@ -158,7 +179,15 @@
                                         <button type="button" class="btn btn-sm btn-danger reject-open-btn" data-action="{{ url('/admin/coaching/bookings/'.$b->id.'/reject') }}" title="Reject" style="padding:4px 8px;">✕</button>
                                     </div>
                                 @else
-                                    <span class="">—</span>
+                                    @if($hasMeetingFinished || $isPastByTime)
+                                        <span class="badge bg-danger meeting-finished-badge">Meeting selesai</span>
+                                    @elseif(strtolower($b->status) === 'accepted' && $isLiveWindow)
+                                        <span class="badge bg-warning text-dark meeting-finished-badge">On Going</span>
+                                    @elseif(strtolower($b->status) === 'accepted')
+                                        <span class="badge bg-secondary meeting-finished-badge">Scheduled</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

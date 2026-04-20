@@ -122,12 +122,29 @@ document.addEventListener('DOMContentLoaded', function(){
         const schedule = '{{ $scheduleDisplay ?? '' }}';
         const packageId = {{ $package ? $package->id : 'null' }};
         try {
+            const createBody = { package_id: packageId };
+            if (schedule && schedule.trim() !== '') {
+                createBody.schedule = schedule;
+            }
+
             const res = await fetch('{{ route('coaching.checkout.create') }}', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({ schedule: schedule, package_id: packageId })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(createBody)
             });
-            const json = await res.json();
+
+            let json = {};
+            try {
+                json = await res.json();
+            } catch (e) {
+                json = { error: 'Server returned non-JSON response' };
+            }
+
             if (! res.ok) {
                 alert(json.error || 'Failed to create order');
                 payBtn.disabled = false; return;
@@ -136,10 +153,22 @@ document.addEventListener('DOMContentLoaded', function(){
             // Request snap token from existing midtrans endpoint
             const snapRes = await fetch('/api/midtrans/create', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({ order_id: json.order_id, gross_amount: json.gross_amount, package_id: json.package_id })
             });
-            const snapJson = await snapRes.json();
+
+            let snapJson = {};
+            try {
+                snapJson = await snapRes.json();
+            } catch (e) {
+                snapJson = { error: 'Server returned non-JSON response' };
+            }
+
             if (! snapRes.ok) {
                 alert(snapJson.error || 'Midtrans create failed'); payBtn.disabled = false; return;
             }
@@ -147,9 +176,37 @@ document.addEventListener('DOMContentLoaded', function(){
             const token = snapJson.snap_token || snapJson.raw?.token;
             if (! token) { alert('Midtrans token not returned'); payBtn.disabled = false; return; }
 
+            async function finalizeAfterSnap(result){
+                try {
+                    await fetch('{{ route('coaching.checkout.finalize') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_id: json.order_id,
+                            transaction_status: result?.transaction_status || null,
+                            result: result || null
+                        })
+                    });
+                } catch (e) {
+                    // Non-fatal: webhook may still grant later.
+                    console.warn('Finalize checkout failed', e);
+                }
+            }
+
             window.snap.pay(token, {
-                onSuccess: function(result){ window.location.href = '/coaching'; },
-                onPending: function(result){ window.location.href = '/coaching'; },
+                onSuccess: async function(result){
+                    await finalizeAfterSnap(result);
+                    window.location.href = '{{ route('coaching.upcoming') }}?paid=1';
+                },
+                onPending: async function(result){
+                    await finalizeAfterSnap(result);
+                    window.location.href = '{{ route('coaching.upcoming') }}?paid=pending';
+                },
                 onError: function(err){ alert('Payment failed'); payBtn.disabled = false; }
             });
 

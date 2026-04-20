@@ -9,6 +9,17 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title mb-3 text-white">Edit Package</h3>
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('admin.packages.update', $package->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -22,6 +33,11 @@
                             <div class="mb-3 col-md-6">
                                 <label class="form-label text-white">Price (Rupiah ex:125000)</label>
                                 <input name="price" value="{{ old('price',$package->price) }}" type="number" class="form-control" />
+                            </div>
+
+                            <div class="mb-3 col-md-12">
+                                <label class="form-label text-white">Slug (e.g. beginner/intermediate/coaching-ticket)</label>
+                                <input name="slug" value="{{ old('slug',$package->slug) }}" class="form-control" />
                             </div>
                         </div>
 

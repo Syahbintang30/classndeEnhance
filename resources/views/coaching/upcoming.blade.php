@@ -84,16 +84,22 @@
     }
     /* Scheduled: high-contrast white pill (on dark background) */
     .status-badge.scheduled {
-        background: #ffffff;
-        color: #111111;
-        border-color: rgba(0,0,0,0.06);
+        background: rgba(255,255,255,0.08);
+        color: #f3f4f6;
+        border-color: rgba(255,255,255,0.18);
     }
-    /* Finished: minimal, low-contrast text */
+    .status-badge.on-going {
+        background: #facc15;
+        color: #111111;
+        border-color: rgba(0,0,0,0.12);
+        font-weight: 800;
+    }
+    /* Finished: red badge for clear ended state */
     .status-badge.finished {
-        background: transparent;
-        color: rgba(255,255,255,0.7);
-        border: none;
-        font-weight: 600;
+        background: rgba(185, 28, 28, 0.2);
+        color: #fecaca;
+        border-color: rgba(248, 113, 113, 0.45);
+        font-weight: 700;
     }
     /* history (past) booking box: darker, lower-contrast */
     .slot.history { background: rgba(0,0,0,0.45) !important; border-color: rgba(255,255,255,0.03) !important; }
@@ -101,6 +107,21 @@
     .slot.history .muted, .slot.history .meta { color: rgba(255,255,255,0.75); }
     .slot.history .status-badge { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.06); }
     .btn-reschedule { background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:8px }
+
+    .notes-wrap { margin-top: 6px; }
+    .notes-label { color: rgba(255,255,255,0.82); font-weight: 700; margin-right: 6px; }
+    .meeting-finished-box {
+        display: inline-block;
+        margin-top: 8px;
+        background: rgba(185, 28, 28, 0.2);
+        color: #fecaca;
+        border: 1px solid rgba(248, 113, 113, 0.45);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+    }
 
     /* Responsive adjustments */
     @media (max-width: 992px) {
@@ -143,7 +164,7 @@
                     @if($availableTickets > 0)
                         <a href="{{ route('coaching.index') }}" class="btn" style="padding:8px 12px;border-radius:10px;">Book a Session</a>
                     @else
-                        <a href="{{ route('registerclass') }}" class="btn" style="padding:8px 12px;border-radius:10px;">Buy Ticket</a>
+                        <a href="{{ route('coaching.checkout') }}" class="btn" style="padding:8px 12px;border-radius:10px;">Buy Ticket</a>
                     @endif
                 </div>
             </div>
@@ -166,10 +187,13 @@
                     // Session length is configurable via coaching.session_length_minutes (default 60).
                     $sessionLength = config('coaching.session_length_minutes', 60);
                     try {
-                        $isPast = $dt->copy()->addMinutes($sessionLength)->lt($now);
+                        $sessionEnd = $dt->copy()->addMinutes($sessionLength);
+                        $isPast = $sessionEnd->lt($now);
+                        $isLiveWindow = $now->gte($dt->copy()->subMinutes(10)) && $now->lte($sessionEnd);
                     } catch (\Throwable $e) {
                         // Fallback: if any error, do not mark as past to avoid prematurely showing 'selesai'
                         $isPast = false;
+                        $isLiveWindow = false;
                     }
                     $dtLocal = $dt->format('Y-m-d H:i:s');
                     $sessionUrl = route('coaching.session', ['booking' => $b->id]);
@@ -185,23 +209,28 @@
                             <div class="topic">{{ $sessionLabel }}@if(!empty($b->topic)) - {{ $b->topic }}@endif
                                     @php
                                         $s = strtolower($b->status);
-                                        // If the booking time is already in the past, treat it as finished for presentation
+                                        // Runtime-state label aligned with admin dashboard semantics.
                                         if ($isPast) {
                                             $badgeClass = 'finished';
-                                            $badgeText = 'selesai';
+                                            $badgeText = 'Meeting selesai';
                                         } else {
                                             if ($s === 'rejected') {
                                                 $badgeClass = 'rejected';
-                                                $badgeText = 'reschedule jadwal kamu';
+                                                $badgeText = 'Rejected';
                                             } else if ($s === 'pending') {
                                                 $badgeClass = 'pending';
-                                                $badgeText = 'Menunggu persetujuan admin';
+                                                $badgeText = 'Pending';
                                             } else if ($s === 'accepted' || $s === 'scheduled') {
-                                                $badgeClass = 'scheduled';
-                                                $badgeText = 'dijadwalkan';
+                                                if ($isLiveWindow) {
+                                                    $badgeClass = 'on-going';
+                                                    $badgeText = 'On Going';
+                                                } else {
+                                                    $badgeClass = 'scheduled';
+                                                    $badgeText = 'Scheduled';
+                                                }
                                             } else {
                                                 $badgeClass = 'finished';
-                                                $badgeText = 'selesai';
+                                                $badgeText = 'Meeting selesai';
                                             }
                                         }
                                     @endphp
@@ -210,7 +239,48 @@
 
                             <div class="muted"><span class="label">Jadwal:</span> {{ $dt->translatedFormat('d F Y') }}, {{ $dt->format('H:i') }} WIB</div>
                             @if($b->notes)
-                                <div class="meta">{{ $b->notes }}</div>
+                                @php
+                                    $rawNotes = (string) $b->notes;
+                                    $noteLines = preg_split('/\r?\n/', $rawNotes) ?: [];
+                                    $cleanLines = [];
+                                    $hasMeetingFinishedEvent = false;
+
+                                    foreach ($noteLines as $line) {
+                                        $line = trim($line);
+                                        if ($line === '') {
+                                            continue;
+                                        }
+
+                                        $lower = strtolower($line);
+                                        if (str_contains($lower, 'session_end_clicked') || str_contains($lower, 'session_ended_by_admin')) {
+                                            $hasMeetingFinishedEvent = true;
+                                            continue;
+                                        }
+
+                                        // Hide connect-error telemetry noise from user-facing notes.
+                                        if (str_contains($lower, 'connect_error') || str_contains($lower, 'notallowederror') || str_contains($lower, 'permission denied')) {
+                                            continue;
+                                        }
+
+                                        $cleanLines[] = $line;
+                                    }
+
+                                    if ($hasMeetingFinishedEvent) {
+                                        // Render this as a separate red status box below notes.
+                                    }
+
+                                    $displayNotes = trim(implode(' ', $cleanLines));
+                                @endphp
+                                @if($displayNotes !== '' || $hasMeetingFinishedEvent)
+                                    <div class="notes-wrap">
+                                        @if($displayNotes !== '')
+                                            <div class="meta"><span class="notes-label">Notes:</span>{{ $displayNotes }}</div>
+                                        @endif
+                                        @if($hasMeetingFinishedEvent)
+                                            <div class="meeting-finished-box">Meeting selesai</div>
+                                        @endif
+                                    </div>
+                                @endif
                             @endif
                             {{-- feedback moved into booking->notes; notes displayed above --}}
                             @if(strtolower($b->status) === 'rejected')
@@ -248,7 +318,7 @@
             @if($hasTicket)
                 <a href="{{ route('coaching.index') }}" class="btn">MAKE ANOTHER APPOINTMENT</a>
             @else
-                <a href="{{ route('registerclass') }}" class="btn">MAKE ANOTHER APPOINTMENT</a>
+                <a href="{{ route('coaching.checkout') }}" class="btn">MAKE ANOTHER APPOINTMENT</a>
             @endif
         </div>
     </div>

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -38,24 +41,52 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        if ($user && (($user->is_admin ?? false) || ($user->is_superadmin ?? false))) {
+            return redirect()->intended(url('/admin'));
+        }
+
+        if ($user && empty($user->google_id)) {
+            $shouldSendEmailVerification = Config::get('mail.default') !== 'log';
+
+            if ($shouldSendEmailVerification && $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+                try {
+                    $user->sendEmailVerificationNotification();
+                } catch (\Throwable $e) {
+                    Log::warning('Failed to resend verification email on login', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return redirect()->route('verification.notice')->with('status', 'Lanjutkan verifikasi dengan Google memakai email yang sama untuk mengaktifkan akun.');
+        }
+
+        // Keep unverified users in signed-in state so they can access verification notice
+        // and verify through the signed link flow.
+        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
         // If the authenticated user's email looks like an admin account (ends with @admin),
         // redirect them to the admin dashboard immediately.
-        $user = Auth::user();
         if ($user && is_string($user->email) && str_ends_with(strtolower($user->email), '@admin')) {
             return redirect()->intended(url('/admin'));
         }
 
-        // If the user already has a package (is enrolled), send them straight to the lesson
-        // so they can continue learning immediately. Respect intended URL if set.
-        if ($user && ! empty($user->package_id)) {
-            // Use the named route if available; fallback to absolute URL
-            if (function_exists('route')) {
-                return redirect()->intended(route('kelas.show', 4));
-            }
-            return redirect()->intended(url('/registerclass/4'));
+        // Non-admin flow: users without package should continue to purchase flow.
+        $defaultRoute = $user && method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()
+            ? route('lms.entry')
+            : route('registerclass');
+
+        $intended = (string) $request->session()->get('url.intended', '');
+        if ($intended !== '' && str_contains($intended, '/lms/access-pending')) {
+            $request->session()->forget('url.intended');
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended($defaultRoute);
     }
 
     /**

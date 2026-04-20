@@ -3,267 +3,170 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="login-hero">
-    <div class="login-wrap">
-        <div class="login-card">
-            <div class="login-card-inner">
-                <h1>Welcome back</h1>
-                <p class="muted">Sign in to access your classes and coaching sessions.</p>
+<div class="cyber-auth-page">
+    <div class="cyber-auth-bg"></div>
+    <div class="cyber-auth-overlay"></div>
 
-                {{-- Consolidated alerts: success, error, and validation list --}}
+    <header class="cyber-auth-header">
+        <a href="{{ route('compro') }}" class="cyber-brand" aria-label="ClassNDE home">
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo" class="cyber-brand-logo">
+        </a>
+        <nav class="cyber-nav">
+            <a href="{{ route('registerclass') }}">Courses</a>
+            <a href="{{ route('login') }}" class="active">Sign in</a>
+            <a href="{{ route('register') }}" class="btn-nav">Register</a>
+        </nav>
+    </header>
+
+    <div class="cyber-auth-layout">
+        <div class="cyber-auth-left" aria-hidden="true"></div>
+
+        <section class="cyber-auth-right">
+            <div class="cyber-card">
+                <p class="cyber-kicker">ClassNDE Portal</p>
+                <h1>Welcome Back</h1>
+                <p class="cyber-subtitle">Sign in to continue your lessons and coaching progress.</p>
+
                 @if(session('status'))
-                    <div class="alert alert-success">
-                        <div class="alert-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22,4 12,14.01 9,11.01"></polyline>
-                            </svg>
-                        </div>
-                        <div class="alert-content">{{ session('status') }}</div>
-                    </div>
+                    <div class="cyber-alert success">{{ session('status') }}</div>
                 @endif
 
-                {{-- Show a single error alert: prefer session('error') else validation errors --}}
                 @if(session('error') || $errors->any())
-                    <div class="alert alert-error">
-                        <div class="alert-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                            </svg>
-                        </div>
-                        <div class="alert-content">
-                            {{-- Use the explicit session error message when present, otherwise show a generic localized message --}}
-                            @if(session('error'))
-                                <div class="alert-title">{{ session('error') }}</div>
-                            @else
-                                <div class="alert-title">Login failed. Please check your email or password.</div>
-                            @endif
-                            {{-- Optionally show field validation messages (if any) as a concise list below the title --}}
-                            @if($errors->any())
-                                <ul class="error-list">
-                                    @foreach($errors->all() as $err)
-                                        {{-- Skip Laravel's default generic English credentials message if present --}}
-                                        @if(str_contains(strtolower($err), 'these credentials do not match') )
-                                            @continue
-                                        @endif
-                                        <li>{{ $err }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
+                    <div class="cyber-alert error">
+                        @if(session('error'))
+                            <div>{{ session('error') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <ul>
+                                @foreach($errors->all() as $err)
+                                    @if(str_contains(strtolower($err), 'these credentials do not match'))
+                                        @continue
+                                    @endif
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}" class="login-form">
+                <form method="POST" action="{{ route('login') }}" class="cyber-form">
                     @csrf
-                    <label class="field">
-                        <span class="label-text">Email</span>
-                           <input name="email" type="email" value="{{ old('email') }}" required autofocus 
-                               class="input @error('email') input-error @enderror" 
-                               placeholder="Enter your email" />
-                        @error('email')
-                            {{-- Hide Laravel's default English 'These credentials...' message and prefer localized text when appropriate --}}
-                            @php
-                                $msg = $message;
-                                if(str_contains(strtolower($msg), 'these credentials do not match')) {
-                                    $msg = 'Email or password is incorrect.';
-                                }
-                            @endphp
-                            <div class="field-error">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                </svg>
-                                <span>{{ $msg }}</span>
-                            </div>
-                        @enderror
-                    </label>
+                    <label for="login-email" class="cyber-label">Email</label>
+                    <input id="login-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="cyber-input @error('email') input-error @enderror" placeholder="Enter your email" />
 
-                    <label class="field">
-                        <span class="label-text">Password</span>
-                        <div class="password-field">
-                                   <input name="password" type="password" required 
-                                   class="input @error('password') input-error @enderror" 
-                                   placeholder="Enter your password" />
-                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
-                                <!-- eye (visible) icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>
-                        @error('password')
-                            <div class="field-error">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                </svg>
-                                <span>{{ $message }}</span>
-                            </div>
-                        @enderror
-                    </label>
+                    <label for="login-password" class="cyber-label">Password</label>
+                    <div class="cyber-password-wrap">
+                        <input id="login-password" name="password" type="password" required class="cyber-input @error('password') input-error @enderror" placeholder="Enter your password" />
+                        <button type="button" class="cyber-toggle" data-target="login-password" aria-label="Toggle password visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
 
-                    <div class="form-meta">
-                        <label class="remember">
-                            <input type="checkbox" name="remember" />
-                            <span>Remember me</span>
-                        </label>
+                    <div class="cyber-meta">
+                        <label class="cyber-remember"><input type="checkbox" name="remember" /><span>Remember me</span></label>
                         @if(Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="forgot">Forgot your password?</a>
+                            <a href="{{ route('password.request') }}" class="cyber-link">Forgot password?</a>
                         @endif
                     </div>
 
-                    <div class="actions">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Sign In Now
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    <button type="submit" class="cyber-btn primary">Sign In</button>
 
-        <aside class="signup-card">
-            <div>
-                <h2>New here?</h2>
-                <p class="muted">Create a free account to start learning and book coaching sessions.</p>
-                <a href="{{ route('registerclass') }}" class="btn btn-outline">
-                    <i class="fas fa-user-plus"></i>
-                    Register Now
-                </a>
+                    <div class="cyber-divider"><span>Or continue with</span></div>
+
+                    <a href="{{ route('auth.google.redirect') }}" class="cyber-btn google">
+                        <svg viewBox="0 0 24 24" class="g-icon" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                        </svg>
+                        Continue with Google
+                    </a>
+                </form>
+
+                <p class="cyber-footer">No account yet? <a href="{{ route('register') }}">Create one now</a></p>
             </div>
-        </aside>
+        </section>
     </div>
 </div>
 
 <style>
-    /* Page layout */
-    .login-hero{min-height:72vh;display:flex;align-items:center;justify-content:center;padding:48px;background:#000;color:#fff}
-    .login-wrap{width:960px;display:flex;gap:28px;align-items:stretch}
-    .login-card{flex:1;border-radius:12px;background:linear-gradient(180deg,#0a0a0a,#050505);border:1px solid #151515;box-shadow:0 8px 30px rgba(0,0,0,0.6);overflow:hidden}
-    .login-card-inner{padding:36px}
-    .signup-card{width:360px;padding:36px;border-radius:12px;background:transparent;border:1px solid #151515;display:flex;align-items:center;justify-content:center}
+    .cyber-auth-page { position: relative; min-height: 100vh; overflow: hidden; color: #e2e8f0; }
+    .cyber-auth-bg { position: absolute; inset: 0; background: url('{{ asset('compro/img/ndehero.webp') }}') center/cover no-repeat; transform: scale(1.02); }
+    .cyber-auth-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(2, 6, 23, 0.82) 0%, rgba(15, 23, 42, 0.4) 52%, rgba(2, 6, 23, 0.84) 100%); }
+    .cyber-auth-header { position: absolute; top: 0; left: 0; right: 0; z-index: 5; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+    .cyber-brand { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; text-decoration: none; }
+    .cyber-brand-logo { width: 42px; height: 42px; object-fit: contain; display: block; }
+    .cyber-nav { display: inline-flex; align-items: center; gap: 18px; }
+    .cyber-nav a { color: rgba(226, 232, 240, 0.9); text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; height: 42px; }
+    .cyber-nav a.active { color: #fff; text-decoration: underline; text-underline-offset: 6px; }
+    .cyber-nav .btn-nav { padding: 0 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: #0f172a; }
 
-    h1{margin:0 0 6px;font-size:26px;font-weight:700}
-    h2{margin:0 0 10px;font-size:20px}
-    .muted{opacity:0.75;margin-bottom:18px}
+    .cyber-auth-layout { position: relative; z-index: 2; min-height: 100vh; display: flex; }
+    .cyber-auth-left { flex: 1; }
+    .cyber-auth-right { width: min(520px, 100%); margin-left: auto; display: flex; align-items: center; justify-content: center; padding: 100px 24px 24px; }
 
-    /* Alert styles */
-    .alert{display:flex;align-items:flex-start;gap:12px;padding:16px;border-radius:12px;margin-bottom:20px;border:1px solid transparent}
-    .alert-success{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.2);color:#22c55e}
-    .alert-error{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:#ef4444}
-    .alert-icon{flex-shrink:0;margin-top:1px}
-    .alert-content{flex:1;line-height:1.5}
-    .alert-title{font-weight:600;margin-bottom:8px;font-size:14px}
-    .error-list{margin:8px 0;padding-left:16px;font-size:13px;opacity:0.9}
-    .error-list li{margin-bottom:4px}
-    .alert-hint{margin-top:12px;font-size:12px;opacity:0.8;line-height:1.4}
-    .alert-link{color:inherit;text-decoration:underline;font-weight:500}
-    .alert-link:hover{opacity:0.8}
+    .cyber-card { width: 100%; border-radius: 26px; background: rgba(15, 23, 42, 0.36); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 22px 48px rgba(2, 6, 23, 0.45); padding: 28px; }
+    .cyber-kicker { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #a5b4fc; }
+    .cyber-card h1 { margin: 0; font-size: 42px; line-height: 1.02; color: #fff; }
+    .cyber-subtitle { margin: 8px 0 18px; font-size: 14px; color: rgba(226, 232, 240, 0.78); }
 
-    /* Form fields */
-    .field{display:block;margin-bottom:20px}
-    .label-text{display:block;font-size:14px;margin-bottom:8px;font-weight:500;color:#fff}
-    .input{width:100%;padding:14px 40px 14px 16px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;outline:none;font-size:15px;transition:all 0.2s ease}
-    .input::placeholder{color:rgba(255,255,255,0.4)}
-    .input:focus{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(255,255,255,0.1)}
-    .input-error{border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.05)}
-    .input-error:focus{border-color:rgba(239,68,68,0.6);box-shadow:0 0 0 3px rgba(239,68,68,0.1)}
-    
-    /* Field error messages */
-    .field-error{display:flex;align-items:center;gap:6px;margin-top:8px;color:#ef4444;font-size:13px;font-weight:500}
-    .field-error svg{flex-shrink:0}
+    .cyber-alert { border-radius: 12px; padding: 10px 12px; font-size: 13px; margin-bottom: 12px; border: 1px solid transparent; }
+    .cyber-alert ul { margin: 6px 0 0; padding-left: 16px; }
+    .cyber-alert.success { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.45); color: #d1fae5; }
+    .cyber-alert.error { background: rgba(239, 68, 68, 0.2); border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
 
-    /* password toggle */
-    .password-field{position:relative}
-    .password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:6px;display:flex;align-items:center;justify-content:center}
-    .password-toggle svg{width:18px;height:18px;opacity:0.95}
-    .password-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,0.06)}
+    .cyber-form { display: grid; gap: 10px; }
+    .cyber-label { font-size: 13px; font-weight: 600; color: rgba(226, 232, 240, 0.92); }
+    .cyber-input { width: 100%; min-height: 47px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(15, 23, 42, 0.44); color: #fff; padding: 0 14px; outline: none; transition: .2s ease; }
+    .cyber-input::placeholder { color: rgba(226, 232, 240, 0.46); }
+    .cyber-input:focus { border-color: rgba(129, 140, 248, 0.75); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); background: rgba(15, 23, 42, 0.62); }
+    .cyber-input.input-error { border-color: rgba(248, 113, 113, 0.75); }
 
-    .form-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;margin-top:8px}
-    .remember{opacity:0.9;font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer}
-    .remember input[type="checkbox"]{width:16px;height:16px;accent-color:#fff}
-    .forgot{color:#fff;opacity:0.75;text-decoration:underline;font-size:14px;transition:opacity 0.2s ease}
-    .forgot:hover{opacity:1}
+    .cyber-password-wrap { position: relative; }
+    .cyber-password-wrap .cyber-input { padding-right: 44px; }
+    .cyber-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: rgba(203, 213, 225, 0.72); padding: 5px; cursor: pointer; }
+    .cyber-toggle svg { width: 18px; height: 18px; }
 
-    /* Buttons */
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-weight:600;text-decoration:none;cursor:pointer;transition:all 0.2s ease;font-size:15px;border:none;min-height:48px}
-    .btn-primary{background:#fff;color:#000;box-shadow:0 2px 8px rgba(255,255,255,0.1)}
-    .btn-primary:hover{background:#f0f0f0;transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,255,255,0.2)}
-    .btn-primary:active{transform:translateY(0);box-shadow:0 2px 8px rgba(255,255,255,0.1)}
+    .cyber-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+    .cyber-remember { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+    .cyber-remember input { width: 14px; height: 14px; accent-color: #818cf8; }
+    .cyber-link { font-size: 13px; color: #c7d2fe; text-decoration: none; }
+    .cyber-link:hover { text-decoration: underline; }
 
-    .btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.2)}
-    .btn-outline:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.4);transform:translateY(-1px)}
+    .cyber-btn { width: 100%; min-height: 47px; border-radius: 12px; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; font-size: 14px; font-weight: 700; transition: .2s ease; cursor: pointer; }
+    .cyber-btn.primary { background: #f8fafc; color: #0f172a; }
+    .cyber-btn.primary:hover { transform: translateY(-1px); background: #fff; }
+    .cyber-divider { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+    .cyber-divider::before, .cyber-divider::after { content: ''; height: 1px; flex: 1; background: rgba(255, 255, 255, 0.2); }
+    .cyber-divider span { font-size: 12px; color: rgba(226, 232, 240, 0.65); }
+    .cyber-btn.google { border-color: rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .cyber-btn.google:hover { background: rgba(255, 255, 255, 0.14); }
+    .g-icon { width: 18px; height: 18px; }
 
-    .actions{text-align:right;margin-top:8px}
+    .cyber-footer { margin: 14px 0 0; font-size: 13px; text-align: center; color: rgba(226, 232, 240, 0.72); }
+    .cyber-footer a { color: #fff; font-weight: 700; text-decoration: none; }
+    .cyber-footer a:hover { text-decoration: underline; }
 
-    /* Enhanced responsive design */
-    @media (max-width: 768px) {
-        .main-container{flex-direction:column;min-height:100vh}
-        .login-card,.signup-card{width:100%;border-radius:0}
-        .login-card{padding:32px 24px}
-        .signup-card{padding:24px;background:rgba(255,255,255,0.05)}
-        .title{font-size:24px}
-        .subtitle{font-size:16px}
+    @media (max-width: 900px) {
+        .cyber-auth-header { padding: 16px 16px; }
+        .cyber-brand,
+        .cyber-brand-logo { width: 36px; height: 36px; }
+        .cyber-nav a:not(.btn-nav) { display: none; }
+        .cyber-auth-layout { min-height: 100vh; }
+        .cyber-auth-right { width: 100%; padding: 92px 16px 20px; }
+        .cyber-card h1 { font-size: 34px; }
     }
-
-    /* Loading state and accessibility */
-    .btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
-    .btn.loading{position:relative;color:transparent}
-    .btn.loading::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border:2px solid currentColor;border-top:2px solid transparent;border-radius:50%;animation:spin 1s linear infinite}
-
-    @keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
-
-    .form-group input:focus,.btn:focus{outline:2px solid rgba(255,255,255,0.5);outline-offset:2px}
-
-    @media (max-width:980px){.login-wrap{width:92%;flex-direction:column}.signup-card{width:100%}}
-    @media (max-width:480px){.login-card-inner{padding:20px}.signup-card{padding:20px}}
 </style>
 
-    <script>
-        // Toggle password visibility for any .password-toggle inside this page
-        document.addEventListener('click', function(e){
-            var btn = e.target.closest && e.target.closest('.password-toggle');
-            if(!btn) return;
-            var field = btn.closest('.password-field');
-            if(!field) return;
-            var input = field.querySelector('input');
-            if(!input) return;
-            // eye (visible) and eye-off (hidden) svgs
-            var eye = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-            var eyeOff = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.7 21.7 0 0 1 5-5"></path><path d="M1 1l22 22"></path></svg>';
-            if(input.type === 'password'){
-                input.type = 'text';
-                btn.innerHTML = eyeOff;
-            } else {
-                input.type = 'password';
-                btn.innerHTML = eye;
-            }
-        });
-
-        // Add loading state to form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            const submitBtn = document.querySelector('.btn-primary');
-            
-            if (form && submitBtn) {
-                form.addEventListener('submit', function() {
-                    submitBtn.classList.add('loading');
-                    submitBtn.disabled = true;
-                    
-                    // Reset after timeout as fallback
-                    setTimeout(function() {
-                        submitBtn.classList.remove('loading');
-                        submitBtn.disabled = false;
-                    }, 10000);
-                });
-            }
-        });
-    </script>
-
-    @endsection
+<script>
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('.cyber-toggle');
+        if (!btn) return;
+        var target = btn.getAttribute('data-target');
+        var input = document.getElementById(target);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+    });
+</script>
+@endsection

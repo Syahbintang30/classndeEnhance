@@ -3,236 +3,172 @@
 @section('title', 'Register Class')
 
 @section('content')
-<style>
-/* Responsive tweaks for /registerclass (keeps existing visual UI but adapts layout on smaller screens)
-     We use specific selectors and !important to override inline styles only where necessary. */
+<div class="checkout-page">
+    <nav class="checkout-nav" aria-label="Checkout logo navigation">
+        <a href="{{ route('compro') }}" class="checkout-brand" aria-label="NDE Home">
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="checkout-brand-logo" />
+        </a>
+    </nav>
 
-/* make container centered and cap width on large screens */
-.container { box-sizing: border-box; max-width: 1180px; margin: 0 auto; }
+    <section class="checkout-hero">
+        <span class="checkout-pill">PILIH PAKET BELAJAR</span>
+        <h1>Langkah Terakhir untuk <span>Memulai Perjalanan.</span></h1>
+        <p>Pilih paket yang paling sesuai dengan kebutuhan kamu. Akses materi seumur hidup dan mulai belajar dengan alur terstruktur.</p>
+    </section>
 
-/* Desktop / tablet breakpoint adjustments */
-@media (max-width: 1024px) {
-    .container { padding: 28px 24px !important; }
-    /* the main two-column wrapper: force wrapping and smaller column widths */
-    .container > div[style*="display:flex"] { flex-wrap: wrap !important; gap: 18px !important; }
-    /* left content (packages) becomes a bit narrower than full; allow shrinking */
-    .container > div[style*="display:flex"] > div[style*="flex:1"] { max-width: 66% !important; width: 100% !important; }
-    /* right column (form) becomes narrower */
-    .container > div[style*="display:flex"] > div[style*="width:460px"] { width: 32% !important; }
-    .packages-grid { padding-left: 8px !important; padding-right: 8px !important; }
-}
-
-/* Mobile - stack columns vertically */
-@media (max-width: 768px) {
-    .container { padding: 20px 16px !important; }
-    .container > div[style*="display:flex"] { flex-direction: column !important; align-items: stretch !important; }
-    .container > div[style*="display:flex"] > div[style*="flex:1"] { order: 1 !important; width: 100% !important; max-width: none !important; }
-    .container > div[style*="display:flex"] > div[style*="width:460px"] { order: 2 !important; width: 100% !important; }
-
-    /* packages: show stacked cards on mobile (keeps card look) */
-    .packages-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; overflow-x: visible !important; -webkit-overflow-scrolling: auto !important; padding-left: 6px !important; padding-right: 6px !important; }
-    .class-card { width: 100% !important; min-width: 0 !important; }
-    .class-card img { width: 100% !important; height: auto !important; max-height: 320px !important; object-fit: cover !important; }
-
-    /* selected package preview: stack content */
-    #selected_package_preview { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
-    #selected_package_preview > div:last-child { width: 100% !important; }
-
-    /* shrink step indicator on small screens */
-    .steps { max-width: 520px !important; padding: 0 6px !important; }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-    .container { padding: 16px 12px !important; }
-    h2 { font-size: 18px !important; }
-    .class-card img { max-height: 220px !important; }
-    input, textarea, select, button { font-size: 15px !important; }
-    .pkg-description, .pkg-benefits-list { font-size: 13px !important; }
-}
-
-</style>
-<!-- Steps indicator: info -> payment -> done -->
-<div style="display:flex;justify-content:center;padding-top:18px;">
-    <div class="steps" role="tablist" aria-label="Booking steps" style="display:flex;align-items:center;gap:12px;max-width:720px;width:100%;justify-content:center;">
-    <div class="step active" aria-current="step" title="Info"><i class="icon-info" aria-hidden="true"></i><span class="sr-only">Info</span></div>
-        <div class="line" aria-hidden="true"></div>
-    <div class="step" title="Payment"><i class="icon-credit-card" aria-hidden="true"></i><span class="sr-only">Payment</span></div>
-        <div class="line" aria-hidden="true"></div>
-    <div class="step" title="Done"><i class="icon-check" aria-hidden="true"></i><span class="sr-only">Done</span></div>
-    </div>
-</div>
-
-<div class="container" style="padding:40px 60px;color:#fff">
-    <div style="display:flex;gap:40px;align-items:flex-start;overflow:visible;">
-        <!-- Left: Class selection -->
-    <div style="flex:1;max-width:680px;overflow:visible;">
-            <h2 style="font-size:20px;margin-bottom:12px">Start Your Guitar Journey</h2>
-            <p style="opacity:0.7;margin-bottom:18px">From basic chords to improvisation, start your journey with our expert-led classes.</p>
-
-            <div class="packages-grid" style="display:flex;gap:20px;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-top:24px;padding-bottom:8px;padding-left:12px;padding-right:12px;">
-                @foreach($packages as $pkg)
-                    <div class="class-card" data-package-id="{{ $pkg->id }}" data-package-price="{{ $pkg->price }}" data-package-slug="{{ $pkg->slug }}" style="flex:1;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:8px;background:#0b0b0b;transition:transform .18s ease, box-shadow .18s ease;cursor:pointer;">
-                        <div style="overflow:hidden;border-radius:6px;">
-                            @php
-                                // prefer admin-uploaded image stored on the public disk; fallback to bundled static pictures
-                                if (!empty($pkg->image)) {
-                                    $imgSrc = asset('storage/' . $pkg->image);
-                                } else {
-                                    $img = 'intermediate';
-                                    if ($pkg->slug == 'beginner') $img = 'beginner';
-                                    if ($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket')) $img = 'coaching-ticket';
-                                    $imgSrc = asset('pictures/' . $img . '.jpg');
-                                }
-                            @endphp
-                            <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" style="width:100%;height:220px;object-fit:cover;display:block;">
-                        </div>
-                        <h3 style="margin:12px 0 8px 0">{{ $pkg->name }}</h3>
-                        @if(!empty($pkg->description))
-                            <p class="pkg-description" style="margin:0 0 8px 0;color:#cfcfcf;font-size:13px;">{{ \Illuminate\Support\Str::limit($pkg->description, 160) }}</p>
-                        @endif
-
-                        <div style="font-size:13px;opacity:0.85">
-                            <strong>Benefits :</strong>
-                            @if(!empty($pkg->benefits))
+    <div class="container checkout-main" style="padding:8px 60px 44px;color:#fff">
+        <div style="display:flex;gap:34px;align-items:flex-start;overflow:visible;">
+            <div style="flex:1;max-width:720px;overflow:visible;">
+                <div class="packages-grid" style="display:flex;gap:20px;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-top:12px;padding-bottom:8px;padding-left:4px;padding-right:4px;">
+                    @foreach($packages as $pkg)
+                        <div class="class-card" data-package-id="{{ $pkg->id }}" data-package-price="{{ $pkg->price }}" data-package-slug="{{ $pkg->slug }}" style="flex:1;border:1px solid rgba(255,255,255,0.06);padding:0;border-radius:18px;background:#0b0b0b;transition:transform .18s ease, box-shadow .18s ease;cursor:pointer;overflow:hidden;">
+                            @if($pkg->slug === 'intermediate')
+                                <span class="pkg-badge">Paling Diminati</span>
+                            @endif
+                            <div style="overflow:hidden;border-bottom:1px solid rgba(255,255,255,0.08);">
                                 @php
-                                    // split benefits by newline and filter empty lines
-                                    $lines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $pkg->benefits)));
+                                    if (!empty($pkg->image)) {
+                                        $imgSrc = asset('storage/' . $pkg->image);
+                                    } else {
+                                        $img = 'intermediate';
+                                        if ($pkg->slug == 'beginner') $img = 'beginner';
+                                        if ($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket')) $img = 'coaching-ticket';
+                                        $imgSrc = asset('pictures/' . $img . '.jpg');
+                                    }
                                 @endphp
-                                @if(count($lines))
-                                    <ul class="pkg-benefits-list">
-                                        @foreach($lines as $line)
-                                            <li>{{ $line }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            @else
-                                {{-- fallback to legacy static content if benefits not set --}}
-                                @if($pkg->slug == 'beginner')
-                                    <ul class="pkg-benefits-list">
-                                        <li>Understand the parts of the guitar and their functions.</li>
-                                        <li>Learn how to tune your guitar properly.</li>
-                                        <li>Master basic chords (C, G, D, Am, Em).</li>
-                                        <li>Practice simple strumming patterns.</li>
-                                    </ul>
-                                @elseif($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket'))
-                                    <ul class="pkg-benefits-list">
-                                        <li>One free coaching ticket redeemable for a live coaching session.</li>
-                                        <li>Priority booking for coaching slots.</li>
-                                        <li>Personalized feedback from a coach.</li>
-                                    </ul>
-                                @else
-                                    <ul class="pkg-benefits-list">
-                                        <li>Master barre chords and chord variations.</li>
-                                        <li>Learn the basics of fingerstyle playing.</li>
-                                        <li>Use scales for improvisation.</li>
-                                        <li>Rhythm and syncopation.</li>
-                                        <li>Perform songs with your own interpretation.</li>
-                                    </ul>
-                                @endif
-                            @endif
+                                <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" style="width:100%;height:220px;object-fit:cover;display:block;">
+                            </div>
+                            <div style="padding:18px 18px 16px;">
+                                <h3 style="margin:0 0 6px 0;font-size:26px;font-family: 'Cormorant Garamond', serif;">{{ $pkg->name }}</h3>
+                                <div style="margin-top:0;font-weight:500;font-size:20px;color:#d4d4d4">Rp <span class="pkg-price">{{ number_format($pkg->price,0,',','.') }}</span></div>
+
+                                <div style="font-size:13px;opacity:0.9;border-top:1px solid rgba(255,255,255,0.08);margin-top:14px;padding-top:14px;">
+                                    @if(!empty($pkg->description))
+                                        <p class="pkg-description" style="margin:0 0 10px 0;color:#cfcfcf;font-size:13px;">{{ \Illuminate\Support\Str::limit($pkg->description, 160) }}</p>
+                                    @endif
+
+                                    @if(!empty($pkg->benefits))
+                                        @php
+                                            $lines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $pkg->benefits)));
+                                        @endphp
+                                        @if(count($lines))
+                                            <ul class="pkg-benefits-list">
+                                                @foreach($lines as $line)
+                                                    <li>{{ $line }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    @else
+                                        @if($pkg->slug == 'beginner')
+                                            <ul class="pkg-benefits-list">
+                                                <li>Pahami anatomi dan fungsi gitar.</li>
+                                                <li>Belajar tuning gitar dengan benar.</li>
+                                                <li>Kuasai chord dasar (C, G, D, Am, Em).</li>
+                                                <li>Latih pola strumming dasar.</li>
+                                            </ul>
+                                        @elseif($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket'))
+                                            <ul class="pkg-benefits-list">
+                                                <li>Satu coaching ticket untuk sesi live coaching.</li>
+                                                <li>Prioritas booking coaching slot.</li>
+                                                <li>Feedback personal dari coach.</li>
+                                            </ul>
+                                        @else
+                                            <ul class="pkg-benefits-list">
+                                                <li>Kuasai barre chords dan variasinya.</li>
+                                                <li>Dasar teknik fingerstyle.</li>
+                                                <li>Penggunaan skala untuk improvisasi.</li>
+                                                <li>Pemahaman ritme dan sinkopasi.</li>
+                                                <li>Interpretasi lagu lebih personal.</li>
+                                            </ul>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <div style="margin-top:8px;font-weight:700">Rp <span class="pkg-price">{{ number_format($pkg->price,0,',','.') }}</span></div>
-                        @if(!empty($pkg->slug) && $pkg->slug === 'upgrade-intermediate')
-                            @php
-                                $beginner = \App\Models\Package::where('slug','beginner')->first();
-                                $intermediate = \App\Models\Package::where('slug','intermediate')->first();
-                            @endphp
-                            <div style="margin-top:8px;font-size:13px;opacity:0.85">Note: Only for owners of the <strong>Beginner</strong> package.</div>
-                            @if($beginner && $intermediate)
-                                <div style="margin-top:6px;font-size:13px;opacity:0.85">Beginner Price: Rp {{ number_format($beginner->price,0,',','.') }} &nbsp;•&nbsp; Intermediate Price: Rp {{ number_format($intermediate->price,0,',','.') }}</div>
-                            @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <div style="width:460px;" class="checkout-summary-panel">
+                <div id="package_validation" style="display:none;color:#ffb3b3;font-size:13px;margin-bottom:10px;"></div>
+                <div id="pay_error" style="display:none;color:#ffb3b3;font-size:13px;margin-bottom:10px;"></div>
+                <input type="hidden" name="package_qty" value="1" id="selected_package_qty_input" />
+
+                @guest
+                    <h2 style="font-size:30px;margin-bottom:6px;font-family:'Cormorant Garamond', serif;">Ringkasan Pesanan</h2>
+                    <p style="opacity:0.68;margin-bottom:16px">Pilih paket, isi kode promo jika ada, lalu lanjut register/login.</p>
+
+                    <input type="hidden" name="selected_package" value="" id="selected_package_input" />
+                    <input type="hidden" name="selected_package_price" value="" id="selected_package_price_input" />
+                    <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
+
+                    <div style="margin-bottom:14px">
+                        <label style="display:block;margin-bottom:8px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.55)">Kode Promo (Opsional)</label>
+                        <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Masukkan kode..." style="width:100%;padding:13px 14px;background:#101010;border:1px solid #2d2d2d;color:#fff !important;border-radius:12px;" />
+                        @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
+                        <div id="referral_hint" style="margin-top:7px;color:rgba(255,255,255,0.56);font-size:12px">Kalau punya referral code, masukkan untuk diskon.</div>
+                    </div>
+
+                    <div id="selected_package_preview" style="margin-bottom:16px;padding:15px;border-radius:14px;background:#0e0e0e;border:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;">
+                        <div>
+                            <div style="font-size:11px;opacity:0.7;letter-spacing:.12em;text-transform:uppercase">Paket</div>
+                            <div id="selected_package_name" style="font-weight:700;margin-top:4px;font-size:21px;font-family:'Cormorant Garamond', serif;">-</div>
+                            <div id="selected_package_price_display" style="font-size:17px;opacity:0.9;margin-top:4px">Rp -</div>
+                            <div id="selected_package_original_price_display" style="font-size:12px;opacity:0.6;margin-top:6px;display:none">Original price: Rp -</div>
+                            <div id="selected_package_discount_display" style="font-size:12px;color:#b8f0c6;margin-top:6px;display:none">Referral discount: -</div>
+                        </div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.6);max-width:128px;text-align:right;">Klik kartu paket lain untuk mengganti pilihan.</div>
+                    </div>
+
+                    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+                        <a href="{{ route('login', ['redirect_to' => route('registerclass')]) }}" class="checkout-ghost-btn">Login</a>
+                        <a id="guest_register_btn" href="{{ route('register', ['redirect_to' => route('registerclass')]) }}" class="checkout-main-btn">Register</a>
+                    </div>
+                @else
+                    <h2 style="font-size:30px;margin-bottom:6px;font-family:'Cormorant Garamond', serif;">Ringkasan Pesanan</h2>
+                    <p style="opacity:0.68;margin-bottom:14px">Kamu sudah login. Tinggal cek paket dan lanjut pembayaran.</p>
+
+                    @php $paymentBase = isset($lesson) && $lesson ? route('kelas.payment', $lesson->id) : null; @endphp
+                    @if(!$paymentBase)
+                        <div style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;color:#ffd9d9;margin-bottom:12px;">No material available for payment. Please check back later.</div>
+                    @endif
+
+                    @php $uid = auth()->user()->package_id ?? null; @endphp
+                    @if(empty($uid))
+                        <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
+                        <div style="margin-top:4px;margin-bottom:12px">
+                            <label style="display:block;margin-bottom:8px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.55)">Kode Promo (Opsional)</label>
+                            <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Masukkan kode..." style="width:100%;padding:13px 14px;background:#101010;border:1px solid #2d2d2d;color:#fff !important;border-radius:12px;" />
+                            @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
+                            <div id="referral_hint" style="margin-top:7px;color:rgba(255,255,255,0.56);font-size:12px">Kalau punya referral code, masukkan untuk diskon.</div>
+                        </div>
+                    @endif
+
+                    <div id="selected_package_preview_logged" style="margin-top:8px;padding:15px;border-radius:14px;background:#0e0e0e;border:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;">
+                        <div>
+                            <div style="font-size:11px;opacity:0.7;letter-spacing:.12em;text-transform:uppercase">Paket</div>
+                            <div id="selected_package_name_logged" style="font-weight:700;margin-top:4px;font-size:21px;font-family:'Cormorant Garamond', serif;">-</div>
+                            <div id="selected_package_price_display_logged" style="font-size:17px;opacity:0.9;margin-top:4px">Rp -</div>
+                            <div id="selected_package_qty_container_logged" style="margin-top:10px;display:none;align-items:center;gap:8px;font-size:13px">
+                                <label style="opacity:0.8;margin-right:8px">Quantity</label>
+                                <button type="button" id="qty_decrease_logged" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:6px 8px;border-radius:6px">-</button>
+                                <span id="selected_package_qty_display_logged" style="min-width:28px;display:inline-block;text-align:center">1</span>
+                                <button type="button" id="qty_increase_logged" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:6px 8px;border-radius:6px">+</button>
+                            </div>
+                        </div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.6);max-width:128px;text-align:right;">Klik kartu paket lain untuk mengganti pilihan.</div>
+                    </div>
+
+                    <input type="hidden" id="selected_package_input" value="" />
+                    <input type="hidden" id="selected_package_price_input" value="" />
+
+                    <div style="text-align:right;margin-top:14px">
+                        @if($paymentBase)
+                            <a id="continue_payment_btn" href="{{ $paymentBase }}" class="checkout-main-btn">Lanjutkan Pembayaran</a>
                         @endif
                     </div>
-                @endforeach
+                @endguest
             </div>
-        </div>
-
-        <!-- Right: Registration or Purchase column -->
-        <div style="width:460px;">
-            <div id="package_validation" style="display:none;color:#ffb3b3;font-size:13px;margin-bottom:10px;"></div>
-            <div id="pay_error" style="display:none;color:#ffb3b3;font-size:13px;margin-bottom:10px;"></div>
-            <!-- ensure a global package qty hidden input exists for both guest and logged-in flows -->
-            <input type="hidden" name="package_qty" value="1" id="selected_package_qty_input" />
-                @guest
-            <h2 style="font-size:20px;margin-bottom:12px">Create An Account To Continue</h2>
-            <p style="opacity:0.7;margin-bottom:12px">Choose a class on the left, then create an account or log in to proceed to secure payment.</p>
-
-            <!-- hidden values for selection (kept for JS compatibility) -->
-            <input type="hidden" name="selected_package" value="" id="selected_package_input" />
-            <input type="hidden" name="selected_package_price" value="" id="selected_package_price_input" />
-            <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
-
-            <div style="margin-bottom:12px">
-                <label style="display:block;margin-bottom:6px">Referral Code (optional)</label>
-                <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Enter referral code or leave blank" style="width:100%;padding:12px;background:transparent;border:1px solid #333;color:#fff !important;border-radius:4px;" />
-                @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
-                <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to get a discount.</div>
-            </div>
-
-            <!-- Selected package preview for guests -->
-            <div id="selected_package_preview" style="margin-bottom:14px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center">
-                <div>
-                    <div style="font-size:13px;opacity:0.8">Selected package</div>
-                    <div id="selected_package_name" style="font-weight:700;margin-top:4px">-</div>
-                    <div id="selected_package_price_display" style="font-size:13px;opacity:0.85;margin-top:4px">Rp -</div>
-                    <div id="selected_package_original_price_display" style="font-size:12px;opacity:0.6;margin-top:6px;display:none">Original price: Rp -</div>
-                    <div id="selected_package_discount_display" style="font-size:12px;color:#b8f0c6;margin-top:6px;display:none">Referral discount: -</div>
-                </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.6)">Click another card to change the package</div>
-            </div>
-
-            <div style="text-align:right;display:flex;gap:10px;justify-content:flex-end">
-                <a id="guest_register_btn" href="{{ route('register') }}" style="background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-weight:700;text-decoration:none">REGISTER</a>
-            </div>
-                @else
-            <h2 style="font-size:20px;margin-bottom:12px">Personal Details</h2>
-            <p style="opacity:0.7;margin-bottom:12px">You're logged in. Click below to continue to the secure payment step.</p>
-
-                <div style="text-align:right;margin-bottom:12px">
-                {{-- link updated by JS to include selected package id as query param; guard when no lesson exists --}}
-                @php $paymentBase = isset($lesson) && $lesson ? route('kelas.payment', $lesson->id) : null; @endphp
-                @if($paymentBase)
-                    {{-- continue button moved below the selected package preview to improve UX for logged-in users --}}
-                @else
-                    <div style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;color:#ffd9d9;">No material available for payment. Please check back later.</div>
-                @endif
-            </div>
-
-                {{-- If the logged-in user has no package, allow entering a referral code (same UX as guest) --}}
-                @php $uid = auth()->user()->package_id ?? null; @endphp
-                @if(empty($uid))
-                    <input type="hidden" name="referral" id="hidden_referral_input" value="{{ old('referral') ?? session('referral') ?? '' }}" />
-                    <div style="margin-top:12px;margin-bottom:12px">
-                        <label style="display:block;margin-bottom:6px">Referral Code (optional)</label>
-                        <input id="referral_code_input" name="referral" value="{{ old('referral') ?? session('referral') ?? '' }}" placeholder="Enter referral code or leave blank" style="width:100%;padding:12px;background:transparent;border:1px solid #333;color:#fff !important;border-radius:4px;" />
-                        @error('referral') <div style="color:#ffb3b3;margin-top:6px;font-size:13px">{{ $message }}</div> @enderror
-                        <div id="referral_hint" style="margin-top:6px;color:rgba(255,255,255,0.6);font-size:13px">If you have a referral code, enter it to get a discount.</div>
-                    </div>
-                @endif
-
-            <!-- Logged-in selected package preview + qty (mirrors guest preview) -->
-            <div id="selected_package_preview_logged" style="margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center">
-                <div>
-                    <div style="font-size:13px;opacity:0.8">Selected package</div>
-                    <div id="selected_package_name_logged" style="font-weight:700;margin-top:4px">-</div>
-                    <div id="selected_package_price_display_logged" style="font-size:13px;opacity:0.85;margin-top:4px">Rp -</div>
-                    <div id="selected_package_qty_container_logged" style="margin-top:8px;display:none;align-items:center;gap:8px;font-size:13px">
-                        <label style="opacity:0.8;margin-right:8px">Quantity</label>
-                        <button type="button" id="qty_decrease_logged" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:6px 8px;border-radius:6px">-</button>
-                        <span id="selected_package_qty_display_logged" style="min-width:28px;display:inline-block;text-align:center">1</span>
-                        <button type="button" id="qty_increase_logged" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:6px 8px;border-radius:6px">+</button>
-                    </div>
-                </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.6)">Change package by clicking a card on the left</div>
-            </div>
-            <div style="text-align:right;margin-top:12px">
-                @if($paymentBase)
-                    <a id="continue_payment_btn" href="{{ $paymentBase }}" style="background:#fff;color:#000;padding:10px 26px;border-radius:24px;font-weight:700;border:none;display:inline-block;text-decoration:none;">CONTINUE TO PAYMENT</a>
-                @endif
-            </div>
-            </div>
-            @endguest
         </div>
     </div>
 </div>
@@ -240,92 +176,278 @@
 
 @push('styles')
 <style>
-    /* typography */
-    body { font-family: 'Inter', Arial, sans-serif; }
-    h2 { font-weight:700; }
-    .class-card h3 { font-size:18px; margin-bottom:6px; }
+    .global-nav {
+        display: none !important;
+    }
 
-    /* hover/selection effects */
-    .class-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
-    /* make card positionable for glow pseudo-element */
-    .class-card { position: relative; }
-    /* visible selected state with brighter outline and lift */
+    .checkout-page {
+        min-height: 100vh;
+        background: radial-gradient(55% 35% at 50% 0%, rgba(196, 196, 196, 0.12), rgba(5, 5, 5, 0)), #050505;
+        color: #d4d4d4;
+        padding-bottom: 28px;
+    }
+
+    .checkout-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 28px 16px 20px;
+    }
+
+    .checkout-brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .checkout-brand-logo {
+        height: 62px;
+        width: auto;
+        display: block;
+    }
+
+    .checkout-hero {
+        max-width: 760px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 8px 16px 26px;
+    }
+
+    .checkout-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 999px;
+        padding: 7px 12px;
+        margin-bottom: 16px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        color: rgba(255, 255, 255, 0.62);
+    }
+
+    .checkout-hero h1 {
+        margin: 0;
+        font-size: clamp(34px, 6vw, 64px);
+        line-height: 1.06;
+        font-family: 'Cormorant Garamond', serif;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
+
+    .checkout-hero h1 span {
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+    }
+
+    .checkout-hero p {
+        margin: 14px auto 0;
+        max-width: 620px;
+        font-size: 15px;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .checkout-main {
+        max-width: 1260px;
+        margin: 0 auto;
+    }
+
+    .checkout-summary-panel {
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        background: #0a0a0a;
+        border-radius: 22px;
+        padding: 24px;
+        position: sticky;
+        top: 24px;
+    }
+
+    .checkout-main-btn,
+    .checkout-ghost-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 13px;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+    .checkout-main-btn {
+        border: 1px solid #fff;
+        background: #fff;
+        color: #000;
+    }
+
+    .checkout-main-btn:hover {
+        transform: translateY(-2px);
+        color: #000;
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.18);
+    }
+
+    .checkout-ghost-btn {
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: transparent;
+        color: #fff;
+    }
+
+    .checkout-ghost-btn:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #fff;
+    }
+
+    .class-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        flex: 0 0 325px;
+        max-width: 325px;
+        min-width: 280px;
+        overflow: hidden;
+    }
+
+    .pkg-badge {
+        position: absolute;
+        z-index: 2;
+        right: 14px;
+        top: 14px;
+        background: #fff;
+        color: #000;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        padding: 7px 10px;
+    }
+
+    .class-card img {
+        filter: grayscale(1);
+        opacity: .62;
+        transition: transform .45s ease, filter .35s ease, opacity .35s ease;
+    }
+
+    .class-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+    }
+
     .class-card.selected {
-        outline: 2px solid rgba(255,255,255,0.12);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.65), 0 0 18px rgba(255,255,255,0.08);
+        border-color: rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 255, 255, 0.1);
         transform: translateY(-8px);
-        z-index: 10001;
-        filter: brightness(1.04);
+        z-index: 7;
     }
-    /* stronger glow for selected card - adds soft outer halo */
-    .class-card.glow {
-        border:1px solid rgba(255,255,255,0.18);
-        box-shadow: 0 8px 28px rgba(255,255,255,0.08), 0 24px 60px rgba(0,0,0,0.6), 0 0 22px rgba(255,255,255,0.16);
-        transition: box-shadow .18s ease, transform .18s ease, filter .18s ease;
-        z-index: 9999; /* ensure glow is rendered above neighboring cards */
+
+    .class-card.selected img {
+        filter: grayscale(0);
+        opacity: .9;
+        transform: scale(1.04);
     }
-    /* outer halo using pseudo-element for a smoother glow */
+
     .class-card.glow::after {
         content: '';
         position: absolute;
-        left: -10px; right: -10px; top: -8px; bottom: -8px;
-        border-radius: 10px;
+        left: -8px;
+        right: -8px;
+        top: -8px;
+        bottom: -8px;
+        border-radius: 20px;
         pointer-events: none;
-        box-shadow: 0 0 36px rgba(255,255,255,0.16);
-        opacity: 0.98;
-        z-index: 9998;
+        box-shadow: 0 0 34px rgba(255, 255, 255, 0.13);
     }
 
-    input, textarea { font-family:inherit; }
-
-    /* progress indicator */
-    /* legacy buy-progress kept for compatibility (hidden when using .steps) */
-    .buy-progress { position:relative; display:none; }
-    .buy-progress .progress-line { flex:1;height:2px;background:rgba(255,255,255,0.06);border-radius:2px; }
-    .buy-progress .circle { width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.12);background:transparent;color:#fff;font-size:18px }
-    .buy-progress .circle.active { background:transparent;border-color:#fff;color:#fff }
-
-    /* New steps component */
-    .steps { display:flex;align-items:center;gap:12px; }
-    .step { width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.12);background:transparent;color:#fff;font-size:20px;transition:transform .12s ease, box-shadow .12s ease, background .12s ease; }
-    .step.active { background:#fff;color:#000;border-color:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.45); transform: translateY(-4px); }
-    .steps .line { flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px; }
-    .step i { font-size:20px; line-height:1; }
-
-    @media (max-width: 600px) {
-        .step { width:44px;height:44px;font-size:16px }
-        .step i { font-size:16px }
+    .packages-grid {
+        align-items: stretch;
+        overflow-x: auto;
+        overflow-y: visible;
+        position: relative;
+        z-index: 1;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
-    /* package card responsive text */
-    /* allow vertical overflow so outer halo/glow isn't clipped while keeping horizontal scroll */
-    .packages-grid { align-items:stretch; overflow-x:auto; overflow-y:visible; position:relative; z-index:1000; }
-    /* make cards fixed-width so they sit horizontally and scroll if overflow */
-    .class-card { display:flex;flex-direction:column; box-sizing:border-box; flex:0 0 320px; max-width:320px; min-width:260px; overflow:visible; }
-    .class-card .pkg-description { word-break:break-word; white-space:normal; color:#cfcfcf }
-    .pkg-benefits-list { margin:8px 0 0 18px; padding:0; }
-    .pkg-benefits-list li { margin-bottom:6px; word-break:break-word; white-space:normal; overflow-wrap:break-word }
 
-    /* Ensure images scale nicely while keeping aspect ratio */
-    .class-card img { width:100%; height:220px; object-fit:cover; display:block }
+    .packages-grid::-webkit-scrollbar {
+        display: none;
+    }
 
-    /* on medium and small screens keep horizontal scroll but adjust image height */
-    @media (max-width:900px) {
-        .class-card img { height:200px }
+    .pkg-benefits-list {
+        margin: 8px 0 0 18px;
+        padding: 0;
     }
-    @media (max-width:600px) {
-        .class-card img { height:180px }
-        .pkg-benefits-list { font-size:13px }
+
+    .pkg-benefits-list li {
+        margin-bottom: 6px;
+        word-break: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+        color: rgba(255, 255, 255, 0.72);
     }
-    /* hide scrollbar visually but keep scroll functionality */
-    .packages-grid::-webkit-scrollbar { height:8px; }
-    .packages-grid::-webkit-scrollbar-thumb { background: transparent; }
-    .packages-grid { -ms-overflow-style: none; scrollbar-width: none; }
-    .packages-grid::-webkit-scrollbar { display: none; }
-    /* tidy packages container look */
-    .packages-grid-container { padding:14px;border-radius:10px;background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.03); }
-    /* referral input visual tweaks */
-    input#referral_code_input { color: #fff !important; }
-    input#referral_code_input::placeholder { color: rgba(255,255,255,0.6); }
+
+    input#referral_code_input {
+        color: #fff !important;
+    }
+
+    input#referral_code_input::placeholder {
+        color: rgba(255, 255, 255, 0.42);
+    }
+
+    @media (max-width: 1080px) {
+        .checkout-main {
+            padding-left: 22px !important;
+            padding-right: 22px !important;
+        }
+
+        .checkout-main > div {
+            flex-direction: column;
+        }
+
+        .checkout-summary-panel {
+            width: 100% !important;
+            position: static;
+        }
+
+        .class-card {
+            min-width: 300px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .checkout-brand-logo {
+            height: 52px;
+        }
+
+        .checkout-hero {
+            padding-bottom: 18px;
+        }
+
+        .checkout-main {
+            padding-left: 14px !important;
+            padding-right: 14px !important;
+        }
+
+        .checkout-summary-panel {
+            padding: 18px;
+            border-radius: 16px;
+        }
+
+        .class-card {
+            min-width: 86vw;
+            max-width: 86vw;
+        }
+
+        .class-card img {
+            height: 190px !important;
+        }
+    }
 </style>
 @endpush
 

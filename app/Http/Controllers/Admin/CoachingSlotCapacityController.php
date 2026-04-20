@@ -86,11 +86,35 @@ class CoachingSlotCapacityController extends Controller
             $replace = filter_var($request->input('replace', true), FILTER_VALIDATE_BOOLEAN);
 
             foreach ($payload as $date => $hours) {
+                // Skip invalid dates early.
+                if (!strtotime($date)) {
+                    continue;
+                }
+
+                $dateCarbon = Carbon::parse($date)->startOfDay();
+                if ($dateCarbon->lt(now()->startOfDay())) {
+                    continue;
+                }
+
                 // normalize hours to unique HH:MM strings
                 $hours = array_values(array_filter(array_map(function($t){
                     if (!$t) return null;
                     return date('H:i', strtotime($t));
                 }, (array)$hours)));
+
+                // Prevent saving past hours on the current date.
+                $hours = array_values(array_filter($hours, function ($h) use ($date) {
+                    try {
+                        $slotAt = Carbon::parse($date . ' ' . $h . ':00');
+                        return $slotAt->gt(now());
+                    } catch (\Throwable $e) {
+                        return false;
+                    }
+                }));
+
+                if (count($hours) === 0) {
+                    continue;
+                }
 
                 if ($replace) {
                     // remove all existing slots for that date and recreate according to hours
@@ -141,6 +165,19 @@ class CoachingSlotCapacityController extends Controller
 
         // normalize time to HH:MM
         $time = date('H:i', strtotime($data['time']));
+
+        try {
+            $slotAt = Carbon::parse($data['date'] . ' ' . $time . ':00');
+            if ($slotAt->lte(now())) {
+                return $request->wantsJson()
+                    ? response()->json(['error' => 'Cannot save past slot'], 422)
+                    : redirect()->back()->with('error', 'Cannot save past slot');
+            }
+        } catch (\Throwable $e) {
+            return $request->wantsJson()
+                ? response()->json(['error' => 'Invalid date/time'], 422)
+                : redirect()->back()->with('error', 'Invalid date/time');
+        }
 
         CoachingSlotCapacity::updateOrCreate(
             ['date' => $data['date'], 'time' => $time],

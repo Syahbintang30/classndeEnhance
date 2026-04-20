@@ -42,7 +42,7 @@ class PaymentRedirectController extends Controller
         // If no txn found, attempt to query Midtrans (best-effort) to fetch status
         if (! $txn) {
             $remote = $this->queryMidtransStatus($orderId);
-            if ($remote && (isset($remote['status_code']) || isset($remote['transaction_status']))) {
+            if ($remote && (isset($remote['status_code']) || isset($remote['transaction_status']) || isset($remote['status']))) {
                 $txn = Transaction::create([
                     'order_id' => $orderId,
                     'user_id' => null,
@@ -52,7 +52,7 @@ class PaymentRedirectController extends Controller
                     'original_amount' => $remote['gross_amount'] ?? null,
                     'referral_code' => null,
                     'referrer_user_id' => null,
-                    'status' => $remote['transaction_status'] ?? ($remote['status_code'] ?? 'pending'),
+                    'status' => $remote['transaction_status'] ?? ($remote['status_code'] ?? ($remote['status'] ?? 'pending')),
                     'midtrans_response' => $remote,
                 ]);
             }
@@ -63,7 +63,7 @@ class PaymentRedirectController extends Controller
         }
 
         // Try to update remote once if not settled
-        $successfulStates = ['settlement','capture','success'];
+        $successfulStates = ['settlement','capture','success','paid','settled'];
         if (! in_array(strtolower($txn->status), $successfulStates)) {
             $remote = $this->queryMidtransStatus($txn->order_id);
             if ($remote && isset($remote['transaction_status'])) {
@@ -213,4 +213,5 @@ class PaymentRedirectController extends Controller
             return null;
         }
     }
+
 }

@@ -1,726 +1,1182 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="coaching-session-root">
-    <header class="cs-topbar">
-        <div class="cs-brand">{{ $booking->user ? $booking->user->name : 'Coaching' }} · Session {{ $booking->session_number ?? $booking->id }}</div>
-    <div class="cs-recording cs-recording-top">● Live</div>
+@php
+    $participantName = optional($booking->user)->name ?: 'Participant';
+    $sessionLabel = $booking->session_number ?? $booking->id;
+@endphp
+
+<div class="vc-root">
+    <header class="vc-header">
+        <div class="vc-session-info">
+            <h1 class="vc-title">
+                <span class="vc-avatar">{{ strtoupper(substr($participantName, 0, 1)) }}</span>
+                <span>{{ $participantName }}</span>
+                <span class="vc-dot">·</span>
+                <span>Sesi {{ $sessionLabel }}</span>
+            </h1>
+
+            <div class="vc-meta-row">
+                <span class="vc-pill vc-pill-muted">{{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y — H:i') }}</span>
+                <span class="vc-pill vc-pill-ok">{{ ucfirst($booking->status) }}</span>
+                @if(($isAdmin ?? false) && !empty($booking->notes))
+                    <span class="vc-pill vc-pill-note">Catatan: {{ \Illuminate\Support\Str::limit($booking->notes, 90) }}</span>
+                @endif
+            </div>
+        </div>
+
+        <div class="vc-live-pill">
+            <span class="vc-live-dot"></span>
+            <span>Live</span>
+        </div>
     </header>
 
-    <!-- centered meta placed above the video area -->
-    <div class="cs-meta cs-meta-center">
-        <div class="cs-time">{{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y — H:i') }}</div>
-        <div class="cs-status">Status: <span class="status-pill">{{ $booking->status }}</span></div>
-        @if(!empty($booking->notes))
-            <div class="cs-notes">Notes: <strong>{{ Str::limit($booking->notes, 120) }}</strong></div>
-        @endif
-    </div>
-
-    <main class="cs-stage" id="video-root">
-        <section class="cs-video-area">
-            <div id="local-media" class="cs-local cs-video-tile" aria-label="local video"></div>
-
-            <div id="remote-media" class="cs-remote-grid">
-                <!-- remote participant tiles appended here -->
+    <main class="vc-main">
+        <section class="vc-video-grid">
+            <div class="vc-video-card" id="remote-media">
+                <div class="vc-empty" id="vc-empty-state">Menunggu peserta lain bergabung...</div>
             </div>
 
-        </section>
-
-        <!-- controls moved below the video area (static, not overlay) -->
-        <div class="cs-overlay-bar" role="group" aria-label="session controls">
-            <div class="cs-overlay-left"><span id="cs-statusline">--:-- | 0 people in the call</span></div>
-            <div class="cs-overlay-center" id="controls-center">
-                <button id="ctl-mic" class="ctl-btn" title="Toggle mic">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19 11v1a7 7 0 0 1-14 0v-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                </button>
-                <button id="ctl-camera" class="ctl-btn" title="Toggle camera">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"></rect><circle cx="12" cy="12" r="2.2" stroke="currentColor" stroke-width="1.6"></circle></svg>
-                </button>
-                <!-- layout toggle removed -->
-                <button id="hangup" class="ctl-btn ctl-hangup" title="End call" aria-label="End call">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21 15v2a2 2 0 0 1-2 2c-6.627 0-12-5.373-12-12a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                    <span class="hangup-label">End</span>
-                </button>
+            <div class="vc-video-card vc-local" id="local-media">
+                <div class="vc-local-fallback" id="vc-local-fallback">
+                    <div class="vc-fallback-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
+                    <span>Kamera mati</span>
+                </div>
+                <div class="vc-tile-label">Anda</div>
             </div>
-            <!-- right-side quick actions removed as requested -->
-        </div>
         </section>
 
-    <!-- sidebar removed as requested -->
+        <aside class="vc-sidepanel" id="vc-sidepanel" hidden>
+            <div class="vc-sidepanel-head">
+                <h2>Detail Sesi</h2>
+                <button type="button" id="vc-close-sidepanel" class="vc-close-panel" aria-label="Close panel">&times;</button>
+            </div>
+
+            <div class="vc-sidepanel-body">
+                <div class="vc-detail-card">
+                    <h3>Info Booking</h3>
+                    <p><strong>Peserta:</strong> {{ $participantName }}</p>
+                    <p><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y H:i') }}</p>
+                    <p><strong>Status:</strong> {{ ucfirst($booking->status) }}</p>
+                </div>
+
+                @if($isAdmin ?? false)
+                    <div class="vc-detail-card">
+                        <h3>Notes Admin</h3>
+                        <p>{{ $booking->notes ?: '-' }}</p>
+                    </div>
+                @endif
+            </div>
+        </aside>
     </main>
 
-    <nav class="cs-bottombar" role="toolbar" aria-label="session controls">
-        <div class="cs-ambient"></div>
-        <div class="cs-ctx">
-            <!-- controls live badge moved to header; help and admin removed -->
+    <footer class="vc-controls-wrap">
+        <div class="vc-bottom-left">
+            <span id="vc-live-time">--:--</span>
+            <span class="vc-divider">|</span>
+            <span id="vc-people-count">1 orang di panggilan</span>
         </div>
-    </nav>
 
+        <div class="vc-controls">
+            <button id="ctl-mic" class="vc-control-btn" title="Toggle microphone" aria-label="Toggle microphone">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg class="icon-mic-on" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v4a3 3 0 0 0 3 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 11v1a7 7 0 1 1-14 0v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 19v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="icon-mic-off" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;">
+                        <path d="M4 4l16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M9 9v2a3 3 0 0 0 5.02 2.17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 11v1a7 7 0 0 1-11.18 5.66" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 19v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="ctl-camera" class="vc-control-btn" title="Toggle camera" aria-label="Toggle camera">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg class="icon-cam-on" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="7" width="13" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M16 10l5-2v8l-5-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg class="icon-cam-off" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;">
+                        <path d="M4 4l16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <rect x="3" y="7" width="13" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M16 10l5-2v8l-5-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="ctl-fullscreen" class="vc-control-btn" title="Fullscreen video" aria-label="Fullscreen video">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="ctl-detail" class="vc-control-btn vc-desktop-only" title="Detail sesi" aria-label="Open detail session">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="hangup" class="vc-control-btn vc-hangup" title="Akhiri panggilan" aria-label="Akhiri panggilan">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 16.2v2a2 2 0 0 1-2 2 17.7 17.7 0 0 1-7.7-1.9 17.4 17.4 0 0 1-5.4-4.2A17.4 17.4 0 0 1 1.7 8.7 17.7 17.7 0 0 1-.2 1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 1.7c.12.89.32 1.76.58 2.6a2 2 0 0 1-.45 2.11L5 6.89a14 14 0 0 0 5.6 5.6l1.51-1.11a2 2 0 0 1 2.11-.45c.84.26 1.71.46 2.6.58A2 2 0 0 1 18.5 13v2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="vc-hangup-label">Akhiri</span>
+            </button>
+        </div>
+
+        <div class="vc-bottom-right">
+            @if($isAdmin ?? false)
+                <span class="vc-admin-badge">Admin</span>
+            @endif
+        </div>
+    </footer>
 </div>
 
-<!-- admin end-room script removed as requested -->
-<!-- Confirmation modal for ending the call -->
-<div id="cs-modal-backdrop" class="cs-modal-backdrop" aria-hidden="true">
-    <div class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="cs-modal-title">
-        <h3 id="cs-modal-title">End Session</h3>
-        <p class="cs-modal-body">Are you sure you want to end this session? This will disconnect all participants.</p>
-        <div class="cs-modal-actions">
-            <button id="cs-modal-cancel" class="btn">Cancel</button>
-            <button id="cs-modal-confirm" class="btn btn-danger">End Session</button>
+<div id="vc-modal-backdrop" class="vc-modal-backdrop" aria-hidden="true">
+    <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-modal-title">
+        <h3 id="vc-modal-title">Akhiri Sesi</h3>
+        <p id="vc-modal-text">Yakin ingin mengakhiri sesi ini?</p>
+        <div class="vc-modal-actions">
+            <button id="vc-modal-cancel" class="vc-btn">Batal</button>
+            <button id="vc-modal-leave-only" class="vc-btn">Keluar saja</button>
+            <button id="vc-modal-confirm" class="vc-btn vc-btn-danger">Akhiri Sekarang</button>
         </div>
     </div>
 </div>
+
+<div id="vc-floating-notice" class="vc-floating-notice" role="status" aria-live="polite"></div>
+<button id="vc-exit-fullscreen" class="vc-exit-fullscreen" type="button" aria-label="Exit fullscreen">Exit Fullscreen</button>
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/coaching.css') }}">
+<style>
+    .vc-root {
+        min-height: calc(100vh - 20px);
+        background: radial-gradient(circle at 10% 10%, #1a1c22 0%, #090a0d 45%, #060608 100%);
+        color: #eceff4;
+        display: flex;
+        flex-direction: column;
+        padding: 14px;
+        gap: 14px;
+        font-family: "Manrope", "Segoe UI", sans-serif;
+    }
+
+    .vc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        background: rgba(15, 17, 23, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 14px 18px;
+        backdrop-filter: blur(8px);
+    }
+
+    .vc-title {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .vc-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #4f7cff, #3656cc);
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(79, 124, 255, 0.28);
+    }
+
+    .vc-dot {
+        opacity: 0.45;
+    }
+
+    .vc-meta-row {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .vc-pill {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 6px 11px;
+        border: 1px solid transparent;
+    }
+
+    .vc-pill-muted {
+        color: #c8ceda;
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .vc-pill-ok {
+        color: #80f3b5;
+        background: rgba(17, 99, 57, 0.3);
+        border-color: rgba(67, 196, 122, 0.35);
+    }
+
+    .vc-pill-note {
+        color: #9ec6ff;
+        background: rgba(27, 52, 92, 0.32);
+        border-color: rgba(103, 161, 255, 0.3);
+    }
+
+    .vc-live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: #ff9f9f;
+        border: 1px solid rgba(255, 90, 90, 0.3);
+        background: rgba(96, 16, 16, 0.3);
+        font-weight: 700;
+    }
+
+    .vc-live-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: #ff4747;
+        animation: vcPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes vcPulse {
+        0%, 100% { opacity: 0.5; transform: scale(0.92); }
+        50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    .vc-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .vc-main.vc-with-panel {
+        grid-template-columns: minmax(0, 1fr) 320px;
+    }
+
+    .vc-video-grid {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .vc-video-card {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        min-height: 380px;
+        background: linear-gradient(180deg, #11141a 0%, #0b0d11 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .vc-video-card video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        background: #07090d;
+        transform: scale(0.92);
+    }
+
+    #remote-media {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    #remote-media .vc-remote-tile {
+        position: relative;
+        overflow: hidden;
+        border-radius: 14px;
+        background: #0c0f14;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        min-height: 260px;
+    }
+
+    #remote-media .vc-remote-tile video,
+    #local-media video {
+        object-fit: cover;
+        object-position: center center;
+    }
+
+    .vc-tile-label {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: rgba(0, 0, 0, 0.62);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 6px 10px;
+    }
+
+    .vc-empty {
+        margin: auto;
+        color: #98a2b3;
+        font-size: 14px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vc-local video {
+        transform: scaleX(-1) scale(0.92);
+    }
+
+    /* Full-bleed fullscreen mode: fill frame edge-to-edge without side gaps. */
+    .vc-video-grid:fullscreen video,
+    .vc-video-card:fullscreen video,
+    .vc-remote-tile:fullscreen video,
+    #local-media:fullscreen video {
+        object-fit: cover !important;
+        object-position: center center !important;
+        transform: none !important;
+        background: #06080c;
+    }
+
+    #local-media:fullscreen video {
+        transform: scaleX(-1) !important;
+    }
+
+    .vc-local-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #9aa4b7;
+        background: radial-gradient(circle at 50% 40%, #161b26 0%, #0b0e15 100%);
+    }
+
+    .vc-fallback-avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 999px;
+        background: #20273b;
+        color: #dbe4ff;
+        font-size: 34px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vc-sidepanel {
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(11, 13, 18, 0.88);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .vc-sidepanel-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .vc-sidepanel-head h2 {
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .vc-close-panel {
+        border: 0;
+        background: transparent;
+        color: #a3acc0;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .vc-sidepanel-body {
+        padding: 14px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .vc-detail-card {
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #0b0f18;
+        padding: 12px;
+    }
+
+    .vc-detail-card h3 {
+        margin: 0 0 8px;
+        color: #c9d4ea;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .vc-detail-card p {
+        margin: 6px 0;
+        font-size: 13px;
+        color: #d2d9e7;
+        white-space: pre-wrap;
+    }
+
+    .vc-controls-wrap {
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(9, 10, 14, 0.94);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 14px;
+    }
+
+    .vc-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .vc-control-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1b1f2a;
+        color: #f1f5ff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .vc-control-btn .vc-icon svg {
+        display: block;
+    }
+
+    .vc-video-card .vc-fs-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(12, 14, 20, 0.55);
+        color: #eaf1ff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        z-index: 3;
+    }
+
+    .vc-video-card .vc-fs-btn:hover {
+        background: rgba(25, 30, 40, 0.8);
+    }
+
+    .vc-control-btn:hover {
+        transform: translateY(-2px);
+        background: #242a38;
+    }
+
+    .vc-control-btn.is-muted {
+        background: rgba(125, 28, 28, 0.28);
+        border-color: rgba(255, 103, 103, 0.45);
+        color: #ff9f9f;
+    }
+
+    .vc-hangup {
+        width: auto;
+        padding: 0 16px;
+        gap: 8px;
+        background: #d63939;
+        border-color: #de5252;
+        color: #fff;
+    }
+
+    .vc-hangup:hover {
+        background: #ec4242;
+    }
+
+    .vc-hangup-label {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .vc-bottom-left,
+    .vc-bottom-right {
+        font-size: 13px;
+        color: #9aa7bd;
+        min-width: 140px;
+    }
+
+    .vc-divider {
+        margin: 0 8px;
+        opacity: 0.5;
+    }
+
+    .vc-admin-badge {
+        background: rgba(39, 93, 213, 0.33);
+        color: #b9d5ff;
+        border: 1px solid rgba(101, 157, 255, 0.45);
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .vc-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .vc-modal {
+        width: min(420px, 94vw);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: #10141d;
+        color: #ebeff8;
+        padding: 18px;
+    }
+
+    .vc-modal h3 {
+        margin: 0 0 8px;
+    }
+
+    .vc-modal p {
+        margin: 0;
+        color: #a8b3c8;
+    }
+
+    .vc-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .vc-btn {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: #1b2231;
+        color: #f5f7fb;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .vc-btn-danger {
+        background: #d63636;
+        border-color: #e45353;
+    }
+
+    .vc-floating-notice {
+        position: fixed;
+        top: 18px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-16px);
+        min-width: min(560px, 94vw);
+        max-width: 94vw;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 173, 103, 0.45);
+        background: rgba(59, 36, 14, 0.96);
+        color: #ffd9aa;
+        padding: 11px 14px;
+        z-index: 2200;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.46);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .vc-floating-notice.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .vc-control-btn.is-active {
+        background: #2a3852;
+        border-color: rgba(128, 176, 255, 0.65);
+        color: #d9e9ff;
+    }
+
+    .vc-exit-fullscreen {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 2500;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(8, 10, 16, 0.86);
+        color: #e9effa;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        display: none;
+        cursor: pointer;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+    }
+
+    .vc-exit-fullscreen.show {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    @media (max-width: 1024px) {
+        .vc-video-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .vc-video-card {
+            min-height: 280px;
+        }
+
+        .vc-main.vc-with-panel {
+            grid-template-columns: 1fr;
+        }
+
+        .vc-sidepanel {
+            max-height: 300px;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .vc-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .vc-controls-wrap {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .vc-controls {
+            justify-content: center;
+        }
+
+        .vc-bottom-left,
+        .vc-bottom-right {
+            min-width: 0;
+            text-align: center;
+        }
+
+        .vc-desktop-only {
+            display: none;
+        }
+    }
+</style>
 @endpush
 
 @push('scripts')
 @if (file_exists(public_path('js/twilio-video.min.js')))
-    <script src="{{ asset('js/twilio-video.min.js') }}"></script>
+<script src="{{ asset('js/twilio-video.min.js') }}"></script>
 @endif
 <script>
-// Load Twilio SDK from CDN with fallback and wait for window.Twilio
-(function(){
-    var primary = 'https://media.twiliocdn.com/sdk/js/video/latest/twilio-video.min.js';
-    var fallback = 'https://unpkg.com/twilio-video/dist/twilio-video.min.js';
-    function insertScript(src){ var s = document.createElement('script'); s.src = src; s.async = false; document.head.appendChild(s); return s; }
-    if (!window.Twilio) insertScript(primary);
-    setTimeout(function(){ if (!window.Twilio) insertScript(fallback); }, 1200);
-})();
+(function () {
+    const token = {!! json_encode($accessToken ?? null) !!};
+    const roomName = {!! json_encode($roomName ?? null) !!};
+    const isAdmin = @json((bool) ($isAdmin ?? false));
+    const bookingId = {{ (int) $booking->id }};
+    const endRoomUrl = {!! json_encode(url('/admin/coaching/bookings/' . $booking->id . '/end-room')) !!};
+    const eventUrl = {!! json_encode(url('/coaching/' . $booking->id . '/event')) !!};
+    const leaveUrl = {!! json_encode(route('coaching.index')) !!};
+    const csrfToken = {!! json_encode(csrf_token()) !!};
 
-console.log('[coaching.session] scripts loaded');
+    const localMedia = document.getElementById('local-media');
+    const remoteMedia = document.getElementById('remote-media');
+    const emptyState = document.getElementById('vc-empty-state');
+    const localFallback = document.getElementById('vc-local-fallback');
 
-function waitForTwilio(timeoutMs = 6000){
-    return new Promise(function(resolve, reject){
-        if (window.Twilio) return resolve(window.Twilio);
-        var waited = 0;
-        var iv = setInterval(function(){
-            if (window.Twilio) { clearInterval(iv); return resolve(window.Twilio); }
-            waited += 200;
-            if (waited >= timeoutMs) { clearInterval(iv); return reject(new Error('Twilio SDK not available after ' + timeoutMs + 'ms')); }
-        }, 200);
-    });
-}
+    const btnMic = document.getElementById('ctl-mic');
+    const btnCam = document.getElementById('ctl-camera');
+    const btnDetail = document.getElementById('ctl-detail');
+    const btnFullscreen = document.getElementById('ctl-fullscreen');
+    const btnHangup = document.getElementById('hangup');
 
-waitForTwilio().then(function(){
-    document.addEventListener('DOMContentLoaded', async function(){
-        const bookingId = {{ $booking->id }};
-        let token = null;
-        let roomName = null;
+    const peopleCount = document.getElementById('vc-people-count');
+    const liveTime = document.getElementById('vc-live-time');
+    const main = document.querySelector('.vc-main');
+    const sidepanel = document.getElementById('vc-sidepanel');
+    const closePanel = document.getElementById('vc-close-sidepanel');
 
-        // Prefer server-provided token
-        @if(isset($accessToken) && isset($roomName))
-            token = {!! json_encode($accessToken) !!};
-            roomName = {!! json_encode($roomName) !!};
-            console && console.log && console.log('Using server-supplied token/roomName');
-        @else
-            // Fallback: fetch token endpoint
-            const tokenResp = await fetch("{{ url('/coaching/token') }}/" + bookingId, { credentials: 'same-origin' });
-            if (!tokenResp.ok) {
-                document.getElementById('video-root').innerText = 'Failed to get token: ' + tokenResp.statusText;
-                return;
-            }
-            const data = await tokenResp.json();
-            token = data.token;
-            roomName = data.room;
-        @endif
+    const modal = document.getElementById('vc-modal-backdrop');
+    const modalText = document.getElementById('vc-modal-text');
+    const modalCancel = document.getElementById('vc-modal-cancel');
+    const modalLeaveOnly = document.getElementById('vc-modal-leave-only');
+    const modalConfirm = document.getElementById('vc-modal-confirm');
+    const floatingNotice = document.getElementById('vc-floating-notice');
+    const exitFullscreenBtn = document.getElementById('vc-exit-fullscreen');
 
-        const { connect, createLocalVideoTrack, createLocalAudioTrack } = Twilio.Video;
-        // Keep debug output in the browser console only (do not write to DOM)
-        function debug(msg){
-            try { console.log(msg); } catch(e) { /* ignore */ }
-        }
+    let room = null;
+    let localVideoTrack = null;
+    let localAudioTrack = null;
+    let selfHangup = false;
 
-        let localVideoTrack = null;
-        let localAudioTrack = null;
-    // map to keep active volume monitors keyed by mediaStreamTrack.id
-    const volumeMonitors = new Map();
-    // single audio context for monitors (create lazily on first user gesture)
-    let audioCtx = null;
-        try {
-            debug('Requesting local media...');
-            localVideoTrack = await createLocalVideoTrack();
-            localAudioTrack = await createLocalAudioTrack();
-            debug('Local media acquired');
-        } catch (e) {
-            debug('Failed to acquire local media: ' + (e && e.message ? e.message : e));
-        }
-
-        if (localVideoTrack) {
-            const localMedia = document.getElementById('local-media');
-            localMedia.appendChild(localVideoTrack.attach());
-        }
-
-        // initialize control UI according to available local tracks
-        try {
-            if (localAudioTrack) {
-                btnMic && btnMic.classList.remove('muted');
-                updateLocalMicIndicator(false);
-            } else {
-                btnMic && btnMic.classList.add('muted');
-                updateLocalMicIndicator(true);
-            }
-            if (localVideoTrack) {
-                btnCamera && btnCamera.classList.remove('muted');
-                ctlCam && ctlCam.classList.remove('muted');
-            } else {
-                btnCamera && btnCamera.classList.add('muted');
-                ctlCam && ctlCam.classList.add('muted');
-            }
-        } catch (e) { /* ignore */ }
-
-    // attach simple mic/camera toggles
-    // prefer explicit control elements if present; fall back to legacy ids
-    const ctlMic = document.getElementById('ctl-mic');
-    const ctlCam = document.getElementById('ctl-camera');
-    const btnMic = document.getElementById('btn-mic') || ctlMic;
-    const btnCamera = document.getElementById('btn-camera') || ctlCam;
-    // layout toggle removed
-
-        // Publications (if room connected)
-        let localVideoPublication = null;
-        let localAudioPublication = null;
-
-        // Helper to get the attached local video element
-        function getLocalVideoEl() {
-            const lm = document.getElementById('local-media');
-            if (!lm) return null;
-            return lm.querySelector('video');
-        }
-
-        // CAMERA: toggle using track.enable(true/false) without publish/unpublish churn.
-        async function enableCamera() {
-            try {
-                if (!localVideoTrack) {
-                    // Create once if permissions were previously denied or track stopped due to hangup
-                    localVideoTrack = await createLocalVideoTrack();
-                    const localMedia = document.getElementById('local-media');
-                    if (localMedia && !getLocalVideoEl()) {
-                        localMedia.appendChild(localVideoTrack.attach());
-                    }
-                    // Initial publish only if we have a room and haven't published yet
-                    if (room && room.localParticipant && !localVideoPublication) {
-                        try {
-                            localVideoPublication = await room.localParticipant.publishTrack(localVideoTrack);
-                            debug('Initial local video published');
-                        } catch (e) { debug('Initial video publish failed: ' + e.message); }
-                    }
-                }
-                if (localVideoTrack && typeof localVideoTrack.enable === 'function') {
-                    localVideoTrack.enable(true);
-                }
-                // Show video element
-                const v = getLocalVideoEl(); if (v) v.style.display = '';
-                const lm = document.getElementById('local-media');
-                if (lm) { const ph = lm.querySelector('.placeholder-camera-off'); if (ph) ph.style.display = 'none'; }
-                btnCamera && btnCamera.classList.remove('muted');
-                ctlCam && ctlCam.classList.remove('muted');
-            } catch (err) { debug('enableCamera error: ' + (err && err.message)); }
-        }
-
-        function disableCamera() {
-            try {
-                if (localVideoTrack && typeof localVideoTrack.enable === 'function') {
-                    localVideoTrack.enable(false); // do not stop/unpublish, just disable
-                }
-                // Hide the video element instead of destroying it
-                const v = getLocalVideoEl(); if (v) v.style.display = 'none';
-                const lm = document.getElementById('local-media');
-                if (lm) {
-                    let ph = lm.querySelector('.placeholder-camera-off');
-                    if (!ph) {
-                        ph = document.createElement('div');
-                        ph.className = 'placeholder-camera-off';
-                        ph.textContent = 'Camera off';
-                        ph.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:14px;opacity:0.7;';
-                        lm.appendChild(ph);
-                    }
-                    ph.style.display = 'flex';
-                }
-                btnCamera && btnCamera.classList.add('muted');
-                ctlCam && ctlCam.classList.add('muted');
-            } catch (err) { debug('disableCamera error: ' + (err && err.message)); }
-        }
-
-        // MIC: toggle using track.enable(true/false) while keeping publication stable.
-        async function enableMic() {
-            try {
-                if (!localAudioTrack) {
-                    localAudioTrack = await createLocalAudioTrack();
-                    if (room && room.localParticipant && !localAudioPublication) {
-                        try {
-                            localAudioPublication = await room.localParticipant.publishTrack(localAudioTrack);
-                            debug('Initial local audio published');
-                        } catch (e) { debug('Initial audio publish failed: ' + e.message); }
-                    }
-                }
-                if (localAudioTrack && typeof localAudioTrack.enable === 'function') {
-                    localAudioTrack.enable(true);
-                }
-                // Start volume monitor when enabled
-                startVolumeMonitorForTrack(localAudioTrack, document.getElementById('local-media'));
-                btnMic && btnMic.classList.remove('muted');
-                ctlMic && ctlMic.classList.remove('muted');
-                updateLocalMicIndicator(false);
-            } catch (err) { debug('enableMic error: ' + (err && err.message)); }
-        }
-
-        function disableMic() {
-            try {
-                if (localAudioTrack && typeof localAudioTrack.enable === 'function') {
-                    localAudioTrack.enable(false); // just disable, keep publication
-                }
-                // Stop volume monitoring while muted
-                stopVolumeMonitorForTrack(localAudioTrack);
-                btnMic && btnMic.classList.add('muted');
-                ctlMic && ctlMic.classList.add('muted');
-                updateLocalMicIndicator(true);
-            } catch (err) { debug('disableMic error: ' + (err && err.message)); }
-        }
-
-        btnCamera && btnCamera.addEventListener('click', function(){
-            if (btnCamera.classList.contains('muted')) {
-                enableCamera();
-            } else {
-                disableCamera();
-            }
-        });
-
-        btnMic && btnMic.addEventListener('click', function(){
-            if (btnMic.classList.contains('muted')) {
-                enableMic();
-            } else {
-                disableMic();
-            }
-        });
-
-    // mirror to overlay center controls (if present)
-    // only mirror clicks if the central and fallback controls are different elements
-    if (ctlCam && btnCamera && ctlCam !== btnCamera) ctlCam.addEventListener('click', () => btnCamera.click());
-    if (ctlMic && btnMic && ctlMic !== btnMic) ctlMic.addEventListener('click', () => btnMic.click());
-    
-    // local mic indicator: small dot in the local-media corner
-    function updateLocalMicIndicator(isMuted) {
-        try {
-            const local = document.getElementById('local-media');
-            if (!local) return;
-            let ind = local.querySelector('.local-mic-indicator');
-            if (!ind) {
-                ind = document.createElement('div');
-                ind.className = 'local-mic-indicator';
-                ind.setAttribute('aria-hidden','true');
-                local.appendChild(ind);
-            }
-            if (isMuted) {
-                ind.classList.add('muted');
-            } else {
-                ind.classList.remove('muted');
-            }
-        } catch (e) { /**/ }
+    function log(msg) {
+        try { console.log('[coaching.session]', msg); } catch (e) {}
     }
-    // layout toggle handler removed because control is no longer present
 
+    function setClock() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        if (liveTime) liveTime.textContent = hh + ':' + mm;
+    }
 
-            let room = null;
+    function updatePeople() {
+        const total = 1 + (room ? room.participants.size : 0);
+        if (peopleCount) {
+            peopleCount.textContent = total + ' orang di panggilan';
+        }
+    }
+
+    function refreshEmptyState() {
+        if (!emptyState) return;
+        const count = remoteMedia ? remoteMedia.querySelectorAll('.vc-remote-tile').length : 0;
+        emptyState.style.display = count > 0 ? 'none' : 'flex';
+    }
+
+    function setMicMuted(muted) {
+        if (!btnMic) return;
+        btnMic.classList.toggle('is-muted', muted);
+        const onIcon = btnMic.querySelector('.icon-mic-on');
+        const offIcon = btnMic.querySelector('.icon-mic-off');
+        if (onIcon && offIcon) {
+            onIcon.style.display = muted ? 'none' : 'block';
+            offIcon.style.display = muted ? 'block' : 'none';
+        }
+    }
+
+    function setCameraMuted(muted) {
+        if (!btnCam) return;
+        btnCam.classList.toggle('is-muted', muted);
+        const onIcon = btnCam.querySelector('.icon-cam-on');
+        const offIcon = btnCam.querySelector('.icon-cam-off');
+        if (onIcon && offIcon) {
+            onIcon.style.display = muted ? 'none' : 'block';
+            offIcon.style.display = muted ? 'block' : 'none';
+        }
+        if (localFallback) localFallback.style.display = muted ? 'flex' : 'none';
+        const localVideo = localMedia ? localMedia.querySelector('video') : null;
+        if (localVideo) localVideo.style.display = muted ? 'none' : 'block';
+    }
+
+    function createFullscreenButton(target, label) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'vc-fs-btn';
+        button.setAttribute('aria-label', 'Fullscreen ' + label);
+        button.title = 'Fullscreen';
+        button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        button.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleFullscreen(target);
+        });
+        target.appendChild(button);
+    }
+
+    function toggleFullscreen(el) {
+        if (!el) return;
+        if (document.fullscreenElement) {
+            document.exitFullscreen && document.exitFullscreen();
+            return;
+        }
+        if (el.requestFullscreen) {
+            el.requestFullscreen().catch(() => {
+                showFloatingNotice('Fullscreen tidak didukung di browser ini.');
+            });
+        }
+    }
+
+    function updateFullscreenUi() {
+        const isFullscreen = !!document.fullscreenElement;
+        if (btnFullscreen) {
+            btnFullscreen.classList.toggle('is-active', isFullscreen);
+        }
+        if (exitFullscreenBtn) {
+            exitFullscreenBtn.classList.toggle('show', isFullscreen);
+        }
+    }
+
+    function addRemoteParticipant(participant) {
+        if (!remoteMedia) return;
+
+        const tile = document.createElement('div');
+        tile.className = 'vc-remote-tile';
+        tile.id = 'remote-' + participant.sid;
+        createFullscreenButton(tile, participant.identity || 'participant');
+
+        const label = document.createElement('div');
+        label.className = 'vc-tile-label';
+        label.textContent = participant.identity || 'Participant';
+        tile.appendChild(label);
+
+        participant.tracks.forEach(pub => {
+            if (pub.track) {
+                tile.appendChild(pub.track.attach());
+            }
+        });
+
+        participant.on('trackSubscribed', track => {
+            tile.appendChild(track.attach());
+        });
+
+        participant.on('trackUnsubscribed', track => {
+            track.detach().forEach(el => el.remove());
+        });
+
+        remoteMedia.appendChild(tile);
+        refreshEmptyState();
+    }
+
+    function removeRemoteParticipant(participant) {
+        const el = document.getElementById('remote-' + participant.sid);
+        if (el) el.remove();
+        refreshEmptyState();
+    }
+
+    async function endSessionByAdmin() {
         try {
-            if (!token) throw new Error('Missing token');
-            debug('Connecting to room ' + roomName + ' with token ' + (token ? token.slice(0,8) + '...' : 'null'));
-            const connectOpts = { name: roomName };
-            const tracks = [];
-            if (localAudioTrack) tracks.push(localAudioTrack);
-            if (localVideoTrack) tracks.push(localVideoTrack);
-            if (tracks.length) connectOpts.tracks = tracks;
-            room = await connect(token, connectOpts);
-            debug('Connected to room ' + roomName + ' (sid=' + (room && room.sid ? room.sid : 'unknown') + ')');
-
-            const remoteContainer = document.getElementById('remote-media');
-
-            function addParticipantToList(participant, muted=false) {
-                const ul = document.getElementById('participant-list');
-                if (!ul) return; // participant list was removed from DOM
-                const li = document.createElement('li');
-                li.id = 'p-' + participant.sid;
-                const dot = document.createElement('span'); dot.className = 'dot';
-                const pname = document.createElement('span'); pname.className = 'pname'; pname.textContent = participant.identity || participant.sid;
-                const aind = document.createElement('span'); aind.className = 'pmuted audio-indicator'; aind.title = 'Audio muted'; aind.style.display = 'none'; aind.textContent = '🔇';
-                const vind = document.createElement('span'); vind.className = 'pmuted video-indicator'; vind.title = 'Video off'; vind.style.display = 'none'; vind.textContent = '📷✖';
-                li.appendChild(dot); li.appendChild(pname); li.appendChild(aind); li.appendChild(vind);
-                ul.appendChild(li);
-            }
-
-            function removeParticipantFromList(participant) {
-                const el = document.getElementById('p-' + participant.sid);
-                if (el) el.remove();
-            }
-
-            function attachParticipant(participant) {
-                // hide empty placeholder if present
-                const empty = document.querySelector('.cs-empty'); if (empty) empty.style.display = 'none';
-
-                addParticipantToList(participant);
-                const tile = document.createElement('div');
-                tile.className = 'cs-video-tile';
-                tile.id = participant.sid;
-                const nameTag = document.createElement('div');
-                nameTag.className = 'tile-name';
-                nameTag.textContent = participant.identity || participant.sid;
-                tile.appendChild(nameTag);
-
-                function ensureRemoteCamPlaceholder(){
-                    let ph = tile.querySelector('.placeholder-camera-off');
-                    if (!ph) {
-                        ph = document.createElement('div');
-                        ph.className = 'placeholder-camera-off';
-                        ph.textContent = 'Camera off';
-                        ph.style.cssText = 'display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:14px;opacity:0.7;';
-                        tile.appendChild(ph);
-                    }
-                    return ph;
-                }
-
-                function setVideoVisibilityForTrack(track, enabled){
-                    try {
-                        const vids = tile.querySelectorAll('video');
-                        vids.forEach(v => v.style.display = enabled ? '' : 'none');
-                        const ph = ensureRemoteCamPlaceholder();
-                        ph.style.display = enabled ? 'none' : 'flex';
-                        // update small indicator badge as well
-                        setParticipantIndicators(participant, true, !!enabled);
-                    } catch (e) { /* ignore */ }
-                }
-
-                participant.tracks.forEach(publication => {
-                    if (publication.track) {
-                        const el = publication.track.attach();
-                        tile.appendChild(el);
-                        if (publication.track.kind === 'video') {
-                            // initialize state in case remote already disabled
-                            const currentEnabled = (typeof publication.track.isEnabled !== 'undefined') ? publication.track.isEnabled : true;
-                            setVideoVisibilityForTrack(publication.track, !!currentEnabled);
-                        }
-                    }
-                });
-                participant.on('trackSubscribed', track => {
-                    tile.appendChild(track.attach());
-                    setParticipantIndicators(participant, true, track.kind === 'video' ? true : false);
-                    // if it's an audio track, start monitoring to show speaking indicator
-                    if (track.kind === 'audio') {
-                        startVolumeMonitorForTrack(track, tile);
-                    } else if (track.kind === 'video') {
-                        // watch for remote camera enable/disable events
-                        const apply = () => {
-                            const enabled = (typeof track.isEnabled !== 'undefined') ? track.isEnabled : true;
-                            setVideoVisibilityForTrack(track, !!enabled);
-                        };
-                        try {
-                            track.on('disabled', () => setVideoVisibilityForTrack(track, false));
-                            track.on('enabled', () => setVideoVisibilityForTrack(track, true));
-                            // also react to bandwidth switch events
-                            if (typeof track.on === 'function') {
-                                track.on('switchedOff', () => setVideoVisibilityForTrack(track, false));
-                                track.on('switchedOn', () => setVideoVisibilityForTrack(track, true));
-                            }
-                        } catch (e) { /* ignore */ }
-                        apply();
-                    }
-                });
-                participant.on('trackUnsubscribed', track => {
-                    track.detach().forEach(el => el.remove());
-                    setParticipantIndicators(participant, false, track.kind === 'video' ? false : false);
-                    // stop audio monitor when unsubscribed
-                    if (track.kind === 'audio') stopVolumeMonitorForTrack(track);
-                });
-                // participant-level events as a fallback for some SDK versions
-                try {
-                    participant.on('trackDisabled', pub => { if (pub && pub.track && pub.track.kind === 'video') setVideoVisibilityForTrack(pub.track, false); });
-                    participant.on('trackEnabled', pub => { if (pub && pub.track && pub.track.kind === 'video') setVideoVisibilityForTrack(pub.track, true); });
-                } catch (e) { /* ignore */ }
-                remoteContainer.appendChild(tile);
-            }
-
-            room.participants.forEach(attachParticipant);
-            room.on('participantConnected', attachParticipant);
-            room.on('participantDisconnected', participant => {
-                const el = document.getElementById(participant.sid);
-                if (el) el.remove();
-                removeParticipantFromList(participant);
-                // if no remaining remote tiles, show placeholder
-                const remote = document.getElementById('remote-media');
-                if (remote && remote.querySelectorAll('.cs-video-tile').length === 0) {
-                    const empty = document.querySelector('.cs-empty'); if (empty) empty.style.display = '';
-                }
-                // update grid classes
-                updateGridClass();
+            const res = await fetch(endRoomUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
             });
 
-            // update status line with time and participant count
-            const statusLine = document.getElementById('cs-statusline');
-            function refreshStatus() {
-                try {
-                    const now = new Date();
-                    const hh = ('0'+now.getHours()).slice(-2);
-                    const mm = ('0'+now.getMinutes()).slice(-2);
-                    const count = 1 + (room ? room.participants.size : 0); // include local
-                    if (statusLine) statusLine.textContent = `${hh}:${mm} | ${count} people in the call`;
-                } catch (e) { }
-            }
-            refreshStatus();
-            // refresh every 20s and on participant changes
-            setInterval(refreshStatus, 20000);
-            room.on('participantConnected', refreshStatus);
-            room.on('participantDisconnected', refreshStatus);
-
-            // show friendly placeholder when no remote participants
-            if (remoteContainer && remoteContainer.querySelectorAll('.cs-video-tile').length === 0) {
-                const ph = document.createElement('div');
-                ph.className = 'cs-empty';
-                ph.textContent = 'Waiting for others to join the session';
-                remoteContainer.appendChild(ph);
+            let json = null;
+            try {
+                json = await res.json();
+            } catch (_) {
+                json = null;
             }
 
-            // update grid layout class based on participant count
-            function updateGridClass(){
-                const grid = document.getElementById('remote-media');
-                if (!grid) return;
-                const tiles = grid.querySelectorAll('.cs-video-tile');
-                grid.classList.remove('two');
-                if (tiles.length === 2) {
-                    grid.classList.add('two');
-                }
-            }
-            // call once after initial attach
-            updateGridClass();
-
-            // Also update the overall video-area when there are exactly two participants total
-            function updateVideoAreaTwoParticipantClass() {
-                try {
-                    const area = document.querySelector('.cs-video-area');
-                    if (!area) return;
-                    const remote = document.getElementById('remote-media');
-                    const remoteTiles = remote ? remote.querySelectorAll('.cs-video-tile').length : 0;
-                    // Detect local presence by looking for a video element inside #local-media
-                    const localMedia = document.getElementById('local-media');
-                    let hasLocal = false;
-                    if (localMedia) {
-                        hasLocal = !!localMedia.querySelector('video');
-                    }
-                    const total = remoteTiles + (hasLocal ? 1 : 0);
-                    if (total === 2) {
-                        area.classList.add('two-participants');
-                    } else {
-                        area.classList.remove('two-participants');
-                    }
-                } catch (e) { /* ignore */ }
+            if (!res.ok || !(json && json.success)) {
+                const msg = (json && json.error) ? json.error : 'Gagal mengakhiri sesi untuk semua peserta.';
+                showFloatingNotice(msg);
+                return false;
             }
 
-            // call now and on participant changes
-            updateVideoAreaTwoParticipantClass();
-            room.on('participantConnected', updateVideoAreaTwoParticipantClass);
-            room.on('participantDisconnected', updateVideoAreaTwoParticipantClass);
+            return true;
+        } catch (e) {
+            log('endRoom request failed: ' + (e && e.message ? e.message : e));
+            showFloatingNotice('Gagal mengakhiri sesi. Periksa koneksi lalu coba lagi.');
+            return false;
+        }
+    }
 
-            // helper to show/hide audio/video indicators for a participant
-            function setParticipantIndicators(participant, audioPresent, videoPresent) {
-                try {
-                    const li = document.getElementById('p-' + participant.sid);
-                    if (li) {
-                        const a = li.querySelector('.audio-indicator');
-                        const v = li.querySelector('.video-indicator');
-                        if (a) a.style.display = audioPresent ? 'none' : '';
-                        if (v) v.style.display = videoPresent ? 'none' : '';
-                    }
-                    const tile = document.getElementById(participant.sid);
-                    if (tile) {
-                        let badge = tile.querySelector('.tile-muted');
-                        if (!badge) {
-                            badge = document.createElement('div'); badge.className = 'tile-muted'; tile.appendChild(badge);
-                        }
-                        const parts = [];
-                        if (!audioPresent) parts.push('🔇');
-                        if (!videoPresent) parts.push('📷');
-                        badge.textContent = parts.join(' ');
-                        badge.style.display = parts.length ? '' : 'none';
-                    }
-                } catch (e) { /* ignore */ }
-            }
-
-            // volume monitor helpers using WebAudio Analyser
-            function ensureAudioContext(){
-                if (audioCtx) return audioCtx;
-                try {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) { audioCtx = null; }
-                return audioCtx;
-            }
-
-            function startVolumeMonitorForTrack(track, element){
-                try {
-                    if (!track || !track.mediaStreamTrack) return;
-                    const id = track.mediaStreamTrack.id || (track.trackSid || track.sid || String(Math.random()));
-                    if (volumeMonitors.has(id)) return; // already monitoring
-                    const ctx = ensureAudioContext();
-                    if (!ctx) return;
-                    const ms = new MediaStream([track.mediaStreamTrack]);
-                    const src = ctx.createMediaStreamSource(ms);
-                    const analyser = ctx.createAnalyser(); analyser.fftSize = 1024; analyser.smoothingTimeConstant = 0.3;
-                    src.connect(analyser);
-                    const data = new Uint8Array(analyser.fftSize);
-                    let raf = null;
-                    function tick(){
-                        try {
-                            analyser.getByteTimeDomainData(data);
-                            let sum = 0;
-                            for (let i=0;i<data.length;i++){ const v = (data[i]-128)/128; sum += v*v; }
-                            const rms = Math.sqrt(sum / data.length);
-                            const isSpeaking = rms > 0.02; // threshold -- tweak if needed
-                            if (element) {
-                                // for local-media element, toggle .local-mic-indicator.speaking
-                                if (element.id === 'local-media'){
-                                    const micInd = element.querySelector('.local-mic-indicator');
-                                    if (micInd) micInd.classList.toggle('speaking', !!isSpeaking);
-                                } else {
-                                    // element is a tile — toggle speaking class to show green outline
-                                    element.classList.toggle('speaking', !!isSpeaking);
-                                }
-                            }
-                        } catch (e) { /* ignore */ }
-                        raf = requestAnimationFrame(tick);
-                    }
-                    raf = requestAnimationFrame(tick);
-                    volumeMonitors.set(id, { analyser, src, raf, ctx });
-                } catch (e) { debug('startVolumeMonitor error: ' + (e && e.message)); }
-            }
-
-            function stopVolumeMonitorForTrack(track){
-                try {
-                    if (!track || !track.mediaStreamTrack) return;
-                    const id = track.mediaStreamTrack.id || (track.trackSid || track.sid);
-                    const item = volumeMonitors.get(id);
-                    if (!item) return;
-                    if (item.raf) cancelAnimationFrame(item.raf);
-                    try { if (item.analyser && item.src) { item.src.disconnect(); item.analyser.disconnect(); } } catch(e){}
-                    volumeMonitors.delete(id);
-                } catch (e) { /**/ }
-            }
-
-            // Listen to remote participant publications to initialize indicators
-            room.participants.forEach(p => {
-                // determine presence of audio/video tracks
-                const hasAudio = Array.from(p.tracks.values()).some(pub => pub.track && pub.track.kind === 'audio');
-                const hasVideo = Array.from(p.tracks.values()).some(pub => pub.track && pub.track.kind === 'video');
-                setParticipantIndicators(p, hasAudio, hasVideo);
+    async function sendEvent(eventName, meta) {
+        try {
+            await fetch(eventUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ event: eventName, meta: meta || {} })
             });
+        } catch (e) {
+            log('event log failed: ' + (e && e.message ? e.message : e));
+        }
+    }
 
-            // update indicators for local participant when publications change
-            if (room.localParticipant) {
-                room.localParticipant.on('trackPublished', (pub) => {
-                    // local audio/video published -> hide local indicators
-                    const localLi = document.getElementById('p-' + room.localParticipant.sid);
-                    // we don't render local in list by default, but update local tile
-                    const localTile = document.getElementById(room.localParticipant.sid) || document.getElementById('local-media');
-                    if (localTile) {
-                        const badge = localTile.querySelector('.tile-muted');
-                        if (badge) badge.style.display = 'none';
-                    }
-                });
-                room.localParticipant.on('trackUnpublished', (pub) => {
-                    const localTile = document.getElementById(room.localParticipant.sid) || document.getElementById('local-media');
-                    if (localTile) {
-                        let badge = localTile.querySelector('.tile-muted');
-                        if (!badge) { badge = document.createElement('div'); badge.className = 'tile-muted'; localTile.appendChild(badge); }
-                        badge.textContent = '🔇'; badge.style.display = '';
-                    }
-                });
-            }
+    function disconnectAndLeave() {
+        try {
+            if (room && room.state === 'connected') room.disconnect();
+        } catch (e) {}
 
-        } catch (err) {
-            const msg = (err && err.message) ? err.message : String(err);
-            debug('Failed to connect: ' + msg);
-            try {
-                // Log connect error to server for diagnostics
-                const errMeta = { message: msg };
-                try { if (err && typeof err === 'object' && 'code' in err) errMeta.code = err.code; } catch(_){}
-                await fetch("{{ url('/coaching') }}/{{ $booking->id }}/event", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ event: 'connect_error', meta: errMeta })
-                });
-            } catch (e) { /* ignore logging failure */ }
+        try {
+            if (localVideoTrack) localVideoTrack.stop();
+            if (localAudioTrack) localAudioTrack.stop();
+        } catch (e) {}
 
-            // One-time retry: fetch a fresh token then retry connect
-            try {
-                if (!window.__twilioConnectRetried) {
-                    window.__twilioConnectRetried = true;
-                    const tokenResp = await fetch("{{ url('/coaching/token') }}/" + bookingId, { credentials: 'same-origin' });
-                    if (tokenResp.ok) {
-                        const data = await tokenResp.json();
-                        if (data && data.token && data.room) {
-                            token = data.token; roomName = data.room;
-                            debug('Retrying connect with fresh token for room ' + roomName);
-                            // Retry without publishing local tracks to avoid media permission issues
-                            const retryOpts = { name: roomName };
-                            room = await connect(token, retryOpts);
-                            debug('Connected on retry');
-                        }
-                    }
-                }
-            } catch (e2) {
-                // retry failed, fall through to UI message
-                debug('Retry failed: ' + (e2 && e2.message ? e2.message : e2));
-            }
+        window.location.href = leaveUrl;
+    }
 
-            if (!room) {
-                document.getElementById('video-root').innerText = 'Failed to connect: ' + msg;
-                return;
-            }
+    function openEndModal(message) {
+        if (modalText && message) modalText.textContent = message;
+        if (modalLeaveOnly) modalLeaveOnly.style.display = isAdmin ? '' : 'none';
+        if (modalConfirm) modalConfirm.textContent = isAdmin ? 'Akhiri untuk Semua' : 'Akhiri Sekarang';
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeEndModal() {
+        if (modal) modal.style.display = 'none';
+    }
+
+    function showFloatingNotice(message) {
+        if (!floatingNotice || !message) return;
+        floatingNotice.textContent = message;
+        floatingNotice.classList.add('show');
+    }
+
+    async function connectRoom() {
+        if (!window.Twilio || !window.Twilio.Video) {
+            throw new Error('Twilio SDK tidak tersedia');
         }
 
-        // Hang up flow: show confirmation modal instead of immediate confirm
-        const hangupBtn = document.getElementById('hangup');
-        const modalBackdrop = document.getElementById('cs-modal-backdrop');
-        const modalCancel = document.getElementById('cs-modal-cancel');
-        const modalConfirm = document.getElementById('cs-modal-confirm');
+        if (!token || !roomName) {
+            throw new Error('Token atau room tidak tersedia');
+        }
 
-        function showModal(){ if (modalBackdrop) modalBackdrop.style.display = 'flex'; }
-        function hideModal(){ if (modalBackdrop) modalBackdrop.style.display = 'none'; }
+        const { connect, createLocalVideoTrack, createLocalAudioTrack } = window.Twilio.Video;
 
-        hangupBtn && hangupBtn.addEventListener('click', function(){
-            showModal();
-        });
-
-        modalCancel && modalCancel.addEventListener('click', function(){ hideModal(); });
-
-        modalBackdrop && modalBackdrop.addEventListener('click', function(e){ if (e.target === modalBackdrop) hideModal(); });
-
-        modalConfirm && modalConfirm.addEventListener('click', function(){
-            // perform the hangup then redirect the user back to the coaching index
-            try {
-                if (room) {
-                    room.localParticipant.tracks.forEach(publication => {
-                        if (publication.track) publication.track.stop();
-                    });
-                    room.disconnect();
-                }
-            } catch (e) { debug('Error during hangup: ' + (e && e.message)); }
-            const local = document.getElementById('local-media'); if (local) local.innerHTML = '';
-            const remote = document.getElementById('remote-media'); if (remote) remote.innerHTML = '';
-            hideModal();
-            // redirect to coaching index
-            try {
-                window.location.href = {!! json_encode(route('coaching.index')) !!};
-            } catch (e) {
-                // fallback
-                window.location.href = '/coaching';
+        try {
+            localVideoTrack = await createLocalVideoTrack();
+            if (localMedia) {
+                const el = localVideoTrack.attach();
+                localMedia.insertBefore(el, localMedia.firstChild);
+                if (localFallback) localFallback.style.display = 'none';
             }
+            setCameraMuted(false);
+        } catch (e) {
+            setCameraMuted(true);
+        }
+
+        try {
+            localAudioTrack = await createLocalAudioTrack();
+            setMicMuted(false);
+        } catch (e) {
+            setMicMuted(true);
+        }
+
+        const tracks = [localVideoTrack, localAudioTrack].filter(Boolean);
+        room = await connect(token, { name: roomName, tracks: tracks });
+
+        room.participants.forEach(addRemoteParticipant);
+        room.on('participantConnected', participant => {
+            addRemoteParticipant(participant);
+            updatePeople();
+        });
+        room.on('participantDisconnected', participant => {
+            removeRemoteParticipant(participant);
+            updatePeople();
         });
 
-    }); // DOMContentLoaded
-}).catch(function(err){
-    console.error('[coaching.session] Twilio SDK error:', err);
-    var root = document.getElementById('video-root');
-    if (root) root.innerText = 'Video SDK failed to load. Check console for details.';
-});
+        room.on('disconnected', async function (_, error) {
+            if (selfHangup) return;
+
+            const reason = (error && error.message) ? error.message.toLowerCase() : '';
+            const endedByAdmin = reason.includes('completed') || reason.includes('ended') || reason.includes('room');
+
+            if (!isAdmin && endedByAdmin) {
+                await sendEvent('session_ended_by_admin', { booking_id: bookingId });
+                showFloatingNotice('Sesi diakhiri oleh admin. Anda akan diarahkan kembali...');
+                setTimeout(function () {
+                    window.location.href = leaveUrl;
+                }, 1500);
+                return;
+            }
+
+            window.location.href = leaveUrl;
+        });
+
+        updatePeople();
+        refreshEmptyState();
+    }
+
+    async function init() {
+        setClock();
+        setInterval(setClock, 1000);
+
+        if (btnDetail && sidepanel) {
+            btnDetail.addEventListener('click', function () {
+                const open = sidepanel.hidden === false;
+                sidepanel.hidden = open;
+                main.classList.toggle('vc-with-panel', !open);
+                btnDetail.classList.toggle('is-muted', !open);
+            });
+        }
+
+        if (closePanel && sidepanel) {
+            closePanel.addEventListener('click', function () {
+                sidepanel.hidden = true;
+                main.classList.remove('vc-with-panel');
+                if (btnDetail) btnDetail.classList.remove('is-muted');
+            });
+        }
+
+        if (btnMic) {
+            btnMic.addEventListener('click', function () {
+                if (!localAudioTrack) return;
+                const enabled = localAudioTrack.isEnabled;
+                localAudioTrack.enable(!enabled);
+                setMicMuted(enabled);
+            });
+        }
+
+        if (btnCam) {
+            btnCam.addEventListener('click', function () {
+                if (!localVideoTrack) return;
+                const enabled = localVideoTrack.isEnabled;
+                localVideoTrack.enable(!enabled);
+                setCameraMuted(enabled);
+            });
+        }
+
+        if (btnHangup) {
+            btnHangup.addEventListener('click', function () {
+                const message = isAdmin
+                    ? 'Akhiri sesi untuk semua peserta? User juga akan langsung keluar dari room.'
+                    : 'Yakin ingin meninggalkan sesi ini?';
+                openEndModal(message);
+            });
+        }
+
+        if (modalCancel) modalCancel.addEventListener('click', closeEndModal);
+        if (modalLeaveOnly) {
+            modalLeaveOnly.addEventListener('click', function () {
+                selfHangup = true;
+                closeEndModal();
+                disconnectAndLeave();
+            });
+        }
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeEndModal();
+            });
+        }
+
+        if (modalConfirm) {
+            modalConfirm.addEventListener('click', async function () {
+                selfHangup = true;
+                modalConfirm.disabled = true;
+
+                await sendEvent('session_end_clicked', {
+                    by_admin: isAdmin,
+                    booking_id: bookingId
+                });
+
+                if (isAdmin) {
+                    const endedAll = await endSessionByAdmin();
+                    if (!endedAll) {
+                        selfHangup = false;
+                        modalConfirm.disabled = false;
+                        return;
+                    }
+                }
+
+                disconnectAndLeave();
+            });
+        }
+
+        if (localMedia) {
+            createFullscreenButton(localMedia, 'local video');
+            localMedia.addEventListener('dblclick', function () {
+                toggleFullscreen(localMedia);
+            });
+        }
+
+        if (remoteMedia) {
+            remoteMedia.addEventListener('dblclick', function (e) {
+                const tile = e.target.closest('.vc-remote-tile');
+                if (tile) toggleFullscreen(tile);
+            });
+        }
+
+        if (btnFullscreen) {
+            btnFullscreen.addEventListener('click', function () {
+                toggleFullscreen(document.querySelector('.vc-video-grid'));
+            });
+        }
+
+        if (exitFullscreenBtn) {
+            exitFullscreenBtn.addEventListener('click', function () {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            });
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenUi);
+        updateFullscreenUi();
+
+        try {
+            await connectRoom();
+        } catch (e) {
+            log(e && e.message ? e.message : e);
+            alert('Gagal terhubung ke sesi video. Coba refresh halaman.');
+        }
+    }
+
+    function ensureTwilioAndInit() {
+        const primary = 'https://media.twiliocdn.com/sdk/js/video/latest/twilio-video.min.js';
+        const fallback = 'https://unpkg.com/twilio-video/dist/twilio-video.min.js';
+
+        function load(src) {
+            return new Promise(function (resolve, reject) {
+                const s = document.createElement('script');
+                s.src = src;
+                s.onload = resolve;
+                s.onerror = reject;
+                document.head.appendChild(s);
+            });
+        }
+
+        (async function () {
+            if (!window.Twilio || !window.Twilio.Video) {
+                try {
+                    await load(primary);
+                } catch (e) {
+                    await load(fallback);
+                }
+            }
+            await init();
+        })();
+    }
+
+    document.addEventListener('DOMContentLoaded', ensureTwilioAndInit);
+})();
 </script>
 @endpush

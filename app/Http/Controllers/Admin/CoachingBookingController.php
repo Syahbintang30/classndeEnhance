@@ -81,24 +81,48 @@ class CoachingBookingController extends Controller
     public function endRoom(CoachingBooking $booking, TwilioService $twilio)
     {
         if (! $twilio->isConfigured()) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Twilio not configured'], 422);
+            }
             return redirect()->back()->with('error', 'Twilio not configured');
-        }
-        $sid = $booking->twilio_room_sid;
-        if (! $sid) {
-            return redirect()->back()->with('error', 'No Twilio room attached to booking');
         }
 
         try {
             $client = $twilio->getClient();
             if (! $client) throw new \RuntimeException('Twilio client not available');
-            // Intelephense doesn't include dynamic SDK resource methods in its stubs.
-            // Cast rooms resource to mixed to avoid static analysis warning while keeping runtime behaviour.
+
+            $sid = $booking->twilio_room_sid;
+            if (! $sid) {
+                $roomName = 'coaching-' . $booking->id;
+                $existing = $client->video->v1->rooms->read(['uniqueName' => $roomName], 1);
+                if (count($existing) > 0) {
+                    $sid = $existing[0]->sid;
+                    $booking->twilio_room_sid = $sid;
+                    $booking->save();
+                }
+            }
+
+            if (! $sid) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'error' => 'No active Twilio room attached to booking'], 404);
+                }
+                return redirect()->back()->with('error', 'No active Twilio room attached to booking');
+            }
+
+            // Intelephense does not ship complete Twilio dynamic stubs; use mixed resource call.
             /** @var mixed $roomsResource */
             $roomsResource = $client->video->v1->rooms;
             $roomsResource->update($sid, ['status' => 'completed']);
+
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'room_sid' => $sid]);
+            }
             return redirect()->back()->with('success', 'Room ended');
         } catch (\Throwable $e) {
             logger()->error('Failed to end Twilio room: ' . $e->getMessage(), ['booking' => $booking->id]);
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Failed to end room: ' . $e->getMessage()], 500);
+            }
             return redirect()->back()->with('error', 'Failed to end room: ' . $e->getMessage());
         }
     }
