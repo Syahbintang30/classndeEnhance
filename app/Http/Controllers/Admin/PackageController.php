@@ -35,6 +35,8 @@ class PackageController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:packages,slug',
             'price' => 'required|numeric|min:0',
+            'member_price' => 'nullable|numeric|min:0',
+            'non_member_price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'benefits' => 'nullable|string',
             'image' => 'nullable|file|max:3072', // 3MB max
@@ -116,6 +118,8 @@ class PackageController extends Controller
                 Rule::unique('packages', 'slug')->ignore($package->id),
             ],
             'price' => 'required|numeric|min:0',
+            'member_price' => 'nullable|numeric|min:0',
+            'non_member_price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'benefits' => 'nullable|string',
             'image' => 'nullable|file|max:3072', // 3MB max

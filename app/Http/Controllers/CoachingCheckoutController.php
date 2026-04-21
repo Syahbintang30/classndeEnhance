@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\CoachingTicket;
 use Illuminate\Support\Str;
 use App\Services\OrderIdGenerator;
+use App\Services\CoachingPricingService;
 
 class CoachingCheckoutController extends Controller
 {
@@ -22,21 +23,17 @@ class CoachingCheckoutController extends Controller
         $package = Package::where('slug', $slug)->first();
 
         // prepare order summary from selected schedule params
-        $schedule = $request->query('schedule'); // expected format: 2025-08-23 14:00
-        $scheduleDisplay = $schedule ?: null;
+        $schedule = $request->query('schedule'); // expected format: YYYY-MM-DD HH:MM:SS
+        $scheduleValue = is_string($schedule) && trim($schedule) !== '' ? trim($schedule) : null;
+        $scheduleDisplay = $scheduleValue ?: null;
 
-        // check user eligibility: user must have purchased one of eligible packages
-        $eligibleSlugs = config('coaching.eligible_packages', []);
-        $hasPackage = false;
-        if ($user && $user->package_id) {
-            $p = Package::find($user->package_id);
-            if ($p && in_array($p->slug, $eligibleSlugs)) $hasPackage = true;
-        }
+        $isCoachingMember = CoachingPricingService::isCoachingMember($user);
+        $displayPrice = $package ? CoachingPricingService::resolveStandaloneTicketUnitPrice($package, $user) : 0;
 
         // midtrans client key config
         $midtrans = config('services.midtrans');
 
-        return view('coaching.checkout', compact('package', 'scheduleDisplay', 'hasPackage', 'midtrans'));
+        return view('coaching.checkout', compact('package', 'scheduleDisplay', 'scheduleValue', 'midtrans', 'isCoachingMember', 'displayPrice'));
     }
 
     public function createOrder(Request $request)
@@ -62,19 +59,13 @@ class CoachingCheckoutController extends Controller
             }
         }
 
-        // ensure user has eligible package
-        $eligibleSlugs = config('coaching.eligible_packages', []);
-        $userHasEligible = false;
-        if ($user->package_id) {
-            $p = Package::find($user->package_id);
-            if ($p && in_array($p->slug, $eligibleSlugs)) $userHasEligible = true;
-        }
-        if (! $userHasEligible) {
-            return response()->json(['error' => 'User not eligible to buy coaching ticket. Please purchase the required package first.'], 422);
+        $package = Package::find($data['package_id']);
+        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+        if (! $package || ($package->slug ?? null) !== $coachingSlug) {
+            return response()->json(['error' => 'Only coaching ticket package is allowed in this checkout flow.'], 422);
         }
 
-        $package = Package::find($data['package_id']);
-        $gross = (int) ($package->price ?? 0);
+        $gross = CoachingPricingService::resolveStandaloneTicketUnitPrice($package, $user);
 
         // create a local Transaction record (pending) - reuse Transaction model
         $external = OrderIdGenerator::generate('nde');

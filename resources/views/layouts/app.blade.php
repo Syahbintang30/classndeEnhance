@@ -266,21 +266,26 @@
                             $coachingLink = auth()->check() ? route('coaching.upcoming') : route('login');
 
                             $showSongTutorial = false;
-                            $hasPackage = false;
+                            $hasCourseAccess = false;
+                            $hasCoachingAccess = false;
                             if (auth()->check()) {
                                 $u = auth()->user();
-                                $hasPackage = $u->hasLmsAccess();
-                                $showSongTutorial = $hasPackage;
+                                $hasCourseAccess = $u->hasLmsAccess();
+                                $hasCoachingAccess = method_exists($u, 'hasCoachingAccess') && $u->hasCoachingAccess();
+                                $showSongTutorial = $hasCourseAccess;
                             }
                         @endphp
 
-                        {{-- If the user is authenticated but does not have a package, only show the Courses link. 
-                             Keep the profile menu on the right so they can access Profile / Logout. --}}
-                        @if (auth()->check() && !$hasPackage)
+                        {{-- Coaching-only users should only see Coaching entry in navbar. --}}
+                        @if (auth()->check() && !$hasCourseAccess && $hasCoachingAccess)
+                            <a href="{{ $coachingLink }}"
+                                class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
+                        {{-- If user has neither course nor coaching entitlement, show purchase entry only. --}}
+                        @elseif (auth()->check() && !$hasCourseAccess)
                             <a href="{{ route('registerclass') }}"
                                 class="{{ request()->routeIs('registerclass') ? 'active' : '' }}">Courses</a>
                         @else
-                            {{-- Only show coaching/song tutorial links to authenticated users who have a package --}}
+                            {{-- Course users get full navigation. --}}
                             @auth
                                 <a href="{{ route('lms.dashboard') }}"
                                     class="{{ request()->routeIs('lms.dashboard') ? 'active' : '' }}">Home</a>

@@ -458,13 +458,24 @@ class CoachingController extends Controller
         }
 
         // load admin-defined capacities for this date
-        $capacityRows = \App\Models\CoachingSlotCapacity::whereDate('date', $date)->get();
+        $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $date)->get();
 
+        $sessionLength = (int) config('coaching.session_length_minutes', 60);
+        $now = now();
         $result = [];
         if ($capacityRows->count() > 0) {
             // Build slots from admin-defined times (exact HH:MM keys)
             foreach ($capacityRows as $r) {
                 $time = $r->time;
+                try {
+                    $slotStart = \Carbon\Carbon::parse($date . ' ' . $time . ':00');
+                    $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
+                    if ($now->gte($slotEnd)) {
+                        continue;
+                    }
+                } catch (\Throwable $e) {
+                    continue;
+                }
                 $cap = (int) ($r->capacity ?? 1);
                 $result[$time] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
             }
@@ -513,6 +524,7 @@ class CoachingController extends Controller
         // small validation to avoid huge ranges
         if ($endDt->diffInDays($startDt) > 92) return response()->json(['error' => 'range too large'], 400);
 
+        $sessionLength = (int) config('coaching.session_length_minutes', 60);
         $days = [];
         // optional short cache to reduce DB load if many users hit same month
         $cacheKey = 'coaching_avail_range:' . $startDt->toDateString() . ':' . $endDt->toDateString();
@@ -524,13 +536,22 @@ class CoachingController extends Controller
             $booked = CoachingBooking::whereDate('booking_time', $ds)
                 ->whereIn('status', ['pending','accepted'])
                 ->get();
-            $capacityRows = \App\Models\CoachingSlotCapacity::whereDate('date', $ds)->get();
+            $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $ds)->get();
 
             $remainingCount = 0;
             if ($capacityRows->count() > 0) {
                 $map = [];
                 foreach ($capacityRows as $r) {
                     $time = $r->time;
+                    try {
+                        $slotStart = \Carbon\Carbon::parse($ds . ' ' . $time . ':00');
+                        $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
+                        if (now()->gte($slotEnd)) {
+                            continue;
+                        }
+                    } catch (\Throwable $e) {
+                        continue;
+                    }
                     $cap = (int) ($r->capacity ?? 1);
                     $map[$time] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
                 }

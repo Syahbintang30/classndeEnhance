@@ -90,7 +90,7 @@ class GoogleAuthController extends Controller
             }
 
             if (! empty($updates)) {
-                $user->fill($updates)->save();
+                $user->forceFill($updates)->save();
             }
         }
 
@@ -101,9 +101,13 @@ class GoogleAuthController extends Controller
             return redirect()->intended(url('/admin'));
         }
 
-        $defaultRoute = method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()
-            ? route('lms.entry')
-            : route('registerclass');
+        if (method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()) {
+            $defaultRoute = route('lms.entry');
+        } elseif (method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
+            $defaultRoute = route('coaching.upcoming');
+        } else {
+            $defaultRoute = route('registerclass');
+        }
 
         $intended = (string) $request->session()->get('url.intended', '');
         if ($intended !== '' && str_contains($intended, '/lms/access-pending')) {

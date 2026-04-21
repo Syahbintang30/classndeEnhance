@@ -14,14 +14,28 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('lms.entry').'?verified=1');
+        $user = $request->user();
+
+        $defaultRoute = route('registerclass');
+        if ($user && method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()) {
+            $defaultRoute = route('lms.dashboard');
+        } elseif ($user && method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
+            $defaultRoute = route('coaching.upcoming');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        $intended = (string) $request->session()->get('url.intended', '');
+        if ($intended !== '' && str_contains($intended, '/verify-email')) {
+            $request->session()->forget('url.intended');
         }
 
-    return redirect()->intended(route('lms.entry').'?verified=1');
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->intended($defaultRoute . '?verified=1');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect()->intended($defaultRoute . '?verified=1');
     }
 }

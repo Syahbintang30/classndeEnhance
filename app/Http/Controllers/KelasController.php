@@ -38,6 +38,9 @@ class KelasController extends Controller
         }
 
         if (! $user->hasLmsAccess()) {
+            if (method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
+                return redirect()->route('coaching.upcoming');
+            }
             return redirect()->route('lms.pending');
         }
 
@@ -171,7 +174,8 @@ class KelasController extends Controller
     if ($user) {
         // If the user does not have any package yet, show beginner/intermediate packages
         if (empty($user->package_id)) {
-            $packages = Package::whereIn('slug', $eligibleSlugs)->orderBy('price')->get();
+            $visibleSlugs = array_values(array_unique(array_filter(array_merge($eligibleSlugs, [$coachingSlug]))));
+            $packages = Package::whereIn('slug', $visibleSlugs)->orderBy('price')->get();
         } else {
             // logged-in users who already have a package should normally only see the coaching-ticket package
             $packages = Package::where('slug', $coachingSlug)->orderBy('price')->get();
@@ -228,7 +232,8 @@ class KelasController extends Controller
         }
     } else {
         // guests see the eligible beginner/intermediate packages only
-        $packages = Package::whereIn('slug', $eligibleSlugs)->orderBy('price')->get();
+        $visibleSlugs = array_values(array_unique(array_filter(array_merge($eligibleSlugs, [$coachingSlug]))));
+        $packages = Package::whereIn('slug', $visibleSlugs)->orderBy('price')->get();
     }
     // pick a default lesson (first) if available so purchase route in the buy view has an id
     $lesson = $lessons->first();
@@ -303,8 +308,11 @@ class KelasController extends Controller
         $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
         $package = $packageId ? Package::find($packageId) : null;
 
-        // package price is canonical; avoid misleading hardcoded fallback
+        // package price is canonical; coaching-ticket uses conditional member/non-member pricing
         $price = (int) ($package->price ?? 0);
+        if ($package && ($package->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+            $price = \App\Services\CoachingPricingService::resolveStandaloneTicketUnitPrice($package, $user);
+        }
         // qty can be passed as query param (guests) or request; default 1
         $qty = (int) (request()->input('package_qty') ?: session('pre_register.package_qty') ?: 1);
 
@@ -421,6 +429,9 @@ class KelasController extends Controller
             $package = $packageId ? Package::find($packageId) : null;
             $qty = (int) (request()->input('package_qty') ?: session('pre_register.package_qty') ?: 1);
             $price = (int) ($package->price ?? 0); // avoid misleading hardcoded fallback
+            if ($package && ($package->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+                $price = \App\Services\CoachingPricingService::resolveStandaloneTicketUnitPrice($package, $user);
+            }
 
             $rawAmount = $price * max(1, $qty);
             $appliedReferralPercent = 0;
@@ -718,39 +729,10 @@ class KelasController extends Controller
         $shouldOpenLms = app()->environment('local') || filter_var(env('PAYMENT_REDIRECT_TO_LMS', true), FILTER_VALIDATE_BOOLEAN);
 
         if ($shouldOpenLms) {
-            $targetLessonId = (int) env('PAYMENT_LMS_LESSON_ID', 0);
-            $targetTopicId = (int) env('PAYMENT_LMS_TOPIC_ID', 0);
-
-            $targetLesson = null;
-            if ($targetLessonId > 0) {
-                $targetLesson = Lesson::with(['topics' => function ($query) {
-                    $query->orderBy('position');
-                }])->find($targetLessonId);
+            if ($ticketId) {
+                return redirect()->route('lms.dashboard')->with(['ticket_id' => $ticketId]);
             }
-
-            if (! $targetLesson) {
-                $targetLesson = Lesson::where('type', 'course')->orderBy('position')->with(['topics' => function ($query) {
-                    $query->orderBy('position');
-                }])->first();
-            }
-
-            if ($targetLesson) {
-                $targetTopic = null;
-                if ($targetTopicId > 0) {
-                    $targetTopic = $targetLesson->topics->firstWhere('id', $targetTopicId);
-                }
-                if (! $targetTopic) {
-                    $targetTopic = $targetLesson->topics->first();
-                }
-                $targetUrl = url('/kelas/' . $targetLesson->id);
-                if ($targetTopic) {
-                    $targetUrl .= '?topic=' . $targetTopic->id;
-                }
-                if ($ticketId) {
-                    return redirect()->to($targetUrl)->with(['ticket_id' => $ticketId]);
-                }
-                return redirect()->to($targetUrl);
-            }
+            return redirect()->route('lms.dashboard');
         }
 
         $payload = ['lesson' => $lesson->id];

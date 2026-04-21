@@ -10,6 +10,21 @@ use Carbon\Carbon;
 
 class CoachingSlotCapacityController extends Controller
 {
+    private function forgetAvailabilityCacheForDates(array $dates): void
+    {
+        foreach (array_unique(array_filter($dates)) as $date) {
+            try {
+                $day = Carbon::parse($date);
+            } catch (\Throwable $e) {
+                continue;
+            }
+
+            $start = $day->copy()->startOfMonth()->toDateString();
+            $end = $day->copy()->endOfMonth()->toDateString();
+            \Illuminate\Support\Facades\Cache::forget('coaching_avail_range:' . $start . ':' . $end);
+        }
+    }
+
     // show simple admin UI to list, create, and remove slot capacities
     public function index(Request $request)
     {
@@ -85,6 +100,8 @@ class CoachingSlotCapacityController extends Controller
             // determine mode: replace existing slots for the date, or merge (add only new hours)
             $replace = filter_var($request->input('replace', true), FILTER_VALIDATE_BOOLEAN);
 
+            $sessionLength = (int) config('coaching.session_length_minutes', 60);
+
             foreach ($payload as $date => $hours) {
                 // Skip invalid dates early.
                 if (!strtotime($date)) {
@@ -103,10 +120,11 @@ class CoachingSlotCapacityController extends Controller
                 }, (array)$hours)));
 
                 // Prevent saving past hours on the current date.
-                $hours = array_values(array_filter($hours, function ($h) use ($date) {
+                $hours = array_values(array_filter($hours, function ($h) use ($date, $sessionLength) {
                     try {
                         $slotAt = Carbon::parse($date . ' ' . $h . ':00');
-                        return $slotAt->gt(now());
+                        $slotEnd = $slotAt->copy()->addMinutes($sessionLength);
+                        return now()->lt($slotEnd);
                     } catch (\Throwable $e) {
                         return false;
                     }
@@ -150,8 +168,11 @@ class CoachingSlotCapacityController extends Controller
             }
 
             if ($request->wantsJson()) {
+                $this->forgetAvailabilityCacheForDates($dates);
                 return response()->json(['success' => true, 'updated' => $result]);
             }
+
+            $this->forgetAvailabilityCacheForDates($dates);
 
             return redirect()->back()->with('success', 'Slot capacities saved');
         }
@@ -166,9 +187,12 @@ class CoachingSlotCapacityController extends Controller
         // normalize time to HH:MM
         $time = date('H:i', strtotime($data['time']));
 
+        $sessionLength = (int) config('coaching.session_length_minutes', 60);
+
         try {
             $slotAt = Carbon::parse($data['date'] . ' ' . $time . ':00');
-            if ($slotAt->lte(now())) {
+            $slotEnd = $slotAt->copy()->addMinutes($sessionLength);
+            if (now()->gte($slotEnd)) {
                 return $request->wantsJson()
                     ? response()->json(['error' => 'Cannot save past slot'], 422)
                     : redirect()->back()->with('error', 'Cannot save past slot');
@@ -183,6 +207,8 @@ class CoachingSlotCapacityController extends Controller
             ['date' => $data['date'], 'time' => $time],
             []
         );
+
+        $this->forgetAvailabilityCacheForDates([$data['date']]);
 
         return redirect()->back()->with('success', 'Slot capacity saved');
     }
@@ -214,8 +240,11 @@ class CoachingSlotCapacityController extends Controller
         $remaining = CoachingSlotCapacity::where('date', $date)->pluck('time')->toArray();
 
         if ($request->wantsJson()) {
+            $this->forgetAvailabilityCacheForDates([$date]);
             return response()->json(['success' => true, 'remaining' => $remaining]);
         }
+
+        $this->forgetAvailabilityCacheForDates([$date]);
 
         return redirect()->back()->with('success', 'Slots deleted');
     }

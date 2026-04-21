@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Package;
 use App\Models\User;
 use App\Services\ReferralService;
+use App\Services\CoachingPricingService;
 
 class MidtransController extends Controller
 {
@@ -78,8 +79,19 @@ class MidtransController extends Controller
             }
         }
 
-    // create an external order id that Midtrans will use (use canonical generator)
-    $externalOrderId = OrderIdGenerator::generate('nde');
+    // create an external order id that Midtrans will use.
+    // Reuse provided order_id when valid to keep checkout attempts deterministic
+    // (prevents users getting different VA numbers on repeated clicks).
+    $providedOrderId = trim((string) ($data['order_id'] ?? ''));
+    $isValidProvidedOrderId = $providedOrderId !== ''
+        && preg_match('/^[A-Za-z0-9._-]{6,64}$/', $providedOrderId);
+
+    $externalOrderId = $isValidProvidedOrderId ? $providedOrderId : OrderIdGenerator::generate('nde');
+
+    // Never reuse order_id that already exists in persistent transactions.
+    if (Transaction::where('order_id', $externalOrderId)->exists()) {
+        $externalOrderId = OrderIdGenerator::generate('nde');
+    }
 
     // Persist pending order metadata in cache only. Do NOT create DB Transaction yet.
     $qty = (int) ($data['package_qty'] ?? 1);
@@ -123,10 +135,15 @@ class MidtransController extends Controller
             $appliedVoucherPercent = (int) $v->discount_percent;
         }
 
-        // calculate unit price: if unit not provided, fallback to package price lookup
-        if (empty($unit) && ! empty($data['package_id'])) {
+        // calculate unit price: coaching-ticket uses authoritative conditional pricing,
+        // while other packages fallback to canonical package price if unit wasn't provided.
+        if (! empty($data['package_id'])) {
             $pkg = $pkg ?: Package::find($data['package_id']);
-            $unit = $pkg ? (int) $pkg->price : 0;
+            if ($pkg && ($pkg->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+                $unit = CoachingPricingService::resolveStandaloneTicketUnitPrice($pkg, Auth::user());
+            } elseif (empty($unit)) {
+                $unit = $pkg ? (int) $pkg->price : 0;
+            }
         }
 
     $rawGross = $unit * max(1, $qty);

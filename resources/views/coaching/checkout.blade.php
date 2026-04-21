@@ -50,7 +50,6 @@
 
 @section('content')
 <div class="container coaching-checkout">
-    @if($hasPackage)
         <div class="steps">
             <div class="step"><i class="icon-info" aria-hidden="true"></i></div>
             <div class="line"></div>
@@ -62,14 +61,23 @@
         <div class="cc-card">
             <div class="cc-body">
                 <div class="cc-title">Order Summary</div>
-                <p class="muted">Pastikan Anda sudah membeli salah satu package yang diperlukan sebelum membeli ticket coaching.</p>
+                <p class="muted">
+                    @if($isCoachingMember ?? false)
+                        Anda terdeteksi sebagai member aktif (Beginner/Intermediate). Harga tiket coaching menggunakan harga khusus member.
+                    @else
+                        Anda belum memiliki paket Beginner/Intermediate aktif. Harga tiket coaching menggunakan harga normal non-member.
+                    @endif
+                </p>
 
                 <div class="summary-grid">
                     <div class="col">
                         <div class="info-block">
                             <div class="h">Package</div>
                             <div id="pkgName" class="v">{{ $package ? $package->name : 'Not configured' }}</div>
-                            <div id="pkgPrice" class="price">Rp {{ $package ? number_format($package->price,0,',','.') : '0' }}</div>
+                            <div id="pkgPrice" class="price">Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</div>
+                            <div class="muted" style="margin-top:6px;font-size:12px;">
+                                {{ ($isCoachingMember ?? false) ? 'Harga Member' : 'Harga Non-Member' }}
+                            </div>
                         </div>
 
                         <div class="info-block" style="margin-top:12px;">
@@ -82,13 +90,10 @@
                         <div class="info-block payment-card">
                             <div class="cc-title"><span class="pay-icon" aria-hidden="true"><i class="icon-credit-card"></i></span> Payment</div>
                             <div class="total-line">Total</div>
-                            <div id="totalAmount" class="total-amount">Rp {{ $package ? number_format($package->price,0,',','.') : '0' }}</div>
+                            <div id="totalAmount" class="total-amount">Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</div>
 
                             <div style="margin-top:12px">
-                                @if(! $hasPackage)
-                                    <div class="alert alert-warning">Anda belum memiliki package yang memenuhi syarat. Silakan beli package yang diperlukan terlebih dahulu.</div>
-                                @endif
-                                <button id="payBtn" class="btn btn-primary wide" {{ $hasPackage ? '' : 'disabled' }}>Pay with Midtrans</button>
+                                <button id="payBtn" class="btn btn-primary wide">Pay with Midtrans</button>
                             </div>
 
                             <div class="muted" style="margin-top:8px;font-size:12px;"> </div>
@@ -97,12 +102,6 @@
                 </div>
             </div>
         </div>
-    @else
-        <div style="min-height:50vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:48px 16px;">
-            <h2 style="font-size:20px;font-weight:800;color:#fff;max-width:900px;">Pastikan Anda sudah membeli salah satu package yang diperlukan sebelum membeli ticket coaching.</h2>
-            <a href="{{ url('/registerclass') }}" class="btn btn-primary" style="margin-top:24px;padding:12px 28px;border-radius:8px;font-weight:700;text-decoration:none;">Kembali ke Dashboard</a>
-        </div>
-    @endif
 </div>
 
 @endsection
@@ -116,18 +115,38 @@
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     const payBtn = document.getElementById('payBtn');
+    const selectedSchedule = @json($scheduleValue ?? null);
+    const createOrderUrl = @json(route('coaching.checkout.create', [], false));
+    const finalizeOrderUrl = @json(route('coaching.checkout.finalize', [], false));
+    const upcomingUrl = @json(route('coaching.upcoming', [], false));
+
+    function resolveErrorMessage(payload, fallback) {
+        if (!payload) return fallback;
+        if (typeof payload === 'string') return payload;
+        if (payload.error) return payload.error;
+        if (payload.message) return payload.message;
+        if (payload.body && payload.body.error_messages && Array.isArray(payload.body.error_messages) && payload.body.error_messages.length) {
+            return payload.body.error_messages[0];
+        }
+        return fallback;
+    }
+
     payBtn && payBtn.addEventListener('click', async function(){
         payBtn.disabled = true;
+        payBtn.textContent = 'Preparing...';
         // create order on server
-        const schedule = '{{ $scheduleDisplay ?? '' }}';
         const packageId = {{ $package ? $package->id : 'null' }};
         try {
-            const createBody = { package_id: packageId };
-            if (schedule && schedule.trim() !== '') {
-                createBody.schedule = schedule;
+            if (!packageId) {
+                throw new Error('Paket coaching tidak ditemukan. Hubungi admin untuk konfigurasi paket.');
             }
 
-            const res = await fetch('{{ route('coaching.checkout.create') }}', {
+            const createBody = { package_id: packageId };
+            if (selectedSchedule && typeof selectedSchedule === 'string' && selectedSchedule.trim() !== '') {
+                createBody.schedule = selectedSchedule.trim();
+            }
+
+            const res = await fetch(createOrderUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             if (! res.ok) {
-                alert(json.error || 'Failed to create order');
+                alert(resolveErrorMessage(json, 'Failed to create order'));
                 payBtn.disabled = false; return;
             }
 
@@ -170,15 +189,22 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             if (! snapRes.ok) {
-                alert(snapJson.error || 'Midtrans create failed'); payBtn.disabled = false; return;
+                alert(resolveErrorMessage(snapJson, 'Midtrans create failed')); payBtn.disabled = false; payBtn.textContent = 'Pay with Midtrans'; return;
             }
 
             const token = snapJson.snap_token || snapJson.raw?.token;
-            if (! token) { alert('Midtrans token not returned'); payBtn.disabled = false; return; }
+            if (! token) { alert('Midtrans token not returned'); payBtn.disabled = false; payBtn.textContent = 'Pay with Midtrans'; return; }
+
+            if (!window.snap || typeof window.snap.pay !== 'function') {
+                alert('Midtrans popup gagal dimuat. Coba nonaktifkan ad-blocker/shield browser lalu refresh halaman.');
+                payBtn.disabled = false;
+                payBtn.textContent = 'Pay with Midtrans';
+                return;
+            }
 
             async function finalizeAfterSnap(result){
                 try {
-                    await fetch('{{ route('coaching.checkout.finalize') }}', {
+                    await fetch(finalizeOrderUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -201,17 +227,29 @@ document.addEventListener('DOMContentLoaded', function(){
             window.snap.pay(token, {
                 onSuccess: async function(result){
                     await finalizeAfterSnap(result);
-                    window.location.href = '{{ route('coaching.upcoming') }}?paid=1';
+                    window.location.href = `${upcomingUrl}?paid=1`;
                 },
                 onPending: async function(result){
                     await finalizeAfterSnap(result);
-                    window.location.href = '{{ route('coaching.upcoming') }}?paid=pending';
+                    window.location.href = `${upcomingUrl}?paid=pending`;
                 },
-                onError: function(err){ alert('Payment failed'); payBtn.disabled = false; }
+                onError: function(err){
+                    const msg = (err && (err.status_message || err.message)) ? (err.status_message || err.message) : 'Payment failed';
+                    alert(msg);
+                    payBtn.disabled = false;
+                    payBtn.textContent = 'Pay with Midtrans';
+                },
+                onClose: function(){
+                    payBtn.disabled = false;
+                    payBtn.textContent = 'Pay with Midtrans';
+                }
             });
 
         } catch (e) {
-            console.error(e); alert('Unexpected error'); payBtn.disabled = false;
+            console.error(e);
+            alert((e && e.message) ? e.message : 'Unexpected error');
+            payBtn.disabled = false;
+            payBtn.textContent = 'Pay with Midtrans';
         }
     });
 });

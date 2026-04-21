@@ -20,17 +20,17 @@ class EmailVerificationPromptController extends Controller
             return redirect()->intended(url('/admin'));
         }
 
-        if (empty($user->google_id)) {
+        if (method_exists($user, 'hasVerifiedEmail') && ! $user->hasVerifiedEmail()) {
             return view('auth.verify-email');
         }
 
-        if (! $user->hasVerifiedEmail()) {
-            $user->forceFill(['email_verified_at' => now()])->save();
+        if (method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()) {
+            $defaultRoute = route('lms.entry');
+        } elseif (method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
+            $defaultRoute = route('coaching.upcoming');
+        } else {
+            $defaultRoute = route('registerclass');
         }
-
-        $defaultRoute = method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()
-            ? route('lms.entry')
-            : route('registerclass');
 
         return redirect()->intended($defaultRoute);
     }

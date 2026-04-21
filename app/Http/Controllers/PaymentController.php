@@ -311,7 +311,14 @@ class PaymentController extends Controller
                     // ensure user's package_id set if empty
                     try {
                         $user = User::find($txn->user_id);
-                        if ($user && empty($user->package_id)) { $user->package_id = $txn->package_id; $user->save(); }
+                        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+                        $pkgForUser = Package::find($txn->package_id);
+                        $isCoachingTicketOnly = $pkgForUser && ($pkgForUser->slug ?? null) === $coachingSlug;
+
+                        if ($user && ! $isCoachingTicketOnly && (int) ($user->package_id ?? 0) !== (int) $txn->package_id) {
+                            $user->package_id = $txn->package_id;
+                            $user->save();
+                        }
                         // Idempotent: top-up free_on_register tickets based on final package
                         if ($user) { CoachingTicketService::grantFreeOnRegister($user); }
                         // For standalone coaching-ticket purchase, grant one purchasable ticket idempotently.
@@ -347,7 +354,14 @@ class PaymentController extends Controller
                     $txn->save();
                     try {
                         $user = User::find($txn->user_id);
-                        if ($user && empty($user->package_id)) { $user->package_id = $txn->package_id; $user->save(); }
+                        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+                        $pkgForUser = Package::find($txn->package_id);
+                        $isCoachingTicketOnly = $pkgForUser && ($pkgForUser->slug ?? null) === $coachingSlug;
+
+                        if ($user && ! $isCoachingTicketOnly && (int) ($user->package_id ?? 0) !== (int) $txn->package_id) {
+                            $user->package_id = $txn->package_id;
+                            $user->save();
+                        }
                         // Idempotent: top-up free_on_register tickets based on final package
                         if ($user) { CoachingTicketService::grantFreeOnRegister($user); }
                         // For standalone coaching-ticket purchase, grant one purchasable ticket idempotently.

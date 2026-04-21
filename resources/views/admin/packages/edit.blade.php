@@ -35,6 +35,16 @@
                                 <input name="price" value="{{ old('price',$package->price) }}" type="number" class="form-control" />
                             </div>
 
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label text-white">Member Price (opsional)</label>
+                                <input name="member_price" value="{{ old('member_price',$package->member_price) }}" type="number" class="form-control" />
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label text-white">Non-Member Price (opsional)</label>
+                                <input name="non_member_price" value="{{ old('non_member_price',$package->non_member_price) }}" type="number" class="form-control" />
+                            </div>
+
                             <div class="mb-3 col-md-12">
                                 <label class="form-label text-white">Slug (e.g. beginner/intermediate/coaching-ticket)</label>
                                 <input name="slug" value="{{ old('slug',$package->slug) }}" class="form-control" />
@@ -42,6 +52,8 @@
                         </div>
 
                         <div class="mb-3">
+                            <div class="form-text text-muted mb-2">Untuk package coaching-ticket: isi kedua harga ini agar checkout otomatis bedakan member vs non-member. Jika kosong, sistem fallback ke Price.</div>
+
                             <label class="form-label text-white">Description</label>
                             <textarea name="description" class="form-control" rows="5">{{ old('description', $package->description) }}</textarea>
                         </div>

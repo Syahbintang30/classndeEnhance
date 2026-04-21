@@ -23,8 +23,9 @@ class RegisteredUserController extends Controller
     public function create(Request $request): View
     {
         // Preserve redirect target (e.g., payment page) if provided from buy page
-        if ($request->query('redirect_to')) {
-            $request->session()->put('url.intended', $request->query('redirect_to'));
+        $redirect = $this->normalizeIntendedUrl($request, $request->query('redirect_to'));
+        if ($redirect) {
+            $request->session()->put('url.intended', $redirect);
         }
         return view('auth.register');
     }
@@ -125,6 +126,39 @@ class RegisteredUserController extends Controller
     // Keep user signed in and send them to verification notice directly.
     Auth::login($user);
     return redirect()->route('verification.notice')
-        ->with('status', 'Registrasi berhasil. Lanjutkan verifikasi dengan Google menggunakan email yang sama untuk mengaktifkan akun.');
+        ->with('status', 'Registrasi berhasil. Link verifikasi sudah dikirim ke email kamu, silakan cek inbox atau spam.');
+    }
+
+    private function normalizeIntendedUrl(Request $request, ?string $url): ?string
+    {
+        if (! is_string($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+        if ($url === '') {
+            return null;
+        }
+
+        if (str_starts_with($url, '/')) {
+            return $url;
+        }
+
+        $parsed = parse_url($url);
+        if (! is_array($parsed)) {
+            return null;
+        }
+
+        $host = strtolower((string) ($parsed['host'] ?? ''));
+        $currentHost = strtolower($request->getHost());
+        if ($host === '' || $host !== $currentHost) {
+            return null;
+        }
+
+        $path = (string) ($parsed['path'] ?? '/');
+        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+        $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+
+        return $request->getSchemeAndHttpHost() . $path . $query . $fragment;
     }
 }

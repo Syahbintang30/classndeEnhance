@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
     'is_superadmin',
     'photo',
     'google_id',
+    'email_verified_at',
     ];
 
     /**
@@ -67,12 +68,25 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasLmsAccess(): bool
     {
+        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+
         if (! empty($this->package_id)) {
-            return true;
+            try {
+                $pkg = \App\Models\Package::find($this->package_id);
+                if ($pkg && ($pkg->slug ?? null) !== $coachingSlug) {
+                    return true;
+                }
+            } catch (\Throwable $e) {
+                // ignore and continue fallback checks
+            }
         }
 
         try {
-            $hasHistoricalPackage = \App\Models\UserPackage::where('user_id', $this->id)->exists();
+            $hasHistoricalPackage = \App\Models\UserPackage::where('user_id', $this->id)
+                ->whereHas('package', function ($q) use ($coachingSlug) {
+                    $q->where('slug', '!=', $coachingSlug);
+                })
+                ->exists();
             if ($hasHistoricalPackage) {
                 return true;
             }
@@ -91,8 +105,6 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->get();
 
             if ($successfulTxns->isNotEmpty()) {
-                $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
-
                 foreach ($successfulTxns as $txn) {
                     $candidatePackageId = $txn->package_id;
 
@@ -162,21 +174,89 @@ class User extends Authenticatable implements MustVerifyEmail
                     }
                 }
 
-                // Last-resort fallback: there is a successful payment but package link is missing.
-                // Allow LMS to prevent paid users from being stuck while logs help reconciliation.
-                try {
-                    \Illuminate\Support\Facades\Log::warning('LMS access granted via successful transaction fallback without package link', [
-                        'user_id' => $this->id,
-                        'order_id' => optional($successfulTxns->first())->order_id,
-                    ]);
-                } catch (\Throwable $e) {
-                    // ignore log failures
-                }
-
-                return true;
+                return false;
             }
         } catch (\Throwable $e) {
             // ignore and return false below
+        }
+
+        return false;
+    }
+
+    /**
+     * Check whether user has coaching-only entitlement.
+     * This is intentionally separate from LMS course entitlement.
+     */
+    public function hasCoachingAccess(): bool
+    {
+        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+
+        try {
+            if (! empty($this->package_id)) {
+                $pkg = \App\Models\Package::find($this->package_id);
+                if ($pkg && ($pkg->slug ?? null) === $coachingSlug) {
+                    return true;
+                }
+            }
+        } catch (\Throwable $e) {
+            // ignore and continue
+        }
+
+        try {
+            if (\App\Models\CoachingTicket::where('user_id', $this->id)->exists()) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // ignore and continue
+        }
+
+        try {
+            if (\App\Models\CoachingBooking::where('user_id', $this->id)->exists()) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // ignore and continue
+        }
+
+        // Recovery path for legacy transactions where coaching ticket rows may be missing
+        // but payment has already settled successfully.
+        try {
+            $successfulTxns = \App\Models\Transaction::query()
+                ->where('user_id', $this->id)
+                ->whereIn('status', ['settlement', 'capture', 'success', 'paid', 'settled'])
+                ->latest()
+                ->get();
+
+            foreach ($successfulTxns as $txn) {
+                $candidatePackageId = (int) ($txn->package_id ?? 0);
+
+                if (empty($candidatePackageId)) {
+                    $payload = $txn->midtrans_response;
+                    if (is_string($payload)) {
+                        $payload = json_decode($payload, true) ?: [];
+                    }
+
+                    if (is_array($payload)) {
+                        if (! empty($payload['package_id'])) {
+                            $candidatePackageId = (int) $payload['package_id'];
+                        } elseif (! empty($payload['item_details'][0]['id'])) {
+                            $itemId = (string) $payload['item_details'][0]['id'];
+                            if (preg_match('/^package-(\d+)$/', $itemId, $matches)) {
+                                $candidatePackageId = (int) ($matches[1] ?? 0);
+                            }
+                        }
+                    }
+                }
+
+                if (! empty($candidatePackageId)) {
+                    $pkg = \App\Models\Package::find($candidatePackageId);
+                    if ($pkg && ($pkg->slug ?? null) === $coachingSlug) {
+                        return true;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // ignore and continue
         }
 
         return false;

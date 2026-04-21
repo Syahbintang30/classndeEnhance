@@ -142,7 +142,7 @@
             <div style="margin-top:36px">
                 <form id="payment-complete-form" method="POST" action="{{ route('kelas.payment.complete', ['lesson' => $lesson->id]) }}">
                     @csrf
-                    <input type="hidden" name="order_id" value="{{ $order['order_id'] }}" />
+                    <input type="hidden" id="order_id_input" name="order_id" value="{{ $order['order_id'] }}" />
                     <input type="hidden" name="midtrans_result" id="midtrans_result" value="" />
                 </form>
             </div>
@@ -169,8 +169,46 @@
     try { updateTotalsAfterDiscounts(); } catch(e){}
 
     // Checkout flow uses Midtrans Snap popup
+    let activeSnapToken = null;
+    let isCreatingSnapToken = false;
+
+    function openSnapPopup(token) {
+        snap.pay(token, {
+            onSuccess: function(result){
+                try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
+                if (result && result.order_id) {
+                    const orderInput = document.getElementById('order_id_input');
+                    if (orderInput) orderInput.value = result.order_id;
+                }
+                document.getElementById('payment-complete-form').submit();
+            },
+            onPending: function(result){
+                try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
+                if (result && result.order_id) {
+                    const orderInput = document.getElementById('order_id_input');
+                    if (orderInput) orderInput.value = result.order_id;
+                }
+                document.getElementById('payment-complete-form').submit();
+            },
+            onError: function(){
+                alert('Payment Failed. Please try again.');
+            },
+            onClose: function(){
+                // User closed popup without finishing payment.
+            }
+        });
+    }
 
     document.getElementById('pay-button').addEventListener('click', function(){
+        if (isCreatingSnapToken) {
+            return;
+        }
+
+        if (activeSnapToken) {
+            openSnapPopup(activeSnapToken);
+            return;
+        }
+
         const selected = document.querySelector('input[name="payment_method"]:checked');
         if (! selected) {
             alert('Please select a payment method first.');
@@ -200,35 +238,41 @@
             }
         @endif
 
+        isCreatingSnapToken = true;
+        const payButton = document.getElementById('pay-button');
+        if (payButton) {
+            payButton.disabled = true;
+            payButton.textContent = 'Preparing payment...';
+        }
+
         fetch("/api/midtrans/create", {
             method: 'POST',
             headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content},
             body: JSON.stringify(payload)
         }).then(r => r.json()).then(json => {
             if (json.snap_token) {
-                snap.pay(json.snap_token, {
-                    onSuccess: function(result){
-                        try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
-                        document.getElementById('payment-complete-form').submit();
-                    },
-                    onPending: function(result){
-                        try { document.getElementById('midtrans_result').value = JSON.stringify(result); } catch (e) {}
-                        document.getElementById('payment-complete-form').submit();
-                    },
-                    onError: function(){
-                        alert('Payment Failed. Please try again.');
-                    },
-                    onClose: function(){
-                        // User closed popup without finishing payment.
-                    }
-                });
+                activeSnapToken = json.snap_token;
+                if (json.order_id) {
+                    const orderInput = document.getElementById('order_id_input');
+                    if (orderInput) orderInput.value = json.order_id;
+                }
+                openSnapPopup(json.snap_token);
             } else {
                 const midtransError = json && json.body && Array.isArray(json.body.error_messages) && json.body.error_messages.length
                     ? json.body.error_messages[0]
                     : (json.message || json.error || 'Failed to process payment. Please try again in a moment.');
                 alert(midtransError);
             }
-        }).catch(e => { console.error(e); alert('A network error occurred. Please check your connection and try again.'); });
+        }).catch(e => {
+            console.error(e);
+            alert('A network error occurred. Please check your connection and try again.');
+        }).finally(() => {
+            isCreatingSnapToken = false;
+            if (payButton) {
+                payButton.disabled = false;
+                payButton.textContent = 'PAY & Start Learning';
+            }
+        });
     });
 
     // voucher validation and attach to payload

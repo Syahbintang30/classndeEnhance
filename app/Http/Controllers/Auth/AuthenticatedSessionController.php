@@ -20,7 +20,7 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request): View
     {
         // If a redirect_to query is present (e.g., coming from buy page), set intended URL
-        $redirect = $request->query('redirect_to');
+        $redirect = $this->normalizeIntendedUrl($request, $request->query('redirect_to'));
         if ($redirect) {
             $request->session()->put('url.intended', $redirect);
         }
@@ -41,16 +41,27 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $normalizedIntended = $this->normalizeIntendedUrl(
+            $request,
+            (string) $request->session()->get('url.intended', '')
+        );
+        if ($normalizedIntended) {
+            $request->session()->put('url.intended', $normalizedIntended);
+        } else {
+            $request->session()->forget('url.intended');
+        }
+
         $user = Auth::user();
 
         if ($user && (($user->is_admin ?? false) || ($user->is_superadmin ?? false))) {
             return redirect()->intended(url('/admin'));
         }
 
-        if ($user && empty($user->google_id)) {
+        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
             $shouldSendEmailVerification = Config::get('mail.default') !== 'log';
+            $statusMessage = 'Akun belum diverifikasi. Silakan cek inbox email kamu untuk link verifikasi.';
 
-            if ($shouldSendEmailVerification && $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+            if ($shouldSendEmailVerification) {
                 try {
                     $user->sendEmailVerificationNotification();
                 } catch (\Throwable $e) {
@@ -58,16 +69,13 @@ class AuthenticatedSessionController extends Controller
                         'user_id' => $user->id,
                         'error' => $e->getMessage(),
                     ]);
+                    $statusMessage = 'Akun belum diverifikasi. Kami gagal mengirim email otomatis, silakan klik kirim ulang verifikasi.';
                 }
+            } else {
+                $statusMessage = 'Akun belum diverifikasi. Mailer masih mode log, aktifkan SMTP lalu kirim ulang verifikasi.';
             }
 
-            return redirect()->route('verification.notice')->with('status', 'Lanjutkan verifikasi dengan Google memakai email yang sama untuk mengaktifkan akun.');
-        }
-
-        // Keep unverified users in signed-in state so they can access verification notice
-        // and verify through the signed link flow.
-        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
-            $user->forceFill(['email_verified_at' => now()])->save();
+            return redirect()->route('verification.notice')->with('status', $statusMessage);
         }
 
         // If the authenticated user's email looks like an admin account (ends with @admin),
@@ -77,9 +85,13 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Non-admin flow: users without package should continue to purchase flow.
-        $defaultRoute = $user && method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()
-            ? route('lms.entry')
-            : route('registerclass');
+        if ($user && method_exists($user, 'hasLmsAccess') && $user->hasLmsAccess()) {
+            $defaultRoute = route('lms.entry');
+        } elseif ($user && method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
+            $defaultRoute = route('coaching.upcoming');
+        } else {
+            $defaultRoute = route('registerclass');
+        }
 
         $intended = (string) $request->session()->get('url.intended', '');
         if ($intended !== '' && str_contains($intended, '/lms/access-pending')) {
@@ -87,6 +99,39 @@ class AuthenticatedSessionController extends Controller
         }
 
         return redirect()->intended($defaultRoute);
+    }
+
+    private function normalizeIntendedUrl(Request $request, ?string $url): ?string
+    {
+        if (! is_string($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+        if ($url === '') {
+            return null;
+        }
+
+        if (str_starts_with($url, '/')) {
+            return $url;
+        }
+
+        $parsed = parse_url($url);
+        if (! is_array($parsed)) {
+            return null;
+        }
+
+        $host = strtolower((string) ($parsed['host'] ?? ''));
+        $currentHost = strtolower($request->getHost());
+        if ($host === '' || $host !== $currentHost) {
+            return null;
+        }
+
+        $path = (string) ($parsed['path'] ?? '/');
+        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+        $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+
+        return $request->getSchemeAndHttpHost() . $path . $query . $fragment;
     }
 
     /**

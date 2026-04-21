@@ -178,6 +178,7 @@
 <script>
     const year = {{ $year }};
     const month = {{ $month }};
+    const sessionLengthMinutes = {{ (int) config('coaching.session_length_minutes', 60) }};
     const existing = @json($slots);
     const booked = @json($booked ?? []);
     const sessionSuccess = @json(session('success'));
@@ -200,7 +201,8 @@
     function isPastHour(isoDate, hourLabel) {
         const slotAt = new Date(`${isoDate}T${hourLabel}:00`);
         if (Number.isNaN(slotAt.getTime())) return false;
-        return slotAt.getTime() <= Date.now();
+        const slotEnd = slotAt.getTime() + (sessionLengthMinutes * 60 * 1000);
+        return slotEnd <= Date.now();
     }
 
     function buildCalendar(y, m) {
@@ -370,7 +372,7 @@
     });
 
     function doAjaxSave(replace) {
-        fetch('{{ url('/admin/coaching/slot-capacities') }}', {
+        fetch('/admin/coaching/slot-capacities', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -378,7 +380,14 @@
                 'Accept': 'application/json'
             },
             body: JSON.stringify({ slots_json: pendingEntries, replace: replace })
-        }).then(r => r.json()).then(data => {
+        }).then(async (r) => {
+            const data = await r.json().catch(() => null);
+            if (!r.ok) {
+                const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Save failed (${r.status})`;
+                throw new Error(message);
+            }
+            return data;
+        }).then(data => {
             if (data && data.success) {
                 Object.keys(data.updated || {}).forEach(d => { existing[d] = data.updated[d]; });
                 Object.keys(pendingEntries).forEach(d => { delete pendingEntries[d]; });
@@ -388,11 +397,11 @@
                 document.getElementById('saveAllBtn').disabled = true;
                 showToast('Schedules saved successfully', 'success');
             } else {
-                showToast('Save failed', 'error');
+                showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Save failed', 'error');
             }
         }).catch(err => {
             console.error(err);
-            showToast('Network error saving schedules', 'error');
+            showToast(err && err.message ? err.message : 'Network error saving schedules', 'error');
         });
     }
 
@@ -468,7 +477,7 @@
             const tm = removeHourBtn.dataset.time;
             if (!confirm('Delete ' + tm + ' on ' + dt + '?')) return;
 
-            fetch('{{ url('/admin/coaching/slot-capacities/delete') }}', {
+            fetch('/admin/coaching/slot-capacities/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -476,7 +485,14 @@
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ date: dt, time: tm })
-            }).then(r => r.json()).then(data => {
+            }).then(async (r) => {
+                const data = await r.json().catch(() => null);
+                if (!r.ok) {
+                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Delete failed (${r.status})`;
+                    throw new Error(message);
+                }
+                return data;
+            }).then(data => {
                 if (data && data.success) {
                     existing[dt] = data.remaining || [];
                     if (existing[dt].length === 0) delete existing[dt];
@@ -484,11 +500,11 @@
                     buildCalendar(year, month);
                     showToast('Deleted ' + tm + ' on ' + dt, 'info');
                 } else {
-                    showToast('Delete failed', 'error');
+                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Delete failed', 'error');
                 }
             }).catch(err => {
                 console.error(err);
-                showToast('Network error deleting slot', 'error');
+                showToast(err && err.message ? err.message : 'Network error deleting slot', 'error');
             });
             return;
         }
@@ -498,7 +514,7 @@
             const date = removeDateBtn.dataset.date;
             if (!confirm('Delete all schedules for ' + date + '?')) return;
 
-            fetch('{{ url('/admin/coaching/slot-capacities/delete') }}', {
+            fetch('/admin/coaching/slot-capacities/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -506,18 +522,25 @@
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ date: date })
-            }).then(r => r.json()).then(data => {
+            }).then(async (r) => {
+                const data = await r.json().catch(() => null);
+                if (!r.ok) {
+                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Delete failed (${r.status})`;
+                    throw new Error(message);
+                }
+                return data;
+            }).then(data => {
                 if (data && data.success) {
                     delete existing[date];
                     renderExisting();
                     buildCalendar(year, month);
                     showToast('Deleted all slots on ' + date, 'info');
                 } else {
-                    showToast('Delete failed', 'error');
+                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Delete failed', 'error');
                 }
             }).catch(err => {
                 console.error(err);
-                showToast('Network error deleting slots', 'error');
+                showToast(err && err.message ? err.message : 'Network error deleting slots', 'error');
             });
         }
     });

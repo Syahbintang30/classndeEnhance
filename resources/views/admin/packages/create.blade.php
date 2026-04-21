@@ -28,6 +28,20 @@
                                 <input name="price" value="{{ old('price') }}" type="number" class="form-control" />
                             </div>
 
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label text-white">Member Price (opsional)</label>
+                                <input name="member_price" value="{{ old('member_price') }}" type="number" class="form-control" />
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label text-white">Non-Member Price (opsional)</label>
+                                <input name="non_member_price" value="{{ old('non_member_price') }}" type="number" class="form-control" />
+                            </div>
+
+                            <div class="mb-2 col-12">
+                                <div class="form-text text-muted">Untuk package coaching-ticket: isi kedua harga ini agar checkout bisa otomatis bedakan member vs non-member. Jika kosong, sistem fallback ke Price.</div>
+                            </div>
+
                             <div class="mb-3 col-12">
                                 <label class="form-label text-white">Description</label>
                                 <textarea name="description" class="form-control" rows="5">{{ old('description') }}</textarea>

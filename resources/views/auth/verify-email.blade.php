@@ -13,9 +13,9 @@
 
         <h1 class="verify-title">Verifikasi email dulu</h1>
         <p class="verify-text">
-            Untuk aktivasi akun, lanjutkan verifikasi lewat Google memakai email yang sama dengan akun kamu.
+            Untuk aktivasi akun, buka link verifikasi yang kami kirim ke email kamu.
             @if($supportsEmailVerificationSend)
-                Opsi kirim email verifikasi tetap tersedia sebagai backup.
+                Kalau belum masuk, klik kirim ulang lalu cek folder inbox atau spam.
             @else
                 Mode lokal saat ini tidak mengirim email ke inbox karena mailer diset ke log.
             @endif
@@ -28,16 +28,6 @@
         @endif
 
         <div class="verify-actions">
-            <a href="{{ route('auth.google.redirect') }}" class="btn-google">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
-                    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
-                    <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
-                    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
-                </svg>
-                Verifikasi dengan Google
-            </a>
-
             @if($supportsEmailVerificationSend)
                 <form method="POST" action="{{ route('verification.send') }}" class="verify-form">
                     @csrf
@@ -46,6 +36,16 @@
                     </button>
                 </form>
             @endif
+
+            <a href="{{ route('auth.google.redirect') }}" class="btn-google">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+                    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+                    <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
+                    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+                </svg>
+                Hubungkan dengan Google (opsional)
+            </a>
 
             <form method="POST" action="{{ route('logout') }}" class="verify-form">
                 @csrf
@@ -189,4 +189,41 @@
             background: #f9fafb;
         }
     </style>
+
+    <script>
+        // If verification happens in another tab/device, auto-refresh this page into the proper destination.
+        (function() {
+            const noticeUrl = '{{ route('verification.notice') }}';
+            let attempts = 0;
+            const maxAttempts = 60; // ~2 minutes at 2s interval
+
+            async function checkVerificationState() {
+                attempts += 1;
+                try {
+                    const response = await fetch(noticeUrl, {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        redirect: 'follow',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html,application/xhtml+xml'
+                        }
+                    });
+
+                    if (response.redirected && response.url && !response.url.includes('/verify-email')) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                } catch (e) {
+                    // ignore transient polling errors
+                }
+
+                if (attempts < maxAttempts) {
+                    setTimeout(checkVerificationState, 2000);
+                }
+            }
+
+            setTimeout(checkVerificationState, 2000);
+        })();
+    </script>
 </x-guest-layout>

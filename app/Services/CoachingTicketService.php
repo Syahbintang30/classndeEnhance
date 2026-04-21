@@ -11,7 +11,7 @@ class CoachingTicketService
     /**
      * Grant free coaching tickets on register based on user's package.
      * - beginner => 1 ticket
-     * - intermediate or highest eligible course package => 2 tickets
+      * - intermediate (or highest eligible course package) => 2 tickets
      * Idempotent: tops up to the desired count for source 'free_on_register'.
      * Returns number of tickets created.
      */
@@ -37,12 +37,12 @@ class CoachingTicketService
                 $highestSlug = end($eligible) ?: 'intermediate';
             }
 
-            // Beginner explicit mapping -> 1 ticket
+            // Beginner => 1 ticket
             if ($pkgSlug === 'beginner') {
                 $desired = 1;
             }
 
-            // Intermediate or highest package -> 2 tickets
+            // Intermediate/highest eligible package => 2 tickets
             $intermediateSlug = DynamicConfigService::get('intermediate_package_slug', 'intermediate');
             if ($pkgSlug && ($pkgSlug === $intermediateSlug || $pkgSlug === $highestSlug)) {
                 $desired = 2;

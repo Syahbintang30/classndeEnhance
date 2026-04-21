@@ -197,12 +197,18 @@
 
         // Allowed slot times provided by server (admin-configured). If empty, fallback to availability response keys.
         const allowedSlotTimes = {!! json_encode($slotTimes ?? []) !!};
+        const coachingAvailabilityRangeUrl = '/coaching/availability-range';
+        const coachingAvailabilityUrl = '/coaching/availability';
+        const coachingBookUrl = '/coaching/book';
+        const coachingCheckoutUrl = '/coaching/checkout';
+        const coachingThankYouUrl = '/coaching/thankyou';
 
         let current = new Date();
         let selectedDate = null;
         let selectedTime = null;
         let today = new Date();
         let todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        let minMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
         // --- UTILITY FUNCTIONS (Your existing logic, mostly unchanged) ---
         function formatDateLocal(d) {
@@ -228,7 +234,7 @@
             const start = formatDateLocal(first);
             const end = formatDateLocal(last);
             try {
-                const url = '{{ route('coaching.availability.range') }}?start=' + start + '&end=' + end;
+                const url = coachingAvailabilityRangeUrl + '?start=' + start + '&end=' + end;
                 const resp = await fetch(url, { credentials: 'same-origin' });
                 if (!resp.ok) return {};
                 const json = await resp.json();
@@ -248,6 +254,10 @@
 
             monthNameEl.textContent = first.toLocaleString('default', { month: 'long', year: 'numeric' });
             daysEl.innerHTML = '';
+            prevBtn.disabled = first.getFullYear() === minMonth.getFullYear() && first.getMonth() === minMonth.getMonth();
+            prevBtn.style.pointerEvents = prevBtn.disabled ? 'none' : 'auto';
+            nextBtn.disabled = false;
+            nextBtn.style.pointerEvents = 'auto';
 
             const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             weekdays.forEach(w => {
@@ -312,7 +322,7 @@
         async function loadTimesForDate(dateStr) {
             timeSuggestions.innerHTML = '<p style="opacity: 0.7;">Loading available times...</p>';
             try {
-                const resp = await fetch('{{ route('coaching.availability') }}?date=' + dateStr, { credentials: 'same-origin' });
+                const resp = await fetch(coachingAvailabilityUrl + '?date=' + dateStr, { credentials: 'same-origin' });
                 if (!resp.ok) throw new Error('Network response was not ok');
                 const json = await resp.json();
                 timeSuggestions.innerHTML = ''; // Clear loading message
@@ -427,20 +437,6 @@
             selectionSummaryTextEl.innerHTML = `🗓️ <strong>${summary}</strong>`;
         }
 
-        // Keep calendar pinned to the current month: hide and disable navigation buttons
-        try {
-            prevBtn.style.display = 'none';
-            prevBtn.setAttribute('aria-hidden', 'true');
-            prevBtn.disabled = true;
-            prevBtn.style.pointerEvents = 'none';
-        } catch (e) { }
-        try {
-            nextBtn.style.display = 'none';
-            nextBtn.setAttribute('aria-hidden', 'true');
-            nextBtn.disabled = true;
-            nextBtn.style.pointerEvents = 'none';
-        } catch (e) { }
-
         // Update month at the next local midnight so calendar stays realtime for the current day/month
         function scheduleMidnightUpdate() {
             const now = new Date();
@@ -457,13 +453,19 @@
         }
         scheduleMidnightUpdate();
 
-        // --- EVENT LISTENERS (navigation disabled) ---
+        // --- EVENT LISTENERS ---
         prevBtn.addEventListener('click', () => {
-            // navigation intentionally disabled to keep current month pinned
+            const firstOfCurrent = new Date(current.getFullYear(), current.getMonth(), 1);
+            if (firstOfCurrent.getFullYear() === minMonth.getFullYear() && firstOfCurrent.getMonth() === minMonth.getMonth()) {
+                return;
+            }
+            current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+            renderMonth(current);
         });
 
         nextBtn.addEventListener('click', () => {
-            // navigation intentionally disabled to keep current month pinned
+            current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+            renderMonth(current);
         });
 
         form && form.addEventListener('submit', async function (e) {
@@ -480,7 +482,7 @@
                 const schedule = encodeURIComponent(bookingInput.value);
                 // Also pass along the notes
                 const notes = encodeURIComponent(document.getElementById('session_notes').value);
-                window.location.href = `{{ route('coaching.checkout') }}?schedule=${schedule}&notes=${notes}`;
+                window.location.href = `${coachingCheckoutUrl}?schedule=${schedule}&notes=${notes}`;
                 return;
             }
 
@@ -495,7 +497,7 @@
             payload.append('notes', document.getElementById('session_notes').value || '');
 
             try {
-                const resp = await fetch('{{ route('coaching.book') }}', {
+                const resp = await fetch(coachingBookUrl, {
                     method: 'POST',
                     body: payload.toString(),
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
@@ -505,7 +507,7 @@
                     const json = await resp.json().catch(() => null);
                     // success — redirect to thank you or booking page
                     if (json && json.booking) {
-                        window.location.href = `{{ route('coaching.thankyou') }}?booking=${json.booking}`;
+                        window.location.href = `${coachingThankYouUrl}?booking=${json.booking}`;
                         return;
                     }
                     // fallback: reload
