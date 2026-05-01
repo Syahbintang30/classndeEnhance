@@ -65,25 +65,6 @@
         font-weight: 600;
     }
 
-    .lms-theme-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.04);
-        color: #f5f5f5;
-        border-radius: 999px;
-        padding: 10px 14px;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .lms-theme-toggle:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
     :root[data-theme="light"] .lms-navbar {
         background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
         border-bottom-color: rgba(15, 23, 42, 0.08);
@@ -98,12 +79,6 @@
     :root[data-theme="light"] .lms-nav-link:hover,
     :root[data-theme="light"] .lms-nav-link.active {
         color: #0f172a;
-    }
-
-    :root[data-theme="light"] .lms-theme-toggle {
-        background: #ffffff;
-        color: #0f172a;
-        border-color: rgba(15, 23, 42, 0.12);
     }
 
     :root[data-theme="light"] .kelas-container {
@@ -157,6 +132,66 @@
         border-left-color: #0f172a;
     }
 
+    :root[data-theme="light"] .lesson-header {
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lesson-header:hover {
+        background: rgba(15, 23, 42, 0.04);
+    }
+
+    :root[data-theme="light"] .lesson-block.active .lesson-header {
+        background: rgba(15, 23, 42, 0.06);
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lesson-arrow {
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .topic-item .topic-box {
+        color: #111827;
+    }
+
+    :root[data-theme="light"] .topic-item:hover .topic-box {
+        background: rgba(15, 23, 42, 0.04);
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .topic-item.selected .topic-box {
+        background: rgba(15, 23, 42, 0.08);
+        border-left-color: #0f172a;
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .topic-check {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1.5px solid #0f172a;
+        border-radius: 3px;
+        background: #ffffff;
+        opacity: 1;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.10);
+    }
+
+    :root[data-theme="light"] .topic-item.completed .topic-check {
+        opacity: 1;
+    }
+
+    :root[data-theme="light"] .topic-check:checked {
+        background: #0f172a;
+        border-color: #0f172a;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 6l2.2 2.2L10 2.4' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 10px 10px;
+    }
+
+    :root[data-theme="light"] .topic-item.completed .topic-box {
+        color: #0f172a;
+    }
+
     :root[data-theme="light"] .player-wrapper #player {
         box-shadow: 0 8px 34px rgba(15, 23, 42, 0.12);
         border-color: rgba(15, 23, 42, 0.08);
@@ -180,6 +215,75 @@
     :root[data-theme="light"] .video-nav-btn#btn-next {
         background: linear-gradient(180deg, #0f172a, #111827);
         color: #ffffff;
+    }
+
+    :root[data-theme="dark"] .kelas-container {
+        background: #121212;
+    }
+
+    :root[data-theme="dark"] .sidebar {
+        background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+        border-right-color: rgba(255, 255, 255, 0.10);
+    }
+
+    :root[data-theme="dark"] .lesson-header {
+        color: #f2f2f2;
+    }
+
+    :root[data-theme="dark"] .lesson-header:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    :root[data-theme="dark"] .lesson-block.active .lesson-header {
+        background: rgba(255, 255, 255, 0.10);
+        color: #ffffff;
+    }
+
+    :root[data-theme="dark"] .lesson-arrow {
+        color: #f5f5f5;
+    }
+
+    :root[data-theme="dark"] .topic-item .topic-box {
+        color: #d6d6d6;
+    }
+
+    :root[data-theme="dark"] .topic-item:hover .topic-box {
+        background: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+    }
+
+    :root[data-theme="dark"] .topic-item.selected .topic-box {
+        background: rgba(255, 255, 255, 0.12);
+        border-left-color: #ffffff;
+        color: #ffffff;
+    }
+
+    :root[data-theme="dark"] .topic-check {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1.5px solid #111827;
+        border-radius: 3px;
+        background: #ffffff;
+        opacity: 1;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+
+    :root[data-theme="dark"] .topic-check:checked {
+        background: #ffffff;
+        border-color: #111827;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 6l2.2 2.2L10 2.4' stroke='%23111827' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 10px 10px;
+    }
+
+    :root[data-theme="dark"] .topic-item.completed .topic-check {
+        opacity: 1;
+    }
+
+    :root[data-theme="dark"] .topic-item.completed .topic-box {
+        color: #f3f4f6;
     }
 
     /* Professional LMS Layout */
@@ -521,10 +625,6 @@
         @if($user && $user->hasLmsAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
         @endif
-        <button type="button" id="lms-theme-toggle" class="lms-theme-toggle" aria-label="Toggle theme">
-            <span id="lms-theme-toggle-icon" aria-hidden="true">☀</span>
-            <span id="lms-theme-toggle-label">Light</span>
-        </button>
     </div>
 </nav>
 
