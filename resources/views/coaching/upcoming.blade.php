@@ -3,7 +3,7 @@
 @push('styles')
     <style>
         /* Make the page container fill the viewport (minus likely header) and use flex layout */
-        .upcoming { padding:40px 20px; color:rgba(255,255,255,0.95); display:flex; flex-direction:column; min-height: calc(100vh - 120px); box-sizing:border-box; }
+        .upcoming { padding:40px 20px; color:rgba(255,255,255,0.95); display:flex; flex-direction:column; min-height: calc(100vh - 120px); box-sizing:border-box; background: linear-gradient(180deg, #0b0b0b 0%, #050505 100%); }
     /* card-style slots */
     .slot { border-radius:10px; margin-bottom:18px; padding:0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
     .slot .card-body { padding:18px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }
@@ -125,12 +125,27 @@
     
         :root[data-theme="light"] .upcoming {
             color: #0f172a;
+            background: #f6f7fb;
         }
     
-        :root[data-theme="light"] .slot {
-            background: #ffffff;
-            border-color: rgba(15, 23, 42, 0.08) !important;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+        :root[data-theme="light"] .upcoming > div[style*="rgba(255,255,255,0.02)"] {
+            background: #ffffff !important;
+            border-color: rgba(15, 23, 42, 0.1) !important;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        }
+
+        :root[data-theme="light"] .upcoming > div[style*="rgba(255,255,255,0.02)"] strong,
+        :root[data-theme="light"] .upcoming > div[style*="rgba(255,255,255,0.02)"] div {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .upcoming h2,
+        :root[data-theme="light"] .upcoming strong,
+        :root[data-theme="light"] .upcoming .topic,
+        :root[data-theme="light"] .upcoming .countdown,
+        :root[data-theme="light"] .upcoming .status-badge,
+        :root[data-theme="light"] .upcoming .meeting-finished-box {
+            color: #0f172a;
         }
     
         :root[data-theme="light"] .slot .topic,
@@ -146,13 +161,29 @@
             border-top-color: rgba(15, 23, 42, 0.08);
         }
     
+        :root[data-theme="light"] .slot .card-body,
+        :root[data-theme="light"] .slot.history .card-body {
+            background: #ffffff;
+        }
+
         :root[data-theme="light"] .slot .btn,
         :root[data-theme="light"] .btn-reschedule,
-        :root[data-theme="light"] .make-another .btn {
-            background: #ffffff;
-            color: #0f172a;
-            border-color: rgba(15, 23, 42, 0.12);
+        :root[data-theme="light"] .make-another .btn,
+        :root[data-theme="light"] .upcoming .btn {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
         }
+
+        :root[data-theme="light"] .slot .btn:hover,
+        :root[data-theme="light"] .btn-reschedule:hover,
+        :root[data-theme="light"] .make-another .btn:hover,
+        :root[data-theme="light"] .upcoming .btn:hover {
+    background: #1e293b;
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
+}
+    
     
         :root[data-theme="light"] .countdown {
             background: #ffffff;
@@ -173,6 +204,62 @@
             color: #0f172a;
             border-color: rgba(15, 23, 42, 0.12) !important;
             box-shadow: none;
+        }
+
+        :root[data-theme="light"] .slot.history .topic,
+        :root[data-theme="light"] .slot.history .muted,
+        :root[data-theme="light"] .slot.history .meta,
+        :root[data-theme="light"] .slot.history .label,
+        :root[data-theme="light"] .slot.history .status-badge,
+        :root[data-theme="light"] .slot.history .meeting-finished-box {
+            color: #334155;
+        }
+
+        :root[data-theme="light"] .slot.history .status-badge {
+            background: #f8fafc;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+        }
+
+        :root[data-theme="light"] .make-another .btn {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+
+        :root[data-theme="light"] .make-another .btn:hover {
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .status-badge.on-going {
+            background: #fde68a;
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        :root[data-theme="light"] .status-badge.finished {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: rgba(153, 27, 27, 0.12) !important;
+        }
+
+        :root[data-theme="light"] .status-badge.rejected,
+        :root[data-theme="light"] .status-badge.pending,
+        :root[data-theme="light"] .status-badge.scheduled {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .countdown.soon {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        :root[data-theme="light"] .countdown.live {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
         }
 
     /* Responsive adjustments */

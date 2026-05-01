@@ -55,6 +55,7 @@
     @php
         $enableThemeToggle = request()->routeIs('lms.*')
             || request()->routeIs('kelas.*')
+            || request()->routeIs('coaching.*')
             || request()->routeIs('payments.*')
             || request()->routeIs('login')
             || request()->routeIs('register')
@@ -124,13 +125,26 @@
             body.lms-theme .nav-username { color: var(--lms-nav-text); }
             body.lms-theme .nav-login-button,
             body.lms-theme .btn-ghost { border-color: rgba(255, 255, 255, 0.08); }
+            body.lms-theme .btn-ghost {
+                background: #ffffff;
+                color: #0f172a;
+                border-color: rgba(255, 255, 255, 0.22);
+            }
+            body.lms-theme .btn-ghost:hover {
+                background: #ffffff;
+                border-color: rgba(255, 255, 255, 0.35);
+            }
             :root[data-theme="light"] body.lms-theme .nav-links a,
             :root[data-theme="light"] body.lms-theme .nav-login-button,
             :root[data-theme="light"] body.lms-theme .nav-toggle,
             :root[data-theme="light"] body.lms-theme .nav-username,
             :root[data-theme="light"] body.lms-theme .btn-ghost { color: var(--lms-nav-text) !important; }
             :root[data-theme="light"] body.lms-theme .nav-login-button,
-            :root[data-theme="light"] body.lms-theme .btn-ghost { border-color: rgba(15, 23, 42, 0.12); background: #ffffff; }
+            :root[data-theme="light"] body.lms-theme .btn-ghost {
+                border-color: rgba(15, 23, 42, 0.12);
+                background: #0f172a;
+                color: #ffffff !important;
+            }
         </style>
     @endif
 </head>
