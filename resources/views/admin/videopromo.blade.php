@@ -22,6 +22,16 @@
                         <label class="form-label">Promo Title</label>
                         <input type="text" name="promo_title" class="form-control" value="{{ old('promo_title', $title) }}">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Thumbnail URL</label>
+                        <input type="text" name="promo_thumbnail" class="form-control" 
+                               value="{{ old('promo_thumbnail', $thumbnail) }}" 
+                               placeholder="https://...">
+                        <div class="form-text">URL gambar thumbnail video promo (opsional)</div>
+                        @if($thumbnail)
+                            <img src="{{ $thumbnail }}" class="mt-2 rounded" style="max-height:120px">
+                        @endif
+                    </div>
                     <button class="btn btn-primary">Save</button>
                 </form>
             </div>

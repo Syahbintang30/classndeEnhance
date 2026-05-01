@@ -6,7 +6,8 @@
 <div class="checkout-page">
     <nav class="checkout-nav" aria-label="Checkout logo navigation">
         <a href="{{ route('compro') }}" class="checkout-brand" aria-label="NDE Home">
-            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="checkout-brand-logo" />
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="checkout-brand-logo checkout-brand-dark" />
+            <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE logo" class="checkout-brand-logo checkout-brand-light" />
         </a>
     </nav>
 
@@ -18,80 +19,93 @@
 
     @php
         $paymentBase = isset($lesson) && $lesson ? route('kelas.payment', $lesson->id) : null;
+        $orderedPackages = $packages->sortBy(function ($pkg) {
+            $slug = strtolower((string) ($pkg->slug ?? ''));
+            $name = strtolower((string) ($pkg->name ?? ''));
+
+            if (
+                \Illuminate\Support\Str::contains($slug, 'intermediate') ||
+                \Illuminate\Support\Str::contains($name, 'intermediate')
+            ) {
+                return 1;
+            }
+
+            if (
+                \Illuminate\Support\Str::contains($slug, 'beginner') ||
+                \Illuminate\Support\Str::contains($name, 'beginner')
+            ) {
+                return 2;
+            }
+
+            if (
+                \Illuminate\Support\Str::contains($slug, 'ticket') ||
+                \Illuminate\Support\Str::contains($slug, 'coaching') ||
+                \Illuminate\Support\Str::contains($name, 'ticket')
+            ) {
+                return 0;
+            }
+
+            return 99;
+        })->values();
     @endphp
 
-    <div class="container checkout-main" style="padding:8px 60px 44px;color:#fff">
-        <div class="packages-grid" style="display:flex;gap:20px;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-top:12px;padding-bottom:8px;padding-left:4px;padding-right:4px;">
-            @foreach($packages as $pkg)
+    <div class="checkout-main">
+        <div class="packages-grid">
+            @foreach($orderedPackages as $i => $pkg)
                 @php
                     $paymentLink = $paymentBase
                         ? ($paymentBase . '?package_id=' . $pkg->id . '&package_qty=1')
                         : '#';
+                    $isFeatured = ($pkg->slug ?? null) === 'intermediate';
+                    $benefits = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
+                    $price = number_format($pkg->price, 0, ',', '.');
+                    $imgSrc = $pkg->image
+                        ? asset('storage/' . $pkg->image)
+                        : asset('pictures/' . $pkg->slug . '.jpg');
                 @endphp
-                <a href="{{ $paymentLink }}" class="class-card" data-package-id="{{ $pkg->id }}" data-package-price="{{ $pkg->price }}" data-package-slug="{{ $pkg->slug }}" style="border:1px solid rgba(255,255,255,0.06);padding:0;border-radius:18px;background:#0b0b0b;transition:transform .18s ease, box-shadow .18s ease;cursor:pointer;overflow:hidden;text-decoration:none;color:inherit;">
-                    @if($pkg->slug === 'intermediate')
-                        <span class="pkg-badge">Paling Diminati</span>
-                    @endif
-                    <div class="class-card-media" style="overflow:hidden;border-bottom:1px solid rgba(255,255,255,0.08);">
-                        @php
-                            if (!empty($pkg->image)) {
-                                $imgSrc = asset('storage/' . $pkg->image);
-                            } else {
-                                $img = 'intermediate';
-                                if ($pkg->slug == 'beginner') $img = 'beginner';
-                                if ($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket')) $img = 'coaching-ticket';
-                                $imgSrc = asset('pictures/' . $img . '.jpg');
-                            }
-                        @endphp
-                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" style="width:100%;height:220px;object-fit:cover;display:block;">
+
+                @if($isFeatured)
+                <a href="{{ $paymentLink }}" class="co-card co-card--featured" data-package-id="{{ $pkg->id }}">
+                    <div class="co-card__best">Best Value</div>
+                    <div class="co-card__img">
+                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}">
                     </div>
-                    <div class="class-card-body" style="padding:18px 18px 16px;">
-                        <h3 style="margin:0 0 6px 0;font-size:26px;font-family: 'Cormorant Garamond', serif;">{{ $pkg->name }}</h3>
-                        <div style="margin-top:0;font-weight:500;font-size:20px;color:#d4d4d4">Rp <span class="pkg-price">{{ number_format($pkg->price,0,',','.') }}</span></div>
-
-                        <div class="class-card-copy" style="font-size:13px;opacity:0.9;border-top:1px solid rgba(255,255,255,0.08);margin-top:14px;padding-top:14px;">
-                            @if(!empty($pkg->description))
-                                <p class="pkg-description" style="margin:0 0 10px 0;color:#cfcfcf;font-size:13px;">{{ \Illuminate\Support\Str::limit($pkg->description, 160) }}</p>
-                            @endif
-
-                            @if(!empty($pkg->benefits))
-                                @php
-                                    $lines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $pkg->benefits)));
-                                @endphp
-                                @if(count($lines))
-                                    <ul class="pkg-benefits-list">
-                                        @foreach($lines as $line)
-                                            <li>{{ $line }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            @else
-                                @if($pkg->slug == 'beginner')
-                                    <ul class="pkg-benefits-list">
-                                        <li>Pahami anatomi dan fungsi gitar.</li>
-                                        <li>Belajar tuning gitar dengan benar.</li>
-                                        <li>Kuasai chord dasar (C, G, D, Am, Em).</li>
-                                        <li>Latih pola strumming dasar.</li>
-                                    </ul>
-                                @elseif($pkg->slug == config('coaching.coaching_package_slug', 'coaching-ticket'))
-                                    <ul class="pkg-benefits-list">
-                                        <li>Satu coaching ticket untuk sesi live coaching.</li>
-                                        <li>Prioritas booking coaching slot.</li>
-                                        <li>Feedback personal dari coach.</li>
-                                    </ul>
-                                @else
-                                    <ul class="pkg-benefits-list">
-                                        <li>Kuasai barre chords dan variasinya.</li>
-                                        <li>Dasar teknik fingerstyle.</li>
-                                        <li>Penggunaan skala untuk improvisasi.</li>
-                                        <li>Pemahaman ritme dan sinkopasi.</li>
-                                        <li>Interpretasi lagu lebih personal.</li>
-                                    </ul>
-                                @endif
-                            @endif
+                    <div class="co-card__body">
+                        <span class="co-card__kicker">Recommended</span>
+                        <h3 class="co-card__name">{{ $pkg->name }}</h3>
+                        <div class="co-card__price">Rp {{ $price }}</div>
+                        <div class="co-card__benefits">
+                            @foreach($benefits as $benefit)
+                            <div class="co-card__benefit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg>
+                                <span>{{ $benefit }}</span>
+                            </div>
+                            @endforeach
                         </div>
+                        <div class="co-card__cta co-card__cta--dark">Dapatkan Akses Sekarang</div>
                     </div>
                 </a>
+                @else
+                <a href="{{ $paymentLink }}" class="co-card co-card--regular" data-package-id="{{ $pkg->id }}">
+                    <div class="co-card__img">
+                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}">
+                    </div>
+                    <div class="co-card__body">
+                        <span class="co-card__kicker">{{ $pkg->description ?? '' }}</span>
+                        <h3 class="co-card__name">{{ $pkg->name }}</h3>
+                        <div class="co-card__price">Rp {{ $price }}</div>
+                        <div class="co-card__benefits">
+                            @foreach($benefits as $benefit)
+                            <div class="co-card__benefit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg>
+                                <span>{{ $benefit }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="co-card__cta co-card__cta--light">Pilih Paket</div>
+                    </div>
+                </a>
+                @endif
             @endforeach
         </div>
 
@@ -106,15 +120,36 @@
 
 @push('styles')
 <style>
-    .global-nav {
-        display: none !important;
+    :root {
+        --co-bg: #050505;
+        --co-text: #ffffff;
+        --co-muted: rgba(255,255,255,0.5);
+        --co-border: rgba(255,255,255,0.1);
+        --co-card-bg: #0a0a0a;
+        --co-pill-text: rgba(255,255,255,0.62);
     }
+
+    :root[data-theme="light"] {
+        --co-bg: #f6f3ee;
+        --co-text: #1b1b1b;
+        --co-muted: rgba(15,15,15,0.55);
+        --co-border: rgba(15,15,15,0.1);
+        --co-card-bg: #ffffff;
+        --co-pill-text: rgba(15,15,15,0.6);
+    }
+
+    .checkout-brand-dark { display: block; }
+    .checkout-brand-light { display: none; }
+    :root[data-theme="light"] .checkout-brand-dark { display: none; }
+    :root[data-theme="light"] .checkout-brand-light { display: block; }
+
+    .global-nav { display: none !important; }
 
     .checkout-page {
         min-height: 100vh;
-        background: radial-gradient(55% 35% at 50% 0%, rgba(196, 196, 196, 0.12), rgba(5, 5, 5, 0)), #050505;
-        color: #d4d4d4;
-        padding-bottom: 28px;
+        background: var(--co-bg);
+        color: var(--co-text);
+        padding-bottom: 60px;
     }
 
     .checkout-nav {
@@ -124,30 +159,21 @@
         padding: 28px 16px 20px;
     }
 
-    .checkout-brand {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .checkout-brand-logo {
-        height: 62px;
-        width: auto;
-        display: block;
-    }
+    .checkout-brand { display: inline-flex; align-items: center; justify-content: center; }
+    .checkout-brand-logo { height: 62px; width: auto; }
 
     .checkout-hero {
         max-width: 760px;
         margin: 0 auto;
         text-align: center;
-        padding: 8px 16px 26px;
+        padding: 8px 16px 40px;
     }
 
     .checkout-pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.13);
+        border: 1px solid var(--co-border);
         border-radius: 999px;
         padding: 7px 12px;
         margin-bottom: 16px;
@@ -155,227 +181,241 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .14em;
-        color: rgba(255, 255, 255, 0.62);
+        color: var(--co-pill-text);
     }
 
     .checkout-hero h1 {
         margin: 0;
-        font-size: clamp(34px, 6vw, 64px);
+        font-size: clamp(32px, 5vw, 56px);
         line-height: 1.06;
-        font-family: 'Cormorant Garamond', serif;
-        color: #fff;
+        font-family: 'Playfair Display', serif;
+        color: var(--co-text);
         letter-spacing: -0.02em;
     }
 
-    .checkout-hero h1 span {
-        color: rgba(255, 255, 255, 0.6);
-        font-style: italic;
-    }
+    .checkout-hero h1 span { color: var(--co-muted); font-style: italic; }
 
     .checkout-hero p {
         margin: 14px auto 0;
-        max-width: 620px;
+        max-width: 560px;
         font-size: 15px;
         line-height: 1.75;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--co-muted);
     }
 
     .checkout-main {
-        max-width: 1260px;
+        max-width: 1160px;
         margin: 0 auto;
-    }
-
-    .checkout-summary-panel {
-        border: 1px solid rgba(255, 255, 255, 0.09);
-        background: #0a0a0a;
-        border-radius: 22px;
-        padding: 24px;
-        position: sticky;
-        top: 24px;
-    }
-
-    .checkout-main-btn,
-    .checkout-ghost-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-        border-radius: 999px;
-        padding: 12px 22px;
-        font-size: 13px;
-        letter-spacing: .04em;
-        text-transform: uppercase;
-        font-weight: 700;
-        transition: all .2s ease;
-    }
-
-    .checkout-main-btn {
-        border: 1px solid #fff;
-        background: #fff;
-        color: #000;
-    }
-
-    .checkout-main-btn:hover {
-        transform: translateY(-2px);
-        color: #000;
-        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.18);
-    }
-
-    .checkout-ghost-btn {
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        background: transparent;
-        color: #fff;
-    }
-
-    .checkout-ghost-btn:hover {
-        border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
-    }
-
-    .class-card {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
-        flex: 0 0 320px;
-        max-width: 320px;
-        min-width: 320px;
-        overflow: hidden;
-    }
-
-    .class-card-body {
-        display: flex;
-        flex-direction: column;
-        min-height: 250px;
-    }
-
-    .class-card-copy {
-        flex: 1;
-    }
-
-    .pkg-badge {
-        position: absolute;
-        z-index: 2;
-        right: 14px;
-        top: 14px;
-        background: #fff;
-        color: #000;
-        border-radius: 999px;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .1em;
-        padding: 7px 10px;
-    }
-
-    .class-card img {
-        filter: none;
-        opacity: .92;
-        transition: transform .45s ease, opacity .35s ease;
-    }
-
-    .class-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
-    }
-
-    .class-card.selected {
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 255, 255, 0.1);
-        transform: translateY(-8px);
-        z-index: 7;
-    }
-
-    .class-card.selected img {
-        opacity: 1;
-        transform: scale(1.04);
-    }
-
-    .class-card.glow::after {
-        content: '';
-        position: absolute;
-        left: -8px;
-        right: -8px;
-        top: -8px;
-        bottom: -8px;
-        border-radius: 20px;
-        pointer-events: none;
-        box-shadow: 0 0 34px rgba(255, 255, 255, 0.13);
+        padding: 0 24px;
     }
 
     .packages-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
         align-items: stretch;
-        justify-content: center;
-        overflow-x: auto;
-        overflow-y: visible;
+    }
+
+    .co-card {
         position: relative;
-        z-index: 1;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-sizing: border-box;
+        border-radius: 2.5rem;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .3s ease;
     }
 
-    .packages-grid::-webkit-scrollbar {
-        display: none;
+    .co-card--regular {
+        background: var(--co-card-bg);
+        border: 1px solid var(--co-border);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
     }
 
-    .pkg-benefits-list {
-        margin: 8px 0 0 18px;
-        padding: 0;
+    .co-card--regular:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255,255,255,0.3);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.55);
     }
 
-    .pkg-benefits-list li {
+    :root[data-theme="light"] .co-card--regular:hover {
+        border-color: rgba(15,15,15,0.22);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    }
+
+    .co-card--featured {
+        background: #ffffff;
+        border: 1px solid #ffffff;
+        box-shadow: 0 0 50px rgba(255,255,255,0.1);
+        z-index: 10;
+        color: #111111;
+    }
+
+    .co-card--featured:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 60px rgba(255,255,255,0.18);
+    }
+
+    .co-card__best {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000000;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 0 0 12px 12px;
+        z-index: 10;
+        white-space: nowrap;
+    }
+
+    .co-card__img {
+        width: 100%;
+        height: 210px;
+        overflow: hidden;
+    }
+
+    .co-card__img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .4s ease, opacity .3s ease;
+        opacity: .92;
+    }
+
+    .co-card:hover .co-card__img img {
+        transform: scale(1.04);
+        opacity: 1;
+    }
+
+    .co-card__body {
+        padding: 22px 22px 26px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .co-card__kicker {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .2em;
+        color: var(--co-muted);
         margin-bottom: 6px;
-        word-break: break-word;
-        white-space: normal;
-        overflow-wrap: break-word;
-        color: rgba(255, 255, 255, 0.72);
+        display: block;
+        min-height: 14px;
     }
 
-    .pkg-description {
-        min-height: 38px;
+    .co-card--featured .co-card__kicker { color: rgba(15,15,15,0.5); }
+
+    .co-card__name {
+        margin: 0 0 6px;
+        font-size: 26px;
+        font-family: 'Playfair Display', serif;
+        font-weight: 400;
+        line-height: 1.1;
+        color: var(--co-text);
     }
 
-    @media (max-width: 1080px) {
+    .co-card--featured .co-card__name { color: #111111; }
+
+    .co-card__price {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 8px 0 16px;
+        color: var(--co-text);
+    }
+
+    .co-card--featured .co-card__price { color: #111111; }
+
+    .co-card__benefits {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+
+    .co-card__benefit {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: rgba(255,255,255,0.75);
+    }
+
+    .co-card--featured .co-card__benefit { color: rgba(15,15,15,0.78); }
+    :root[data-theme="light"] .co-card--regular .co-card__benefit { color: rgba(15,15,15,0.72); }
+
+    .co-card__benefit svg {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: #22c55e;
+    }
+
+    .co-card--featured .co-card__benefit svg { color: #111111; }
+
+    .co-card__cta {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border-radius: 1.25rem;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        transition: all .2s ease;
+    }
+
+    .co-card__cta--light {
+        background: rgba(255,255,255,0.08);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .co-card--regular:hover .co-card__cta--light { background: rgba(255,255,255,0.14); }
+
+    :root[data-theme="light"] .co-card__cta--light {
+        background: rgba(15,15,15,0.05);
+        color: #111111;
+        border: 1px solid rgba(15,15,15,0.15);
+    }
+
+    .co-card__cta--dark {
+        background: #111111;
+        color: #ffffff;
+        border: none;
+    }
+
+    .co-card--featured:hover .co-card__cta--dark { background: #000000; }
+
+    @media (max-width: 1024px) {
         .packages-grid {
-            justify-content: flex-start;
+            grid-template-columns: repeat(3, minmax(260px, 1fr));
+            overflow-x: auto;
+            padding-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
-
-        .checkout-main {
-            padding-left: 22px !important;
-            padding-right: 22px !important;
-        }
-
-        .class-card {
-            min-width: 300px;
-            max-width: 300px;
-            flex-basis: 300px;
-        }
+        .packages-grid::-webkit-scrollbar { display: none; }
     }
 
     @media (max-width: 768px) {
-        .checkout-brand-logo {
-            height: 52px;
-        }
-
-        .checkout-hero {
-            padding-bottom: 18px;
-        }
-
-        .checkout-main {
-            padding-left: 14px !important;
-            padding-right: 14px !important;
-        }
-
-        .class-card {
-            min-width: 86vw;
-            max-width: 86vw;
-            flex-basis: 86vw;
-        }
-
-        .class-card img {
-            height: 190px !important;
-        }
+        .packages-grid { grid-template-columns: repeat(3, 82vw); }
+        .co-card--featured { transform: none; }
+        .co-card--featured:hover { transform: translateY(-4px); }
+        .checkout-main { padding: 0 16px; }
+        .co-card__img { height: 180px; }
     }
 </style>
 @endpush

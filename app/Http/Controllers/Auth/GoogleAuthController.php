@@ -16,28 +16,36 @@ use Laravel\Socialite\Facades\Socialite;
 class GoogleAuthController extends Controller
 {
     public function redirectToGoogle(Request $request): RedirectResponse
-    {
-        $clientId = Config::get('services.google.client_id');
-        $clientSecret = Config::get('services.google.client_secret');
+{
+    $clientId = Config::get('services.google.client_id');
+    $clientSecret = Config::get('services.google.client_secret');
 
-        if (! $clientId || ! $clientSecret) {
-            Log::warning('Google auth misconfigured', [
-                'has_client_id' => (bool) $clientId,
-                'has_client_secret' => (bool) $clientSecret,
-            ]);
+    if (! $clientId || ! $clientSecret) {
+        Log::warning('Google auth misconfigured', [
+            'has_client_id' => (bool) $clientId,
+            'has_client_secret' => (bool) $clientSecret,
+        ]);
 
-            return redirect()
-                ->route('login')
-                ->with('error', 'Google Login belum dikonfigurasi. Isi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET.');
-        }
-
-        /** @var \Laravel\Socialite\Two\GoogleProvider $provider */
-        $provider = Socialite::driver('google');
-
-        return $provider
-            ->redirectUrl($this->resolveGoogleRedirectUri($request))
-            ->redirect();
+        return redirect()
+            ->route('login')
+            ->with('error', 'Google Login belum dikonfigurasi. Isi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET.');
     }
+
+    // Simpan package_id ke session jika ada
+    if ($request->query('package_id')) {
+        $request->session()->put('pre_register', [
+            'package_id' => (int) $request->query('package_id'),
+            'package_qty' => (int) $request->query('package_qty', 1),
+        ]);
+    }
+
+    /** @var \Laravel\Socialite\Two\GoogleProvider $provider */
+    $provider = Socialite::driver('google');
+
+    return $provider
+        ->redirectUrl($this->resolveGoogleRedirectUri($request))
+        ->redirect();
+}
 
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
@@ -96,6 +104,18 @@ class GoogleAuthController extends Controller
 
         Auth::login($user, true);
         session()->regenerate();
+
+        // Cek apakah ada package yang dipilih sebelum login via Google
+        $preRegister = $request->session()->get('pre_register');
+        $packageId = $preRegister['package_id'] ?? null;
+
+        if ($packageId && !$user->hasLmsAccess()) {
+            $request->session()->forget('pre_register');
+            $firstLesson = \App\Models\Lesson::where('type', 'course')->orderBy('position')->first();
+            if ($firstLesson) {
+                return redirect(route('kelas.buy', $firstLesson->id) . '?package_id=' . $packageId . '&package_qty=' . ($preRegister['package_qty'] ?? 1));
+            }
+        }
 
         if (is_string($user->email) && str_ends_with(strtolower($user->email), '@admin')) {
             return redirect()->intended(url('/admin'));

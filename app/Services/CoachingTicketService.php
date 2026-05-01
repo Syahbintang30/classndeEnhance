@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\CoachingTicket;
 use App\Models\Package;
+use App\Models\Setting;
 use App\Models\User;
 
 class CoachingTicketService
@@ -44,7 +45,11 @@ class CoachingTicketService
 
             // Intermediate/highest eligible package => 2 tickets
             $intermediateSlug = DynamicConfigService::get('intermediate_package_slug', 'intermediate');
-            if ($pkgSlug && ($pkgSlug === $intermediateSlug || $pkgSlug === $highestSlug)) {
+            $intermediateSlugs = Setting::getIntermediatePackageSlugs();
+            if (! in_array($intermediateSlug, $intermediateSlugs, true)) {
+                $intermediateSlugs[] = $intermediateSlug;
+            }
+            if ($pkgSlug && (in_array($pkgSlug, $intermediateSlugs, true) || $pkgSlug === $highestSlug)) {
                 $desired = 2;
             }
         }

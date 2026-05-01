@@ -65,6 +65,123 @@
         font-weight: 600;
     }
 
+    .lms-theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f5f5f5;
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .lms-theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    :root[data-theme="light"] .lms-navbar {
+        background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+        border-bottom-color: rgba(15, 23, 42, 0.08);
+    }
+
+    :root[data-theme="light"] .lms-home-link,
+    :root[data-theme="light"] .lms-nav-link {
+        color: #334155;
+    }
+
+    :root[data-theme="light"] .lms-home-link:hover,
+    :root[data-theme="light"] .lms-nav-link:hover,
+    :root[data-theme="light"] .lms-nav-link.active {
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lms-theme-toggle {
+        background: #ffffff;
+        color: #0f172a;
+        border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    :root[data-theme="light"] .kelas-container {
+        background: #f6f7fb;
+    }
+
+    :root[data-theme="light"] .sidebar {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border-right-color: rgba(15, 23, 42, 0.08);
+    }
+
+    :root[data-theme="light"] .lesson-header {
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lesson-header:hover {
+        background: rgba(15, 23, 42, 0.04);
+    }
+
+    :root[data-theme="light"] .lesson-block.active .lesson-header {
+        background: rgba(15, 23, 42, 0.06);
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lesson-arrow,
+    :root[data-theme="light"] .lesson-title,
+    :root[data-theme="light"] .topic-item,
+    :root[data-theme="light"] .topic-list,
+    :root[data-theme="light"] .video-meta,
+    :root[data-theme="light"] #video-title,
+    :root[data-theme="light"] #video-description {
+        color: #1f2937;
+    }
+
+    :root[data-theme="light"] .lesson-block.active > .lesson-header:before {
+        background: #0f172a;
+    }
+
+    :root[data-theme="light"] .lesson-logo {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .topic-item:hover {
+        background: rgba(15, 23, 42, 0.04);
+    }
+
+    :root[data-theme="light"] .topic-item.selected {
+        color: #0f172a;
+        background: rgba(15, 23, 42, 0.08);
+        border-left-color: #0f172a;
+    }
+
+    :root[data-theme="light"] .player-wrapper #player {
+        box-shadow: 0 8px 34px rgba(15, 23, 42, 0.12);
+        border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    :root[data-theme="light"] .custom-play-btn {
+        background: rgba(15, 23, 42, 0.08);
+        border-color: rgba(15, 23, 42, 0.12);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    :root[data-theme="light"] .custom-play-btn:before {
+        border-left-color: #0f172a;
+    }
+
+    :root[data-theme="light"] .video-nav-btn#btn-prev {
+        background: linear-gradient(180deg, #ffffff, #eef2ff);
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .video-nav-btn#btn-next {
+        background: linear-gradient(180deg, #0f172a, #111827);
+        color: #ffffff;
+    }
+
     /* Professional LMS Layout */
     * { box-sizing: border-box; }
 
@@ -404,6 +521,10 @@
         @if($user && $user->hasLmsAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
         @endif
+        <button type="button" id="lms-theme-toggle" class="lms-theme-toggle" aria-label="Toggle theme">
+            <span id="lms-theme-toggle-icon" aria-hidden="true">☀</span>
+            <span id="lms-theme-toggle-label">Light</span>
+        </button>
     </div>
 </nav>
 
@@ -1188,6 +1309,31 @@ document.addEventListener('DOMContentLoaded', () => {
             reportProgress(false);
         }catch(e){}
     });
+
+    const lmsThemeToggle = document.getElementById('lms-theme-toggle');
+    const lmsThemeLabel = document.getElementById('lms-theme-toggle-label');
+    const lmsThemeIcon = document.getElementById('lms-theme-toggle-icon');
+
+    function updateLmsThemeToggle() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (lmsThemeLabel) {
+            lmsThemeLabel.textContent = theme === 'light' ? 'Dark' : 'Light';
+        }
+        if (lmsThemeIcon) {
+            lmsThemeIcon.textContent = theme === 'light' ? '🌙' : '☀';
+        }
+    }
+
+    if (lmsThemeToggle) {
+        lmsThemeToggle.addEventListener('click', function () {
+            const nextTheme = (document.documentElement.getAttribute('data-theme') === 'light') ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', nextTheme);
+            document.cookie = 'theme=' + nextTheme + '; path=/; max-age=' + (60 * 60 * 24 * 365);
+            updateLmsThemeToggle();
+        });
+    }
+
+    updateLmsThemeToggle();
 });
 </script>
 @endsection

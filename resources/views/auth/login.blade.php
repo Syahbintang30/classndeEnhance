@@ -12,7 +12,8 @@
 <div class="auth-page-v2">
     <header class="auth-header-v2">
         <a href="{{ route('compro') }}" class="brand-logo-v2" aria-label="ClassNDE home">
-            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo">
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo" class="brand-logo-dark">
+            <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE Logo" class="brand-logo-light">
         </a>
         <nav class="auth-nav-v2">
             <a href="{{ route('registerclass') }}">Courses</a>
@@ -112,12 +113,40 @@
         --border-color: rgba(255, 255, 255, 0.15);
         --accent-white: #ffffff;
         --accent-black: #000000;
+        --card-bg: rgba(10, 10, 10, 0.4);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --badge-bg: rgba(255, 255, 255, 0.05);
+        --badge-border: rgba(255, 255, 255, 0.15);
+        --badge-text: #d4d4d8;
+        --field-bg: rgba(0, 0, 0, 0.4);
+        --field-bg-focus: rgba(0, 0, 0, 0.6);
+        --field-placeholder: #71717a;
+        --link-hover: #ffffff;
+    }
+
+    :root[data-theme="light"] {
+        --bg-base: #f6f3ee;
+        --text-main: #1b1b1b;
+        --text-muted: #6d6d6d;
+        --border-color: rgba(15, 15, 15, 0.14);
+        --accent-white: #111111;
+        --accent-black: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.75);
+        --card-border: rgba(15, 15, 15, 0.08);
+        --badge-bg: rgba(15, 15, 15, 0.06);
+        --badge-border: rgba(15, 15, 15, 0.12);
+        --badge-text: #2b2b2b;
+        --field-bg: rgba(255, 255, 255, 0.8);
+        --field-bg-focus: rgba(255, 255, 255, 0.95);
+        --field-placeholder: #8a8a8a;
+        --link-hover: #111111;
     }
 
     .auth-page-v2 {
         background-color: var(--bg-base);
         background-image:
-            linear-gradient(to right, rgba(3, 3, 3, 0.3) 0%, rgba(3, 3, 3, 0.85) 60%, rgba(3, 3, 3, 0.95) 100%),
+            radial-gradient(circle at top left, rgba(3, 3, 3, 0.72) 0%, rgba(3, 3, 3, 0.42) 18%, rgba(3, 3, 3, 0.12) 48%, rgba(3, 3, 3, 0) 72%),
+            linear-gradient(to left, rgba(3, 3, 3, 0.18) 0%, rgba(3, 3, 3, 0.36) 38%, rgba(3, 3, 3, 0.55) 100%),
             url('{{ asset('compro/img/ndehero.webp') }}');
         background-size: cover;
         background-position: center;
@@ -141,10 +170,23 @@
     }
 
     .brand-logo-v2 img {
-        height: 42px;
+        height: 52px;
         width: auto;
         display: block;
     }
+
+    .brand-logo-v2 {
+        display: inline-flex;
+        align-items: center;
+        line-height: 0;
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+    .brand-logo-dark { display: block; }
+    .brand-logo-light { display: none; }
+    :root[data-theme="light"] .brand-logo-dark { display: none; }
+    :root[data-theme="light"] .brand-logo-light { display: block; }
 
     .auth-nav-v2 {
         display: flex;
@@ -153,22 +195,32 @@
     }
 
     .auth-nav-v2 a {
-        color: var(--text-muted);
+        color: rgba(255, 255, 255, 0.92);
         text-decoration: none;
         font-size: 0.9rem;
+        font-weight: 600;
         transition: color 0.2s;
     }
 
+    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2) {
+        color: rgba(17, 17, 17, 0.84);
+    }
+
+    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2):hover {
+        color: #111111;
+    }
+
     .auth-nav-v2 a:hover:not(.btn-nav-v2) {
-        color: white;
+        color: var(--link-hover);
     }
 
     .btn-nav-v2 {
-        background: white;
-        color: black !important;
+        background: var(--accent-white);
+        color: var(--accent-black) !important;
         padding: 8px 16px;
         border-radius: 999px;
         font-weight: 500;
+        font-size: 0.85rem;
     }
 
     .auth-main-v2 {
@@ -187,35 +239,31 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: rgba(10, 10, 10, 0.4);
+        background: var(--card-bg);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--card-border);
         border-radius: 24px;
         padding: 48px 40px;
         box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
     }
 
-    .title-group-v2 {
-        text-align: center;
-        margin-bottom: 32px;
-        width: 100%;
-    }
+    .title-group-v2 { text-align: center; margin-bottom: 32px; width: 100%; }
 
     .badge-v2 {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         padding: 6px 16px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid var(--badge-border);
         border-radius: 999px;
         font-size: 0.65rem;
         font-weight: 600;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        color: #d4d4d8;
+        color: var(--badge-text);
         margin-bottom: 24px;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--badge-bg);
     }
 
     .badge-v2::before {
@@ -223,7 +271,7 @@
         display: block;
         width: 6px;
         height: 6px;
-        background: #d4d4d8;
+        background: var(--badge-text);
         border-radius: 50%;
     }
 
@@ -237,11 +285,7 @@
         margin: 0;
     }
 
-    .title-v2 em {
-        font-style: italic;
-        font-weight: 500;
-        color: #e4e4e7;
-    }
+    .title-v2 em { font-style: italic; font-weight: 500; color: var(--text-muted); }
 
     .alert-v2 {
         width: 100%;
@@ -252,88 +296,37 @@
         border: 1px solid transparent;
     }
 
-    .alert-v2 ul {
-        margin: 8px 0 0;
-        padding-left: 18px;
-    }
+    .alert-v2 ul { margin: 8px 0 0; padding-left: 18px; }
+    .alert-v2.success { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.45); color: #d1fae5; }
+    .alert-v2.error { background: rgba(239, 68, 68, 0.2); border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
+        :root[data-theme="light"] .alert-v2.success { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.28); color: #0f5132; }
+        :root[data-theme="light"] .alert-v2.error { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.32); color: #7f1d1d; }
 
-    .alert-v2.success {
-        background: rgba(16, 185, 129, 0.2);
-        border-color: rgba(16, 185, 129, 0.45);
-        color: #d1fae5;
-    }
+    .auth-form-v2 { width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-    .alert-v2.error {
-        background: rgba(239, 68, 68, 0.2);
-        border-color: rgba(248, 113, 113, 0.45);
-        color: #fecaca;
-    }
+    .input-group-v2 { display: flex; flex-direction: column; gap: 8px; }
+    .input-group-v2 label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
-    .auth-form-v2 {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .input-group-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .input-group-v2 label {
-        font-size: 0.85rem;
-        color: #d4d4d8;
-        font-weight: 500;
-    }
-
-    .input-wrapper-v2 {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
+    .input-wrapper-v2 { position: relative; display: flex; align-items: center; }
 
     .input-field-v2 {
         width: 100%;
-        background: rgba(0, 0, 0, 0.4);
+        background: var(--field-bg);
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 14px 16px;
-        color: white;
+        color: var(--text-main);
         font-size: 0.95rem;
         font-family: inherit;
         transition: all 0.2s ease;
     }
 
-    .input-field-v2::placeholder {
-        color: #71717a;
-    }
+    .input-field-v2::placeholder { color: var(--field-placeholder); }
+    .input-field-v2:focus { outline: none; border-color: rgba(255, 255, 255, 0.4); background: var(--field-bg-focus); }
+    .input-field-v2.input-error { border-color: rgba(248, 113, 113, 0.8); }
 
-    .input-field-v2:focus {
-        outline: none;
-        border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(0, 0, 0, 0.6);
-    }
-
-    .input-field-v2.input-error {
-        border-color: rgba(248, 113, 113, 0.8);
-    }
-
-    .icon-btn-v2 {
-        position: absolute;
-        right: 16px;
-        background: none;
-        border: none;
-        color: #71717a;
-        cursor: pointer;
-        padding: 0;
-        display: flex;
-    }
-
-    .icon-btn-v2:hover {
-        color: white;
-    }
+    .icon-btn-v2 { position: absolute; right: 16px; background: none; border: none; color: var(--field-placeholder); cursor: pointer; padding: 0; display: flex; }
+    .icon-btn-v2:hover { color: var(--text-main); }
 
     .meta-row-v2 {
         margin-top: -6px;
@@ -342,28 +335,13 @@
         justify-content: space-between;
         gap: 10px;
         font-size: 0.84rem;
-        color: #a1a1aa;
+        color: var(--text-muted);
     }
 
-    .remember-v2 {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-    }
-
-    .remember-v2 input {
-        accent-color: #ffffff;
-    }
-
-    .forgot-v2 {
-        color: #ffffff;
-        text-decoration: none;
-    }
-
-    .forgot-v2:hover {
-        text-decoration: underline;
-    }
+    .remember-v2 { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .remember-v2 input { accent-color: var(--text-main); }
+    .forgot-v2 { color: var(--text-main); text-decoration: none; }
+    .forgot-v2:hover { text-decoration: underline; }
 
     .btn-v2 {
         width: 100%;
@@ -382,67 +360,44 @@
         text-decoration: none;
     }
 
-    .btn-primary-v2 {
-        background: var(--accent-white);
-        color: var(--accent-black);
-        margin-top: -4px;
+    .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); margin-top: -4px; }
+    .btn-primary-v2:hover { background: #e5e5e5; transform: translateY(-1px); }
+    .btn-outline-v2 { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-outline-v2:hover { background: rgba(255, 255, 255, 0.08); }
+
+    .divider-v2 { display: flex; align-items: center; text-align: center; color: var(--field-placeholder); font-size: 0.8rem; margin: 2px 0; }
+    .divider-v2::before, .divider-v2::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider-v2 span { padding: 0 16px; }
+
+    .auth-footer-v2 { margin-top: 30px; text-align: center; font-size: 0.9rem; color: var(--text-muted); }
+    .auth-footer-v2 a { color: var(--text-main); text-decoration: none; font-weight: 500; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color 0.2s; }
+    .auth-footer-v2 a:hover { border-color: var(--text-main); }
+
+    :root[data-theme="light"] .auth-page-v2 {
+        background-image:
+            linear-gradient(to right, rgba(246, 243, 238, 0.1) 0%, rgba(246, 243, 238, 0.35) 60%, rgba(246, 243, 238, 0.55) 100%),
+            url('{{ asset('compro/img/ndehero.webp') }}');
     }
 
-    .btn-primary-v2:hover {
-        background: #e5e5e5;
-        transform: translateY(-1px);
-    }
-
-    .btn-outline-v2 {
-        background: transparent;
-        color: var(--text-main);
-        border: 1px solid var(--border-color);
-    }
-
-    .btn-outline-v2:hover {
-        border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .divider-v2 {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        color: #71717a;
-        font-size: 0.8rem;
-        margin: 2px 0;
-    }
-
-    .divider-v2::before,
-    .divider-v2::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .divider-v2 span {
-        padding: 0 16px;
-    }
-
-    .auth-footer-v2 {
-        margin-top: 30px;
-        text-align: center;
-        font-size: 0.9rem;
-        color: #a1a1aa;
-    }
-
-    .auth-footer-v2 a {
-        color: white;
-        text-decoration: none;
-        font-weight: 500;
-        border-bottom: 1px solid transparent;
-        padding-bottom: 2px;
-        transition: border-color 0.2s;
-    }
-
-    .auth-footer-v2 a:hover {
-        border-color: white;
-    }
+    :root[data-theme="light"] .auth-nav-v2 a { color: var(--text-muted); }
+    :root[data-theme="light"] .auth-nav-v2 a:hover:not(.btn-nav-v2) { color: var(--text-main); }
+    :root[data-theme="light"] .title-v2 { color: var(--text-main); }
+    :root[data-theme="light"] .title-v2 em { color: var(--text-muted); }
+    :root[data-theme="light"] .badge-v2 { color: var(--badge-text); background: var(--badge-bg); border-color: var(--badge-border); }
+    :root[data-theme="light"] .badge-v2::before { background: var(--badge-text); }
+    :root[data-theme="light"] .input-group-v2 label,
+    :root[data-theme="light"] .meta-row-v2,
+    :root[data-theme="light"] .divider-v2,
+    :root[data-theme="light"] .auth-footer-v2 { color: var(--text-muted); }
+    :root[data-theme="light"] .input-field-v2 { background: var(--field-bg); color: var(--text-main); border-color: var(--border-color); }
+    :root[data-theme="light"] .input-field-v2::placeholder { color: var(--field-placeholder); }
+    :root[data-theme="light"] .input-field-v2:focus { background: var(--field-bg-focus); border-color: rgba(15, 15, 15, 0.2); }
+    :root[data-theme="light"] .icon-btn-v2 { color: var(--field-placeholder); }
+    :root[data-theme="light"] .icon-btn-v2:hover { color: var(--text-main); }
+    :root[data-theme="light"] .btn-outline-v2 { color: var(--text-main); border-color: var(--border-color); background: rgba(255, 255, 255, 0.72); }
+    :root[data-theme="light"] .btn-outline-v2:hover { background: rgba(15, 15, 15, 0.04); }
+    :root[data-theme="light"] .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); }
+    :root[data-theme="light"] .btn-primary-v2:hover { background: #e8e1d8; }
 
     @media (max-width: 900px) {
         .auth-page-v2 {
@@ -450,33 +405,15 @@
                 linear-gradient(to bottom, rgba(3, 3, 3, 0.6) 0%, rgba(3, 3, 3, 0.95) 100%),
                 url('{{ asset('compro/img/ndehero.webp') }}');
         }
-
-        .auth-main-v2 {
-            justify-content: center;
-            padding: 40px 20px;
-        }
+        .auth-main-v2 { justify-content: center; padding: 40px 20px; }
     }
 
     @media (max-width: 600px) {
-        .auth-header-v2 {
-            padding: 20px;
-        }
-
-        .brand-logo-v2 img {
-            height: 36px;
-        }
-
-        .auth-card-v2 {
-            padding: 40px 24px;
-        }
-
-        .title-v2 {
-            font-size: 2.8rem;
-        }
-
-        .auth-nav-v2 a:first-child {
-            display: none;
-        }
+        .auth-header-v2 { padding: 20px; }
+        .brand-logo-v2 img { height: 44px; }
+        .auth-card-v2 { padding: 40px 24px; }
+        .title-v2 { font-size: 2.8rem; }
+        .auth-nav-v2 a:first-child { display: none; }
     }
 </style>
 

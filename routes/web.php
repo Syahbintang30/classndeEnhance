@@ -15,7 +15,14 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/ndeofficial', function () {
     $promoGuid = \App\Models\Setting::get('nde.promo_bunny_guid', null);
     $promoTitle = \App\Models\Setting::get('nde.promo_title', null);
-    return view('compro', ['promo_bunny_guid' => $promoGuid, 'promo_title' => $promoTitle]);
+    $promoThumbnail = \App\Models\Setting::get('nde.promo_thumbnail', null);
+    $packages = \App\Models\Package::orderBy('price')->get();
+    return view('compro', [
+        'promo_bunny_guid' => $promoGuid,
+        'promo_title' => $promoTitle,
+        'promo_thumbnail_url' => $promoThumbnail,
+        'packages' => $packages,
+    ]);
 })->name('compro');
 
 Route::get('/', function () {

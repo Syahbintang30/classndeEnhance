@@ -1,0 +1,172 @@
+classDiagram
+direction TB
+
+%% ===== Core from Iterasi 1 (tetap ada) =====
+class User {
+  +id: bigint
+  +name: string
+  +email: string
+  +phone: string?
+  +is_admin: bool
+  +is_superadmin: bool
+  +package_id: bigint?
+}
+
+class Package {
+  +id: bigint
+  +name: string
+  +slug: string
+  +price: int
+  +description: text?
+  +benefits: text?
+  +image: string?
+  +member_price: int?
+  +non_member_price: int?
+}
+
+class UserPackage {
+  +id: bigint
+  +user_id: bigint
+  +package_id: bigint
+  +purchased_at: datetime?
+  +source: string?
+}
+
+class Transaction {
+  +id: bigint
+  +order_id: string
+  +user_id: bigint?
+  +package_id: bigint?
+  +method: string?
+  +amount: decimal
+  +original_amount: int?
+  +status: string?
+  +referral_code: string?
+  +referrer_user_id: bigint?
+}
+
+class CoachingTicket {
+  +id: bigint
+  +user_id: bigint
+  +is_used: bool
+  +source: string?
+  +referrer_user_id: bigint?
+  +used_by_admin_id: bigint?
+}
+
+class CoachingBooking {
+  +id: bigint
+  +user_id: bigint
+  +ticket_id: bigint
+  +booking_time: datetime?
+  +status: string
+  +session_number: int
+  +twilio_room_sid: string?
+  +notes: text?
+  +admin_note: text?
+}
+
+class CoachingFeedback {
+  +id: bigint
+  +booking_id: bigint
+  +user_id: bigint
+  +rating: int
+  +feedback: text
+  +admin_action: string
+}
+
+class CoachingRecording {
+  +id: bigint
+  +booking_id: bigint
+  +status: string
+  +recording_url: string
+}
+
+class CoachingEvent {
+  +id: bigint
+  +booking_id: bigint
+  +user_id: bigint
+  +event: string
+  +meta: json
+}
+
+class ReferralRedemption {
+  +id: bigint
+  +referrer_user_id: bigint
+  +referred_user_id: bigint
+  +reward_ticket_id: bigint
+  +status: string
+  +redeemed_at: datetime
+}
+
+class CoachingSlotCapacity {
+  +id: bigint
+  +date: date
+  +time: string
+  +capacity: int
+}
+
+%% ===== LMS module (masuk lagi, tidak dihilangkan) =====
+class Lesson {
+  +id: bigint
+  +title: string
+  +position: int
+  +price: int
+  +type: string
+}
+
+class Topic {
+  +id: bigint
+  +lesson_id: bigint
+  +title: string
+  +bunny_guid: string?
+  +description: text?
+  +position: int
+}
+
+class TopicProgress {
+  +id: bigint
+  +user_id: bigint
+  +topic_id: bigint
+  +watched_seconds: int
+  +completed: bool
+}
+
+class Setting {
+  +id: bigint
+  +key: string
+  +value: text?
+}
+
+%% ===== Multiplicity (rapi & inti) =====
+Package "1" --> "0..*" User : current_package
+User "1" --> "0..*" UserPackage : purchase_history
+Package "1" --> "0..*" UserPackage : purchased
+
+User "1" --> "0..*" Transaction : pays
+Package "1" --> "0..*" Transaction : item
+User "1" --> "0..*" Transaction : referrer
+
+User "1" --> "0..*" CoachingTicket : owns
+User "1" --> "0..*" CoachingTicket : referred_reward
+User "1" --> "0..*" CoachingTicket : admin_used_by
+
+User "1" --> "0..*" CoachingBooking : books
+CoachingTicket "1" --> "0..*" CoachingBooking : consumed_by
+
+CoachingBooking "1" --> "0..1" CoachingFeedback : has_feedback
+User "1" --> "0..*" CoachingFeedback : writes
+
+CoachingBooking "1" --> "0..1" CoachingRecording : has_recording
+CoachingBooking "1" --> "0..*" CoachingEvent : logs
+User "1" --> "0..*" CoachingEvent : triggers
+
+CoachingTicket "1" --> "0..1" ReferralRedemption : reward_ticket
+User "1" --> "0..*" ReferralRedemption : referrer
+User "1" --> "0..*" ReferralRedemption : referred_user
+
+Lesson "1" --> "0..*" Topic : contains
+User "1" --> "0..*" TopicProgress : tracks
+Topic "1" --> "0..*" TopicProgress : progressed_by
+
+%% Lifetime access dicerminkan dari UserPackage tanpa kolom expires_at

@@ -12,7 +12,8 @@
 <div class="auth-page-v2">
     <header class="auth-header-v2">
         <a href="{{ route('compro') }}" class="brand-logo-v2" aria-label="ClassNDE home">
-            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo">
+            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo" class="brand-logo-dark">
+            <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE Logo" class="brand-logo-light">
         </a>
         <nav class="auth-nav-v2">
             <a href="{{ route('registerclass') }}">Courses</a>
@@ -45,7 +46,7 @@
             <form method="POST" action="{{ route('register') }}" id="registerForm" class="auth-form-v2">
                 @csrf
 
-                <a href="{{ route('auth.google.redirect') }}" class="btn-v2 btn-outline-v2">
+                <a href="{{ route('auth.google.redirect') }}{{ request()->query('package_id') ? '?package_id=' . request()->query('package_id') . '&package_qty=' . request()->query('package_qty', 1) : '' }}" class="btn-v2 btn-outline-v2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
                         <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
                         <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
@@ -92,7 +93,8 @@
                         </button>
                     </div>
                 </div>
-
+                <input type="hidden" name="package_id" value="{{ request()->query('package_id') }}">
+                <input type="hidden" name="package_qty" value="{{ request()->query('package_qty', 1) }}">
                 <button type="submit" class="btn-v2 btn-primary-v2">Create Account</button>
             </form>
 
@@ -111,12 +113,40 @@
         --border-color: rgba(255, 255, 255, 0.15);
         --accent-white: #ffffff;
         --accent-black: #000000;
+        --card-bg: rgba(10, 10, 10, 0.4);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --badge-bg: rgba(255, 255, 255, 0.05);
+        --badge-border: rgba(255, 255, 255, 0.15);
+        --badge-text: #d4d4d8;
+        --field-bg: rgba(0, 0, 0, 0.4);
+        --field-bg-focus: rgba(0, 0, 0, 0.6);
+        --field-placeholder: #71717a;
+        --link-hover: #ffffff;
+    }
+
+    :root[data-theme="light"] {
+        --bg-base: #f6f3ee;
+        --text-main: #1b1b1b;
+        --text-muted: #6d6d6d;
+        --border-color: rgba(15, 15, 15, 0.14);
+        --accent-white: #111111;
+        --accent-black: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.75);
+        --card-border: rgba(15, 15, 15, 0.08);
+        --badge-bg: rgba(15, 15, 15, 0.06);
+        --badge-border: rgba(15, 15, 15, 0.12);
+        --badge-text: #2b2b2b;
+        --field-bg: rgba(255, 255, 255, 0.8);
+        --field-bg-focus: rgba(255, 255, 255, 0.95);
+        --field-placeholder: #8a8a8a;
+        --link-hover: #111111;
     }
 
     .auth-page-v2 {
         background-color: var(--bg-base);
         background-image:
-            linear-gradient(to right, rgba(3, 3, 3, 0.3) 0%, rgba(3, 3, 3, 0.85) 60%, rgba(3, 3, 3, 0.95) 100%),
+            radial-gradient(circle at top left, rgba(3, 3, 3, 0.72) 0%, rgba(3, 3, 3, 0.42) 18%, rgba(3, 3, 3, 0.12) 48%, rgba(3, 3, 3, 0) 72%),
+            linear-gradient(to left, rgba(3, 3, 3, 0.18) 0%, rgba(3, 3, 3, 0.36) 38%, rgba(3, 3, 3, 0.55) 100%),
             url('{{ asset('compro/img/ndehero.webp') }}');
         background-size: cover;
         background-position: center;
@@ -140,10 +170,23 @@
     }
 
     .brand-logo-v2 img {
-        height: 42px;
+        height: 52px;
         width: auto;
         display: block;
     }
+
+    .brand-logo-v2 {
+        display: inline-flex;
+        align-items: center;
+        line-height: 0;
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+    .brand-logo-dark { display: block; }
+    .brand-logo-light { display: none; }
+    :root[data-theme="light"] .brand-logo-dark { display: none; }
+    :root[data-theme="light"] .brand-logo-light { display: block; }
 
     .auth-nav-v2 {
         display: flex;
@@ -152,22 +195,32 @@
     }
 
     .auth-nav-v2 a {
-        color: var(--text-muted);
+        color: rgba(255, 255, 255, 0.92);
         text-decoration: none;
         font-size: 0.9rem;
+        font-weight: 600;
         transition: color 0.2s;
     }
 
+    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2) {
+        color: rgba(17, 17, 17, 0.84);
+    }
+
+    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2):hover {
+        color: #111111;
+    }
+
     .auth-nav-v2 a:hover:not(.btn-nav-v2) {
-        color: white;
+        color: var(--link-hover);
     }
 
     .btn-nav-v2 {
-        background: white;
-        color: black !important;
+        background: var(--accent-white);
+        color: var(--accent-black) !important;
         padding: 8px 16px;
         border-radius: 999px;
         font-weight: 500;
+        font-size: 0.85rem;
     }
 
     .auth-main-v2 {
@@ -186,10 +239,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: rgba(10, 10, 10, 0.4);
+        background: var(--card-bg);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--card-border);
         border-radius: 24px;
         padding: 48px 40px;
         box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
@@ -206,15 +259,15 @@
         align-items: center;
         gap: 8px;
         padding: 6px 16px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid var(--badge-border);
         border-radius: 999px;
         font-size: 0.65rem;
         font-weight: 600;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        color: #d4d4d8;
+        color: var(--badge-text);
         margin-bottom: 24px;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--badge-bg);
     }
 
     .badge-v2::before {
@@ -222,7 +275,7 @@
         display: block;
         width: 6px;
         height: 6px;
-        background: #d4d4d8;
+        background: var(--badge-text);
         border-radius: 50%;
     }
 
@@ -239,7 +292,7 @@
     .title-v2 em {
         font-style: italic;
         font-weight: 500;
-        color: #e4e4e7;
+        color: var(--text-muted);
     }
 
     .alert-v2 {
@@ -267,6 +320,8 @@
         border-color: rgba(248, 113, 113, 0.45);
         color: #fecaca;
     }
+        :root[data-theme="light"] .alert-v2.success { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.28); color: #0f5132; }
+        :root[data-theme="light"] .alert-v2.error { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.32); color: #7f1d1d; }
 
     .auth-form-v2 {
         width: 100%;
@@ -283,7 +338,7 @@
 
     .input-group-v2 label {
         font-size: 0.85rem;
-        color: #d4d4d8;
+        color: var(--text-muted);
         font-weight: 500;
     }
 
@@ -295,24 +350,24 @@
 
     .input-field-v2 {
         width: 100%;
-        background: rgba(0, 0, 0, 0.4);
+        background: var(--field-bg);
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 14px 16px;
-        color: white;
+        color: var(--text-main);
         font-size: 0.95rem;
         font-family: inherit;
         transition: all 0.2s ease;
     }
 
     .input-field-v2::placeholder {
-        color: #71717a;
+        color: var(--field-placeholder);
     }
 
     .input-field-v2:focus {
         outline: none;
         border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(0, 0, 0, 0.6);
+        background: var(--field-bg-focus);
     }
 
     .input-field-v2.input-error {
@@ -324,14 +379,14 @@
         right: 16px;
         background: none;
         border: none;
-        color: #71717a;
+        color: var(--field-placeholder);
         cursor: pointer;
         padding: 0;
         display: flex;
     }
 
     .icon-btn-v2:hover {
-        color: white;
+        color: var(--text-main);
     }
 
     .btn-v2 {
@@ -369,15 +424,15 @@
     }
 
     .btn-outline-v2:hover {
-        border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--border-color);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .divider-v2 {
         display: flex;
         align-items: center;
         text-align: center;
-        color: #71717a;
+        color: var(--field-placeholder);
         font-size: 0.8rem;
         margin: 2px 0;
     }
@@ -397,11 +452,11 @@
         margin-top: 30px;
         text-align: center;
         font-size: 0.9rem;
-        color: #a1a1aa;
+        color: var(--text-muted);
     }
 
     .auth-footer-v2 a {
-        color: white;
+        color: var(--text-main);
         text-decoration: none;
         font-weight: 500;
         border-bottom: 1px solid transparent;
@@ -410,8 +465,68 @@
     }
 
     .auth-footer-v2 a:hover {
-        border-color: white;
+        border-color: var(--text-main);
     }
+
+    :root[data-theme="light"] .auth-page-v2 {
+        background-image:
+            linear-gradient(to right, rgba(246, 243, 238, 0.1) 0%, rgba(246, 243, 238, 0.35) 60%, rgba(246, 243, 238, 0.55) 100%),
+            url('{{ asset('compro/img/ndehero.webp') }}');
+    }
+
+    :root[data-theme="light"] .auth-nav-v2 a {
+        color: var(--text-muted);
+    }
+
+    :root[data-theme="light"] .auth-nav-v2 a:hover:not(.btn-nav-v2) {
+        color: var(--text-main);
+    }
+
+    :root[data-theme="light"] .title-v2 { color: var(--text-main); }
+    :root[data-theme="light"] .title-v2 em { color: var(--text-muted); }
+
+    :root[data-theme="light"] .badge-v2 {
+        color: var(--badge-text);
+        background: var(--badge-bg);
+        border-color: var(--badge-border);
+    }
+
+    :root[data-theme="light"] .badge-v2::before { background: var(--badge-text); }
+
+    :root[data-theme="light"] .input-group-v2 label,
+    :root[data-theme="light"] .meta-row-v2,
+    :root[data-theme="light"] .divider-v2,
+    :root[data-theme="light"] .auth-footer-v2 { color: var(--text-muted); }
+
+    :root[data-theme="light"] .input-field-v2 {
+        background: var(--field-bg);
+        color: var(--text-main);
+        border-color: var(--border-color);
+    }
+
+    :root[data-theme="light"] .input-field-v2::placeholder { color: var(--field-placeholder); }
+    :root[data-theme="light"] .input-field-v2:focus {
+        background: var(--field-bg-focus);
+        border-color: rgba(15, 15, 15, 0.2);
+    }
+
+    :root[data-theme="light"] .icon-btn-v2 { color: var(--field-placeholder); }
+    :root[data-theme="light"] .icon-btn-v2:hover { color: var(--text-main); }
+
+    :root[data-theme="light"] .btn-outline-v2 {
+        color: var(--text-main);
+        border-color: var(--border-color);
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+    :root[data-theme="light"] .btn-outline-v2:hover { background: rgba(15, 15, 15, 0.04); }
+
+    :root[data-theme="light"] .btn-primary-v2 {
+        background: var(--accent-white);
+        color: var(--accent-black);
+    }
+
+    :root[data-theme="light"] .btn-primary-v2:hover { background: #e8e1d8; }
 
     @media (max-width: 900px) {
         .auth-page-v2 {
@@ -419,7 +534,6 @@
                 linear-gradient(to bottom, rgba(3, 3, 3, 0.6) 0%, rgba(3, 3, 3, 0.95) 100%),
                 url('{{ asset('compro/img/ndehero.webp') }}');
         }
-
         .auth-main-v2 {
             justify-content: center;
             padding: 40px 20px;
@@ -427,25 +541,11 @@
     }
 
     @media (max-width: 600px) {
-        .auth-header-v2 {
-            padding: 20px;
-        }
-
-        .brand-logo-v2 img {
-            height: 36px;
-        }
-
-        .auth-card-v2 {
-            padding: 40px 24px;
-        }
-
-        .title-v2 {
-            font-size: 2.8rem;
-        }
-
-        .auth-nav-v2 a:first-child {
-            display: none;
-        }
+        .auth-header-v2 { padding: 20px; }
+        .brand-logo-v2 img { height: 44px; }
+        .auth-card-v2 { padding: 40px 24px; }
+        .title-v2 { font-size: 2.8rem; }
+        .auth-nav-v2 a:first-child { display: none; }
     }
 </style>
 

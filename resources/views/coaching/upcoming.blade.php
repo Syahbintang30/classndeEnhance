@@ -122,6 +122,58 @@
         font-weight: 700;
         letter-spacing: 0.2px;
     }
+    
+        :root[data-theme="light"] .upcoming {
+            color: #0f172a;
+        }
+    
+        :root[data-theme="light"] .slot {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.08) !important;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+        }
+    
+        :root[data-theme="light"] .slot .topic,
+        :root[data-theme="light"] .slot .muted,
+        :root[data-theme="light"] .slot .meta,
+        :root[data-theme="light"] .slot .label,
+        :root[data-theme="light"] .notes-label,
+        :root[data-theme="light"] .no-appointments {
+            color: #334155;
+        }
+    
+        :root[data-theme="light"] .slot hr {
+            border-top-color: rgba(15, 23, 42, 0.08);
+        }
+    
+        :root[data-theme="light"] .slot .btn,
+        :root[data-theme="light"] .btn-reschedule,
+        :root[data-theme="light"] .make-another .btn {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+    
+        :root[data-theme="light"] .countdown {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+    
+        :root[data-theme="light"] .countdown.soon,
+        :root[data-theme="light"] .countdown.live,
+        :root[data-theme="light"] .status-badge,
+        :root[data-theme="light"] .status-badge.pending,
+        :root[data-theme="light"] .status-badge.scheduled,
+        :root[data-theme="light"] .status-badge.rejected,
+        :root[data-theme="light"] .status-badge.finished,
+        :root[data-theme="light"] .meeting-finished-box,
+        :root[data-theme="light"] .slot.history {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+            box-shadow: none;
+        }
 
     /* Responsive adjustments */
     @media (max-width: 992px) {

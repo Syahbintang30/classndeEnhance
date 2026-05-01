@@ -1,0 +1,84 @@
+/* From resources/views/profile/edit.blade.php */
+
+/* Layout container tweaks */
+            /* Prevent horizontal overflow and make page adapt to small viewports */
+            html,body{min-width:0;overflow-x:hidden}
+            *,*::before,*::after{box-sizing:border-box}
+            .profile-container{max-width:900px;margin:40px auto;padding:20px 18px;color:#fff;width:100%}
+            @media (max-width:640px){ .profile-container{margin:18px auto;padding:12px 12px} }
+
+            /* Responsive avatar sizes and smooth preview transition */
+            #photo-wrap{width:140px;height:140px}
+            #photo-preview{transition:opacity .18s ease, transform .18s ease;display:block;width:100%;height:100%;object-fit:cover}
+            @media (max-width:900px){ #photo-wrap{width:120px;height:120px} }
+            @media (max-width:600px){ #photo-wrap{width:96px;height:96px} }
+
+            /* Modal overlay and dialog transitions */
+            #cropper-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s ease}
+            #cropper-modal.open{opacity:1;pointer-events:auto}
+            #cropper-dialog{transform:translateY(6px) scale(.98);transition:transform .22s cubic-bezier(.2,.9,.2,1),opacity .18s ease;opacity:.98;max-height:calc(100vh - 80px);overflow:auto;box-sizing:border-box}
+            #cropper-modal.open #cropper-dialog{transform:translateY(0) scale(1);opacity:1}
+            /* Slight backdrop blur for elegance (opt-in if supported) */
+            #cropper-modal .blur-backdrop{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+            /* Crop area should stay square and shrink on small viewports */
+            #crop-area{width:min(420px,86vw);aspect-ratio:1/1;height:auto;background:#111;overflow:hidden;position:relative;border-radius:8px;border:1px solid rgba(255,255,255,0.04);touch-action:none}
+            #crop-area img{position:absolute;left:0;top:0;will-change:transform;user-select:none;-webkit-user-drag:none}
+
+            /* Zoom control responsive sizing */
+            #crop-zoom{width:220px;max-width:60vw}
+
+            /* Forms and sections
+               Keep centered but flexible; reduce gaps on small screens */
+
+            /* Sections should not overflow; use full available width on small screens */
+            .profile-section{width:100%;max-width:720px;margin:0 auto;background:linear-gradient(180deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);backdrop-filter:blur(10px);padding:28px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+            .profile-section h3{color:#fff;font-weight:800;letter-spacing:-0.02em}
+            .profile-section p{color:#a3a3a3;font-size:14px}
+            @media (max-width:640px){ .profile-section{padding:20px;margin:0 6px;border-radius:14px} }
+
+            .profile-form{max-width:520px;margin:0 auto;width:100%}
+            @media (max-width:520px){ .profile-form{padding:0 6px;width:100%} }
+
+            /* Buttons flow better on small screens */
+            .actions-row{display:flex;gap:10px;align-items:center;margin-top:6px}
+            @media (max-width:420px){ .actions-row{flex-direction:column;align-items:stretch} }
+
+            /* Ensure buttons and other controls don't create horizontal overflow */
+            button,input,select,textarea{max-width:100%}
+            img{max-width:100%;height:auto;display:block}
+
+
+/* From resources/views/profile.blade.php */
+
+.profile-view-container{max-width:1000px;margin:40px auto;padding:20px;color:#fff}
+            @media (max-width:640px){ .profile-view-container{margin:18px auto;padding:12px} }
+
+            .profile-grid{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+            @media (max-width:900px){ .profile-grid{grid-template-columns:1fr;gap:16px} }
+
+            .profile-sidebar{flex:0 0 260px;background:linear-gradient(180deg,#0b0b0b,#0f0f0f);padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+            @media (max-width:640px){ .profile-sidebar{padding:14px} }
+
+            .profile-main{background:linear-gradient(180deg,#070707,#0c0c0c);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+            @media (max-width:640px){ .profile-main{padding:14px} }
+
+            .avatar-wrap{width:120px;height:120px;border-radius:999px;overflow:hidden;border:4px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;background:#111}
+            .avatar-wrap img{width:100%;height:100%;object-fit:cover;filter:grayscale(0.03);opacity:0.98;display:block}
+            @media (max-width:900px){ .avatar-wrap{width:110px;height:110px} }
+            @media (max-width:420px){ .avatar-wrap{width:92px;height:92px} }
+
+            .account-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+            @media (max-width:720px){ .account-grid{grid-template-columns:1fr} }
+
+            .info-card{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+            .info-label{color:rgba(255,255,255,0.8);font-weight:700}
+            .info-value{color:rgba(255,255,255,0.6)}
+
+            .actions-row{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+            .referral-row{margin-top:18px;display:flex;gap:10px;align-items:center}
+
+            /* Make ghost buttons full width on tiny screens */
+            @media (max-width:420px){ .actions-row .btn-ghost{flex:1 1 100%;text-align:center} }
+
+

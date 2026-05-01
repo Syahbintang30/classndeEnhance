@@ -85,6 +85,64 @@
         .btn.primary:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
         .btn.primary:disabled { background: rgba(255,255,255,0.1); border-color: transparent !important; color: rgba(255,255,255,0.4); cursor: not-allowed; }
 
+        :root[data-theme="light"] .booking-header h1,
+        :root[data-theme="light"] .booking-step h3,
+        :root[data-theme="light"] .summary-box h4,
+        :root[data-theme="light"] .summary-box strong,
+        :root[data-theme="light"] .booking-header div {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .booking-header p,
+        :root[data-theme="light"] .feedback-note,
+        :root[data-theme="light"] .summary-box p,
+        :root[data-theme="light"] .calendar .weekday,
+        :root[data-theme="light"] .calendar .nav-btn,
+        :root[data-theme="light"] .times .time {
+            color: #334155;
+        }
+
+        :root[data-theme="light"] .booking-step {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.08);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        :root[data-theme="light"] .calendar .day {
+            border-color: rgba(15, 23, 42, 0.12);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .calendar .day:hover:not(.disabled),
+        :root[data-theme="light"] .times .time:hover:not(.disabled) {
+            background: rgba(15, 23, 42, 0.04);
+            border-color: rgba(15, 23, 42, 0.18);
+        }
+
+        :root[data-theme="light"] .calendar .day.active,
+        :root[data-theme="light"] .times .time.selected,
+        :root[data-theme="light"] .btn.primary {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+
+        :root[data-theme="light"] .summary-box,
+        :root[data-theme="light"] .feedback-textarea {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .feedback-textarea::placeholder {
+            color: rgba(15, 23, 42, 0.45);
+        }
+
+        :root[data-theme="light"] .btn.primary:disabled {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 600px) {
             .booking-step { padding: 16px; }

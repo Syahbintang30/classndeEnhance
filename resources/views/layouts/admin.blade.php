@@ -423,6 +423,9 @@
                 <a class="side-link {{ request()->is('admin/referral*') ? 'active' : '' }}" href="{{ route('admin.referral.settings.form') }}">
                     <i class="ph ph-share-network"></i> Referral
                 </a>
+                  <a class="side-link {{ request()->routeIs('videopromo') ? 'active' : '' }}" href="{{ route('admin.videopromo') }}">
+                    <i class="ph ph-video"></i> Video Promo
+                </a>
                 <a class="side-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
                     <i class="ph ph-gear"></i> Settings
                 </a>

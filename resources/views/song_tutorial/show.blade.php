@@ -3,6 +3,69 @@
 @section('title', 'Song Tutorial')
 
 @section('content')
+<style>
+    .topic-box { padding:8px 12px; }
+    :root[data-theme="light"] .sidebar {
+        border-right-color: rgba(15, 23, 42, 0.08);
+        background: #ffffff;
+    }
+    :root[data-theme="light"] .lesson-title,
+    :root[data-theme="light"] .lesson-arrow,
+    :root[data-theme="light"] .topic-item,
+    :root[data-theme="light"] .main-wrapper,
+    :root[data-theme="light"] .video-meta,
+    :root[data-theme="light"] #video-title,
+    :root[data-theme="light"] #video-description {
+        color: #1f2937;
+    }
+    :root[data-theme="light"] .lesson-header:hover {
+        background: rgba(15, 23, 42, 0.04);
+    }
+    :root[data-theme="light"] .lesson-block.active .lesson-title,
+    :root[data-theme="light"] .lesson-block.active .lesson-header,
+    :root[data-theme="light"] .topic-item.selected {
+        color: #0f172a;
+    }
+    :root[data-theme="light"] .lesson-block.active > .lesson-header:before {
+        background: #0f172a;
+    }
+    :root[data-theme="light"] .lesson-logo {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+    :root[data-theme="light"] .topic-item:hover {
+        background: rgba(15, 23, 42, 0.04);
+    }
+    :root[data-theme="light"] .topic-item.selected {
+        background: rgba(15, 23, 42, 0.08);
+        border-left-color: #0f172a;
+    }
+    :root[data-theme="light"] .custom-play-btn {
+        background: rgba(15, 23, 42, 0.06);
+        border-color: rgba(15, 23, 42, 0.12);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+    }
+    :root[data-theme="light"] .custom-play-btn:before {
+        border-left-color: #0f172a;
+    }
+    :root[data-theme="light"] .video-nav-btn#btn-prev {
+        background: linear-gradient(180deg, #ffffff, #eef2ff);
+        color: #0f172a;
+    }
+    :root[data-theme="light"] .video-nav-btn#btn-next {
+        background: linear-gradient(180deg, #0f172a, #111827);
+        color: #ffffff;
+    }
+    :root[data-theme="light"] .song-theme-toggle,
+    :root[data-theme="light"] .btn-ghost {
+        color: #0f172a;
+        border-color: rgba(15, 23, 42, 0.12);
+        background: #ffffff;
+    }
+    :root[data-theme="light"] .btn-ghost svg path {
+        stroke: #0f172a;
+    }
+</style>
 <div class="kelas-container" style="display: flex;">
     <!-- Sidebar -->
     <aside class="sidebar" style="width: 250px; border-right:1px solid #ccc; padding:1rem;">
@@ -33,6 +96,7 @@
                                 data-topic-id="{{ $topic->id }}"
                                 style="padding:6px 0; display:flex; align-items:center;">
                                 <div class="topic-box">{{ $topic->title }}</div>
+
                             </li>
                         @empty
                             <li class="topic-item disabled" style="padding-left:1rem; color:#999;">No topics available</li>
@@ -57,6 +121,10 @@
                 </svg>
                 <span>Back</span>
             </a>
+            <button type="button" id="song-theme-toggle" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;margin-left:12px;text-decoration:none;" aria-label="Toggle theme">
+                <span id="song-theme-toggle-icon" aria-hidden="true">☀</span>
+                <span id="song-theme-toggle-label">Light</span>
+            </button>
         </div>
 
 
@@ -69,6 +137,26 @@
 </div>
 
 <script>
+function syncSongThemeToggle() {
+    var label = document.getElementById('song-theme-toggle-label');
+    var icon = document.getElementById('song-theme-toggle-icon');
+    var theme = document.documentElement.getAttribute('data-theme') || 'dark';
+    if (label) label.textContent = theme === 'light' ? 'Dark' : 'Light';
+    if (icon) icon.textContent = theme === 'light' ? '🌙' : '☀';
+}
+
+var songThemeToggle = document.getElementById('song-theme-toggle');
+if (songThemeToggle) {
+    songThemeToggle.addEventListener('click', function () {
+        var nextTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        document.cookie = 'theme=' + nextTheme + '; path=/; max-age=' + (60 * 60 * 24 * 365);
+        syncSongThemeToggle();
+    });
+}
+
+syncSongThemeToggle();
+
 // initial topic requested from index (via ?topic=ID)
 var initialTopicId = {{ request()->has('topic') ? intval(request()->query('topic')) : 'null' }};
 

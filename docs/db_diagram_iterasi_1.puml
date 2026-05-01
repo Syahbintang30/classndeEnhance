@@ -1,0 +1,90 @@
+@startuml DB Diagram Iterasi 1
+hide circle
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+}
+
+entity "users" as users {
+  * id : bigint <<PK>>
+  --
+  name : varchar
+  email : varchar <<UK>>
+  phone : varchar(30) nullable
+  package_id : bigint nullable <<FK>>
+  is_admin : boolean
+  is_superadmin : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "packages" as packages {
+  * id : bigint <<PK>>
+  --
+  name : varchar
+  slug : varchar <<UK>>
+  price : unsigned int
+  description : text nullable
+  benefits : text nullable
+  image : varchar nullable
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "transactions" as transactions {
+  * id : bigint <<PK>>
+  --
+  order_id : varchar
+  user_id : bigint nullable <<FK>>
+  package_id : bigint nullable <<FK>>
+  method : varchar nullable
+  amount : decimal(14,2)
+  original_amount : int nullable
+  status : varchar nullable
+  referral_code : varchar nullable
+  referrer_user_id : bigint nullable <<FK>>
+  midtrans_response : json nullable
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "coaching_tickets" as coaching_tickets {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  referrer_user_id : bigint nullable <<FK>>
+  is_used : boolean
+  used_at : timestamp nullable
+  used_by_admin_id : bigint nullable <<FK>>
+  source : varchar nullable
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "coaching_bookings" as coaching_bookings {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  ticket_id : bigint <<FK>>
+  session_number : int
+  booking_time : datetime nullable
+  status : varchar
+  twilio_room_sid : varchar nullable
+  notes : text nullable
+  admin_note : text nullable
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+packages ||--o{ users : package_id
+users ||--o{ transactions : user_id
+packages ||--o{ transactions : package_id
+users ||--o{ transactions : referrer_user_id
+users ||--o{ coaching_tickets : user_id
+users ||--o{ coaching_tickets : referrer_user_id
+users ||--o{ coaching_tickets : used_by_admin_id
+users ||--o{ coaching_bookings : user_id
+coaching_tickets ||--o{ coaching_bookings : ticket_id
+
+@enduml

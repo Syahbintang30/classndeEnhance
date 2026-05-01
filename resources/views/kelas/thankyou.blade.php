@@ -3,7 +3,7 @@
 @section('title', 'Thank you')
 
 @section('content')
-<div style="min-height:72vh;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px;">
+<div class="kelas-thankyou-page" style="min-height:72vh;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px;">
     <!-- progress indicator: steps (Info -> Payment -> Done) -->
     <div class="steps" role="tablist" aria-label="Booking steps" style="display:flex;align-items:center;gap:14px;max-width:720px;width:100%;justify-content:center;padding-top:20px;">
     <div class="step" title="Info"><i class="icon-info" aria-hidden="true"></i><span class="sr-only">Info</span></div>
@@ -14,7 +14,7 @@
     </div>
 
     <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
-    <div style="text-align:center;max-width:820px;padding:60px 20px;color:#fff;">
+    <div class="kelas-thankyou-card" style="text-align:center;max-width:820px;padding:60px 20px;color:#fff;">
 
             @if($package)
                 @php
@@ -211,5 +211,53 @@
     .bonus-panel { margin-top:20px; padding:16px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); text-align:center }
     .bonus-copy { margin-top:8px; color:rgba(255,255,255,0.9); line-height:1.5 }
     .bonus-link { color:#fff; text-decoration:underline; font-weight:700 }
+
+    :root[data-theme="light"] .kelas-thankyou-page {
+        background: #f6f7fb !important;
+        color: #0f172a !important;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-card {
+        color: #0f172a !important;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .thankyou-card,
+    :root[data-theme="light"] .kelas-thankyou-page .bonus-panel {
+        background: #ffffff !important;
+        border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .thankyou-head,
+    :root[data-theme="light"] .kelas-thankyou-page h3,
+    :root[data-theme="light"] .kelas-thankyou-page h4,
+    :root[data-theme="light"] .kelas-thankyou-page .thankyou-sub,
+    :root[data-theme="light"] .kelas-thankyou-page .purchase-summary,
+    :root[data-theme="light"] .kelas-thankyou-page .bonus-copy,
+    :root[data-theme="light"] .kelas-thankyou-page .bonus-link,
+    :root[data-theme="light"] .kelas-thankyou-page div {
+        color: #0f172a !important;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .thankyou-cta {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .steps .step,
+    :root[data-theme="light"] .kelas-thankyou-page .buy-progress .circle {
+        border-color: rgba(15, 23, 42, 0.12);
+        color: #0f172a;
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .steps .line,
+    :root[data-theme="light"] .kelas-thankyou-page .buy-progress .progress-line {
+        background: rgba(15, 23, 42, 0.18);
+    }
+
+    :root[data-theme="light"] .kelas-thankyou-page .steps .step.active,
+    :root[data-theme="light"] .kelas-thankyou-page .buy-progress .circle.active {
+        background: #0f172a;
+        color: #ffffff;
+    }
 </style>
 @endpush

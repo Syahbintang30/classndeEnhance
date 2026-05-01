@@ -11,6 +11,38 @@
         .steps .step { width:48px; height:48px; border-radius:50%; border:2px solid rgba(255,255,255,0.12); display:inline-flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.9); }
         .steps .line { flex:1; height:1px; background:rgba(255,255,255,0.95); margin:0 12px; }
         .steps .step.complete { background: rgba(255,255,255,0.95); color:#000; }
+
+        :root[data-theme="light"] .thank-page {
+            background: #f6f7fb;
+        }
+
+        :root[data-theme="light"] .thank-inner {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .thank-inner p {
+            color: #334155;
+            opacity: 1;
+        }
+
+        :root[data-theme="light"] .btn-view {
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        :root[data-theme="light"] .steps .step {
+            border-color: rgba(15, 23, 42, 0.12);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .steps .line {
+            background: rgba(15, 23, 42, 0.2);
+        }
+
+        :root[data-theme="light"] .steps .step.complete {
+            background: #0f172a;
+            color: #ffffff;
+        }
     </style>
 @endpush
 

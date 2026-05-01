@@ -96,14 +96,75 @@
 </div>
 
 <style>
-.pay-wrapper{min-height:74vh;display:flex;align-items:center;justify-content:center;padding:40px;background:#000;color:#fff}
-.pay-card{width:100%;max-width:940px;padding:48px 52px;border:1px solid #151515;border-radius:22px;background:linear-gradient(180deg,#0c0c0c,#050505);box-shadow:0 10px 40px rgba(0,0,0,.55);position:relative;overflow:hidden}
+:root{
+  --pay-bg:#000000;
+  --pay-text:#ffffff;
+  --pay-muted:rgba(255,255,255,0.85);
+  --pay-border:rgba(255,255,255,0.08);
+  --pay-card-bg:linear-gradient(180deg,#0c0c0c,#050505);
+  --pay-card-border:#151515;
+  --pay-outline:rgba(255,255,255,0.22);
+  --pay-outline-hover:rgba(255,255,255,0.12);
+}
+
+:root[data-theme="light"]{
+  --pay-bg:#f6f3ee;
+  --pay-text:#1b1b1b;
+  --pay-muted:rgba(15,15,15,0.7);
+  --pay-border:rgba(15,15,15,0.12);
+  --pay-card-bg:linear-gradient(180deg,#ffffff,#f1ebe3);
+  --pay-card-border:rgba(15,15,15,0.12);
+  --pay-outline:rgba(15,15,15,0.2);
+  --pay-outline-hover:rgba(15,15,15,0.08);
+}
+
+:root[data-theme="light"] .title,
+:root[data-theme="light"] .section-head,
+:root[data-theme="light"] .extra-head,
+:root[data-theme="light"] .status-pill,
+:root[data-theme="light"] .link-text,
+:root[data-theme="light"] .copy-row code,
+:root[data-theme="light"] .tiny,
+:root[data-theme="light"] .lead,
+:root[data-theme="light"] .info-item,
+:root[data-theme="light"] .info-item strong {
+  color: var(--pay-text);
+}
+
+:root[data-theme="light"] .info-item span,
+:root[data-theme="light"] .lead,
+:root[data-theme="light"] .tiny {
+  color: var(--pay-muted);
+}
+
+:root[data-theme="light"] .btn-primary {
+  background: #111111;
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .btn-outline {
+  border-color: var(--pay-outline);
+  color: var(--pay-text);
+}
+
+:root[data-theme="light"] .btn-outline:hover {
+  background: var(--pay-outline-hover);
+}
+
+:root[data-theme="light"] .btn-copy {
+  background: rgba(15,15,15,0.08);
+  border-color: var(--pay-outline);
+  color: var(--pay-text);
+}
+
+.pay-wrapper{min-height:74vh;display:flex;align-items:center;justify-content:center;padding:40px;background:var(--pay-bg);color:var(--pay-text)}
+.pay-card{width:100%;max-width:940px;padding:48px 52px;border:1px solid var(--pay-card-border);border-radius:22px;background:var(--pay-card-bg);box-shadow:0 10px 40px rgba(0,0,0,.55);position:relative;overflow:hidden}
 .pay-card.success:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 25%,rgba(16,185,129,0.12),transparent 60%) ;pointer-events:none}
 .icon-wrap{width:90px;height:90px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 0 26px;background:rgba(255,255,255,0.05)}
 .title{margin:0 0 14px;font-size:34px;font-weight:800;letter-spacing:.5px}
-.lead{margin:0 0 26px;max-width:720px;font-size:16px;line-height:1.55;opacity:.92}
+.lead{margin:0 0 26px;max-width:720px;font-size:16px;line-height:1.55;opacity:.92;color:var(--pay-muted)}
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:4px 0 24px}
-.info-item{padding:16px 18px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);border-radius:12px}
+.info-item{padding:16px 18px;border:1px solid var(--pay-border);background:rgba(255,255,255,0.02);border-radius:12px}
 .info-item span{display:block;font-size:11px;letter-spacing:.5px;opacity:.55;text-transform:uppercase;margin-bottom:6px}
 .status-pill{display:inline-block;padding:4px 10px;font-size:11px;border-radius:40px;background:rgba(255,255,255,0.12);letter-spacing:.5px}
 .status-pill.ok{background:rgba(16,185,129,0.18);color:#34d399}
@@ -114,17 +175,17 @@
 .btn-primary,.btn-outline{padding:14px 26px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:.18s ease;border:1px solid transparent;cursor:pointer}
 .btn-primary{background:#fff;color:#000}
 .btn-primary:hover{background:#e9e9e9}
-.btn-outline{background:transparent;color:#fff;border-color:rgba(255,255,255,0.22)}
-.btn-outline:hover{background:rgba(255,255,255,0.12)}
+.btn-outline{background:transparent;color:var(--pay-text);border-color:var(--pay-outline)}
+.btn-outline:hover{background:var(--pay-outline-hover)}
 .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);margin:34px 0 30px}
 .extras{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
-.extra-box{border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);border-radius:14px;padding:18px 20px}
+.extra-box{border:1px solid var(--pay-border);background:rgba(255,255,255,0.02);border-radius:14px;padding:18px 20px}
 .extra-head{font-size:13px;letter-spacing:.6px;font-weight:600;opacity:.75;text-transform:uppercase;margin-bottom:10px}
 .copy-row{display:flex;align-items:center;gap:10px}
 .copy-row code{background:rgba(255,255,255,0.08);padding:6px 10px;border-radius:8px;font-size:13px}
 .btn-copy{background:#1e1e1e;border:1px solid rgba(255,255,255,0.18);color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer}
 .btn-copy:hover{background:#2a2a2a}
-.link-text{color:#fff;text-decoration:underline;font-weight:600;font-size:14px}
+.link-text{color:var(--pay-text);text-decoration:underline;font-weight:600;font-size:14px}
 .tiny{font-size:12px;line-height:1.45;opacity:.75}
 @media (max-width:720px){.pay-card{padding:38px 26px}.title{font-size:28px}.lead{font-size:15px}.info-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
 </style>

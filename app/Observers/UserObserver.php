@@ -39,6 +39,14 @@ class UserObserver
         }
     }
 
+    public function updated(User $user)
+    {
+        if ($user->wasChanged('package_id') && ! empty($user->package_id)) {
+            // Ensure free tickets are granted when package changes after registration
+            CoachingTicketService::grantFreeOnRegister($user);
+        }
+    }
+
     protected function generateReferralCode($id, $email)
     {
         // simple deterministic but hard-to-guess code: base36 of id + 4 chars of email hash

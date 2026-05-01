@@ -4,7 +4,13 @@
 
 @section('content')
     <div style="max-width:1200px;margin:40px auto;padding:0 18px;color:#fff">
-        <h1 style="font-size:22px;margin-bottom:20px">Song Tutorial</h1>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+            <h1 style="font-size:22px;margin:0">Song Tutorial</h1>
+            <button type="button" id="song-theme-toggle" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 14px;" aria-label="Toggle theme">
+                <span id="song-theme-toggle-icon" aria-hidden="true">☀</span>
+                <span id="song-theme-toggle-label">Light</span>
+            </button>
+        </div>
 
         <style>
             /* Topic grid and card styling */
@@ -15,6 +21,26 @@
             .topic-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s, filter .3s; }
             .topic-card:hover .topic-thumb img{ transform:scale(1.03); filter:brightness(.95) contrast(1.02); }
             .topic-title{ padding-top:12px; color:rgba(255,255,255,0.94); font-weight:700; font-size:15px }
+
+            :root[data-theme="light"] .topic-card {
+                background: linear-gradient(180deg, #ffffff, #f8fafc);
+                border-color: rgba(15, 23, 42, 0.08);
+                box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+            }
+
+            :root[data-theme="light"] .topic-card:hover,
+            :root[data-theme="light"] .topic-card:focus {
+                border-color: rgba(15, 23, 42, 0.16);
+                box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+            }
+
+            :root[data-theme="light"] .topic-thumb {
+                background: #e2e8f0;
+            }
+
+            :root[data-theme="light"] .topic-title {
+                color: #0f172a;
+            }
         </style>
 
         @if($hasIntermediate)
@@ -58,4 +84,28 @@
             </div>
         @endif
     </div>
+    <script>
+        (function () {
+            var toggle = document.getElementById('song-theme-toggle');
+            var label = document.getElementById('song-theme-toggle-label');
+            var icon = document.getElementById('song-theme-toggle-icon');
+
+            function syncTheme() {
+                var theme = document.documentElement.getAttribute('data-theme') || 'dark';
+                if (label) label.textContent = theme === 'light' ? 'Dark' : 'Light';
+                if (icon) icon.textContent = theme === 'light' ? '🌙' : '☀';
+            }
+
+            if (toggle) {
+                toggle.addEventListener('click', function () {
+                    var nextTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', nextTheme);
+                    document.cookie = 'theme=' + nextTheme + '; path=/; max-age=' + (60 * 60 * 24 * 365);
+                    syncTheme();
+                });
+            }
+
+            syncTheme();
+        })();
+    </script>
 @endsection

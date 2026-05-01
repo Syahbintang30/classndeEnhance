@@ -3,6 +3,13 @@
 
 <head>
     <meta charset="utf-8">
+    <script>
+        (function() {
+            var match = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+            var theme = match ? decodeURIComponent(match[1]) : @json(request()->routeIs('kelas.payment') ? 'light' : 'dark');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <title>@yield('title', 'Nde Official')</title>
     <meta name="description" content="@yield('meta_description', 'Nde Official - Exclusive Guitar Sessions')">
     <meta name="keywords" content="@yield('meta_keywords', 'Nde Official, guitar sessions, content creator, Indonesia')">
@@ -26,32 +33,112 @@
     <link href="{{ asset('compro/css/magnific-popup.css') }}" rel="stylesheet" type="text/css" media="all" />
     <link href="{{ asset('compro/css/fonts.css') }}" rel="stylesheet" type="text/css" media="all" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"
-        media="print" onload="this.media='all'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="icon" type="image/png" href="{{ asset('compro/img/ndelogo.png') }}">
-    {{-- Prefer local Font Awesome if present, otherwise fallback to CDN --}}
-    {{-- <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}"> --}}
-    <!-- Google font fallback and local font override -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="{{ asset('css/google-fonts.css') }}" rel="stylesheet" type="text/css" media="all" />
-    <!-- Payment grid styles -->
     <link href="{{ asset('css/payment-grid.css') }}" rel="stylesheet" type="text/css" media="all" />
+
     <style>
-        /* prevent horizontal scrollbar site-wide (keeps coaching layout clean) */
-        html,
-        body {
-            overflow-x: hidden;
-        }
+        html, body { overflow-x: hidden; }
+
+        /* Dynamic logo based on theme */
+        .nav-logo-dark { display: block; }
+        .nav-logo-light { display: none; }
+        :root[data-theme="light"] .nav-logo-dark { display: none; }
+        :root[data-theme="light"] .nav-logo-light { display: block; }
     </style>
+
     @stack('styles')
+
+    @php
+        $enableThemeToggle = request()->routeIs('lms.*')
+            || request()->routeIs('kelas.*')
+            || request()->routeIs('payments.*')
+            || request()->routeIs('login')
+            || request()->routeIs('register')
+            || request()->routeIs('password.*')
+            || request()->routeIs('verification.*');
+    @endphp
+
+    @if ($enableThemeToggle)
+        <style>
+            :root {
+                color-scheme: light dark;
+                --lms-bg: #0a0a0a;
+                --lms-hero: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+                --lms-text: #f5f5f5;
+                --lms-muted: #888888;
+                --lms-subtle: #666666;
+                --lms-border: rgba(255, 255, 255, 0.08);
+                --lms-card: linear-gradient(180deg, rgba(30, 30, 30, 0.6) 0%, rgba(20, 20, 20, 0.4) 100%);
+                --lms-heading-gradient: linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%);
+                --lms-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                --lms-nav-bg: linear-gradient(90deg, rgba(6, 6, 6, 0.92), rgba(14, 14, 14, 0.86));
+                --lms-nav-border: 1px solid rgba(255, 255, 255, 0.04);
+                --lms-nav-text: #ffffff;
+                --lms-nav-text-dim: rgba(255, 255, 255, 0.75);
+                --lms-pill-bg: rgba(255, 255, 255, 0.06);
+                --lms-pill-border: rgba(255, 255, 255, 0.18);
+                --lms-btn-bg: #ffffff;
+                --lms-btn-text: #050505;
+            }
+
+            :root[data-theme="light"] {
+                color-scheme: light;
+                --lms-bg: #f6f3ee;
+                --lms-hero: linear-gradient(135deg, #f6f3ee 0%, #ebe5dc 100%);
+                --lms-text: #1b1b1b;
+                --lms-muted: #6d6d6d;
+                --lms-subtle: #565656;
+                --lms-border: rgba(15, 15, 15, 0.10);
+                --lms-card: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(246, 243, 238, 0.85) 100%);
+                --lms-heading-gradient: linear-gradient(135deg, #1b1b1b 0%, #4a4a4a 100%);
+                --lms-shadow: 0 8px 24px rgba(20, 12, 8, 0.14);
+                --lms-nav-bg: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+                --lms-nav-border: 1px solid rgba(15, 23, 42, 0.08);
+                --lms-nav-text: #334155;
+                --lms-nav-text-dim: rgba(51, 65, 85, 0.72);
+                --lms-pill-bg: rgba(15, 23, 42, 0.04);
+                --lms-pill-border: rgba(15, 23, 42, 0.12);
+                --lms-btn-bg: #ffffff;
+                --lms-btn-text: #0f172a;
+            }
+
+            body.lms-theme { background: var(--lms-bg); color: var(--lms-text); }
+            body.lms-theme .global-nav .nav-wrap { background: var(--lms-nav-bg); border-bottom: var(--lms-nav-border); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+            body.lms-theme .nav-links a,
+            body.lms-theme .nav-username,
+            body.lms-theme .nav-login-button,
+            body.lms-theme .nav-login-button span { color: var(--lms-text); }
+            :root[data-theme="light"] body.lms-theme .btn-ghost { color: #0f172a; border-color: rgba(15, 23, 42, 0.12); background: #ffffff; }
+            body.lms-theme .nav-links a,
+            body.lms-theme .nav-login-button,
+            body.lms-theme .nav-toggle,
+            body.lms-theme .nav-username,
+            body.lms-theme .btn-ghost { color: var(--lms-nav-text); }
+            body.lms-theme .nav-links a:hover,
+            body.lms-theme .nav-links a.active,
+            body.lms-theme .nav-login-button:hover,
+            body.lms-theme .nav-username { color: var(--lms-nav-text); }
+            body.lms-theme .nav-login-button,
+            body.lms-theme .btn-ghost { border-color: rgba(255, 255, 255, 0.08); }
+            :root[data-theme="light"] body.lms-theme .nav-links a,
+            :root[data-theme="light"] body.lms-theme .nav-login-button,
+            :root[data-theme="light"] body.lms-theme .nav-toggle,
+            :root[data-theme="light"] body.lms-theme .nav-username,
+            :root[data-theme="light"] body.lms-theme .btn-ghost { color: var(--lms-nav-text) !important; }
+            :root[data-theme="light"] body.lms-theme .nav-login-button,
+            :root[data-theme="light"] body.lms-theme .btn-ghost { border-color: rgba(15, 23, 42, 0.12); background: #ffffff; }
+        </style>
+    @endif
 </head>
 
-<body>
-    {{-- hide the global app navbar on pages that provide their own dedicated header --}}
+<body class="{{ $enableThemeToggle ? 'lms-theme' : '' }}">
     @php
         $hideGlobalNav = Route::currentRouteName() === 'compro'
+            || request()->routeIs('kelas.payment')
             || request()->routeIs('coaching.session')
             || request()->routeIs('song.tutorial.show')
             || request()->routeIs('admin.audit.*')
@@ -63,208 +150,88 @@
     @endphp
 
     @if (! $hideGlobalNav)
-        <!-- Top navigation (modern glass) -->
         <nav class="global-nav" aria-label="Main navigation">
             <style>
-                .global-nav {
-                    position: sticky;
-                    top: 0;
-                    z-index: 9999;
-                }
-
-                .global-nav .nav-inner {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 14px 22px;
-                    gap: 18px;
-                }
-
-                /* glass background with subtle gradient and shadow */
-                .global-nav .nav-wrap {
-                    background: linear-gradient(90deg, rgba(6, 6, 6, 0.92), rgba(14, 14, 14, 0.86));
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-                    box-shadow: 0 8px 32px rgba(2, 6, 23, 0.55);
-                    backdrop-filter: blur(6px);
-                    -webkit-backdrop-filter: blur(6px);
-                }
-
-                /* Logo: larger and bolder presence */
-                .nav-logo {
-                    height: 64px;
-                    transition: transform .18s ease, filter .18s ease;
-                    display: block
-                }
-
-                .nav-logo:hover {
-                    transform: translateY(-4px) scale(1.02);
-                    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.6));
-                }
-
-                /* Primary links */
-                .nav-links {
-                    display: flex;
-                    align-items: center;
-                    gap: 18px
-                }
-
-                .nav-links a {
-                    color: #fff;
-                    text-decoration: none;
-                    font-weight: 600;
-                    padding: 6px 4px;
-                    position: relative;
-                    opacity: 0.95;
-                    transition: color .14s ease, transform .14s ease;
-                }
-
-                .nav-links a:before {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    bottom: -6px;
-                    width: 0;
-                    height: 3px;
-                    border-radius: 3px;
-                    background: linear-gradient(90deg, #ffd166, #ff6b6b);
-                    transition: width .22s cubic-bezier(.2, .9, .2, 1);
-                }
-
-                .nav-links a:hover {
-                    transform: translateY(-4px);
-                    color: #fff;
-                }
-
-                .nav-links a:hover:before {
-                    width: 100%;
-                }
-
-                /* subtle badge for active/important links */
-                .nav-links a.active {
-                    color: #fff;
-                }
-
-                /* right-side controls */
-                .nav-actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px
-                }
-
-                .nav-username {
-                    color: rgba(255, 255, 255, 0.92);
-                    font-weight: 600;
-                    opacity: 0.95;
-                }
-
+                .global-nav { position: sticky; top: 0; z-index: 9999; }
+                .global-nav .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; gap: 18px; }
+                .global-nav .nav-wrap { background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%); border-bottom: 1px solid rgba(15, 23, 42, 0.08); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+                .nav-logo { height: 64px; transition: transform .18s ease, filter .18s ease; display: block }
+                .nav-logo:hover { transform: translateY(-4px) scale(1.02); filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.6)); }
+                .nav-links { display: flex; align-items: center; gap: 18px }
+                .nav-links a { color: #334155; text-decoration: none; font-weight: 600; padding: 6px 4px; position: relative; opacity: 0.95; transition: color .14s ease, transform .14s ease; }
+                .nav-links a:before { content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #0f172a, #64748b); transition: width .22s cubic-bezier(.2, .9, .2, 1); }
+                .nav-links a:hover { transform: translateY(-4px); }
+                .nav-links a:hover:before { width: 100%; }
+                .nav-links a.active { color: #0f172a; }
+                .nav-actions { display: flex; align-items: center; gap: 10px }
+                .nav-username { color: #0f172a; font-weight: 600; opacity: 0.95; }
                 .btn-ghost {
-                    background: transparent;
-                    color: #fff;
-                    border: 1px solid rgba(255, 255, 255, 0.06);
-                    padding: 8px 12px;
-                    border-radius: 10px;
-                    font-weight: 700;
-                    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-                }
-
-                .btn-ghost:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-                    background: rgba(255, 255, 255, 0.03);
-                }
-
-                /* modern login button variant */
-                .nav-login-button {
+                    width: 36px;
+                    height: 36px;
                     display: inline-flex;
                     align-items: center;
-                    gap: 10px;
-                    background: transparent;
-                    color: #fff;
-                    padding: 10px 14px;
-                    border-radius: 12px;
-                    text-decoration: none;
-                    font-weight: 700;
-                    border: 1px solid rgba(255, 255, 255, 0.06);
-                    transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease
+                    justify-content: center;
+                    border-radius: 999px;
+                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    color: #0f172a;
+                    background: #ffffff;
+                    padding: 0;
+                    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
                 }
-
-                .nav-login-button svg {
-                    width: 18px;
-                    height: 18px
+                .btn-ghost:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10); background: #ffffff; border-color: rgba(15, 23, 42, 0.18); }
+                .nav-login-button { display: inline-flex; align-items: center; gap: 10px; background: #ffffff; color: #0f172a; padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 700; border: 1px solid rgba(15, 23, 42, 0.12); transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease }
+                .nav-login-button svg { width: 18px; height: 18px }
+                .nav-toggle { display: none; background: transparent; border: none; color: #fff; padding: 8px; border-radius: 8px }
+                .nav-profile-button {
+                    width: 36px;
+                    height: 36px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    border-radius: 999px;
+                    background: #ffffff;
+                    padding: 0;
+                    cursor: pointer;
+                    overflow: hidden;
+                    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
                 }
-
-                /* mobile: compact layout with toggle */
-                .nav-toggle {
-                    display: none;
-                    background: transparent;
-                    border: none;
-                    color: #fff;
-                    padding: 8px;
-                    border-radius: 8px
+                .nav-profile-button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10); background: #ffffff; border-color: rgba(15, 23, 42, 0.18); }
+                .nav-profile-button img,
+                .nav-profile-button svg {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                    border: 0;
                 }
-
                 @media (max-width:900px) {
-                    .nav-links {
-                        display: none;
-                        position: absolute;
-                        left: 16px;
-                        right: 16px;
-                        top: 84px;
-                        flex-direction: column;
-                        gap: 10px;
-                        background: linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(8, 8, 8, 0.98));
-                        border-radius: 12px;
-                        padding: 14px;
-                        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-                    }
-
-                    .nav-links.show {
-                        display: flex;
-                    }
-
-                    .nav-logo {
-                        height: 52px
-                    }
-
-                    .nav-inner {
-                        padding: 10px 16px
-                    }
-
-                    .nav-toggle {
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center
-                    }
+                    .nav-links { display: none; position: absolute; left: 16px; right: 16px; top: 84px; flex-direction: column; gap: 10px; background: linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(8, 8, 8, 0.98)); border-radius: 12px; padding: 14px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
+                    .nav-links.show { display: flex; }
+                    .nav-logo { height: 52px }
+                    .nav-inner { padding: 10px 16px }
+                    .nav-toggle { display: inline-flex; align-items: center; justify-content: center }
                 }
             </style>
 
             <div class="nav-wrap">
                 <div class="nav-inner">
                     <div style="display:flex;align-items:center;gap:16px">
-                        {{-- hide the center navbar logo on kelas pages only (sidebar logo remains) --}}
                         @if (!request()->is('kelas*') && !request()->routeIs('kelas.*'))
-                            <a href="{{ url('/ndeofficial') }}" aria-label="NDE Home"
-                                style="display:inline-flex;align-items:center;">
-                                <img class="nav-logo" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
+                            <a href="{{ url('/ndeofficial') }}" aria-label="NDE Home" style="display:inline-flex;align-items:center;">
+                                <img class="nav-logo nav-logo-dark" src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" />
+                                <img class="nav-logo nav-logo-light" src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE logo" />
                             </a>
                         @endif
-                        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav"
-                            aria-label="Open menu">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 7H20M4 12H20M4 17H20" stroke="white" stroke-width="1.6"
-                                    stroke-linecap="round" stroke-linejoin="round" />
+                        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 7H20M4 12H20M4 17H20" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </button>
                     </div>
 
                     <div id="main-nav" class="nav-links" role="navigation">
                         @php
-                            // Coaching navbar should always go to Upcoming first; from there user can book if they have tickets or buy if not.
                             $coachingLink = auth()->check() ? route('coaching.upcoming') : route('login');
-
                             $showSongTutorial = false;
                             $hasCourseAccess = false;
                             $hasCoachingAccess = false;
@@ -276,51 +243,40 @@
                             }
                         @endphp
 
-                        {{-- Coaching-only users should only see Coaching entry in navbar. --}}
                         @if (auth()->check() && !$hasCourseAccess && $hasCoachingAccess)
-                            <a href="{{ $coachingLink }}"
-                                class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
-                        {{-- If user has neither course nor coaching entitlement, show purchase entry only. --}}
+                            <a href="{{ $coachingLink }}" class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
                         @elseif (auth()->check() && !$hasCourseAccess)
-                            <a href="{{ route('registerclass') }}"
-                                class="{{ request()->routeIs('registerclass') ? 'active' : '' }}">Courses</a>
+                            <a href="{{ route('registerclass') }}" class="{{ request()->routeIs('registerclass') ? 'active' : '' }}">Courses</a>
                         @else
-                            {{-- Course users get full navigation. --}}
                             @auth
-                                <a href="{{ route('lms.dashboard') }}"
-                                    class="{{ request()->routeIs('lms.dashboard') ? 'active' : '' }}">Home</a>
+                                <a href="{{ route('lms.dashboard') }}" class="{{ request()->routeIs('lms.dashboard') ? 'active' : '' }}">Home</a>
                             @endauth
-                            <a href="{{ route('lms.entry') }}"
-                                class="{{ request()->routeIs('kelas.show') || request()->routeIs('lms.entry') ? 'active' : '' }}">Courses</a>
-
-                            {{-- Only show coaching/song tutorial links to authenticated users who have a package --}}
+                            <a href="{{ route('lms.entry') }}" class="{{ request()->routeIs('kelas.show') || request()->routeIs('lms.entry') ? 'active' : '' }}">Courses</a>
                             @auth
-                                <a href="{{ $coachingLink }}"
-                                    class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
+                                <a href="{{ $coachingLink }}" class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>
                                 @if ($showSongTutorial)
-                                    <a href="{{ route('song.tutorial.index') }}"
-                                        class="{{ request()->routeIs('song.tutorial.*') ? 'active' : '' }}">Song
-                                        Tutorial</a>
+                                    <a href="{{ route('song.tutorial.index') }}" class="{{ request()->routeIs('song.tutorial.*') ? 'active' : '' }}">Song Tutorial</a>
                                 @endif
                             @endauth
                         @endif
                     </div>
 
                     <div class="nav-actions">
+                        @if ($enableThemeToggle)
+                            <button id="theme-toggle-app" type="button" class="btn-ghost" aria-label="Toggle theme">
+                                <svg id="theme-app-moon" style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                                <svg id="theme-app-sun" style="width:16px;height:16px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                            </button>
+                        @endif
+
                         @auth
-                            <div style="position:relative">
-                                <button id="profile-toggle" aria-haspopup="true" aria-expanded="false"
-                                    style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:none;padding:6px;border-radius:10px;cursor:pointer">
+                            <div style="position:relative;display:flex;align-items:center;">
+                                <button id="profile-toggle" class="nav-profile-button" aria-haspopup="true" aria-expanded="false" aria-label="Open profile menu">
                                     @php $avatar = auth()->user()->photoUrl(); @endphp
                                     @if ($avatar)
-                                        <img src="{{ $avatar }}" alt="avatar"
-                                            style="width:36px;height:36px;border-radius:999px;border:2px solid rgba(255,255,255,0.04);object-fit:cover">
+                                        <img src="{{ $avatar }}" alt="avatar" style="object-fit:cover">
                                     @else
-                                        {{-- Default white avatar icon (inline SVG) --}}
-                                        <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true"
-                                            focusable="false"
-                                            style="border-radius:999px;border:2px solid rgba(255,255,255,0.04);background:transparent;">
-                                            <defs></defs>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="background:transparent;">
                                             <circle cx="12" cy="8" r="4" fill="#ffffff" />
                                             <path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="#ffffff" />
                                         </svg>
@@ -330,27 +286,21 @@
                                     style="display:none;position:absolute;right:0;margin-top:8px;background:linear-gradient(180deg,#0b0b0b,#0e0e0e);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 40px rgba(0,0,0,0.6);min-width:180px;z-index:999">
                                     <div style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.02)">
                                         <div style="font-weight:700">{{ auth()->user()->name }}</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.65)">
-                                            {{ auth()->user()->email }}</div>
+                                        <div style="font-size:12px;color:rgba(255,255,255,0.65)">{{ auth()->user()->email }}</div>
                                     </div>
-                                    <a href="{{ route('profile') }}"
-                                        style="display:block;padding:8px 10px;color:#fff;text-decoration:none">Profile</a>
+                                    <a href="{{ route('profile') }}" style="display:block;padding:8px 10px;color:#fff;text-decoration:none">Profile</a>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit"
-                                            style="width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;color:#fff;cursor:pointer">Logout</button>
+                                        <button type="submit" style="width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;color:#fff;cursor:pointer">Logout</button>
                                     </form>
                                 </div>
                             </div>
                         @else
                             @if (Route::currentRouteName() !== 'login')
                                 <a href="{{ route('login') }}" class="nav-login-button" aria-label="Login">
-                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                        aria-hidden="true" focusable="false">
-                                        <path d="M15 12H3" stroke="white" stroke-width="1.6" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M10 17L15 12L10 7" stroke="white" stroke-width="1.6"
-                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                        <path d="M15 12H3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M10 17L15 12L10 7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                                         <circle cx="18.5" cy="7.5" r="3" stroke="white" stroke-width="1.6" />
                                     </svg>
                                     <span>Login</span>
@@ -376,7 +326,6 @@
         </nav>
     @endif
 
-    {{-- Admin sub-navbar (only on admin routes, for authenticated admin users) --}}
     @auth
         @php
             $isAdminVisible = auth()->user()->is_admin || auth()->user()->is_superadmin;
@@ -385,20 +334,15 @@
         @if ($isAdminVisible && $onAdminRoute)
             <nav style="background:#0b1220;color:#fff;padding:8px 20px;border-bottom:1px solid #0f1724;">
                 <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:18px;">
-                    <a href="{{ route('admin.dashboard') ?? url('/admin') }}"
-                        style="color:#fff;text-decoration:none;font-weight:500;">Admin Dashboard</a>
-                    <a href="{{ url('/admin/coaching/bookings') }}"
-                        style="color:#fff;text-decoration:none;font-weight:500;">Coaching Bookings</a>
-                    <a href="{{ url('/coaching') }}" style="color:#fff;text-decoration:none;font-weight:500;">Public
-                        Coaching Page</a>
+                    <a href="{{ route('admin.dashboard') ?? url('/admin') }}" style="color:#fff;text-decoration:none;font-weight:500;">Admin Dashboard</a>
+                    <a href="{{ url('/admin/coaching/bookings') }}" style="color:#fff;text-decoration:none;font-weight:500;">Coaching Bookings</a>
+                    <a href="{{ url('/coaching') }}" style="color:#fff;text-decoration:none;font-weight:500;">Public Coaching Page</a>
                 </div>
             </nav>
         @endif
     @endauth
 
     @yield('content')
-
-    <!-- Scripts -->
 
     <script src="{{ asset('compro/js/jquery-1.12.4.min.js') }}"></script>
     <script src="{{ asset('compro/js/jquery.flexslider-min.js') }}"></script>
@@ -409,12 +353,44 @@
     <script src="{{ asset('compro/js/jquery.countdown.min.js') }}"></script>
     <script src="{{ asset('compro/js/placeholders.min.js') }}"></script>
     <script src="{{ asset('compro/js/script.js') }}"></script>
-
-    <!-- Payment grid behavior (safe to include globally; it no-ops when grid absent) -->
     <script src="{{ asset('js/payment-grid.js') }}"></script>
 
+    @if ($enableThemeToggle)
+        <script>
+            (function () {
+                var toggle = document.getElementById('theme-toggle-app');
+                if (!toggle) return;
+
+                function getTheme() {
+                    var match = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+                    return match ? decodeURIComponent(match[1]) : 'dark';
+                }
+
+                function setTheme(theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    document.cookie = 'theme=' + encodeURIComponent(theme) + '; path=/; max-age=31536000; SameSite=Lax';
+                    var moon = document.getElementById('theme-app-moon');
+                    var sun = document.getElementById('theme-app-sun');
+                    if (theme === 'light') {
+                        if (moon) moon.style.display = 'block';
+                        if (sun) sun.style.display = 'none';
+                    } else {
+                        if (moon) moon.style.display = 'none';
+                        if (sun) sun.style.display = 'block';
+                    }
+                }
+
+                setTheme(getTheme());
+                toggle.addEventListener('click', function () {
+                    var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    setTheme(next);
+                });
+            })();
+        </script>
+    @endif
+
     @stack('scripts')
-    
+
     <script>
         (function() {
             const btn = document.getElementById('profile-toggle');

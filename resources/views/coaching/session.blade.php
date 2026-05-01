@@ -25,9 +25,16 @@
             </div>
         </div>
 
-        <div class="vc-live-pill">
-            <span class="vc-live-dot"></span>
-            <span>Live</span>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                <button type="button" id="vc-theme-toggle" class="vc-live-pill" style="cursor:pointer;">
+                    <span id="vc-theme-toggle-icon" aria-hidden="true">☀</span>
+                    <span id="vc-theme-toggle-label">Light</span>
+                </button>
+
+                <div class="vc-live-pill">
+                    <span class="vc-live-dot"></span>
+                    <span>Live</span>
+                </div>
         </div>
     </header>
 
@@ -451,6 +458,62 @@
         white-space: pre-wrap;
     }
 
+        :root[data-theme="light"] .vc-root {
+            background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f6f7fb 45%, #eef2f8 100%);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-header,
+        :root[data-theme="light"] .vc-video-card,
+        :root[data-theme="light"] .vc-sidepanel,
+        :root[data-theme="light"] .vc-detail-card,
+        :root[data-theme="light"] .vc-control-btn {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-title,
+        :root[data-theme="light"] .vc-detail-card h3,
+        :root[data-theme="light"] .vc-detail-card p,
+        :root[data-theme="light"] .vc-bottom-left,
+        :root[data-theme="light"] .vc-live-pill,
+        :root[data-theme="light"] .vc-pill-muted,
+        :root[data-theme="light"] .vc-pill-note,
+        :root[data-theme="light"] .vc-pill-ok {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-pill-muted,
+        :root[data-theme="light"] .vc-pill-note,
+        :root[data-theme="light"] .vc-pill-ok {
+            background: #f8fafc;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        :root[data-theme="light"] .vc-live-pill {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        :root[data-theme="light"] .vc-avatar {
+            box-shadow: none;
+        }
+
+        :root[data-theme="light"] .vc-empty,
+        :root[data-theme="light"] .vc-local-fallback,
+        :root[data-theme="light"] .vc-fallback-avatar {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-control-btn:hover {
+            border-color: rgba(15, 23, 42, 0.16);
+        }
+
+        :root[data-theme="light"] .vc-theme-toggle-label {
+            color: #0f172a;
+        }
+
     .vc-controls-wrap {
         border-radius: 16px;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -751,6 +814,9 @@
     const modalConfirm = document.getElementById('vc-modal-confirm');
     const floatingNotice = document.getElementById('vc-floating-notice');
     const exitFullscreenBtn = document.getElementById('vc-exit-fullscreen');
+    const themeToggle = document.getElementById('vc-theme-toggle');
+    const themeToggleLabel = document.getElementById('vc-theme-toggle-label');
+    const themeToggleIcon = document.getElementById('vc-theme-toggle-icon');
 
     let room = null;
     let localVideoTrack = null;
@@ -760,6 +826,27 @@
     function log(msg) {
         try { console.log('[coaching.session]', msg); } catch (e) {}
     }
+
+    function syncThemeToggle() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (themeToggleLabel) {
+            themeToggleLabel.textContent = theme === 'light' ? 'Dark' : 'Light';
+        }
+        if (themeToggleIcon) {
+            themeToggleIcon.textContent = theme === 'light' ? '🌙' : '☀';
+        }
+    }
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            const nextTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', nextTheme);
+            document.cookie = 'theme=' + nextTheme + '; path=/; max-age=' + (60 * 60 * 24 * 365);
+            syncThemeToggle();
+        });
+    }
+
+    syncThemeToggle();
 
     function setClock() {
         const now = new Date();
