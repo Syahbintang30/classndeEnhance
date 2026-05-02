@@ -34,7 +34,12 @@
 
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
                 <button type="button" id="vc-theme-toggle" class="vc-theme-btn" title="Toggle theme" aria-label="Toggle theme">
-                    <span id="vc-theme-toggle-icon" aria-hidden="true">☀</span>
+                    <svg id="vc-theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg id="vc-theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:none;">
+                        <path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36-6.36-1.41 1.41M7.05 16.95l-1.41 1.41m12.72 0-1.41-1.41M7.05 7.05 5.64 5.64M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </button>
 
                 <div class="vc-live-pill">
@@ -125,6 +130,7 @@
                     </svg>
                     <svg class="icon-mic-off" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;">
                         <path d="M4 4l16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M9 7a3 3 0 0 1 6 0v4a3 3 0 0 1-.5 1.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M9 9v2a3 3 0 0 0 5.02 2.17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M19 11v1a7 7 0 0 1-11.18 5.66" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M12 19v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -154,26 +160,33 @@
                 </span>
             </button>
 
-            <button id="ctl-detail" class="vc-control-btn vc-desktop-only" title="Detail sesi" aria-label="Open detail session">
+            <button id="ctl-screen" class="vc-control-btn" title="Share screen" aria-label="Share screen">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg class="icon-screen-on" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="4" width="18" height="13" rx="2.2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="icon-screen-off" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;">
+                        <path d="M4 4l16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <rect x="3" y="4" width="18" height="13" rx="2.2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="ctl-detail" class="vc-control-btn vc-desktop-only" title="Buka chat" aria-label="Open chat">
                 <span class="vc-icon" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
-            </button>
-
-            <button id="ctl-chat" class="vc-control-btn" title="Buka chat" aria-label="Open chat">
-                <span class="vc-icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
+                <span id="vc-chat-badge" class="vc-chat-badge" hidden>0</span>
             </button>
 
             <button id="hangup" class="vc-control-btn vc-hangup" title="Akhiri panggilan" aria-label="Akhiri panggilan">
                 <span class="vc-icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 16.2v2a2 2 0 0 1-2 2 17.7 17.7 0 0 1-7.7-1.9 17.4 17.4 0 0 1-5.4-4.2A17.4 17.4 0 0 1 1.7 8.7 17.7 17.7 0 0 1-.2 1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 1.7c.12.89.32 1.76.58 2.6a2 2 0 0 1-.45 2.11L5 6.89a14 14 0 0 0 5.6 5.6l1.51-1.11a2 2 0 0 1 2.11-.45c.84.26 1.71.46 2.6.58A2 2 0 0 1 18.5 13v2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 1h2a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L7.1 8.6a16 16 0 0 0 8.3 8.3l1.15-1.18a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
                 <span class="vc-hangup-label">Akhiri</span>
@@ -196,6 +209,26 @@
             <button id="vc-modal-cancel" class="vc-btn">Batal</button>
             <button id="vc-modal-leave-only" class="vc-btn">Keluar saja</button>
             <button id="vc-modal-confirm" class="vc-btn vc-btn-danger">Akhiri Sekarang</button>
+        </div>
+    </div>
+</div>
+
+<div id="vc-session-ended-backdrop" class="vc-modal-backdrop" aria-hidden="true">
+    <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-session-ended-title">
+        <h3 id="vc-session-ended-title">Meeting Selesai</h3>
+        <p id="vc-session-ended-text">Waktu sesi coaching telah mencapai batas 1 jam. Sesi akan ditutup untuk semua peserta.</p>
+        <div class="vc-modal-actions">
+            <button id="vc-session-ended-ok" class="vc-btn vc-btn-danger">Mengerti</button>
+        </div>
+    </div>
+</div>
+
+<div id="vc-session-warning-backdrop" class="vc-modal-backdrop" aria-hidden="true">
+    <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-session-warning-title">
+        <h3 id="vc-session-warning-title">Peringatan Sesi</h3>
+        <p id="vc-session-warning-text">Sesi coaching akan berakhir dalam 5 menit. Silakan selesaikan diskusi Anda.</p>
+        <div class="vc-modal-actions">
+            <button id="vc-session-warning-ok" class="vc-btn">Mengerti</button>
         </div>
     </div>
 </div>
@@ -299,9 +332,9 @@
     }
 
     .vc-pill-timer.vc-timer-warning {
-        color: #ff9f9f;
-        background: rgba(96, 16, 16, 0.3);
-        border-color: rgba(255, 103, 103, 0.45);
+        color: #ffd7d7;
+        background: rgba(140, 20, 20, 0.52);
+        border-color: rgba(255, 80, 80, 0.68);
     }
 
     .vc-pill-timer.vc-timer-expired {
@@ -329,23 +362,23 @@
     }
 
     .vc-theme-btn {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        background: transparent;
+        background: rgba(255, 255, 255, 0.03);
         color: rgba(255, 255, 255, 0.7);
         cursor: pointer;
         transition: all 0.15s ease;
-        font-size: 16px;
     }
 
     .vc-theme-btn:hover {
         color: #ffffff;
         border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .vc-live-dot {
@@ -404,23 +437,23 @@
         object-fit: cover;
         display: block;
         background: #07090d;
-        transform: scale(0.92);
     }
 
     #remote-media {
         display: grid;
         grid-template-columns: 1fr;
         gap: 10px;
-        padding: 10px;
+        padding: 0;
     }
 
     #remote-media .vc-remote-tile {
         position: relative;
         overflow: hidden;
-        border-radius: 14px;
+        border-radius: 18px;
         background: #0c0f14;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        min-height: 260px;
+        border: 0;
+        min-height: 100%;
+        height: 100%;
     }
 
     #remote-media .vc-remote-tile video,
@@ -433,11 +466,14 @@
         position: absolute;
         left: 12px;
         bottom: 12px;
+        z-index: 4;
         border-radius: 999px;
         font-size: 12px;
         background: rgba(0, 0, 0, 0.62);
         border: 1px solid rgba(255, 255, 255, 0.14);
         padding: 6px 10px;
+        backdrop-filter: blur(4px);
+        pointer-events: none;
     }
 
     .vc-empty {
@@ -451,7 +487,7 @@
     }
 
     .vc-local video {
-        transform: scaleX(-1) scale(0.92);
+        transform: scaleX(-1);
     }
 
     /* Full-bleed fullscreen mode: fill frame edge-to-edge without side gaps. */
@@ -479,6 +515,19 @@
         gap: 10px;
         color: #9aa4b7;
         background: radial-gradient(circle at 50% 40%, #161b26 0%, #0b0e15 100%);
+    }
+
+    .vc-remote-fallback {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #9aa4b7;
+        background: radial-gradient(circle at 50% 40%, #161b26 0%, #0b0e15 100%);
+        z-index: 2;
     }
 
     .vc-fallback-avatar {
@@ -700,11 +749,6 @@
         cursor: not-allowed;
     }
 
-        :root[data-theme="light"] .vc-root {
-            background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f6f7fb 45%, #eef2f8 100%);
-            color: #0f172a;
-        }
-
         :root[data-theme="light"] .vc-header,
         :root[data-theme="light"] .vc-video-card,
         :root[data-theme="light"] .vc-sidepanel,
@@ -712,6 +756,11 @@
         :root[data-theme="light"] .vc-control-btn {
             background: #ffffff;
             border-color: rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-root {
+            background: radial-gradient(circle at 20% 12%, #ffffff 0%, #f8fafc 42%, #eef2ff 100%);
             color: #0f172a;
         }
 
@@ -739,19 +788,33 @@
             color: #b8860b;
         }
 
+        :root[data-theme="light"] .vc-pill-timer.vc-timer-warning {
+            background: #ffe4e6;
+            border-color: rgba(239, 68, 68, 0.42);
+            color: #b91c1c;
+        }
+
+        :root[data-theme="light"] .vc-pill-timer.vc-timer-expired {
+            background: #fecaca;
+            border-color: rgba(220, 38, 38, 0.5);
+            color: #991b1b;
+        }
+
         :root[data-theme="light"] .vc-live-pill {
             background: #ffffff;
             border-color: rgba(15, 23, 42, 0.12);
         }
 
         :root[data-theme="light"] .vc-theme-btn {
-            border-color: rgba(15, 23, 42, 0.1);
-            color: rgba(15, 23, 42, 0.6);
+            border-color: rgba(15, 23, 42, 0.15);
+            color: #334155;
+            background: rgba(15, 23, 42, 0.04);
         }
 
         :root[data-theme="light"] .vc-theme-btn:hover {
             color: #0f172a;
-            border-color: rgba(15, 23, 42, 0.25);
+            border-color: rgba(15, 23, 42, 0.28);
+            background: rgba(15, 23, 42, 0.08);
         }
 
         :root[data-theme="light"] .vc-chat-panel,
@@ -820,8 +883,24 @@
 
         :root[data-theme="light"] .vc-empty,
         :root[data-theme="light"] .vc-local-fallback,
-        :root[data-theme="light"] .vc-fallback-avatar {
+        :root[data-theme="light"] .vc-fallback-avatar,
+        :root[data-theme="light"] .vc-remote-fallback {
             color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-local-fallback,
+        :root[data-theme="light"] .vc-remote-fallback {
+            background: radial-gradient(circle at 50% 40%, #f8fbff 0%, #e6eefc 100%);
+        }
+
+        :root[data-theme="light"] .vc-video-card {
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        :root[data-theme="light"] .vc-tile-label {
+            background: rgba(255, 255, 255, 0.8);
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.16);
         }
 
         :root[data-theme="light"] .vc-control-btn:hover {
@@ -852,6 +931,7 @@
     .vc-control-btn {
         width: 48px;
         height: 48px;
+        position: relative;
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.12);
         background: #1b1f2a;
@@ -865,6 +945,28 @@
 
     .vc-control-btn .vc-icon svg {
         display: block;
+    }
+
+    .vc-chat-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.45);
+        pointer-events: none;
+        z-index: 2;
     }
 
     .vc-video-card .vc-fs-btn {
@@ -1108,6 +1210,7 @@
     const leaveUrl = {!! json_encode(route('coaching.index')) !!};
     const csrfToken = {!! json_encode(csrf_token()) !!};
     const bookingTime = new Date({!! json_encode($booking->booking_time->getTimestamp() * 1000) !!});
+    const currentUserName = {!! json_encode(auth()->user()->name ?? 'Anda') !!};
 
     const localMedia = document.getElementById('local-media');
     const remoteMedia = document.getElementById('remote-media');
@@ -1117,7 +1220,9 @@
     const btnMic = document.getElementById('ctl-mic');
     const btnCam = document.getElementById('ctl-camera');
     const btnDetail = document.getElementById('ctl-detail');
+    const chatBadge = document.getElementById('vc-chat-badge');
     const btnFullscreen = document.getElementById('ctl-fullscreen');
+    const btnScreen = document.getElementById('ctl-screen');
     const btnHangup = document.getElementById('hangup');
 
     const peopleCount = document.getElementById('vc-people-count');
@@ -1125,23 +1230,40 @@
     const main = document.querySelector('.vc-main');
     const sidepanel = document.getElementById('vc-sidepanel');
     const closePanel = document.getElementById('vc-close-sidepanel');
+    const chatPanel = document.getElementById('vc-chat-panel');
+    const closeChat = document.getElementById('vc-close-chat');
+    const chatMessages = document.getElementById('vc-chat-messages');
+    const chatForm = document.getElementById('vc-chat-form');
+    const chatInput = document.getElementById('vc-chat-input');
 
     const modal = document.getElementById('vc-modal-backdrop');
     const modalText = document.getElementById('vc-modal-text');
     const modalCancel = document.getElementById('vc-modal-cancel');
     const modalLeaveOnly = document.getElementById('vc-modal-leave-only');
     const modalConfirm = document.getElementById('vc-modal-confirm');
+    const sessionWarningModal = document.getElementById('vc-session-warning-backdrop');
+    const sessionWarningOk = document.getElementById('vc-session-warning-ok');
+    const sessionEndedModal = document.getElementById('vc-session-ended-backdrop');
+    const sessionEndedOk = document.getElementById('vc-session-ended-ok');
     const floatingNotice = document.getElementById('vc-floating-notice');
     const exitFullscreenBtn = document.getElementById('vc-exit-fullscreen');
     const themeToggle = document.getElementById('vc-theme-toggle');
-    const themeToggleIcon = document.getElementById('vc-theme-toggle-icon');
+    const themeIconMoon = document.getElementById('vc-theme-icon-moon');
+    const themeIconSun = document.getElementById('vc-theme-icon-sun');
 
     let room = null;
     let localVideoTrack = null;
     let localAudioTrack = null;
+    let localChatDataTrack = null;
+    let localScreenTrack = null;
+    let isScreenSharing = false;
     let selfHangup = false;
+    let unreadChatCount = 0;
     let sessionDurationMinutes = 60; // Default 1 hour
+    let sessionFiveMinuteWarningShown = false;
     let sessionEndTimeNotificationShown = false;
+    let sessionAutoEnded = false;
+    let sessionWarningHideTimer = null;
     let countdownTimerElement = document.getElementById('vc-countdown-timer');
     let countdownTextElement = document.getElementById('vc-countdown-text');
 
@@ -1151,8 +1273,10 @@
 
     function syncThemeToggle() {
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        if (themeToggleIcon) {
-            themeToggleIcon.textContent = theme === 'light' ? '🌙' : '☀';
+        if (themeIconMoon && themeIconSun) {
+            const isLight = theme === 'light';
+            themeIconMoon.style.display = isLight ? 'none' : 'block';
+            themeIconSun.style.display = isLight ? 'block' : 'none';
         }
     }
 
@@ -1185,7 +1309,7 @@
     }
 
     function updateCountdownTimer() {
-        if (!countdownTextElement || !bookingTime) return;
+        if (!countdownTextElement || !bookingTime || sessionAutoEnded) return;
 
         const now = new Date();
         const sessionEndTime = new Date(bookingTime.getTime() + (sessionDurationMinutes * 60 * 1000));
@@ -1201,16 +1325,23 @@
             
             if (remainingSeconds === 0) {
                 countdownTimerElement.classList.add('vc-timer-expired');
+            } else if (remainingSeconds <= 300) { // Last 5 minutes
+                countdownTimerElement.classList.add('vc-timer-warning');
             } else if (remainingSeconds <= 600) { // Last 10 minutes
                 countdownTimerElement.classList.add('vc-timer-warning');
             }
         }
 
         // Show notification when session time expires
+        if (remainingSeconds <= 300 && remainingSeconds > 0 && !sessionFiveMinuteWarningShown) {
+            sessionFiveMinuteWarningShown = true;
+            showSessionFiveMinuteWarning();
+        }
+
+        // Ensure hard auto-end at 0 second.
         if (remainingSeconds === 0 && !sessionEndTimeNotificationShown) {
             sessionEndTimeNotificationShown = true;
-            showFloatingNotice('Waktu sesi selama ' + sessionDurationMinutes + ' menit telah habis!');
-            sendEvent('session_time_expired', { booking_id: bookingId, duration_minutes: sessionDurationMinutes });
+            handleSessionAutoEnd();
         }
     }
 
@@ -1219,6 +1350,103 @@
         if (peopleCount) {
             peopleCount.textContent = total + ' orang di panggilan';
         }
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatChatTime(ts) {
+        const date = ts ? new Date(ts) : new Date();
+        if (Number.isNaN(date.getTime())) return '--:--';
+        const hh = String(date.getHours()).padStart(2, '0');
+        const mm = String(date.getMinutes()).padStart(2, '0');
+        return hh + ':' + mm;
+    }
+
+    function clearChatWelcome() {
+        if (!chatMessages) return;
+        const welcome = chatMessages.querySelector('.vc-chat-welcome');
+        if (welcome) welcome.remove();
+    }
+
+    function appendChatMessage(author, message, ownMessage, timestamp) {
+        if (!chatMessages || !message) return;
+        clearChatWelcome();
+        const item = document.createElement('div');
+        item.className = 'vc-chat-message' + (ownMessage ? ' own' : '');
+        item.innerHTML =
+            '<div class="vc-chat-message-header">' +
+                '<span class="vc-chat-message-author">' + escapeHtml(author || 'Participant') + '</span>' +
+                '<span class="vc-chat-message-time">' + escapeHtml(formatChatTime(timestamp)) + '</span>' +
+            '</div>' +
+            '<div class="vc-chat-message-content">' + escapeHtml(message) + '</div>';
+        chatMessages.appendChild(item);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function setUnreadChatCount(count) {
+        unreadChatCount = Math.max(0, count || 0);
+        if (!chatBadge) return;
+        if (unreadChatCount > 0) {
+            chatBadge.hidden = false;
+            chatBadge.textContent = unreadChatCount > 99 ? '99+' : String(unreadChatCount);
+            btnDetail && btnDetail.setAttribute('aria-label', 'Open chat, ' + unreadChatCount + ' pesan baru');
+            return;
+        }
+        chatBadge.hidden = true;
+        chatBadge.textContent = '0';
+        btnDetail && btnDetail.setAttribute('aria-label', 'Open chat');
+    }
+
+    function toggleChatPanel(forceOpen) {
+        if (!chatPanel || !main || !btnDetail) return;
+        const open = typeof forceOpen === 'boolean' ? forceOpen : chatPanel.hidden;
+        chatPanel.hidden = !open;
+        main.classList.toggle('vc-with-chat', open);
+        btnDetail.classList.toggle('is-active', open);
+        if (open) setUnreadChatCount(0);
+        if (open && chatInput) {
+            setTimeout(function () { chatInput.focus(); }, 0);
+        }
+    }
+
+    function handleIncomingChatMessage(raw, fallbackAuthor) {
+        let payload = null;
+        try {
+            payload = JSON.parse(raw);
+        } catch (_) {
+            payload = null;
+        }
+
+        if (payload && payload.type === 'chat' && payload.message) {
+            appendChatMessage(payload.sender || fallbackAuthor || 'Participant', payload.message, false, payload.sentAt);
+            const isChatPanelOpen = chatPanel && chatPanel.hidden === false;
+            if (!isChatPanelOpen) {
+                setUnreadChatCount(unreadChatCount + 1);
+            }
+            return;
+        }
+
+        if (typeof raw === 'string' && raw.trim()) {
+            appendChatMessage(fallbackAuthor || 'Participant', raw.trim(), false, Date.now());
+            const isChatPanelOpen = chatPanel && chatPanel.hidden === false;
+            if (!isChatPanelOpen) {
+                setUnreadChatCount(unreadChatCount + 1);
+            }
+        }
+    }
+
+    function bindParticipantDataTrack(track, participant) {
+        if (!track || track.kind !== 'data') return;
+        track.on('message', function (raw) {
+            handleIncomingChatMessage(raw, participant && participant.identity ? participant.identity : 'Participant');
+        });
     }
 
     function refreshEmptyState() {
@@ -1250,6 +1478,91 @@
         if (localFallback) localFallback.style.display = muted ? 'flex' : 'none';
         const localVideo = localMedia ? localMedia.querySelector('video') : null;
         if (localVideo) localVideo.style.display = muted ? 'none' : 'block';
+    }
+
+    function setScreenSharing(active) {
+        isScreenSharing = !!active;
+        if (!btnScreen) return;
+        btnScreen.classList.toggle('is-active', isScreenSharing);
+        const onIcon = btnScreen.querySelector('.icon-screen-on');
+        const offIcon = btnScreen.querySelector('.icon-screen-off');
+        if (onIcon && offIcon) {
+            onIcon.style.display = isScreenSharing ? 'none' : 'block';
+            offIcon.style.display = isScreenSharing ? 'block' : 'none';
+        }
+    }
+
+    function clearLocalPreviewVideo() {
+        if (!localMedia) return;
+        localMedia.querySelectorAll('video').forEach(function (el) { el.remove(); });
+    }
+
+    function attachLocalPreviewTrack(track, mirror) {
+        if (!localMedia || !track || typeof track.attach !== 'function') return;
+        clearLocalPreviewVideo();
+        const el = track.attach();
+        el.style.transform = mirror ? 'scaleX(-1)' : 'none';
+        localMedia.insertBefore(el, localMedia.firstChild);
+        if (localFallback) localFallback.style.display = 'none';
+    }
+
+    async function stopScreenShare() {
+        if (!isScreenSharing || !room) return;
+        try {
+            if (localScreenTrack) {
+                room.localParticipant.unpublishTrack(localScreenTrack);
+                localScreenTrack.stop();
+            }
+        } catch (e) {}
+
+        localScreenTrack = null;
+        setScreenSharing(false);
+
+        if (localVideoTrack) {
+            try {
+                room.localParticipant.publishTrack(localVideoTrack);
+            } catch (e) {}
+            if (localVideoTrack.isEnabled) {
+                attachLocalPreviewTrack(localVideoTrack, true);
+                setCameraMuted(false);
+            } else {
+                clearLocalPreviewVideo();
+                setCameraMuted(true);
+            }
+        }
+    }
+
+    async function startScreenShare() {
+        if (!room || !navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+            showFloatingNotice('Share screen tidak didukung di browser ini.');
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+            const mediaTrack = stream.getVideoTracks()[0];
+            if (!mediaTrack) {
+                showFloatingNotice('Tidak ada layar yang dibagikan.');
+                return;
+            }
+
+            const { LocalVideoTrack } = window.Twilio.Video;
+            localScreenTrack = new LocalVideoTrack(mediaTrack, { name: 'screen' });
+
+            if (localVideoTrack) {
+                room.localParticipant.unpublishTrack(localVideoTrack);
+            }
+
+            await room.localParticipant.publishTrack(localScreenTrack);
+            attachLocalPreviewTrack(localScreenTrack, false);
+            setScreenSharing(true);
+
+            mediaTrack.addEventListener('ended', function () {
+                stopScreenShare();
+            }, { once: true });
+        } catch (e) {
+            if (e && e.name === 'NotAllowedError') return;
+            showFloatingNotice('Gagal memulai share screen. Coba lagi.');
+        }
     }
 
     function createFullscreenButton(target, label) {
@@ -1289,6 +1602,34 @@
         }
     }
 
+    function createRemoteFallback(participant) {
+        const fallback = document.createElement('div');
+        fallback.className = 'vc-remote-fallback';
+        const name = (participant && participant.identity) ? String(participant.identity) : 'Participant';
+        const initial = name.trim().charAt(0).toUpperCase() || 'P';
+        fallback.innerHTML =
+            '<div class="vc-fallback-avatar">' + escapeHtml(initial) + '</div>' +
+            '<span>Kamera mati</span>';
+        return fallback;
+    }
+
+    function setRemoteTrackMuted(tile, muted) {
+        if (!tile) return;
+        const fallback = tile.querySelector('.vc-remote-fallback');
+        if (fallback) fallback.style.display = muted ? 'flex' : 'none';
+        const remoteVideos = tile.querySelectorAll('video');
+        remoteVideos.forEach(function (videoEl) {
+            videoEl.style.display = muted ? 'none' : 'block';
+        });
+    }
+
+    function bindRemoteTrackState(track, tile) {
+        if (!track || track.kind !== 'video') return;
+        track.on('disabled', function () { setRemoteTrackMuted(tile, true); });
+        track.on('enabled', function () { setRemoteTrackMuted(tile, false); });
+        setRemoteTrackMuted(tile, track.isEnabled === false);
+    }
+
     function addRemoteParticipant(participant) {
         if (!remoteMedia) return;
 
@@ -1301,19 +1642,32 @@
         label.className = 'vc-tile-label';
         label.textContent = participant.identity || 'Participant';
         tile.appendChild(label);
+        tile.appendChild(createRemoteFallback(participant));
 
         participant.tracks.forEach(pub => {
-            if (pub.track) {
+            if (pub.track && pub.track.kind !== 'data') {
                 tile.appendChild(pub.track.attach());
+                bindRemoteTrackState(pub.track, tile);
             }
         });
 
         participant.on('trackSubscribed', track => {
+            if (track.kind === 'data') {
+                bindParticipantDataTrack(track, participant);
+                return;
+            }
             tile.appendChild(track.attach());
+            bindRemoteTrackState(track, tile);
+        });
+
+        participant.dataTracks.forEach(pub => {
+            if (pub.track) bindParticipantDataTrack(pub.track, participant);
         });
 
         participant.on('trackUnsubscribed', track => {
+            if (track.kind === 'data') return;
             track.detach().forEach(el => el.remove());
+            if (track.kind === 'video') setRemoteTrackMuted(tile, true);
         });
 
         remoteMedia.appendChild(tile);
@@ -1407,6 +1761,59 @@
         floatingNotice.classList.add('show');
     }
 
+    function disableSessionControls() {
+        [btnMic, btnCam, btnDetail, btnFullscreen, btnScreen, btnHangup, chatInput].forEach(function (el) {
+            if (el) el.disabled = true;
+        });
+    }
+
+    function showSessionEndedModal() {
+        if (!sessionEndedModal) return;
+        sessionEndedModal.style.display = 'flex';
+    }
+
+    async function showSessionFiveMinuteWarning() {
+        await sendEvent('session_warning_five_minutes', {
+            booking_id: bookingId,
+            duration_minutes: sessionDurationMinutes
+        });
+        showFloatingNotice('Sesi akan berakhir dalam 5 menit.');
+        if (sessionWarningModal) {
+            sessionWarningModal.style.display = 'flex';
+            if (sessionWarningHideTimer) {
+                clearTimeout(sessionWarningHideTimer);
+            }
+            sessionWarningHideTimer = setTimeout(function () {
+                sessionWarningModal.style.display = 'none';
+                sessionWarningHideTimer = null;
+            }, 5000);
+        }
+    }
+
+    async function handleSessionAutoEnd() {
+        if (sessionAutoEnded) return;
+        sessionAutoEnded = true;
+        selfHangup = true;
+        closeEndModal();
+        disableSessionControls();
+
+        await sendEvent('session_time_expired', {
+            booking_id: bookingId,
+            duration_minutes: sessionDurationMinutes
+        });
+
+        // Admin closes room at source; participants still enforce local disconnect.
+        if (isAdmin) {
+            await endSessionByAdmin();
+        }
+
+        showSessionEndedModal();
+
+        setTimeout(function () {
+            disconnectAndLeave();
+        }, 3500);
+    }
+
     async function connectRoom() {
         if (!window.Twilio || !window.Twilio.Video) {
             throw new Error('Twilio SDK tidak tersedia');
@@ -1416,7 +1823,7 @@
             throw new Error('Token atau room tidak tersedia');
         }
 
-        const { connect, createLocalVideoTrack, createLocalAudioTrack } = window.Twilio.Video;
+        const { connect, createLocalVideoTrack, createLocalAudioTrack, LocalDataTrack } = window.Twilio.Video;
 
         try {
             localVideoTrack = await createLocalVideoTrack();
@@ -1437,7 +1844,13 @@
             setMicMuted(true);
         }
 
-        const tracks = [localVideoTrack, localAudioTrack].filter(Boolean);
+        try {
+            localChatDataTrack = new LocalDataTrack();
+        } catch (e) {
+            localChatDataTrack = null;
+        }
+
+        const tracks = [localVideoTrack, localAudioTrack, localChatDataTrack].filter(Boolean);
         room = await connect(token, { name: roomName, tracks: tracks });
 
         room.participants.forEach(addRemoteParticipant);
@@ -1479,12 +1892,15 @@
         // Update countdown timer every second
         setInterval(updateCountdownTimer, 1000);
 
-        if (btnDetail && sidepanel) {
+        if (btnDetail && chatPanel) {
             btnDetail.addEventListener('click', function () {
-                const open = sidepanel.hidden === false;
-                sidepanel.hidden = open;
-                main.classList.toggle('vc-with-panel', !open);
-                btnDetail.classList.toggle('is-muted', !open);
+                toggleChatPanel();
+            });
+        }
+
+        if (closeChat && chatPanel) {
+            closeChat.addEventListener('click', function () {
+                toggleChatPanel(false);
             });
         }
 
@@ -1492,7 +1908,28 @@
             closePanel.addEventListener('click', function () {
                 sidepanel.hidden = true;
                 main.classList.remove('vc-with-panel');
-                if (btnDetail) btnDetail.classList.remove('is-muted');
+                if (btnDetail) btnDetail.classList.remove('is-active');
+            });
+        }
+
+        if (chatForm && chatInput) {
+            chatForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const message = (chatInput.value || '').trim();
+                if (!message || !localChatDataTrack) return;
+
+                try {
+                    localChatDataTrack.send(JSON.stringify({
+                        type: 'chat',
+                        sender: currentUserName,
+                        message: message,
+                        sentAt: Date.now()
+                    }));
+                    appendChatMessage(currentUserName, message, true, Date.now());
+                    chatInput.value = '';
+                } catch (_) {
+                    showFloatingNotice('Gagal mengirim chat. Coba lagi.');
+                }
             });
         }
 
@@ -1507,10 +1944,24 @@
 
         if (btnCam) {
             btnCam.addEventListener('click', function () {
+                if (isScreenSharing) {
+                    showFloatingNotice('Matikan share screen dulu untuk mengubah kamera.');
+                    return;
+                }
                 if (!localVideoTrack) return;
                 const enabled = localVideoTrack.isEnabled;
                 localVideoTrack.enable(!enabled);
                 setCameraMuted(enabled);
+            });
+        }
+
+        if (btnScreen) {
+            btnScreen.addEventListener('click', function () {
+                if (isScreenSharing) {
+                    stopScreenShare();
+                    return;
+                }
+                startScreenShare();
             });
         }
 
@@ -1534,6 +1985,32 @@
         if (modal) {
             modal.addEventListener('click', function (e) {
                 if (e.target === modal) closeEndModal();
+            });
+        }
+
+        if (sessionEndedModal) {
+            sessionEndedModal.addEventListener('click', function (e) {
+                if (e.target === sessionEndedModal) disconnectAndLeave();
+            });
+        }
+
+        if (sessionEndedOk) {
+            sessionEndedOk.addEventListener('click', function () {
+                disconnectAndLeave();
+            });
+        }
+
+        if (sessionWarningModal) {
+            sessionWarningModal.addEventListener('click', function (e) {
+                if (e.target === sessionWarningModal) {
+                    sessionWarningModal.style.display = 'none';
+                }
+            });
+        }
+
+        if (sessionWarningOk) {
+            sessionWarningOk.addEventListener('click', function () {
+                if (sessionWarningModal) sessionWarningModal.style.display = 'none';
             });
         }
 

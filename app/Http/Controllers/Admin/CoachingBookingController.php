@@ -144,10 +144,8 @@ class CoachingBookingController extends Controller
                 return redirect()->back()->with('error', 'No active Twilio room attached to booking');
             }
 
-            // Intelephense does not ship complete Twilio dynamic stubs; use mixed resource call.
-            /** @var mixed $roomsResource */
-            $roomsResource = $client->video->v1->rooms;
-            $roomsResource->update($sid, ['status' => 'completed']);
+            // Twilio Video API update is performed via RoomContext: rooms(<sid>)->update(...)
+            $client->video->v1->rooms($sid)->update(['status' => 'completed']);
 
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json(['success' => true, 'room_sid' => $sid]);
