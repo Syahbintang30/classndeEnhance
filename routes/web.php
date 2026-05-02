@@ -46,7 +46,7 @@ Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'
 Route::get('/kelas/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified']);
 Route::get('/kelas/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified']);
 
-Route::get('/song-tutorial/index', [App\Http\Controllers\SongTutorialController::class, 'indexLanding'])->name('song.tutorial.index');
+Route::get('/song-tutorial/index', [App\Http\Controllers\SongTutorialController::class, 'index'])->name('song.tutorial.index');
 Route::get('/song-tutorial', [App\Http\Controllers\SongTutorialController::class, 'index'])->name('song.tutorial');
 Route::get('/song-tutorial/{lesson}', [App\Http\Controllers\SongTutorialController::class, 'show'])->name('song.tutorial.show');
 Route::get('/song-tutorial/{lesson}/content', [App\Http\Controllers\SongTutorialController::class, 'content'])->name('song.tutorial.content');
