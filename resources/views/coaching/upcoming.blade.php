@@ -282,10 +282,109 @@
         .start-wrap .countdown { margin-top:0 }
         .slot .topic { font-size:15px }
     }
+
+    /* Hide global navbar and show custom LMS navbar */
+    body > nav { display: none; }
+
+    /* Custom LMS Navbar */
+    .lms-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .lms-navbar-left {
+        display: flex;
+        align-items: center;
+        width: 280px;
+    }
+
+    .lms-home-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e0e0e0;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-home-link:hover {
+        color: #fff;
+    }
+
+    .lms-navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .lms-nav-link {
+        color: #a0a0a0;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-nav-link:hover {
+        color: #fff;
+    }
+
+    .lms-nav-link.active {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    :root[data-theme="light"] .lms-navbar {
+        background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+        border-bottom-color: rgba(15, 23, 42, 0.08);
+    }
+
+    :root[data-theme="light"] .lms-home-link,
+    :root[data-theme="light"] .lms-nav-link {
+        color: #334155;
+    }
+
+    :root[data-theme="light"] .lms-home-link:hover,
+    :root[data-theme="light"] .lms-nav-link:hover,
+    :root[data-theme="light"] .lms-nav-link.active {
+        color: #0f172a;
+    }
     </style>
 @endpush
 
 @section('content')
+<!-- Custom LMS Navbar -->
+<nav class="lms-navbar">
+    <div class="lms-navbar-left">
+        <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+    </div>
+    
+    <div class="lms-navbar-right">
+        <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
+        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
+        @php $user = auth()->user(); @endphp
+        @if($user && $user->hasLmsAccess())
+            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
+        @endif
+    </div>
+</nav>
+
     <div class="upcoming">
         <h2>Upcoming Appointment</h2>
 
