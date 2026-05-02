@@ -179,20 +179,43 @@
         border-radius: 999px;
         overflow: hidden;
         border: 2px solid var(--ep-border);
-        background: rgba(255,255,255,0.04);
+        background: #c91863;
         flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
+        color: #ffffff;
+        line-height: 0;
     }
 
-    :root[data-theme="light"] .ep-avatar-wrap { background: #f1f5f9; }
+    :root[data-theme="light"] .ep-avatar-wrap { background: #c91863; }
+    .ep-avatar-wrap--has-image,
+    :root[data-theme="light"] .ep-avatar-wrap--has-image { background: transparent; }
 
     .ep-avatar-wrap img {
         width: 100%;
         height: 100%;
-        /* Mengubah posisi ke tengah tepat, dan menggunakan cover agar mengisi seluruh area */
-        object-position: center; 
+        object-position: center;
         display: block;
-        object-fit: cover; 
+        object-fit: cover;
+        max-width: none;
+        min-width: 100%;
+        min-height: 100%;
+        transform: scale(1.28);
+        transform-origin: center;
+    }
+
+    .ep-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #c91863;
+        color: #ffffff;
+        font-size: 42px;
+        line-height: 1;
+        font-weight: 500;
+        text-transform: uppercase;
     }
 
     .ep-change-photo-btn {
@@ -396,11 +419,12 @@
             <!-- Avatar -->
             <div class="ep-avatar-row">
                 @php $avatar = $user->photoUrl(); @endphp
-                <div class="ep-avatar-wrap">
+                <div class="ep-avatar-wrap {{ $avatar ? 'ep-avatar-wrap--has-image' : '' }}">
                     @if($avatar)
-                        <img id="photo-preview" src="{{ $avatar }}" alt="avatar">
+                        <img id="photo-preview" src="{{ $avatar }}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                        <span class="ep-avatar-fallback" hidden>{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                     @else
-                        <img id="photo-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='8' r='4' fill='%23888'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6' fill='%23888'/></svg>" alt="avatar">
+                        <span id="photo-preview" class="ep-avatar-fallback">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                     @endif
                 </div>
                 <div>
@@ -566,6 +590,16 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     var rem = document.getElementById('crop-remove');
     var state = { x:0, y:0, scale:1, isDown:false, startX:0, startY:0 };
 
+    function ensurePreviewImage(){
+        if(preview && preview.tagName === 'IMG') return preview;
+        var img = document.createElement('img');
+        img.id = 'photo-preview';
+        img.alt = '';
+        if(preview && preview.parentNode) preview.parentNode.replaceChild(img, preview);
+        preview = img;
+        return preview;
+    }
+
     function showModal(){ modal.style.display='flex'; requestAnimationFrame(function(){ modal.classList.add('open'); }); document.body.style.overflow='hidden'; }
     function hideModal(){ modal.classList.remove('open'); setTimeout(function(){ modal.style.display='none'; document.body.style.overflow=''; }, 240); }
 
@@ -602,7 +636,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
             if(!blob){ alert('Gagal membuat gambar'); hideModal(); return; }
             var file = new File([blob],'profile.jpg',{type:'image/jpeg'});
             var dt = new DataTransfer(); dt.items.add(file); nativeInput.files=dt.files;
-            preview.src = URL.createObjectURL(file);
+            ensurePreviewImage().src = URL.createObjectURL(file);
             hideModal();
         },'image/jpeg',0.9);
     });

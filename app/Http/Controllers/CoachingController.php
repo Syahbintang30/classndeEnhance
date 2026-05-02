@@ -131,14 +131,12 @@ class CoachingController extends Controller
                     throw new \RuntimeException('Slot full');
                 }
 
-                // create booking and populate commonly expected fields immediately
-                // New behaviour: bookings created by users are 'pending' by default and require admin action
+                // Create approved bookings immediately so users can join without admin review.
                 $booking = CoachingBooking::create([
                     'user_id' => $user->id,
                     'ticket_id' => $ticket->id,
                     'booking_time' => $data['booking_time'],
-                    // mark pending so admin must accept or reject
-                    'status' => 'pending',
+                    'status' => 'accepted',
                     'session_number' => 1,
                     'notes' => isset($data['notes']) ? $data['notes'] : null,
                 ]);
@@ -198,8 +196,7 @@ class CoachingController extends Controller
             }
         }
 
-        // attempt to create Twilio room only for bookings that are already accepted.
-        // This prevents auto-creating rooms for pending bookings (which may later be rejected by admin).
+        // Attempt to create Twilio room for auto-approved bookings when Twilio is configured.
         try {
             if ($booking && $booking->status === 'accepted' && $this->twilio->isConfigured()) {
                 // Standardize room unique name across the app for consistency
@@ -400,7 +397,7 @@ class CoachingController extends Controller
     }
 
     /**
-    * Update note for a booking (user-editable). Bookings are created as 'pending' and later accepted by admin.
+    * Update note for a booking (user-editable).
      */
     public function updateNote(Request $request, CoachingBooking $booking)
     {

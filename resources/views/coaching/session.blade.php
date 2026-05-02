@@ -19,6 +19,13 @@
             <div class="vc-meta-row">
                 <span class="vc-pill vc-pill-muted">{{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y — H:i') }}</span>
                 <span class="vc-pill vc-pill-ok">{{ ucfirst($booking->status) }}</span>
+                <span class="vc-pill vc-pill-timer" id="vc-countdown-timer">
+                    <svg class="vc-timer-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-right: 4px;">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="vc-countdown-text">1:00:00</span>
+                </span>
                 @if(($isAdmin ?? false) && !empty($booking->notes))
                     <span class="vc-pill vc-pill-note">Catatan: {{ \Illuminate\Support\Str::limit($booking->notes, 90) }}</span>
                 @endif
@@ -26,9 +33,8 @@
         </div>
 
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
-                <button type="button" id="vc-theme-toggle" class="vc-live-pill" style="cursor:pointer;">
+                <button type="button" id="vc-theme-toggle" class="vc-theme-btn" title="Toggle theme" aria-label="Toggle theme">
                     <span id="vc-theme-toggle-icon" aria-hidden="true">☀</span>
-                    <span id="vc-theme-toggle-label">Light</span>
                 </button>
 
                 <div class="vc-live-pill">
@@ -73,6 +79,31 @@
                         <p>{{ $booking->notes ?: '-' }}</p>
                     </div>
                 @endif
+            </div>
+        </aside>
+
+        <aside class="vc-chat-panel" id="vc-chat-panel" hidden>
+            <div class="vc-chat-head">
+                <h2>Chat</h2>
+                <button type="button" id="vc-close-chat" class="vc-close-panel" aria-label="Close chat">&times;</button>
+            </div>
+
+            <div class="vc-chat-body" id="vc-chat-messages">
+                <div class="vc-chat-welcome">
+                    <p>Selamat datang di chat sesi! 💬</p>
+                    <p class="vc-chat-welcome-small">Kirim pesan untuk berkomunikasi dengan peserta lain.</p>
+                </div>
+            </div>
+
+            <div class="vc-chat-footer">
+                <form id="vc-chat-form" class="vc-chat-form">
+                    <input type="text" id="vc-chat-input" class="vc-chat-input" placeholder="Ketik pesan..." maxlength="500" autocomplete="off">
+                    <button type="submit" id="vc-chat-send" class="vc-chat-send" aria-label="Kirim pesan">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </form>
             </div>
         </aside>
     </main>
@@ -127,6 +158,14 @@
                 <span class="vc-icon" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button id="ctl-chat" class="vc-control-btn" title="Buka chat" aria-label="Open chat">
+                <span class="vc-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
             </button>
@@ -247,6 +286,36 @@
         border-color: rgba(103, 161, 255, 0.3);
     }
 
+    .vc-pill-timer {
+        color: #ffc107;
+        background: rgba(97, 80, 14, 0.32);
+        border-color: rgba(255, 193, 7, 0.35);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .vc-timer-icon {
+        display: inline-block;
+    }
+
+    .vc-pill-timer.vc-timer-warning {
+        color: #ff9f9f;
+        background: rgba(96, 16, 16, 0.3);
+        border-color: rgba(255, 103, 103, 0.45);
+    }
+
+    .vc-pill-timer.vc-timer-expired {
+        color: #ff6b6b;
+        background: rgba(120, 20, 20, 0.4);
+        border-color: rgba(255, 60, 60, 0.5);
+        animation: vcTimerBlink 1s ease-in-out infinite;
+    }
+
+    @keyframes vcTimerBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
     .vc-live-pill {
         display: inline-flex;
         align-items: center;
@@ -257,6 +326,26 @@
         border: 1px solid rgba(255, 90, 90, 0.3);
         background: rgba(96, 16, 16, 0.3);
         font-weight: 700;
+    }
+
+    .vc-theme-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-size: 16px;
+    }
+
+    .vc-theme-btn:hover {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.6);
     }
 
     .vc-live-dot {
@@ -282,6 +371,14 @@
 
     .vc-main.vc-with-panel {
         grid-template-columns: minmax(0, 1fr) 320px;
+    }
+
+    .vc-main.vc-with-chat {
+        grid-template-columns: minmax(0, 1fr) 320px;
+    }
+
+    .vc-main.vc-with-both {
+        grid-template-columns: minmax(0, 1fr) 320px 320px;
     }
 
     .vc-video-grid {
@@ -406,6 +503,15 @@
         min-height: 0;
     }
 
+    .vc-chat-panel {
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(11, 13, 18, 0.88);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
     .vc-sidepanel-head {
         padding: 14px 16px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -458,6 +564,142 @@
         white-space: pre-wrap;
     }
 
+    .vc-chat-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .vc-chat-head h2 {
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .vc-chat-body {
+        flex: 1;
+        padding: 14px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+    }
+
+    .vc-chat-welcome {
+        text-align: center;
+        padding: 20px 10px;
+        color: #98a2b3;
+    }
+
+    .vc-chat-welcome p {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .vc-chat-welcome-small {
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+    }
+
+    .vc-chat-message {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .vc-chat-message-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .vc-chat-message-author {
+        color: #c9d4ea;
+    }
+
+    .vc-chat-message-time {
+        color: #64748b;
+        font-weight: 400;
+    }
+
+    .vc-chat-message-content {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e2e8f0;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    .vc-chat-message.own .vc-chat-message-content {
+        background: rgba(79, 124, 255, 0.2);
+        color: #dbe4ff;
+    }
+
+    .vc-chat-footer {
+        padding: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .vc-chat-form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .vc-chat-input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 8px 16px;
+        color: #e2e8f0;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.15s ease;
+    }
+
+    .vc-chat-input:focus {
+        border-color: rgba(79, 124, 255, 0.5);
+    }
+
+    .vc-chat-input::placeholder {
+        color: #64748b;
+    }
+
+    .vc-chat-send {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(79, 124, 255, 0.3);
+        background: rgba(79, 124, 255, 0.1);
+        color: #4f7cff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .vc-chat-send:hover {
+        background: rgba(79, 124, 255, 0.2);
+        border-color: rgba(79, 124, 255, 0.5);
+        color: #5b87ff;
+    }
+
+    .vc-chat-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
         :root[data-theme="light"] .vc-root {
             background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f6f7fb 45%, #eef2f8 100%);
             color: #0f172a;
@@ -491,9 +733,85 @@
             border-color: rgba(15, 23, 42, 0.12);
         }
 
+        :root[data-theme="light"] .vc-pill-timer {
+            background: #fef3e2;
+            border-color: rgba(255, 165, 0, 0.25);
+            color: #b8860b;
+        }
+
         :root[data-theme="light"] .vc-live-pill {
             background: #ffffff;
             border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        :root[data-theme="light"] .vc-theme-btn {
+            border-color: rgba(15, 23, 42, 0.1);
+            color: rgba(15, 23, 42, 0.6);
+        }
+
+        :root[data-theme="light"] .vc-theme-btn:hover {
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.25);
+        }
+
+        :root[data-theme="light"] .vc-chat-panel,
+        :root[data-theme="light"] .vc-sidepanel {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        :root[data-theme="light"] .vc-chat-head,
+        :root[data-theme="light"] .vc-sidepanel-head {
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        :root[data-theme="light"] .vc-chat-head h2,
+        :root[data-theme="light"] .vc-sidepanel-head h2 {
+            color: #0f172a;
+        }
+
+        :root[data-theme="light"] .vc-close-panel {
+            color: #64748b;
+        }
+
+        :root[data-theme="light"] .vc-chat-welcome {
+            color: #64748b;
+        }
+
+        :root[data-theme="light"] .vc-chat-message-author {
+            color: #334155;
+        }
+
+        :root[data-theme="light"] .vc-chat-message-time {
+            color: #94a3b8;
+        }
+
+        :root[data-theme="light"] .vc-chat-message-content {
+            background: rgba(15, 23, 42, 0.05);
+            color: #334155;
+        }
+
+        :root[data-theme="light"] .vc-chat-message.own .vc-chat-message-content {
+            background: rgba(79, 124, 255, 0.1);
+            color: #1e40af;
+        }
+
+        :root[data-theme="light"] .vc-chat-input {
+            background: rgba(15, 23, 42, 0.05);
+            border-color: rgba(15, 23, 42, 0.1);
+            color: #334155;
+        }
+
+        :root[data-theme="light"] .vc-chat-input:focus {
+            border-color: rgba(79, 124, 255, 0.5);
+        }
+
+        :root[data-theme="light"] .vc-chat-input::placeholder {
+            color: #94a3b8;
+        }
+
+        :root[data-theme="light"] .vc-chat-footer {
+            border-color: rgba(15, 23, 42, 0.08);
         }
 
         :root[data-theme="light"] .vc-avatar {
@@ -789,6 +1107,7 @@
     const eventUrl = {!! json_encode(url('/coaching/' . $booking->id . '/event')) !!};
     const leaveUrl = {!! json_encode(route('coaching.index')) !!};
     const csrfToken = {!! json_encode(csrf_token()) !!};
+    const bookingTime = new Date({!! json_encode($booking->booking_time->getTimestamp() * 1000) !!});
 
     const localMedia = document.getElementById('local-media');
     const remoteMedia = document.getElementById('remote-media');
@@ -815,13 +1134,16 @@
     const floatingNotice = document.getElementById('vc-floating-notice');
     const exitFullscreenBtn = document.getElementById('vc-exit-fullscreen');
     const themeToggle = document.getElementById('vc-theme-toggle');
-    const themeToggleLabel = document.getElementById('vc-theme-toggle-label');
     const themeToggleIcon = document.getElementById('vc-theme-toggle-icon');
 
     let room = null;
     let localVideoTrack = null;
     let localAudioTrack = null;
     let selfHangup = false;
+    let sessionDurationMinutes = 60; // Default 1 hour
+    let sessionEndTimeNotificationShown = false;
+    let countdownTimerElement = document.getElementById('vc-countdown-timer');
+    let countdownTextElement = document.getElementById('vc-countdown-text');
 
     function log(msg) {
         try { console.log('[coaching.session]', msg); } catch (e) {}
@@ -829,9 +1151,6 @@
 
     function syncThemeToggle() {
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        if (themeToggleLabel) {
-            themeToggleLabel.textContent = theme === 'light' ? 'Dark' : 'Light';
-        }
         if (themeToggleIcon) {
             themeToggleIcon.textContent = theme === 'light' ? '🌙' : '☀';
         }
@@ -853,6 +1172,46 @@
         const hh = String(now.getHours()).padStart(2, '0');
         const mm = String(now.getMinutes()).padStart(2, '0');
         if (liveTime) liveTime.textContent = hh + ':' + mm;
+    }
+
+    function formatTimeRemaining(seconds) {
+        if (seconds < 0) seconds = 0;
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return String(hours).padStart(1, '0') + ':' + 
+               String(minutes).padStart(2, '0') + ':' + 
+               String(secs).padStart(2, '0');
+    }
+
+    function updateCountdownTimer() {
+        if (!countdownTextElement || !bookingTime) return;
+
+        const now = new Date();
+        const sessionEndTime = new Date(bookingTime.getTime() + (sessionDurationMinutes * 60 * 1000));
+        const remainingMs = sessionEndTime - now;
+        const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+
+        // Update display
+        countdownTextElement.textContent = formatTimeRemaining(remainingSeconds);
+
+        // Update styling based on time remaining
+        if (countdownTimerElement) {
+            countdownTimerElement.classList.remove('vc-timer-warning', 'vc-timer-expired');
+            
+            if (remainingSeconds === 0) {
+                countdownTimerElement.classList.add('vc-timer-expired');
+            } else if (remainingSeconds <= 600) { // Last 10 minutes
+                countdownTimerElement.classList.add('vc-timer-warning');
+            }
+        }
+
+        // Show notification when session time expires
+        if (remainingSeconds === 0 && !sessionEndTimeNotificationShown) {
+            sessionEndTimeNotificationShown = true;
+            showFloatingNotice('Waktu sesi selama ' + sessionDurationMinutes + ' menit telah habis!');
+            sendEvent('session_time_expired', { booking_id: bookingId, duration_minutes: sessionDurationMinutes });
+        }
     }
 
     function updatePeople() {
@@ -1116,6 +1475,9 @@
     async function init() {
         setClock();
         setInterval(setClock, 1000);
+        
+        // Update countdown timer every second
+        setInterval(updateCountdownTimer, 1000);
 
         if (btnDetail && sidepanel) {
             btnDetail.addEventListener('click', function () {

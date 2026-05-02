@@ -294,10 +294,7 @@
     <section id="tentang" class="relative pt-40 pb-20 lg:pt-56 lg:pb-32 overflow-hidden px-6">
         <div class="hero-glow"></div>
         <div class="max-w-5xl mx-auto text-center relative z-10">
-            <div class="inline-flex items-center gap-2 border border-white/10 rounded-full px-4 py-2 mb-8 text-xs font-semibold tracking-widest text-textDim uppercase">
-                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                Pendaftaran Batch 4 Dibuka
-            </div>
+        
 
             <h1 class="hero-heading font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-tight mb-8">
                 Kuasai Gitar dengan<br>

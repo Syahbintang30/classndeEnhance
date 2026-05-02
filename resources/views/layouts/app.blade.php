@@ -172,9 +172,15 @@
                 .nav-login-button { display: inline-flex; align-items: center; gap: 10px; background: #ffffff; color: #0f172a; padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 700; border: 1px solid rgba(15, 23, 42, 0.12); transition: transform .14s ease, box-shadow .14s ease; }
                 .nav-login-button svg { width: 18px; height: 18px }
                 .nav-toggle { display: none; background: transparent; border: none; color: #fff; padding: 8px; border-radius: 8px }
-                .nav-profile-button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 999px; background: #ffffff; padding: 0; cursor: pointer; overflow: hidden; transition: transform .12s ease, box-shadow .12s ease; }
+                .nav-profile-button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 999px; background: #c91863; padding: 0; cursor: pointer; overflow: hidden; transition: transform .12s ease, box-shadow .12s ease; flex: 0 0 36px; }
+                .nav-profile-button--has-image { background: transparent; }
                 .nav-profile-button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10); }
-                .nav-profile-button img, .nav-profile-button svg { width: 100%; height: 100%; display: block; border: 0; }
+                .nav-profile-avatar { width: 100%; height: 100%; border-radius: inherit; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #c91863; color: #ffffff; line-height: 0; }
+                .nav-profile-avatar--has-image { background: transparent; }
+                .nav-profile-avatar img,
+                .nav-profile-avatar svg { width: 100%; height: 100%; display: block; border: 0; flex: 0 0 100%; }
+                .nav-profile-avatar img { object-fit: cover; object-position: center; max-width: none; min-width: 100%; min-height: 100%; transform: scale(1.28); transform-origin: center; }
+                .nav-profile-avatar svg { padding: 7px; box-sizing: border-box; }
                 @media (max-width:900px) {
                     .nav-links { display: none; position: absolute; left: 16px; right: 16px; top: 84px; flex-direction: column; gap: 10px; background: linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(8, 8, 8, 0.98)); border-radius: 12px; padding: 14px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
                     .nav-links.show { display: flex; }
@@ -247,16 +253,22 @@
 
                         @auth
                             <div style="position:relative;display:flex;align-items:center;">
-                                <button id="profile-toggle" class="nav-profile-button" aria-haspopup="true" aria-expanded="false" aria-label="Open profile menu">
-                                    @php $avatar = auth()->user()->photoUrl(); @endphp
-                                    @if ($avatar)
-                                        <img src="{{ $avatar }}" alt="avatar" style="object-fit:cover">
-                                    @else
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="background:transparent;">
-                                            <path d="M20 21a8 8 0 0 0-16 0"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                    @endif
+                                @php $avatar = auth()->user()->photoUrl(); @endphp
+                                <button id="profile-toggle" class="nav-profile-button {{ $avatar ? 'nav-profile-button--has-image' : '' }}" aria-haspopup="true" aria-expanded="false" aria-label="Open profile menu">
+                                    <span class="nav-profile-avatar {{ $avatar ? 'nav-profile-avatar--has-image' : '' }}">
+                                        @if ($avatar)
+                                            <img src="{{ $avatar }}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                                            <svg hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                                <path d="M20 21a8 8 0 0 0-16 0"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        @else
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                                <path d="M20 21a8 8 0 0 0-16 0"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        @endif
+                                    </span>
                                 </button>
                                 <div id="profile-menu" role="menu"
                                     style="display:none;position:absolute;right:0;top:44px;background:linear-gradient(180deg,#0b0b0b,#0e0e0e);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 40px rgba(0,0,0,0.6);min-width:180px;z-index:999">

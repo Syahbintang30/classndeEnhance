@@ -17,16 +17,23 @@
             </div>
 
             <div style="min-width:320px;">
-                <form method="GET" class="d-flex gap-2">
-                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="Search user, email, order id..." />
+                <form method="GET" class="d-flex flex-wrap justify-content-end gap-2">
+                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" style="width:260px;" placeholder="Search user, email, order id..." />
 
-                    <select name="status" class="form-select form-select-sm text-white" style="background-color: #1a1a1a; border:1px solid #333;">
+                    <select name="status" class="form-select form-select-sm text-white" style="width:150px; background-color: #1a1a1a; border:1px solid #333;">
                         <option value="">All status</option>
                         <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="accepted" {{ request('status')=='accepted' ? 'selected' : '' }}>Accepted</option>
+                        <option value="accepted" {{ request('status')=='accepted' ? 'selected' : '' }}>Approved</option>
                         <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
+
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal mulai" />
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal akhir" />
+
                     <button class="btn btn-sm btn-primary">Filter</button>
+                    @if(request()->hasAny(['q', 'status', 'date_from', 'date_to']))
+                        <a href="{{ url('/admin/coaching/bookings') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                    @endif
                 </form>
             </div>
         </div>

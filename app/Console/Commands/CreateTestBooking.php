@@ -37,7 +37,7 @@ class CreateTestBooking extends Command
             'user_id' => $user->id,
             'ticket_id' => $ticket->id,
             'booking_time' => $bookingTime,
-            'status' => 'pending',
+            'status' => 'accepted',
         ]);
 
         $this->info('Created booking id=' . $booking->id . ' at ' . $bookingTime);

@@ -165,11 +165,43 @@
         overflow: hidden;
         border: 3px solid var(--profile-card-border);
         margin-bottom: 16px;
-        background: rgba(255,255,255,0.04);
+        background: #c91863;
         display: flex; align-items: center; justify-content: center;
+        color: #ffffff;
+        line-height: 0;
+        isolation: isolate;
     }
 
-    .profile-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    :root[data-theme="light"] .profile-avatar-wrap { background: #c91863; }
+    .profile-avatar-wrap--has-image,
+    :root[data-theme="light"] .profile-avatar-wrap--has-image { background: transparent; }
+
+    .profile-avatar-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        max-width: none;
+        min-width: 100%;
+        min-height: 100%;
+        transform: scale(1.12);
+    }
+
+    .profile-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #c91863;
+        color: #ffffff;
+        font-size: 54px;
+        line-height: 1;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
 
     .profile-name {
         font-size: 18px;
@@ -443,15 +475,13 @@
 
         <!-- LEFT: Profile Card -->
         <div class="profile-left">
-            <div class="profile-avatar-wrap">
-                @php $avatar = auth()->user()->photoUrl(); @endphp
+            @php $avatar = auth()->user()->photoUrl(); @endphp
+            <div class="profile-avatar-wrap {{ $avatar ? 'profile-avatar-wrap--has-image' : '' }}">
                 @if($avatar)
-                    <img src="{{ $avatar }}" alt="avatar">
+                    <img src="{{ $avatar }}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                    <span class="profile-avatar-fallback" hidden>{{ mb_substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
                 @else
-                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--profile-muted)">
-                        <circle cx="12" cy="8" r="4"></circle>
-                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-                    </svg>
+                    <span class="profile-avatar-fallback">{{ mb_substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
                 @endif
             </div>
             <h2 class="profile-name">{{ auth()->user()->name }}</h2>

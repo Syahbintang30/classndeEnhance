@@ -13,12 +13,47 @@ class CoachingBookingController extends Controller
 {
     public function index(Request $request)
     {
-        // Simple admin listing: latest first, paginate 50
-        // Order so upcoming sessions (>= now) appear first, then past ones; within each group order by booking_time ascending
-        $now = \Carbon\Carbon::now();
-        $bookings = CoachingBooking::with(['user','coach','ticket'])
-            ->orderBy('booking_time', 'ASC')
-            ->paginate(50);
+        $query = CoachingBooking::with(['user','coach','ticket']);
+
+        $search = trim((string) $request->input('q', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($userQuery) use ($search) {
+                    $userQuery
+                        ->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%')
+                        ->orWhere('phone', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('ticket', function ($ticketQuery) use ($search) {
+                    $ticketQuery->where('source', 'like', '%' . $search . '%');
+                })
+                ->orWhere('notes', 'like', '%' . $search . '%')
+                ->orWhere('admin_note', 'like', '%' . $search . '%')
+                ->orWhere('twilio_room_sid', 'like', '%' . $search . '%');
+            });
+        }
+
+        $status = strtolower((string) $request->input('status', ''));
+        if ($status === 'approved') {
+            $status = 'accepted';
+        }
+        if (in_array($status, ['pending', 'accepted', 'rejected'], true)) {
+            $query->where('status', $status);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('booking_time', '>=', $request->input('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('booking_time', '<=', $request->input('date_to'));
+        }
+
+        $bookings = $query
+            ->orderByDesc('booking_time')
+            ->orderByDesc('created_at')
+            ->paginate(50)
+            ->withQueryString();
 
         // Compute aggregated "Taken" counts per slot for the dates shown on this page to avoid N+1 queries.
         // Use safe database-agnostic approach instead of raw SQL expressions
