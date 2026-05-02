@@ -130,12 +130,12 @@
     }
 
     :root[data-theme="light"] {
-        --co-bg: #f6f3ee;
-        --co-text: #1b1b1b;
-        --co-muted: rgba(15,15,15,0.55);
-        --co-border: rgba(15,15,15,0.1);
+        --co-bg: #f5f5f7;
+        --co-text: #0f172a;
+        --co-muted: #64748b;
+        --co-border: rgba(15, 23, 42, 0.08);
         --co-card-bg: #ffffff;
-        --co-pill-text: rgba(15,15,15,0.6);
+        --co-pill-text: #64748b;
     }
 
     .checkout-brand-dark { display: block; }

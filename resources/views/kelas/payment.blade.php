@@ -44,22 +44,22 @@
 
         :root[data-theme="light"] {
             color-scheme: light;
-            --checkout-bg: #f6f3ee;
+            --checkout-bg: #f5f5f7;
             --checkout-surface: #ffffff;
-            --checkout-surface-soft: #f9f6f1;
-            --checkout-surface-alt: #f1ece6;
-            --checkout-text: #1b1b1b;
-            --checkout-text-muted: #747474;
-            --checkout-border: rgba(15, 15, 15, 0.10);
-            --checkout-border-strong: rgba(15, 15, 15, 0.14);
-            --checkout-pill: rgba(15, 15, 15, 0.05);
-            --checkout-shadow: 0 18px 40px rgba(20, 12, 8, 0.08);
-            --checkout-shadow-strong: 0 26px 60px rgba(20, 12, 8, 0.12);
-            --checkout-accent: #111111;
+            --checkout-surface-soft: #f8f9fb;
+            --checkout-surface-alt: #f1f5f9;
+            --checkout-text: #0f172a;
+            --checkout-text-muted: #64748b;
+            --checkout-border: rgba(15, 23, 42, 0.08);
+            --checkout-border-strong: rgba(15, 23, 42, 0.12);
+            --checkout-pill: rgba(15, 23, 42, 0.04);
+            --checkout-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            --checkout-shadow-strong: 0 26px 60px rgba(15, 23, 42, 0.12);
+            --checkout-accent: #0f172a;
             --checkout-accent-text: #ffffff;
-            --checkout-payment-border: rgba(15, 15, 15, 0.10);
-            --checkout-payment-hover: rgba(15, 15, 15, 0.04);
-            --checkout-payment-active: rgba(15, 15, 15, 0.08);
+            --checkout-payment-border: rgba(15, 23, 42, 0.08);
+            --checkout-payment-hover: rgba(15, 23, 42, 0.04);
+            --checkout-payment-active: rgba(15, 23, 42, 0.08);
             --checkout-check: #22c55e;
         }
 

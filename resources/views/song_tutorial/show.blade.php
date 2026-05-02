@@ -4,131 +4,319 @@
 
 @section('content')
 <style>
-    .topic-box { padding:8px 12px; }
+    /* Hide global navbar */
+    body > nav { display: none; }
+
+    /* Custom LMS Navbar */
+    .lms-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .lms-navbar-left {
+        display: flex;
+        align-items: center;
+        width: 280px;
+    }
+
+    .lms-home-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e0e0e0;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-home-link:hover { color: #fff; }
+
+    .lms-navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .lms-nav-link {
+        color: #a0a0a0;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .lms-nav-link:hover { color: #fff; }
+    .lms-nav-link.active { color: #fff; font-weight: 600; }
+
+    :root[data-theme="light"] .lms-navbar {
+        background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+        border-bottom-color: rgba(15, 23, 42, 0.08);
+    }
+
+    :root[data-theme="light"] .lms-home-link,
+    :root[data-theme="light"] .lms-nav-link { color: #334155; }
+
+    :root[data-theme="light"] .lms-home-link:hover,
+    :root[data-theme="light"] .lms-nav-link:hover,
+    :root[data-theme="light"] .lms-nav-link.active { color: #0f172a; }
+
+    :root[data-theme="light"] .kelas-container { background: #f5f5f7; }
+
     :root[data-theme="light"] .sidebar {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         border-right-color: rgba(15, 23, 42, 0.08);
-        background: #ffffff;
     }
-    :root[data-theme="light"] .lesson-title,
+
+    :root[data-theme="light"] .lesson-header { color: #0f172a; }
+    :root[data-theme="light"] .lesson-header:hover { background: rgba(15, 23, 42, 0.04); }
+    :root[data-theme="light"] .lesson-block.active .lesson-header { background: rgba(15, 23, 42, 0.06); color: #0f172a; }
+    :root[data-theme="light"] .lesson-block.active > .lesson-header:before { background: #0f172a; }
+    :root[data-theme="light"] .lesson-logo { background: #e2e8f0; color: #0f172a; }
     :root[data-theme="light"] .lesson-arrow,
+    :root[data-theme="light"] .lesson-title,
     :root[data-theme="light"] .topic-item,
-    :root[data-theme="light"] .main-wrapper,
-    :root[data-theme="light"] .video-meta,
-    :root[data-theme="light"] #video-title,
-    :root[data-theme="light"] #video-description {
-        color: #1f2937;
+    :root[data-theme="light"] #video-title { color: #0f172a; }
+    :root[data-theme="light"] #video-description { color: #475569; }
+    :root[data-theme="light"] .topic-item .topic-box { color: #111827; }
+    :root[data-theme="light"] .topic-item:hover .topic-box { background: rgba(15, 23, 42, 0.04); color: #0f172a; }
+    :root[data-theme="light"] .topic-item.selected .topic-box { background: rgba(15, 23, 42, 0.08); border-left-color: #0f172a; color: #0f172a; }
+    :root[data-theme="light"] .topic-item.completed .topic-box { color: #0f172a; }
+    :root[data-theme="light"] .player-wrapper #player { box-shadow: 0 8px 34px rgba(15, 23, 42, 0.12); border-color: rgba(15, 23, 42, 0.08); }
+    :root[data-theme="light"] .custom-play-btn { background: rgba(15, 23, 42, 0.08); border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12); }
+    :root[data-theme="light"] .custom-play-btn:before { border-left-color: #0f172a; }
+    :root[data-theme="light"] .video-nav-btn#btn-prev { background: linear-gradient(180deg, #ffffff, #eef2ff); color: #0f172a; }
+    :root[data-theme="light"] .video-nav-btn#btn-next { background: linear-gradient(180deg, #0f172a, #111827); color: #ffffff; }
+
+    /* Layout */
+    * { box-sizing: border-box; }
+
+    .kelas-container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        background: #0a0a0a;
     }
-    :root[data-theme="light"] .lesson-header:hover {
-        background: rgba(15, 23, 42, 0.04);
+
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        overflow-y: auto;
+        padding: 0;
+        position: relative;
+        z-index: 5;
     }
-    :root[data-theme="light"] .lesson-block.active .lesson-title,
-    :root[data-theme="light"] .lesson-block.active .lesson-header,
-    :root[data-theme="light"] .topic-item.selected {
-        color: #0f172a;
+
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+
+    .lesson-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        cursor: pointer;
+        color: #e0e0e0;
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
     }
-    :root[data-theme="light"] .lesson-block.active > .lesson-header:before {
-        background: #0f172a;
+
+    .lesson-header:hover { background: rgba(255, 255, 255, 0.04); }
+    .lesson-block.active .lesson-header { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .lesson-left { display: flex; align-items: center; gap: 10px; }
+
+    .lesson-arrow {
+        display: inline-block;
+        font-size: 22px;
+        line-height: 1;
+        font-weight: 700;
+        color: #d8d8d8;
+        transition: transform 0.2s ease;
     }
-    :root[data-theme="light"] .lesson-logo {
-        background: #e2e8f0;
-        color: #0f172a;
+
+    .topic-list { list-style: none; padding: 0; margin: 0; display: none; }
+
+    .topic-item .topic-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px 10px 42px;
+        color: #a0a0a0;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        border-left: 2px solid transparent;
+        cursor: pointer;
     }
-    :root[data-theme="light"] .topic-item:hover {
-        background: rgba(15, 23, 42, 0.04);
+
+    .topic-item.completed .topic-box { color: #d7f6ff; }
+    .topic-item:hover .topic-box { background: rgba(255, 255, 255, 0.04); color: #d0d0d0; }
+    .topic-item.selected .topic-box { background: rgba(255, 255, 255, 0.08); border-left-color: #888; color: #fff; font-weight: 600; }
+
+    .home-float-btn { display: none; }
+
+    .main-wrapper { flex: 1; padding: 0; overflow-y: auto; position: relative; }
+
+    .content { padding: 14px 56px 28px 56px; max-width: 1120px; margin: 0 auto; }
+
+    .main-wrapper::-webkit-scrollbar { width: 8px; }
+    .main-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+
+    #video-title { font-size: 30px; font-weight: 900; margin: 0 0 12px 0; color: #fff; letter-spacing: -0.02em; text-align: center; }
+    #video-description { font-size: 15px; color: #a0a0a0; margin: 0 0 28px 0; line-height: 1.6; text-align: center; }
+
+    .player-wrapper { width: 100%; max-width: 980px; margin: 0 auto; }
+
+    #player {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        min-height: unset !important;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        background: #000;
     }
-    :root[data-theme="light"] .topic-item.selected {
-        background: rgba(15, 23, 42, 0.08);
-        border-left-color: #0f172a;
+
+    .video-placeholder {
+        background-size: cover;
+        background-position: center;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
     }
-    :root[data-theme="light"] .custom-play-btn {
-        background: rgba(15, 23, 42, 0.06);
-        border-color: rgba(15, 23, 42, 0.12);
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+
+    .custom-play-btn {
+        width: 86px;
+        height: 86px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        position: relative;
     }
-    :root[data-theme="light"] .custom-play-btn:before {
-        border-left-color: #0f172a;
+
+    .custom-play-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-42%, -50%);
+        width: 0;
+        height: 0;
+        border-left: 22px solid #fff;
+        border-top: 14px solid transparent;
+        border-bottom: 14px solid transparent;
     }
-    :root[data-theme="light"] .video-nav-btn#btn-prev {
-        background: linear-gradient(180deg, #ffffff, #eef2ff);
-        color: #0f172a;
+
+    .video-controls { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+
+    .video-nav-btn {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 10px;
+        height: 30px;
+        min-width: 92px;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
     }
-    :root[data-theme="light"] .video-nav-btn#btn-next {
-        background: linear-gradient(180deg, #0f172a, #111827);
-        color: #ffffff;
-    }
-    :root[data-theme="light"] .song-theme-toggle,
-    :root[data-theme="light"] .btn-ghost {
-        color: #0f172a;
-        border-color: rgba(15, 23, 42, 0.12);
-        background: #ffffff;
-    }
-    :root[data-theme="light"] .btn-ghost svg path {
-        stroke: #0f172a;
+
+    .video-nav-btn .label { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+    .video-nav-btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
+    #btn-prev.video-nav-btn { background: linear-gradient(180deg, #b7b7b7 0%, #9f9f9f 100%); color: #0f0f0f; border-color: rgba(255, 255, 255, 0.28); }
+    #btn-next.video-nav-btn { background: linear-gradient(180deg, #111316 0%, #090a0c 100%); color: #fff; }
+    .video-nav-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.05); }
+    .video-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    @media (max-width: 768px) {
+        .kelas-container { flex-direction: column; }
+        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .content { padding: 14px 16px 22px 16px; }
+        #video-title { font-size: 24px; }
+        .video-nav-btn { min-width: 88px; height: 34px; font-size: 13px; padding: 0 9px; }
     }
 </style>
-<div class="kelas-container" style="display: flex;">
-    <!-- Sidebar -->
-    <aside class="sidebar" style="width: 250px; border-right:1px solid #ccc; padding:1rem;">
-    <div class="logo-container" style="margin-bottom:1rem; display:flex; align-items:center; justify-content:center;">
-            <a href="{{ route('compro') }}">
-                <img src="{{ asset('compro/img/ndelogo.png') }}" class="nav-home-btn" alt="Nde Logo">
-            </a>
-        </div>
 
-        <ul class="menu" style="list-style:none; padding:0;">
+<!-- Custom LMS Navbar -->
+<nav class="lms-navbar">
+    <div class="lms-navbar-left">
+        <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+    </div>
+    <div class="lms-navbar-right">
+        <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
+        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
+        @php $user = auth()->user(); @endphp
+        @if($user && $user->hasLmsAccess())
+            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
+        @endif
+    </div>
+</nav>
+
+<div class="kelas-container" style="display:flex;">
+    <aside class="sidebar" style="width:280px;">
+        <ul class="menu" style="list-style:none;padding:0;margin:0;">
             @forelse($lessons as $ls)
-                <li class="lesson-block" style="margin-bottom:0.5rem;">
-                        <a href="{{ route('song.tutorial.show', $ls->id) }}" class="lesson-header" style="display:flex;align-items:center;cursor:pointer;padding:0.25rem 0;justify-content:space-between;text-decoration:none;">
-                            <div class="lesson-left" style="display:flex;align-items:center;">
-                                <span class="lesson-logo" style="width:28px;height:28px;margin-right:12px;display:inline-flex;align-items:center;justify-content:center;background:#222;border-radius:6px;font-size:14px;line-height:24px;text-align:center;color:#fff">♫</span>
-                                <span class="lesson-title">{{ $ls->title }}</span>
-                            </div>
-                            <div class="lesson-right">
-                                <span class="lesson-arrow" style="display:inline-block;width:18px;text-align:center;">▾</span>
-                            </div>
-                        </a>
+                <li class="lesson-block">
+                    <a href="{{ route('song.tutorial.show', $ls->id) }}" class="lesson-header">
+                        <div class="lesson-left">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4m6 0h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4m-6-4h12"/><circle cx="12" cy="12" r="2"/></svg>
+                            {{ $ls->title }}
+                        </div>
+                        <span class="lesson-arrow">▸</span>
+                    </a>
                     @php $topics = $ls->topics ?? collect(); @endphp
-                    <ul class="topic-list" style="list-style:none;padding-left:26px;display:none;">
+                    <ul class="topic-list">
                         @forelse($topics as $topic)
-                            <li class="topic-item" 
+                            <li class="topic-item"
                                 data-bunny-guid="{{ $topic->bunny_guid }}"
                                 data-description="{{ $topic->description }}"
-                                data-topic-id="{{ $topic->id }}"
-                                style="padding:6px 0; display:flex; align-items:center;">
-                                <div class="topic-box">{{ $topic->title }}</div>
-
+                                data-topic-id="{{ $topic->id }}">
+                                <div class="topic-box">
+                                    <span>{{ $topic->title }}</span>
+                                </div>
                             </li>
                         @empty
-                            <li class="topic-item disabled" style="padding-left:1rem; color:#999;">No topics available</li>
                         @endforelse
                     </ul>
                 </li>
             @empty
-                <li>Tidak ada lesson tersedia</li>
             @endforelse
         </ul>
     </aside>
 
-    <!-- Main Content -->
-    <div class="main-wrapper" style="flex:1; padding:1rem;">
-    <!-- local navbar removed to use global navbar from layouts.app -->
-
-        <!-- Top-right Back button -->
-        <div class="page-actions" style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:12px;">
-            <a href="{{ route('song.tutorial.index') }}" class="btn-ghost" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="width:18px;height:18px">
-                    <path d="M15 6L9 12L15 18" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Back</span>
-            </a>
-            <button type="button" id="song-theme-toggle" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;margin-left:12px;text-decoration:none;" aria-label="Toggle theme">
-                <span id="song-theme-toggle-icon" aria-hidden="true">☀</span>
-                <span id="song-theme-toggle-label">Light</span>
-            </button>
-        </div>
-
-
-        <!-- Topik Content -->
+    <div class="main-wrapper" style="flex:1;">
         <main class="content">
             @php $firstLesson = $lessons->first(); @endphp
             @include('kelas._lesson_content', ['lesson' => $firstLesson])
@@ -137,45 +325,24 @@
 </div>
 
 <script>
-function syncSongThemeToggle() {
-    var label = document.getElementById('song-theme-toggle-label');
-    var icon = document.getElementById('song-theme-toggle-icon');
-    var theme = document.documentElement.getAttribute('data-theme') || 'dark';
-    if (label) label.textContent = theme === 'light' ? 'Dark' : 'Light';
-    if (icon) icon.textContent = theme === 'light' ? '🌙' : '☀';
-}
-
-var songThemeToggle = document.getElementById('song-theme-toggle');
-if (songThemeToggle) {
-    songThemeToggle.addEventListener('click', function () {
-        var nextTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        document.cookie = 'theme=' + nextTheme + '; path=/; max-age=' + (60 * 60 * 24 * 365);
-        syncSongThemeToggle();
-    });
-}
-
-syncSongThemeToggle();
-
-// initial topic requested from index (via ?topic=ID)
-var initialTopicId = {{ request()->has('topic') ? intval(request()->query('topic')) : 'null' }};
-
 function toggleSidebar() {
     const sb = document.querySelector('.sidebar');
     if(!sb) return;
     const isActive = sb.classList.toggle('active');
-    // body class for layout state
     document.body.classList.toggle('sidebar-open', isActive);
-    // backdrop (created in DOMContentLoaded)
     const bd = document.getElementById('sidebar-backdrop');
     if(bd) bd.classList.toggle('visible', isActive);
-    // prevent background scroll when sidebar open on small screens
     if(isActive) document.body.style.overflow = 'hidden'; else document.body.style.overflow = '';
 }
 
-// Update video, title, description saat klik topik
-// --- HLS / HTML5 player + progress tracking (Bunny CDN) ---
-// load hls.js dynamically
+function closeSidebar(){
+    const sb = document.querySelector('.sidebar'); if(!sb) return;
+    sb.classList.remove('active');
+    const bd = document.getElementById('sidebar-backdrop'); if(bd) bd.classList.remove('visible');
+    document.body.classList.remove('sidebar-open');
+    document.body.style.overflow = '';
+}
+
 (function loadHlsScript(){
     if(window.Hls) return;
     const s = document.createElement('script');
@@ -184,55 +351,24 @@ function toggleSidebar() {
     document.head.appendChild(s);
 })();
 
-let player = null; // for YT player or placeholder
-let hlsInstance = null; // for hls.js instance
+let player = null;
 let currentTopicId = null;
 let progressTimer = null;
 let lastProgressSentAt = 0;
+const completionPostedTopics = new Set();
 
 function isYouTubeUrl(url){ return /youtu\.be\/|youtube\.com\/.+v=/.test(url || ''); }
 
-function loadTopicVideo(url, topicId, title, description){
-    currentTopicId = topicId;
-    document.getElementById('video-title').textContent = title;
-    document.getElementById('video-description').textContent = description;
-    const placeholder = document.getElementById('video-placeholder');
-    // clear prior attributes
-    placeholder.removeAttribute('data-video-id');
-    placeholder.removeAttribute('data-stream-url');
-    placeholder.setAttribute('data-topic-id', topicId || '');
-
-    if(!url) return;
-
-    if(isYouTubeUrl(url)){
-        // extract YouTube id for backward compatibility
-        const m = url.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/);
-        const videoId = m ? m[2] : null;
-        if(videoId){
-            const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-            placeholder.style.backgroundImage = `url(${thumb})`;
-            placeholder.setAttribute('data-video-id', videoId);
-        }
-    } else {
-        // assume Bunny / HLS or MP4 full URL or path
-        placeholder.style.backgroundImage = '';
-        placeholder.setAttribute('data-stream-url', url);
-    }
-
-    // clear existing progress timer
-    if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-}
-
 function getCurrentPlaybackSeconds(){
     const html5 = document.getElementById('html5-player');
-    if (html5 && Number.isFinite(html5.currentTime)) {
-        return Math.max(0, Math.floor(html5.currentTime));
-    }
-    try {
-        if (player && typeof player.getCurrentTime === 'function') {
-            return Math.max(0, Math.floor(player.getCurrentTime() || 0));
-        }
-    } catch (e) {}
+    if (html5 && Number.isFinite(html5.currentTime)) return Math.max(0, Math.floor(html5.currentTime));
+    try { if (player && typeof player.getCurrentTime === 'function') return Math.max(0, Math.floor(player.getCurrentTime() || 0)); } catch (e) {}
+    return 0;
+}
+
+function getCurrentPlaybackDuration(){
+    const html5 = document.getElementById('html5-player');
+    if (html5 && Number.isFinite(html5.duration) && html5.duration > 0) return Math.floor(html5.duration);
     return 0;
 }
 
@@ -241,27 +377,21 @@ function setTopicCompletedUI(topicId, completed){
     const el = document.querySelector('.topic-item[data-topic-id="' + topicId + '"]');
     if(!el) return;
     el.classList.toggle('completed', !!completed);
+    if(completed) completionPostedTopics.add(String(topicId));
 }
 
 function reportProgress(markComplete = false){
     if(!currentTopicId) return;
-
+    const topicKey = String(currentTopicId);
+    if(markComplete && completionPostedTopics.has(topicKey)) return;
     const now = Date.now();
     if(!markComplete && now - lastProgressSentAt < 5000) return;
     if(!markComplete) lastProgressSentAt = now;
-
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     fetch('/api/topics/' + currentTopicId + '/progress', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': csrf,
-        },
-        body: JSON.stringify({
-            watched_seconds: getCurrentPlaybackSeconds(),
-            completed: !!markComplete,
-        })
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrf },
+        body: JSON.stringify({ watched_seconds: getCurrentPlaybackSeconds(), duration_seconds: getCurrentPlaybackDuration(), completed: !!markComplete })
     }).then(async (res) => {
         if(!res.ok) return;
         const data = await res.json();
@@ -269,168 +399,106 @@ function reportProgress(markComplete = false){
     }).catch(() => {});
 }
 
+function maybeCompleteByThreshold(videoEl){
+    if(!videoEl || !currentTopicId) return;
+    const duration = Number(videoEl.duration || 0);
+    const current = Number(videoEl.currentTime || 0);
+    if(!Number.isFinite(duration) || duration <= 0) return;
+    if(current >= Math.max(1, duration * 0.95)) reportProgress(true);
+}
+
 function fetchTopicProgress(topicId){
     if(!topicId) return;
-    fetch('/api/topics/' + topicId + '/progress', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).then(async (res) => {
-        if(!res.ok) return;
-        const data = await res.json();
-        setTopicCompletedUI(topicId, !!data.completed);
-    }).catch(() => {});
+    fetch('/api/topics/' + topicId + '/progress', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(async (res) => { if(!res.ok) return; const data = await res.json(); setTopicCompletedUI(topicId, !!data.completed); })
+    .catch(() => {});
 }
 
 function onPlayerStateChange(event){
     if(!window.YT || !event) return;
-    if(event.data === YT.PlayerState.PLAYING){
-        if(progressTimer) clearInterval(progressTimer);
-        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
-    } else if(event.data === YT.PlayerState.PAUSED){
-        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(false);
-    } else if(event.data === YT.PlayerState.ENDED){
-        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(true);
-    }
+    if(event.data === YT.PlayerState.PLAYING){ if(progressTimer) clearInterval(progressTimer); progressTimer = setInterval(function(){ reportProgress(false); }, 15000); }
+    else if(event.data === YT.PlayerState.PAUSED){ if(progressTimer){ clearInterval(progressTimer); progressTimer = null; } reportProgress(false); }
+    else if(event.data === YT.PlayerState.ENDED){ if(progressTimer){ clearInterval(progressTimer); progressTimer = null; } reportProgress(true); }
 }
 
 function createHtml5PlayerAndPlay(streamUrl, topicId){
-    // ensure container
-    const container = document.getElementById('player');
-    if(!container) return;
-    // remove any previous html5 player
+    const container = document.getElementById('player'); if(!container) return;
+    if(topicId) currentTopicId = String(topicId);
     let v = document.getElementById('html5-player');
     if(v){ try{ v.pause(); }catch(e){} v.remove(); }
-    // destroy hls instance
     if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
-
     v = document.createElement('video');
     v.id = 'html5-player'; v.controls = true; v.setAttribute('playsinline','');
-    // position the video absolutely so it sits above the thumbnail placeholder
-    v.style.position = 'absolute'; v.style.top = '0'; v.style.left = '0'; v.style.width = '100%'; v.style.height = '100%'; v.style.zIndex = '2';
+    v.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;';
     container.appendChild(v);
-    // hide the placeholder so the video element is visible
     try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){}
-
-    // attach HLS if available; if hls.js not yet loaded, load it dynamically then retry
     const attachAndPlay = () => {
-        if(window.Hls && Hls.isSupported()){
-            const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v);
-            hls.on(Hls.Events.MANIFEST_PARSED, function(){
-                v.play().catch(()=>{});
-            });
-        } else {
-            // native HLS (iOS) or MP4
-            v.src = streamUrl;
-            v.addEventListener('loadedmetadata', function once(){ v.removeEventListener('loadedmetadata', once); v.play().catch(()=>{}); });
-        }
+        if(window.Hls && Hls.isSupported()){ const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v); }
+        else { v.src = streamUrl; }
     };
-
-    if(!window.Hls){
-        // try to load hls.js from CDN, then attach
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-        s.async = true;
-        s.onload = () => { try{ attachAndPlay(); }catch(e){ console.error('hls attach failed', e); } };
-        s.onerror = () => { console.warn('Failed to load hls.js, falling back to native playback'); attachAndPlay(); };
-        document.head.appendChild(s);
-    } else {
-        attachAndPlay();
-    }
-
-    // wire events for progress reporting
-    v.addEventListener('play', function(){
-        const sp = document.getElementById('ajax-spinner'); if(sp) sp.classList.remove('show');
-        if(progressTimer) clearInterval(progressTimer);
-        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
-    });
-    v.addEventListener('pause', function(){
-        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(false);
-    });
-    v.addEventListener('ended', function(){
-        if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(true);
-    });
+    if(!window.Hls){ const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest'; s.async = true; s.onload = () => { try{ attachAndPlay(); }catch(e){} }; s.onerror = () => { attachAndPlay(); }; document.head.appendChild(s); } else { attachAndPlay(); }
+    v.addEventListener('play', function(){ if(progressTimer) clearInterval(progressTimer); progressTimer = setInterval(function(){ reportProgress(false); }, 15000); });
+    v.addEventListener('pause', function(){ if(progressTimer){ clearInterval(progressTimer); progressTimer = null; } reportProgress(false); });
+    v.addEventListener('timeupdate', function(){ maybeCompleteByThreshold(v); });
+    v.addEventListener('seeked', function(){ maybeCompleteByThreshold(v); });
+    v.addEventListener('ended', function(){ if(progressTimer){ clearInterval(progressTimer); progressTimer = null; } reportProgress(true); });
 }
 
 function destroyHtml5Player(){
     const v = document.getElementById('html5-player'); if(v){ try{ v.pause(); }catch(e){} v.remove(); }
     if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
     if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-    // restore placeholder visibility when player is destroyed
     try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'flex'; }catch(e){}
 }
 
-// SPA-like navigation and page initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // create a global ajax spinner overlay (hidden by default)
     (function createAjaxSpinner(){
         if(document.getElementById('ajax-spinner')) return;
-        const s = document.createElement('div');
-        s.id = 'ajax-spinner';
-        s.style.display = 'none';
+        const s = document.createElement('div'); s.id = 'ajax-spinner'; s.style.display = 'none';
         s.innerHTML = '<div class="spinner-inner"><div class="spinner"></div></div>';
         document.body.appendChild(s);
-        // allow CSS transitions via class
     })();
 
-        // create a backdrop for mobile sidebar overlay
-        (function createSidebarBackdrop(){
-            if(document.getElementById('sidebar-backdrop')) return;
-            const b = document.createElement('div');
-            b.id = 'sidebar-backdrop';
-            b.addEventListener('click', function(){
-                // close sidebar when tapping backdrop
-                const sb = document.querySelector('.sidebar');
-                if(sb && sb.classList.contains('active')) toggleSidebar();
-            });
-            document.body.appendChild(b);
-        })();
+    (function createSidebarBackdrop(){
+        if(document.getElementById('sidebar-backdrop')) return;
+        const b = document.createElement('div'); b.id = 'sidebar-backdrop';
+        b.addEventListener('click', function(){ const sb = document.querySelector('.sidebar'); if(sb && sb.classList.contains('active')) toggleSidebar(); });
+        document.body.appendChild(b);
+    })();
 
-    const openLessonsKey = 'kelas_open_lessons';
-    // prefetch cache and timers for hover intent
-    const prefetchCache = {}; // keyed by contentUrl
+    const openLessonsKey = 'song_open_lessons';
+    const prefetchCache = {};
     const prefetchTimers = new Map();
     const prefetchControllers = new Map();
 
     async function prefetchLesson(url){
         try{
             const contentUrl = url.replace(/\/?$/, '') + '/content';
-            if(prefetchCache[contentUrl]) return; // already cached
-            // avoid duplicate controllers
+            if(prefetchCache[contentUrl]) return;
             if(prefetchControllers.has(contentUrl)) return;
-            const ctrl = new AbortController();
-            prefetchControllers.set(contentUrl, ctrl);
+            const ctrl = new AbortController(); prefetchControllers.set(contentUrl, ctrl);
             const res = await fetch(contentUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: ctrl.signal });
             if(!res.ok){ prefetchControllers.delete(contentUrl); return; }
-            const html = await res.text();
-            prefetchCache[contentUrl] = html;
+            prefetchCache[contentUrl] = await res.text();
             prefetchControllers.delete(contentUrl);
-        }catch(e){
-            // ignore abort or network errors
-            prefetchControllers.delete(url);
-        }
+        }catch(e){ prefetchControllers.delete(url); }
     }
 
-    function getOpenLessons(){
-        try{ return JSON.parse(localStorage.getItem(openLessonsKey) || '[]'); }catch(e){ return []; }
-    }
+    function getOpenLessons(){ try{ return JSON.parse(localStorage.getItem(openLessonsKey) || '[]'); }catch(e){ return []; } }
     function setOpenLessons(arr){ localStorage.setItem(openLessonsKey, JSON.stringify(arr || [])); }
 
-    // force stop player/timers
     function forceStopAll(){
         try{
+            const html5 = document.getElementById('html5-player');
+            if(html5) maybeCompleteByThreshold(html5);
             reportProgress(false);
             if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
             if(player && typeof player.stopVideo === 'function'){ try{ player.stopVideo(); }catch(e){} }
             if(player && typeof player.destroy === 'function'){ try{ player.destroy(); }catch(e){} }
-            player = null;
-            currentTopicId = null;
-        }catch(e){ console.warn('forceStopAll error', e); }
+            player = null; currentTopicId = null;
+        }catch(e){}
     }
 
-    // initialize sidebar interactions (toggle/restore open state)
     function initSidebar(){
         const open = getOpenLessons();
         const openLessonId = Array.isArray(open) && open.length ? open[0] : null;
@@ -454,105 +522,55 @@ document.addEventListener('DOMContentLoaded', () => {
             const href = a.getAttribute('href');
             const lessonId = href ? href.split('/').filter(Boolean).pop() : null;
 
-            // restore open state
-            if(lessonId && lessonId === openLessonId){
-                if(topics) topics.style.display = 'block';
-                block.classList.add('active');
-                if(arrow) arrow.textContent = '▾';
-            } else {
-                if(topics) topics.style.display = 'none';
-                block.classList.remove('active');
-                if(arrow) arrow.textContent = '▸';
-            }
+            if(lessonId && lessonId === openLessonId){ if(topics) topics.style.display = 'block'; block.classList.add('active'); if(arrow) arrow.textContent = '▾'; }
+            else { if(topics) topics.style.display = 'none'; block.classList.remove('active'); if(arrow) arrow.textContent = '▸'; }
 
-            // arrow click toggles expand without navigation
             if(arrow){
                 arrow.addEventListener('click', (ev) => {
                     ev.preventDefault(); ev.stopPropagation();
                     const isHidden = window.getComputedStyle(topics).display === 'none';
-                    if(isHidden){
-                        closeOtherLessons(block);
-                        topics.style.display = 'block';
-                        block.classList.add('active');
-                        arrow.textContent = '▾';
-                        setOpenLessons(lessonId ? [lessonId] : []);
-                    } else {
-                        topics.style.display = 'none';
-                        block.classList.remove('active');
-                        arrow.textContent = '▸';
-                        setOpenLessons([]);
-                    }
+                    if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active'); arrow.textContent = '▾'; setOpenLessons(lessonId ? [lessonId] : []); }
+                    else { topics.style.display = 'none'; block.classList.remove('active'); arrow.textContent = '▸'; setOpenLessons([]); }
                 });
             }
 
-            // header (anchor) click -> toggle topic list only (do not navigate)
             a.addEventListener('click', function(ev){
-                // if click originated from arrow, ignore (arrow handled above)
                 if(ev.target.closest('.lesson-arrow')){ return; }
                 ev.preventDefault();
-                // toggle topics visible state
                 const isHidden = window.getComputedStyle(topics).display === 'none';
-                if(isHidden){
-                    closeOtherLessons(block);
-                    topics.style.display = 'block';
-                    block.classList.add('active');
-                    if(arrow) arrow.textContent = '▾';
-                    setOpenLessons(lessonId ? [lessonId] : []);
-                } else {
-                    topics.style.display = 'none';
-                    block.classList.remove('active');
-                    if(arrow) arrow.textContent = '▸';
-                    setOpenLessons([]);
-                }
+                if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active'); if(arrow) arrow.textContent = '▾'; setOpenLessons(lessonId ? [lessonId] : []); }
+                else { topics.style.display = 'none'; block.classList.remove('active'); if(arrow) arrow.textContent = '▸'; setOpenLessons([]); }
             });
 
-            // hover intent: start a short timer then prefetch partial
             a.addEventListener('mouseenter', function(){
-                const url = a.getAttribute('href');
-                if(!url) return;
-                const t = setTimeout(()=>{
-                    prefetchLesson(url);
-                    prefetchTimers.delete(a);
-                }, 180);
+                const url = a.getAttribute('href'); if(!url) return;
+                const t = setTimeout(()=>{ prefetchLesson(url); prefetchTimers.delete(a); }, 180);
                 prefetchTimers.set(a, t);
             });
             a.addEventListener('mouseleave', function(){
-                const t = prefetchTimers.get(a);
-                if(t){ clearTimeout(t); prefetchTimers.delete(a); }
-                // if a prefetch is in-flight, abort it to avoid wasted bandwidth
+                const t = prefetchTimers.get(a); if(t){ clearTimeout(t); prefetchTimers.delete(a); }
                 const contentUrl = (a.getAttribute('href') || '').replace(/\/?$/, '') + '/content';
-                const ctrl = prefetchControllers.get(contentUrl);
-                if(ctrl){ try{ ctrl.abort(); }catch(e){} prefetchControllers.delete(contentUrl); }
+                const ctrl = prefetchControllers.get(contentUrl); if(ctrl){ try{ ctrl.abort(); }catch(e){} prefetchControllers.delete(contentUrl); }
             });
         });
     }
 
-    // initialize topic handlers and player bindings inside main content
     function initPage(lessonId){
-    // topic clicks (sidebar only)
-    document.querySelectorAll('.topic-item').forEach(item => {
+        document.querySelectorAll('.topic-item').forEach(item => {
             item.addEventListener('click', () => {
-                const bunnyGuid = item.getAttribute('data-bunny-guid');
-                const title = item.textContent.trim();
-                const description = item.getAttribute('data-description');
                 const topicId = item.getAttribute('data-topic-id');
-                // persist last topic for this lesson
-                if(lessonId && topicId) localStorage.setItem('kelas_last_topic_' + lessonId, topicId);
-                // SPA-style topic navigation (pushState + play)
-                // We do not pass a videoUrl; the player will request /topics/{id}/stream to get the signed URL based on bunny_guid
+                if(lessonId && topicId) localStorage.setItem('song_last_topic_' + lessonId, topicId);
                 navigateTopic(lessonId, topicId, null, true);
-                // selection highlight
+                try{ if(window.innerWidth <= 900) closeSidebar(); }catch(e){}
                 document.querySelectorAll('.topic-item.selected').forEach(s => s.classList.remove('selected'));
                 item.classList.add('selected');
             });
         });
 
-        // Load completion markers for topic list
         document.querySelectorAll('.topic-item[data-topic-id]').forEach(item => {
             fetchTopicProgress(item.getAttribute('data-topic-id'));
         });
 
-        // play button behavior
         const customPlay = document.getElementById('custom-play');
         if(customPlay){
             customPlay.addEventListener('click', function(){
@@ -560,79 +578,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ytId = placeholder ? placeholder.getAttribute('data-video-id') : null;
                 const streamUrlAttr = placeholder ? placeholder.getAttribute('data-stream-url') : null;
                 const topicId = placeholder ? placeholder.getAttribute('data-topic-id') : null;
-
-                // If we have a stream URL attribute already, use it
-                if(streamUrlAttr){
-                    destroyHtml5Player();
-                    createHtml5PlayerAndPlay(streamUrlAttr, topicId);
-                    return;
-                }
-
-                // If placeholder doesn't have stream URL but topic id exists, ask server for it
+                if(topicId) currentTopicId = String(topicId);
+                if(streamUrlAttr){ destroyHtml5Player(); createHtml5PlayerAndPlay(streamUrlAttr, topicId); return; }
                 if(topicId){
-                    fetch(`/topics/${topicId}/stream`).then(async r=>{
-                        try { return await r.json(); } catch(e){ return { url: null, error: 'non-json' }; }
-                    }).then(data=>{
-                        if(data && data.url){
-                            placeholder.setAttribute('data-stream-url', data.url);
-                            destroyHtml5Player();
-                            createHtml5PlayerAndPlay(data.url, topicId);
-                            return;
-                        }
-                        // fallback to YouTube if present
-                            if(ytId){
-                            // create or load YT player as before (keep legacy support)
-                                // hide placeholder so the iframe is visible
-                                try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){}
-                                if(!player || typeof player.loadVideoById !== 'function'){
-                                player = new YT.Player('player', {
-                                    height: '100%', width: '100%', videoId: ytId,
-                                    playerVars: { rel:0, modestbranding:1 },
-                                    events: { 'onStateChange': onPlayerStateChange, 'onReady': function(e){ player.playVideo(); }}
-                                });
-                            } else { player.loadVideoById(ytId); player.playVideo(); }
-                        }
-                    }).catch(err => {
-                        console.warn('stream lookup failed', err);
-                        if(ytId){
-                            try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){}
-                            if(!player){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} }); } else { player.loadVideoById(ytId); }
-                        }
-                    });
-                } else if(ytId){
-                    // no topicId but have yt fallback
-                    if(!player || typeof player.loadVideoById !== 'function'){
-                        player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} });
-                    } else { player.loadVideoById(ytId); }
-                }
+                    fetch(`/topics/${topicId}/stream`).then(async r=>{ try { return await r.json(); } catch(e){ return { url: null }; } }).then(data=>{
+                        if(data && data.url){ placeholder.setAttribute('data-stream-url', data.url); destroyHtml5Player(); createHtml5PlayerAndPlay(data.url, topicId); return; }
+                        if(ytId){ try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){} if(!player || typeof player.loadVideoById !== 'function'){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange,'onReady':function(e){ player.playVideo(); }} }); } else { player.loadVideoById(ytId); player.playVideo(); } }
+                    }).catch(err => { if(ytId){ try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){} if(!player){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} }); } else { player.loadVideoById(ytId); } } });
+                } else if(ytId){ if(!player || typeof player.loadVideoById !== 'function'){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} }); } else { player.loadVideoById(ytId); } }
             });
         }
 
-        // restore last topic selection for this lesson if exists
         try{
             if(lessonId){
-                    const last = localStorage.getItem('kelas_last_topic_' + lessonId);
-                    if(last){
-                        const el = document.querySelector('[data-topic-id="' + last + '"]');
-                        if(el) { el.click(); /* continue to wire buttons and handlers */ }
-                    }
-                }
+                const last = localStorage.getItem('song_last_topic_' + lessonId);
+                if(last){ const el = document.querySelector('[data-topic-id="' + last + '"]'); if(el) el.click(); }
+            }
         }catch(e){}
 
-    // otherwise auto-click requested topic (from index) or first topic if present
-    if(typeof initialTopicId === 'number' && initialTopicId) {
-        const requested = document.querySelector('.topic-item[data-topic-id="' + initialTopicId + '"]');
-        if(requested) requested.click();
-        else {
-            const first = document.querySelector('.topic-item[data-topic-id]');
-            if(first) first.click();
-        }
-    } else {
         const first = document.querySelector('.topic-item[data-topic-id]');
         if(first) first.click();
-    }
 
-        // wire next/back buttons (if present in the partial)
         const btnNext = document.getElementById('btn-next');
         const btnPrev = document.getElementById('btn-prev');
         function updateNavButtons(){
@@ -643,344 +609,75 @@ document.addEventListener('DOMContentLoaded', () => {
             if(btnNext) btnNext.disabled = (idx < 0 || idx >= visibleTopics.length - 1);
         }
 
-        if(btnNext){
-            btnNext.addEventListener('click', function(){
-                console.debug('btnNext clicked');
-                const topics = Array.from(document.querySelectorAll('.topic-item[data-topic-id]'));
-                let sel = document.querySelector('.topic-item.selected');
-                let idx = sel ? topics.indexOf(sel) : -1;
-                // fallback: if nothing selected, select first topic first
-                if(idx === -1 && topics.length){
-                    const firstTopic = topics[0];
-                    if(firstTopic){ firstTopic.click(); sel = firstTopic; idx = 0; }
-                }
-                if(idx >= 0 && idx < topics.length - 1){
-                    const nxt = topics[idx+1];
-                    if(nxt){ nxt.click(); }
-                    // ensure navigation behavior triggers
-                    const lessonIdLocal = lessonId || (location.pathname.split('/').filter(Boolean)[1] || null);
-                    navigateTopic(lessonIdLocal, nxt.getAttribute('data-topic-id'), null, true);
-                    setTimeout(updateNavButtons, 50);
-                }
-            });
-        }
-        if(btnPrev){
-            btnPrev.addEventListener('click', function(){
-                console.debug('btnPrev clicked');
-                const topics = Array.from(document.querySelectorAll('.topic-item[data-topic-id]'));
-                let sel = document.querySelector('.topic-item.selected');
-                let idx = sel ? topics.indexOf(sel) : -1;
-                // if nothing selected, select first and do nothing else
-                if(idx === -1 && topics.length){
-                    const firstTopic = topics[0];
-                    if(firstTopic){ firstTopic.click(); sel = firstTopic; idx = 0; }
-                }
-                if(idx > 0){
-                    const prev = topics[idx-1];
-                    if(prev){ prev.click(); }
-                    const lessonIdLocal = lessonId || (location.pathname.split('/').filter(Boolean)[1] || null);
-                    navigateTopic(lessonIdLocal, prev.getAttribute('data-topic-id'), null, true);
-                    setTimeout(updateNavButtons, 50);
-                }
-            });
-        }
+        if(btnNext){ btnNext.addEventListener('click', function(){ const topics = Array.from(document.querySelectorAll('.topic-item[data-topic-id]')); let sel = document.querySelector('.topic-item.selected'); let idx = sel ? topics.indexOf(sel) : -1; if(idx === -1 && topics.length){ const f = topics[0]; if(f){ f.click(); sel = f; idx = 0; } } if(idx >= 0 && idx < topics.length - 1){ const nxt = topics[idx+1]; if(nxt){ nxt.click(); } navigateTopic(lessonId, nxt.getAttribute('data-topic-id'), null, true); setTimeout(updateNavButtons, 50); } }); }
+        if(btnPrev){ btnPrev.addEventListener('click', function(){ const topics = Array.from(document.querySelectorAll('.topic-item[data-topic-id]')); let sel = document.querySelector('.topic-item.selected'); let idx = sel ? topics.indexOf(sel) : -1; if(idx === -1 && topics.length){ const f = topics[0]; if(f){ f.click(); sel = f; idx = 0; } } if(idx > 0){ const prev = topics[idx-1]; if(prev){ prev.click(); } navigateTopic(lessonId, prev.getAttribute('data-topic-id'), null, true); setTimeout(updateNavButtons, 50); } }); }
 
-        // update buttons whenever topics change or selection changes
         document.addEventListener('click', function(ev){ if(ev.target.closest('.topic-item')) setTimeout(updateNavButtons,30); });
         updateNavButtons();
 
-        // ripple effect for nav buttons
         document.querySelectorAll('.video-nav-btn').forEach(btn => {
-            btn.addEventListener('click', function(e){
-                // create ripple
-                const r = document.createElement('span');
-                r.className = 'ripple';
-                const rect = btn.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                r.style.width = r.style.height = size + 'px';
-                r.style.left = (e.clientX - rect.left - size/2) + 'px';
-                r.style.top = (e.clientY - rect.top - size/2) + 'px';
-                btn.appendChild(r);
-                setTimeout(()=>{ try{ r.remove(); }catch(e){} }, 700);
-            });
+            btn.addEventListener('click', function(e){ const r = document.createElement('span'); r.className = 'ripple'; const rect = btn.getBoundingClientRect(); const size = Math.max(rect.width, rect.height); r.style.width = r.style.height = size + 'px'; r.style.left = (e.clientX - rect.left - size/2) + 'px'; r.style.top = (e.clientY - rect.top - size/2) + 'px'; btn.appendChild(r); setTimeout(()=>{ try{ r.remove(); }catch(e){} }, 700); });
         });
     }
 
-    // fetch content for a lesson and swap into main content area
     async function navigateTo(url, pushState=true){
         try{
-            const spinner = document.getElementById('ajax-spinner');
-            if(spinner){ spinner.style.display = 'flex'; setTimeout(()=>spinner.classList.add('show'), 10); }
-            const main = document.querySelector('main.content');
-            if(main){ main.classList.remove('fade-in'); main.classList.add('fade-out'); }
+            const spinner = document.getElementById('ajax-spinner'); if(spinner){ spinner.style.display = 'flex'; setTimeout(()=>spinner.classList.add('show'), 10); }
+            const main = document.querySelector('main.content'); if(main){ main.classList.remove('fade-in'); main.classList.add('fade-out'); }
             const contentUrl = url.replace(/\/?$/, '') + '/content';
             let html;
-            if(prefetchCache[contentUrl]){
-                html = prefetchCache[contentUrl];
-            } else {
-                const res = await fetch(contentUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                if(!res.ok) { if(spinner){ spinner.classList.remove('show'); setTimeout(()=>spinner.style.display='none',200); } window.location.href = url; return; }
-                html = await res.text();
-            }
-            // wait for fade out transition (250ms)
+            if(prefetchCache[contentUrl]){ html = prefetchCache[contentUrl]; } else { const res = await fetch(contentUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }); if(!res.ok){ if(spinner){ spinner.classList.remove('show'); setTimeout(()=>spinner.style.display='none',200); } window.location.href = url; return; } html = await res.text(); }
             await new Promise(r => setTimeout(r, 260));
             document.querySelector('main.content').innerHTML = html;
-            // extract lesson id from url
             const lessonId = url.split('/').filter(Boolean).pop();
             if(pushState) history.pushState({ ajax: true, url: url }, '', url);
-            // re-init page scripts for newly loaded content
             initPage(lessonId);
-            // fade in and hide spinner
             const m = document.querySelector('main.content'); if(m){ m.classList.remove('fade-out'); m.classList.add('fade-in'); }
             if(spinner){ spinner.classList.remove('show'); setTimeout(()=>spinner.style.display='none',220); }
-        }catch(e){ console.error('navigate error', e); window.location.href = url; }
+        }catch(e){ window.location.href = url; }
     }
 
-    // handle back/forward
     window.addEventListener('popstate', function(ev){
         const path = location.pathname + location.search + location.hash;
-        // handle lesson content swap
-        if(path.startsWith('/song-tutorial') || path.startsWith('/kelas')){
+        if(path.startsWith('/song-tutorial')){
             forceStopAll();
-            // if URL contains topic query or hash, attempt to parse and play topic
             const params = new URLSearchParams(location.search);
-            const topicParam = params.get('topic') || (location.hash ? location.hash.replace('#','') : null);
-            navigateTo(location.pathname, false).then(()=>{
-                if(topicParam){
-                    const el = document.querySelector('[data-topic-id="'+topicParam+'"]');
-                    if(el) el.click();
-                }
-            });
+            const topicParam = params.get('topic');
+            navigateTo(location.pathname, false).then(()=>{ if(topicParam){ const el = document.querySelector('[data-topic-id="'+topicParam+'"]'); if(el) el.click(); } });
         }
     });
 
-    // navigate between topics without full reload
     function navigateTopic(lessonId, topicId, videoUrl, pushState=true){
         try{
             forceStopAll();
+            if(topicId) currentTopicId = String(topicId);
             const spinner = document.getElementById('ajax-spinner'); if(spinner){ spinner.style.display='flex'; setTimeout(()=>spinner.classList.add('show'),10); }
-            // update placeholder and start playback after creating player
             const placeholder = document.getElementById('video-placeholder');
             if(placeholder){
-                // Always set current topic id for the placeholder so the player can request stream metadata
                 if(topicId) placeholder.setAttribute('data-topic-id', topicId);
-
-                // If this is a YouTube link, set video-id and thumbnail
                 const vid = (videoUrl && videoUrl.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)) ? videoUrl.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)[2] : null;
-                if(vid){
-                    placeholder.style.backgroundImage = 'url(https://img.youtube.com/vi/'+vid+'/hqdefault.jpg)';
-                    placeholder.setAttribute('data-video-id', vid);
-                    // clear any existing stream-url/bunny-guid since this is YouTube
-                    placeholder.removeAttribute('data-stream-url');
-                    placeholder.removeAttribute('data-bunny-guid');
-                } else {
-                    // For non-YouTube topics, set bunny GUID from sidebar item if available
-                    try{
-                        const topicEl = document.querySelector('[data-topic-id="' + topicId + '"]');
-                        if(topicEl){
-                            const bg = topicEl.getAttribute('data-bunny-guid');
-                            if(bg) {
-                                placeholder.setAttribute('data-bunny-guid', bg);
-                            } else {
-                                placeholder.removeAttribute('data-bunny-guid');
-                            }
-                        }
-                        // clear video-id (youtube) if present
-                        placeholder.removeAttribute('data-video-id');
-                        // also clear any previously cached stream-url so it will be fetched fresh
-                        placeholder.removeAttribute('data-stream-url');
-                    }catch(e){}
-                }
+                if(vid){ placeholder.style.backgroundImage = 'url(https://img.youtube.com/vi/'+vid+'/hqdefault.jpg)'; placeholder.setAttribute('data-video-id', vid); placeholder.removeAttribute('data-stream-url'); placeholder.removeAttribute('data-bunny-guid'); }
+                else { try{ const topicEl = document.querySelector('[data-topic-id="' + topicId + '"]'); if(topicEl){ const bg = topicEl.getAttribute('data-bunny-guid'); if(bg){ placeholder.setAttribute('data-bunny-guid', bg); } else { placeholder.removeAttribute('data-bunny-guid'); } } placeholder.removeAttribute('data-video-id'); placeholder.removeAttribute('data-stream-url'); }catch(e){} }
             }
-            // update displayed title/description using sidebar item text if available
-            try{
-                const topicEl = document.querySelector('[data-topic-id="' + topicId + '"]');
-                const titleEl = document.getElementById('video-title');
-                const descEl = document.getElementById('video-description');
-                if(topicEl){
-                    if(titleEl) titleEl.textContent = topicEl.textContent.trim();
-                    if(descEl) descEl.textContent = topicEl.getAttribute('data-description') || '';
-                }
-            }catch(e){ /* ignore */ }
-            // push topic into URL as query param (keeps lesson path)
+            try{ const topicEl = document.querySelector('[data-topic-id="' + topicId + '"]'); const titleEl = document.getElementById('video-title'); const descEl = document.getElementById('video-description'); if(topicEl){ if(titleEl) titleEl.textContent = topicEl.textContent.trim(); if(descEl) descEl.textContent = topicEl.getAttribute('data-description') || ''; } }catch(e){}
             const newUrl = '/song-tutorial/' + lessonId + (topicId ? '?topic=' + topicId : '');
             if(pushState) history.pushState({ ajax: true, url: newUrl }, '', newUrl);
-            // create player if needed and play
-            if(player){
-                player.loadVideoById(placeholder.getAttribute('data-video-id'));
-                currentTopicId = topicId;
-                player.playVideo();
-                // spinner will be hidden on PlayerStateChange when PLAYING
-            } else {
-                // trigger the custom-play button's click to create player
-                const customPlay = document.getElementById('custom-play');
-                if(customPlay) customPlay.click();
-                // spinner will be hidden once player fires onReady/onStateChange
-            }
+            if(player){ player.loadVideoById(placeholder.getAttribute('data-video-id')); currentTopicId = topicId; player.playVideo(); }
+            else { const customPlay = document.getElementById('custom-play'); if(customPlay) customPlay.click(); }
         }catch(e){ console.error('navigateTopic error', e); }
     }
 
-    // initial setup
     initSidebar();
-    // initialize page for current lesson (try to extract lesson id from url)
     const pathParts = location.pathname.split('/').filter(Boolean);
-    const currentLessonId = (pathParts.length && (pathParts[0] === 'kelas' || pathParts[0] === 'song-tutorial') && pathParts[1]) ? pathParts[1] : (document.querySelector('.lesson-block') ? document.querySelector('.lesson-block').querySelector('.lesson-header').getAttribute('href').split('/').filter(Boolean).pop() : null);
+    const currentLessonId = (pathParts.length && pathParts[0] === 'song-tutorial' && pathParts[1]) ? pathParts[1] : (document.querySelector('.lesson-block') ? document.querySelector('.lesson-block').querySelector('.lesson-header').getAttribute('href').split('/').filter(Boolean).pop() : null);
     initPage(currentLessonId);
 
-    // close overlay sidebar automatically when resizing to desktop
-    window.addEventListener('resize', function(){
-        try{
-            if(window.innerWidth > 900){
-                const sb = document.querySelector('.sidebar'); if(sb) sb.classList.remove('active');
-                const bd = document.getElementById('sidebar-backdrop'); if(bd) bd.classList.remove('visible');
-                document.body.classList.remove('sidebar-open');
-                document.body.style.overflow = '';
-            }
-        }catch(e){}
-    });
+    window.addEventListener('resize', function(){ try{ if(window.innerWidth > 900){ const sb = document.querySelector('.sidebar'); if(sb) sb.classList.remove('active'); const bd = document.getElementById('sidebar-backdrop'); if(bd) bd.classList.remove('visible'); document.body.classList.remove('sidebar-open'); document.body.style.overflow = ''; } }catch(e){} });
+
+    window.addEventListener('pagehide', function(){ try{ const html5 = document.getElementById('html5-player'); if(html5) maybeCompleteByThreshold(html5); reportProgress(false); }catch(e){} });
 });
 </script>
-
 @endsection
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/kelas.css') }}">
-<!-- Poppins font for buttons (kept) -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-/* copied styles from kelas.blade.php to keep exact parity */
-.kelas-container { display:flex; }
-.sidebar { width:250px; border-right:1px solid #222; padding:1rem; background:#0f0f0f; }
-.lesson-title { font-weight:400; margin-top:0; font-size:15px; color:#cfcfcf; }
-.lesson-block .lesson-title { transition: color .12s ease, font-weight .12s ease; }
-.lesson-block.active .lesson-title { color:#fff; font-weight:700; }
-.topic-item { cursor:pointer; padding-left:1rem; font-size:13px; color:#bfbfbf; }
-.topic-item.disabled { color:#999; cursor:default; }
-.main-wrapper { flex:1; padding:1rem; }
-.topic-item.completed { color: #9fd19f; }
-
-/* Use Roboto font for page */
-body, .main-wrapper, .sidebar, .kelas-container { font-family: 'Inter', 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-
-/* Video placeholder & play button */
-.video-placeholder { background-size: cover; background-position: center; position:relative; display:flex; align-items:center; justify-content:center; }
-.custom-play-btn {
-    width:96px; height:96px; border-radius:50%; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.6);
-    position:relative; display:flex; align-items:center; justify-content:center;
-}
-.custom-play-btn:before {
-    content:''; display:block; width:0; height:0; border-left:28px solid #fff; border-top:18px solid transparent; border-bottom:18px solid transparent; position:relative; margin-left:6px;
-}
-
-/* Player wrapper to match example size and style (use aspect-ratio so iframe fills frame) */
-.player-wrapper { max-width:1100px; margin:1rem auto; }
-.player-wrapper #player { width:100%; aspect-ratio:16/9; position:relative; border-radius:14px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.6); border:1px solid rgba(255,255,255,0.04); }
-.player-wrapper iframe, .player-wrapper .video-placeholder { position:absolute; top:0; left:0; width:100%; height:100%; }
-.player-wrapper .video-placeholder { z-index:1; }
-.player-wrapper iframe { z-index:3; }
-
-.main-wrapper .navbar { margin-bottom:1rem; }
-.main-wrapper .content { padding-top:1rem; }
-.video-meta { margin-bottom:1.5rem; }
-
-/* Prevent long subtitle/title text from creating horizontal scroll */
-#video-description, .video-meta, .video-meta * {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    overflow: visible;
-    word-break: break-word;
-    white-space: normal; /* allow wrapping */
-    max-width: 100%;
-}
-
-/* Collapsible sidebar styles - improved alignment */
-.lesson-header { padding: 8px 6px; margin-bottom:2px; border-radius:6px; }
-.lesson-arrow { width:18px; display:inline-block; color:#bbb; margin-left:6px; }
-.lesson-logo { background:#222; color:#fff; display:inline-flex; align-items:center; justify-content:center; }
-.topic-list { margin-top:2px; }
-
-/* visual highlight left strip when active - simple clean style */
-.lesson-block.active > .lesson-header { position:relative; }
-.lesson-block.active > .lesson-header:before { 
-    content:''; position:absolute; left:-12px; top:2px; bottom:2px; 
-    width:3px; background:#fff; border-radius:2px; 
-}
-
-/* hover/active styles */
-.lesson-header:hover { background: rgba(255,255,255,0.02); }
-.lesson-block.active .lesson-title { color:#fff; }
-
-/* Stylish Next/Back buttons */
-.video-controls { display:flex; gap:12px; justify-content:center; margin-top:12px; }
-.video-nav-btn {
-    font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    display:inline-flex; align-items:center; gap:10px;
-    font-weight:700; font-size:16px; padding:12px 20px; border-radius:12px; border:0; cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease;
-    position:relative; overflow:hidden;
-}
-.video-nav-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
-.video-nav-btn#btn-prev { background: linear-gradient(180deg,#ffffff,#f2f2f2); color:#111; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
-.video-nav-btn#btn-next { background: linear-gradient(180deg,#111,#0a0a0a); color:#fff; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.04); }
-.video-nav-btn#btn-prev:hover:not(:disabled){ transform: translateY(-4px); box-shadow: 0 26px 60px rgba(0,0,0,0.35); }
-.video-nav-btn#btn-next:hover:not(:disabled){ transform: translateY(-4px); box-shadow: 0 26px 80px rgba(0,0,0,0.5); }
-.video-nav-btn#btn-prev:active, .video-nav-btn#btn-next:active{ transform: translateY(-2px); }
-
-/* icon sizing inside buttons */
-.video-nav-btn svg{ width:18px;height:18px;display:inline-block;}
-.video-nav-btn .label{display:inline-block}
-
-/* shine effect */
-.video-nav-btn::after{ content:''; position:absolute; left:-60%; top:0; width:40%; height:100%; background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(255,255,255,0.18), rgba(255,255,255,0.06)); transform: skewX(-18deg) translateX(0); transition: transform .9s ease; pointer-events:none; }
-.video-nav-btn:hover::after{ transform: translateX(200%); }
-
-/* ripple effect */
-.ripple { position:absolute; border-radius:999px; transform:scale(0); background: rgba(255,255,255,0.14); animation:ripple .6s linear; pointer-events:none; }
-@keyframes ripple { to { transform: scale(6); opacity:0; } }
-
-
-/* connector lines for nested topics - clean text-only style */
-.topic-list { position:relative; padding-left:28px; margin-top:8px; }
-.topic-item { 
-    position:relative; padding:8px 12px 8px 28px; border-radius:4px;
-    transition: background-color 0.15s ease; display:flex; align-items:center; line-height:1.35; text-indent:0; word-break:break-word; white-space:normal;
-}
-.topic-item:hover { background:rgba(255,255,255,0.04); }
-.topic-item.selected { 
-    color:#fff; font-weight:600; background:rgba(255,255,255,0.08);
-    border-left:3px solid #fff; padding-left:19px;
-}
-/* topic box padding */
-.topic-box { padding:8px 12px; }
-/* Responsive: mobile-friendly layout */
-@media (max-width: 900px) {
-    .kelas-container { flex-direction:row; }
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 300px; max-width: 80%; transform: translateX(-110%); transition: transform .28s ease; z-index: 1200; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-    .sidebar.active { transform: translateX(0); }
-    /* backdrop when sidebar is open */
-    #sidebar-backdrop { position:fixed; inset:0; background: rgba(0,0,0,0.5); opacity:0; transition: opacity .22s ease; z-index:1100; display:none; }
-    #sidebar-backdrop.visible { display:block; opacity:1; }
-    /* collapse lesson arrow area and increase tap targets */
-    .lesson-header { padding: 12px 10px; }
-    .topic-item { padding: 10px 14px 10px 34px; }
-    .main-wrapper { padding: 0.75rem; }
-    .player-wrapper { max-width: 100%; margin: 0.5rem 0; }
-    .player-wrapper #player { border-radius:10px; }
-    /* make navbar smaller and burger obvious */
-    .navbar { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; }
-    .nav-left .burger { font-size:20px; padding:8px 10px; border-radius:8px; }
-    /* ensure content area uses full width when sidebar hidden */
-    body:not(.sidebar-open) .main-wrapper { margin-left:0; }
-}
-
-@media (max-width: 480px) {
-    .lesson-title { font-size:14px; }
-    .topic-item { font-size:14px; }
-    .video-nav-btn { padding:10px 14px; font-size:15px; }
-    .custom-play-btn { width:72px; height:72px; }
-}
-</style>
-@endpush
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/kelas.css') }}">

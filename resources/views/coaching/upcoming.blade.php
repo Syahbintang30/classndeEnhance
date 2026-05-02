@@ -36,10 +36,9 @@
         border-color: rgba(0,0,0,0.06);
     }
     .countdown.live {
-        background: #111111;
+        background: rgba(255,255,255,0.06);
         color: #ffffff;
-        border-color: rgba(255,255,255,0.06);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+        border-color: rgba(255,255,255,0.07);
     }
         .no-appointments { opacity:0.85; }
         .make-another { position:fixed; right:36px; bottom:36px; z-index:60 }
@@ -128,6 +127,12 @@
             background: #f6f7fb;
         }
     
+        :root[data-theme="light"] .slot {
+            background: #ffffff !important;
+            border: 1px solid rgba(15, 23, 42, 0.06) !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+    
         :root[data-theme="light"] .upcoming > div[style*="rgba(255,255,255,0.02)"] {
             background: #ffffff !important;
             border-color: rgba(15, 23, 42, 0.1) !important;
@@ -179,10 +184,10 @@
         :root[data-theme="light"] .btn-reschedule:hover,
         :root[data-theme="light"] .make-another .btn:hover,
         :root[data-theme="light"] .upcoming .btn:hover {
-    background: #1e293b;
-    color: #ffffff;
-    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
-}
+            background: #1e293b;
+            color: #ffffff;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
+        }
     
     
         :root[data-theme="light"] .countdown {
@@ -257,9 +262,9 @@
         }
 
         :root[data-theme="light"] .countdown.live {
-            background: #0f172a;
-            color: #ffffff;
-            border-color: #0f172a;
+            background: rgba(15, 23, 42, 0.06);
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.08);
         }
 
     /* Responsive adjustments */
