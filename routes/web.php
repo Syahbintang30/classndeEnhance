@@ -17,11 +17,13 @@ Route::get('/ndeofficial', function () {
     $promoTitle = \App\Models\Setting::get('nde.promo_title', null);
     $promoThumbnail = \App\Models\Setting::get('nde.promo_thumbnail', null);
     $packages = \App\Models\Package::orderBy('price')->get();
+    $faqItems = \App\Models\FaqItem::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
     return view('compro', [
         'promo_bunny_guid' => $promoGuid,
         'promo_title' => $promoTitle,
         'promo_thumbnail_url' => $promoThumbnail,
         'packages' => $packages,
+        'faq_items' => $faqItems,
     ]);
 })->name('compro');
 
@@ -205,6 +207,10 @@ Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureA
     Route::post('coaching/slot-capacities', [App\Http\Controllers\Admin\CoachingSlotCapacityController::class, 'store']);
     Route::post('coaching/slot-capacities/delete', [App\Http\Controllers\Admin\CoachingSlotCapacityController::class, 'destroy']);
     Route::get('coaching/warranty-tickets', [App\Http\Controllers\Admin\CoachingWarrantyTicketController::class, 'index'])->name('admin.coaching.warranty');
+    Route::get('faq', [App\Http\Controllers\Admin\FaqController::class, 'index'])->name('faq.index');
+    Route::post('faq', [App\Http\Controllers\Admin\FaqController::class, 'store'])->name('faq.store');
+    Route::put('faq/{faqItem}', [App\Http\Controllers\Admin\FaqController::class, 'update'])->name('faq.update');
+    Route::delete('faq/{faqItem}', [App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('faq.destroy');
     Route::get('settings/referral', [\App\Http\Controllers\Admin\SettingController::class, 'referralForm'])->name('referral.settings');
     Route::post('settings/referral', [\App\Http\Controllers\Admin\SettingController::class, 'referralSave'])->name('referral.save');
     Route::get('settings/referral/export', [\App\Http\Controllers\Admin\SettingController::class, 'exportReferralCsv'])->name('referral.export');

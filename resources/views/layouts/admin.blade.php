@@ -413,6 +413,9 @@
             <a class="side-link {{ request()->is('admin/transactions*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
                 <i class="ph ph-credit-card"></i> Transactions
             </a>
+            <a class="side-link {{ request()->is('admin/faq*') ? 'active' : '' }}" href="{{ route('admin.faq.index') }}">
+                <i class="ph ph-question"></i> FAQ
+            </a>
 
             @if($isSuper)
                 <div class="menu-label">Super Admin</div>

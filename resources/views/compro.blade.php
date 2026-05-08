@@ -225,6 +225,129 @@
         :root[data-theme="light"] ::-webkit-scrollbar-track { background: #e2e8f0; }
         :root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #94a3b8; }
         :root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .faq-top {
+            padding: 48px 24px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .faq-shell {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .faq-kicker {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .faq-title {
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 700;
+            color: var(--heading);
+            margin-top: 12px;
+        }
+
+        .faq-subtitle {
+            color: var(--text-dim);
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .faq-list {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 22px;
+            transition: border-color 0.25s ease, transform 0.25s ease;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        :root[data-theme="light"] .faq-item:hover {
+            border-color: rgba(15, 23, 42, 0.2);
+        }
+
+        .faq-question {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            color: var(--heading);
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .faq-answer p {
+            margin-top: 14px;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .faq-item.is-open .faq-answer {
+            max-height: 260px;
+        }
+
+        .faq-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .faq-icon::before,
+        .faq-icon::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background: var(--heading);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-icon::after {
+            transform: rotate(90deg);
+        }
+
+        .faq-item.is-open .faq-icon {
+            transform: rotate(45deg);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        :root[data-theme="light"] .faq-icon::before,
+        :root[data-theme="light"] .faq-icon::after {
+            background: #0f172a;
+        }
     </style>
 </head>
 <body class="font-sans text-gray-200 antialiased selection:bg-white/20 selection:text-white">
@@ -476,6 +599,38 @@
         </div>
     </section>
 
+    <section class="faq-top">
+        <div class="faq-shell">
+            <span class="faq-kicker">FAQ</span>
+            <h2 class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
+            <p class="faq-subtitle">Temukan jawaban singkat seputar layanan, program, dan tiket coaching NDE.</p>
+
+            <div class="faq-list">
+                @forelse(($faq_items ?? []) as $faq)
+                    <div class="faq-item {{ $loop->first ? 'is-open' : '' }}">
+                        <button class="faq-question" type="button">
+                            <span>{{ $faq->question }}</span>
+                            <span class="faq-icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>{{ $faq->answer }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <div class="faq-item is-open">
+                        <button class="faq-question" type="button">
+                            <span>Belum ada FAQ yang tersedia.</span>
+                            <span class="faq-icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Admin bisa menambahkan FAQ dari dashboard.</p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+
     <footer class="site-footer bg-[#07090d] border-t border-white/5 pt-16 pb-10 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-[1.35fr_repeat(4,minmax(0,1fr))] gap-8 items-start">
@@ -639,6 +794,24 @@
                 btn.addEventListener('click', function () {
                     var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
                     setTheme(next);
+                });
+            });
+        })();
+
+        (function () {
+            var items = document.querySelectorAll('.faq-item');
+            if (!items.length) return;
+
+            items.forEach(function (item) {
+                var button = item.querySelector('.faq-question');
+                if (!button) return;
+
+                button.addEventListener('click', function () {
+                    var isOpen = item.classList.contains('is-open');
+                    items.forEach(function (other) {
+                        other.classList.remove('is-open');
+                    });
+                    if (!isOpen) item.classList.add('is-open');
                 });
             });
         })();
