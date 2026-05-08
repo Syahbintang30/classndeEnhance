@@ -28,8 +28,25 @@ class CoachingController extends Controller
             $hasAvailableTicket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->exists();
         }
 
+        $warrantyTickets = $user
+            ? \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)->orderByDesc('id')->get()
+            : collect();
+        $hasWarrantyTicket = $user
+            ? \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)->where('status', 'available')->exists()
+            : false;
+        $selectedWarrantyTicket = null;
+        if ($user && request()->filled('warranty_ticket')) {
+            $selectedWarrantyTicket = \App\Models\CoachingWarrantyTicket::where('id', request()->input('warranty_ticket'))
+                ->where('user_id', $user->id)
+                ->where('status', 'available')
+                ->first();
+        }
+        if (! $selectedWarrantyTicket && $hasWarrantyTicket && ! $hasAvailableTicket) {
+            $selectedWarrantyTicket = $warrantyTickets->firstWhere('status', 'available');
+        }
+
     $coachingPkg = \App\Models\Package::where('slug', config('coaching.coaching_package_slug'))->first();
-    return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg'));
+    return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg', 'warrantyTickets', 'hasWarrantyTicket', 'selectedWarrantyTicket'));
     }
 
     // feedback is now saved together with booking inside storeBooking()
@@ -45,6 +62,7 @@ class CoachingController extends Controller
             'notes' => 'nullable|string|max:255',
             'keluh_kesah' => "nullable|string|max:{$keluhKesahMaxLength}",
             'want_to_learn' => 'nullable|string|max:255',
+            'warranty_ticket_id' => 'nullable|integer',
         ]);
 
     logger()->info('CoachingController@storeBooking called', ['user_id' => $user->id ?? null, 'payload' => $data]);
@@ -86,20 +104,51 @@ class CoachingController extends Controller
             return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time is too far in the future'])->withInput();
         }
 
-        // find available ticket
-        $ticket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->first();
-
-        if (! $ticket) {
-            if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                return response()->json(['ok' => false, 'errors' => ['ticket' => ['No available tickets. Please purchase one.']]], 422);
+        $warrantyTicket = null;
+        if (! empty($data['warranty_ticket_id'])) {
+            $warrantyTicket = \App\Models\CoachingWarrantyTicket::where('id', $data['warranty_ticket_id'])
+                ->where('user_id', $user->id)
+                ->where('status', 'available')
+                ->first();
+            if (! $warrantyTicket) {
+                if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
+                    return response()->json(['ok' => false, 'errors' => ['warranty_ticket' => ['Invalid warranty ticket.']]], 422);
+                }
+                return redirect()->route('coaching.index')->withErrors(['warranty_ticket' => 'Invalid warranty ticket.'])->withInput();
             }
-            return redirect()->route('coaching.index')->withErrors(['ticket' => 'No available tickets. Please purchase one.'])->withInput();
+        }
+
+        if (! $warrantyTicket) {
+            $hasStandardTicket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->exists();
+            if (! $hasStandardTicket) {
+                $warrantyTicket = \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)
+                    ->where('status', 'available')
+                    ->orderByDesc('id')
+                    ->first();
+            }
+        }
+
+        if ($warrantyTicket && $warrantyTicket->warranty_minutes) {
+            $sessionLength = (int) $warrantyTicket->warranty_minutes;
+        }
+
+        // find available ticket (only required if not using warranty ticket)
+        $ticket = null;
+        if (! $warrantyTicket) {
+            $ticket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->first();
+
+            if (! $ticket) {
+                if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
+                    return response()->json(['ok' => false, 'errors' => ['ticket' => ['No available tickets. Please purchase one.']]], 422);
+                }
+                return redirect()->route('coaching.index')->withErrors(['ticket' => 'No available tickets. Please purchase one.'])->withInput();
+            }
         }
 
         // Attempt atomic reservation: use DB::transaction to wrap create operations
         $booking = null;
         try {
-            \Illuminate\Support\Facades\DB::transaction(function() use (&$booking, $data, $user, $ticket) {
+            \Illuminate\Support\Facades\DB::transaction(function() use (&$booking, $data, $user, $ticket, $warrantyTicket, $sessionLength) {
                 $dt = \Carbon\Carbon::parse($data['booking_time']);
                 $date = $dt->toDateString();
                 $time = $dt->format('H:i');
@@ -131,6 +180,14 @@ class CoachingController extends Controller
                     throw new \RuntimeException('Slot full');
                 }
 
+                if ($warrantyTicket) {
+                    $ticket = CoachingTicket::create([
+                        'user_id' => $user->id,
+                        'is_used' => true,
+                        'source' => 'warranty',
+                    ]);
+                }
+
                 // Create approved bookings immediately so users can join without admin review.
                 $booking = CoachingBooking::create([
                     'user_id' => $user->id,
@@ -138,6 +195,7 @@ class CoachingController extends Controller
                     'booking_time' => $data['booking_time'],
                     'status' => 'accepted',
                     'session_number' => 1,
+                    'session_duration_minutes' => $sessionLength,
                     'notes' => isset($data['notes']) ? $data['notes'] : null,
                 ]);
 
@@ -159,9 +217,18 @@ class CoachingController extends Controller
 
                 // NOTE: CachingBooking table is deprecated — primary source of truth is coaching_bookings.
 
-                // reserve ticket
-                $ticket->is_used = true;
-                $ticket->save();
+                // reserve ticket (skip if already marked used from warranty)
+                if (! $warrantyTicket) {
+                    $ticket->is_used = true;
+                    $ticket->save();
+                }
+
+                if ($warrantyTicket) {
+                    $warrantyTicket->status = 'used';
+                    $warrantyTicket->used_at = now();
+                    $warrantyTicket->ticket_id = $ticket->id;
+                    $warrantyTicket->save();
+                }
             });
         } catch (\Throwable $e) {
             logger()->error('Booking transaction failed', ['error' => $e->getMessage()]);
@@ -265,14 +332,15 @@ class CoachingController extends Controller
     // Prepare room uniqueName
     $roomName = 'coaching-' . $booking->id;
 
-    // ensure related user is loaded to avoid lazy-loading in the view
-    $booking->loadMissing('user');
+    // ensure related user and ticket are loaded to avoid lazy-loading in the view
+    $booking->loadMissing(['user', 'ticket']);
 
-        // enforce schedule window for non-admins: allow from 10 minutes before until 60 minutes after start
+        // enforce schedule window for non-admins: allow from 10 minutes before until session duration ends
         try {
             $start = \Carbon\Carbon::parse($booking->booking_time);
             $now = now();
-            if (! $isAdmin && ($now->lt($start->copy()->subMinutes(10)) || $now->gt($start->copy()->addMinutes(60)))) {
+            $duration = (int) ($booking->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
+            if (! $isAdmin && ($now->lt($start->copy()->subMinutes(10)) || $now->gt($start->copy()->addMinutes($duration)))) {
                 abort(403, 'Session not available at this time');
             }
         } catch (\Throwable $e) {
@@ -303,7 +371,8 @@ class CoachingController extends Controller
         }
 
         // pass isAdmin flag to view so UI can render admin controls
-        return view('coaching.session', compact('booking', 'accessToken', 'roomName'))
+        $sessionDurationMinutes = (int) ($booking->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
+        return view('coaching.session', compact('booking', 'accessToken', 'roomName', 'sessionDurationMinutes'))
             ->with('isAdmin', $isAdmin);
     }
 
@@ -327,11 +396,12 @@ class CoachingController extends Controller
         $identity = $this->twilio->generateIdentity($user);
         $roomName = 'coaching-' . $booking->id;
 
-        // enforce schedule window: allow token from 10 minutes before start until 60 minutes after start
+        // enforce schedule window: allow token from 10 minutes before start until session duration ends
         try {
             $start = \Carbon\Carbon::parse($booking->booking_time);
             $now = now();
-            if ($now->lt($start->copy()->subMinutes(10)) || $now->gt($start->copy()->addMinutes(60))) {
+            $duration = (int) ($booking->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
+            if ($now->lt($start->copy()->subMinutes(10)) || $now->gt($start->copy()->addMinutes($duration))) {
                 return response()->json(['error' => 'Token not available at this time'], 403);
             }
         } catch (\Throwable $e) {

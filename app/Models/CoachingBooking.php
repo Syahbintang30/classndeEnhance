@@ -15,15 +15,17 @@ class CoachingBooking extends Model
         'booking_time',
         'status',
         'twilio_room_sid',
-    'session_number',
-    'notes',
-    'admin_note',
+        'session_number',
+        'session_duration_minutes',
+        'notes',
+        'admin_note',
     ];
 
     protected $dates = ['booking_time'];
     
     protected $casts = [
         'booking_time' => 'datetime',
+        'session_duration_minutes' => 'integer',
     ];
 
     public function user()

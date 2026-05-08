@@ -103,7 +103,7 @@
                                         $slotDate = $bt->toDateString();
                                         $key = $slotDate . ' ' . $slotTime;
                                         $taken = isset($slotCounts[$key]) ? $slotCounts[$key] : 0;
-                                        $sessionLength = (int) config('coaching.session_length_minutes', 60);
+                                        $sessionLength = (int) ($b->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
                                         $sessionStart = $bt->copy();
                                         $sessionEnd = $bt->copy()->addMinutes($sessionLength);
                                         $isPastByTime = $sessionEnd->lt(now());

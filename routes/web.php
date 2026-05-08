@@ -204,6 +204,7 @@ Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureA
     Route::get('coaching/slot-capacities', [App\Http\Controllers\Admin\CoachingSlotCapacityController::class, 'index'])->name('admin.coaching.slotcapacities');
     Route::post('coaching/slot-capacities', [App\Http\Controllers\Admin\CoachingSlotCapacityController::class, 'store']);
     Route::post('coaching/slot-capacities/delete', [App\Http\Controllers\Admin\CoachingSlotCapacityController::class, 'destroy']);
+    Route::get('coaching/warranty-tickets', [App\Http\Controllers\Admin\CoachingWarrantyTicketController::class, 'index'])->name('admin.coaching.warranty');
     Route::get('settings/referral', [\App\Http\Controllers\Admin\SettingController::class, 'referralForm'])->name('referral.settings');
     Route::post('settings/referral', [\App\Http\Controllers\Admin\SettingController::class, 'referralSave'])->name('referral.save');
     Route::get('settings/referral/export', [\App\Http\Controllers\Admin\SettingController::class, 'exportReferralCsv'])->name('referral.export');
@@ -360,7 +361,13 @@ Route::middleware(['auth', 'verified'])->group(function(){
         }
         $hasTicket = $user ? \App\Models\CoachingTicket::where('user_id', $user->id)->where('is_used', false)->exists() : false;
         $tickets = $user ? \App\Models\CoachingTicket::where('user_id', $user->id)->orderByDesc('id')->get() : collect();
-    return view('coaching.upcoming', compact('bookings', 'hasTicket', 'tickets'));
+        $warrantyTickets = $user
+            ? \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)->orderByDesc('id')->get()
+            : collect();
+        $hasWarrantyTicket = $user
+            ? \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)->where('status', 'available')->exists()
+            : false;
+    return view('coaching.upcoming', compact('bookings', 'hasTicket', 'tickets', 'warrantyTickets', 'hasWarrantyTicket'));
     })->name('coaching.upcoming');
     Route::post('/coaching/{booking}/note', [\App\Http\Controllers\CoachingController::class, 'updateNote'])->name('coaching.note');
     Route::post('/coaching/caching/{caching}/note', [\App\Http\Controllers\CoachingController::class, 'updateCachingNote'])->name('coaching.caching.note');

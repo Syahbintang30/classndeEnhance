@@ -205,7 +205,11 @@
 
 
 @section('content')
-    @if(auth()->check() && !$hasAvailableTicket && ($tickets->where('is_used', true)->count() > 0) && ($bookings->count() == 0))
+    @php
+        $hasSelectedWarranty = isset($selectedWarrantyTicket) && $selectedWarrantyTicket;
+        $hasAnyTicket = $hasAvailableTicket || $hasSelectedWarranty;
+    @endphp
+    @if(auth()->check() && !$hasAnyTicket && ($tickets->where('is_used', true)->count() > 0) && ($bookings->count() == 0))
         <div class="coaching-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;padding:40px 16px;">
             <div style="text-align:center;max-width:760px;width:100%;">
                 <h1 style="font-weight:600;font-size:28px;margin-bottom:12px">You don't have any sessions yet</h1>
@@ -221,6 +225,9 @@
                 <h1>Book Your Coaching Session</h1>
                 <p>Follow the steps below to schedule your one-on-one session.<br>Your available tickets will be applied automatically.</p>
                 <div style="margin-top: 16px; font-weight: 600;">Available Tickets: <span id="availableCount">{{ $tickets->where('is_used', false)->count() }}</span></div>
+                @if($hasSelectedWarranty)
+                    <div style="margin-top: 6px; font-weight: 600;">Using Warranty Ticket: {{ $selectedWarrantyTicket->warranty_minutes ?? '-' }} min</div>
+                @endif
             </div>
 
             <div id="step1-date" class="booking-step">
@@ -247,6 +254,9 @@
                 <form id="bookingOrCheckoutForm" method="POST" action="{{ route('coaching.book') }}">
                     @csrf
                     <input type="hidden" id="booking_time" name="booking_time" value="" />
+                    @if($hasSelectedWarranty)
+                        <input type="hidden" name="warranty_ticket_id" value="{{ $selectedWarrantyTicket->id }}" />
+                    @endif
                     <div>
                         <label for="session_notes" style="font-weight: 600; font-size: 14px; margin-bottom: 8px; display: block;">What would you like to focus on? (Optional)</label>
                         <textarea id="session_notes" name="notes" placeholder="e.g., Flamenco techniques, strumming patterns, music theory..." class="feedback-textarea"></textarea>
@@ -256,11 +266,11 @@
                         <h4>Your Selection</h4>
                         <p id="selectionSummaryText">—</p>
                         <p id="ticketInfoText" style="margin-top: 8px;"></p>
-                        <div id="priceLine" style="margin-top:10px;font-size:14px;display: {{ $hasAvailableTicket ? 'none' : 'block' }};">
+                        <div id="priceLine" style="margin-top:10px;font-size:14px;display: {{ $hasAnyTicket ? 'none' : 'block' }};">
                             Price: <strong>Rp {{ $coachingPkg ? number_format($coachingPkg->price,0,',','.') : '0' }}</strong>
                         </div>
                     </div>
-                    <button id="submitBtn" class="btn primary" type="submit" disabled data-has-ticket="{{ $hasAvailableTicket ? '1' : '0' }}">
+                        <button id="submitBtn" class="btn primary" type="submit" disabled data-has-ticket="{{ $hasAnyTicket ? '1' : '0' }}" data-using-warranty="{{ $hasSelectedWarranty ? '1' : '0' }}">
                         Select a Date & Time
                     </button>
                 </form>
@@ -430,6 +440,7 @@
 
         function updateSummaryAndButtonState() {
             const hasTicket = submitBtn.getAttribute('data-has-ticket') === '1';
+            const usingWarranty = submitBtn.getAttribute('data-using-warranty') === '1';
             if (!selectedDate) {
                 selectionSummaryTextEl.textContent = '—';
                 submitBtn.disabled = true;
@@ -446,8 +457,10 @@
                 summary += ` — ${selectedTime}`;
                 document.getElementById('booking_time').value = `${selectedDate} ${selectedTime}:00`;
                 submitBtn.disabled = false;
-                submitBtn.textContent = hasTicket ? 'Confirm & Use 1 Ticket' : 'Proceed to Payment';
-                ticketInfoTextEl.textContent = hasTicket ? '🎟️ This session will use 1 of your available tickets.' : '';
+                submitBtn.textContent = hasTicket ? (usingWarranty ? 'Confirm & Use Warranty Ticket' : 'Confirm & Use 1 Ticket') : 'Proceed to Payment';
+                ticketInfoTextEl.textContent = hasTicket
+                    ? (usingWarranty ? '🎟️ This session will use your warranty ticket.' : '🎟️ This session will use 1 of your available tickets.')
+                    : '';
             } else {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Select a Time';
@@ -507,7 +520,7 @@
                 alert('Failed to create booking. Please try again.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Confirm & Use 1 Ticket';
+                submitBtn.textContent = usingWarranty ? 'Confirm & Use Warranty Ticket' : 'Confirm & Use 1 Ticket';
             }
         });
 

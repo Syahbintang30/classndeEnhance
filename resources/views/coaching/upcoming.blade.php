@@ -415,6 +415,43 @@
             {{-- ticket badges removed per design request; summary above retained --}}
         </div>
 
+        {{-- Warranty tickets summary --}}
+        @php
+            $totalWarrantyTickets = isset($warrantyTickets) && is_iterable($warrantyTickets) ? collect($warrantyTickets)->count() : 0;
+            $availableWarrantyTickets = 0;
+            if (isset($warrantyTickets) && is_iterable($warrantyTickets)) {
+                $availableWarrantyTickets = collect($warrantyTickets)->where('status', 'available')->count();
+            }
+        @endphp
+        <div style="margin:0 0 20px 0;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                    <strong>Warranty Tickets</strong>
+                    <div style="font-size:13px;opacity:0.9">{{ $availableWarrantyTickets }} available of {{ $totalWarrantyTickets }} total</div>
+                </div>
+                @php
+                    $firstAvailableWarranty = isset($warrantyTickets) && is_iterable($warrantyTickets)
+                        ? collect($warrantyTickets)->firstWhere('status', 'available')
+                        : null;
+                @endphp
+                @if($firstAvailableWarranty)
+                    <div style="font-size:13px;opacity:0.95">
+                        <a href="{{ route('coaching.index', ['warranty_ticket' => $firstAvailableWarranty->id]) }}" class="btn" style="padding:8px 12px;border-radius:10px;">Apply Ticket</a>
+                    </div>
+                @endif
+            </div>
+            @if(isset($warrantyTickets) && is_iterable($warrantyTickets) && collect($warrantyTickets)->isNotEmpty())
+                <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+                    @foreach(collect($warrantyTickets)->take(5) as $wt)
+                        <div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;opacity:0.9;">
+                            <div>Warranty {{ $wt->warranty_minutes !== null ? $wt->warranty_minutes . ' min' : '-' }}</div>
+                            <div>{{ $wt->issued_at ? $wt->issued_at->format('d M Y') : ($wt->created_at ? $wt->created_at->format('d M Y') : '-') }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
         @if($bookings->isEmpty() && (empty($caching) || $caching->isEmpty()))
             <p class="no-appointments">You have no upcoming appointments.</p>
         @else
@@ -427,8 +464,7 @@
                     $dt = \Carbon\Carbon::parse($b->booking_time);
                     $now = \Carbon\Carbon::now();
                     // Treat booking as finished only when the session end time has passed.
-                    // Session length is configurable via coaching.session_length_minutes (default 60).
-                    $sessionLength = config('coaching.session_length_minutes', 60);
+                    $sessionLength = (int) ($b->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
                     try {
                         $sessionEnd = $dt->copy()->addMinutes($sessionLength);
                         $isPast = $sessionEnd->lt($now);

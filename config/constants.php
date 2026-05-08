@@ -22,6 +22,7 @@ return [
     ],
 
     'security' => [
+        'session_security_enabled' => filter_var(env('SECURITY_SESSION_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
         'session_timeout_minutes' => env('SECURITY_SESSION_TIMEOUT_MINUTES', 30),
         'max_concurrent_sessions' => env('SECURITY_MAX_CONCURRENT_SESSIONS', 3),
         'session_cache_hours' => env('SECURITY_SESSION_CACHE_HOURS', 24),

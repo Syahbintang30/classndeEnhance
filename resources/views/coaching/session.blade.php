@@ -4,6 +4,7 @@
 @php
     $participantName = optional($booking->user)->name ?: 'Participant';
     $sessionLabel = $booking->session_number ?? $booking->id;
+    $isWarrantySession = ($booking->ticket && $booking->ticket->source === 'warranty');
 @endphp
 
 <div class="vc-root">
@@ -205,6 +206,12 @@
     <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-modal-title">
         <h3 id="vc-modal-title">End Session</h3>
         <p id="vc-modal-text">Are you sure you want to end this session?</p>
+        @if(($isAdmin ?? false) && ! $isWarrantySession)
+            <div class="vc-modal-field">
+                <label for="vc-warranty-minutes" class="vc-modal-label">Warranty minutes to grant</label>
+                <input id="vc-warranty-minutes" type="number" min="0" max="180" inputmode="numeric" placeholder="e.g. 40" class="vc-modal-input" />
+            </div>
+        @endif
         <div class="vc-modal-actions">
             <button id="vc-modal-cancel" class="vc-btn">Cancel</button>
             <button id="vc-modal-leave-only" class="vc-btn">Leave only</button>
@@ -1077,6 +1084,27 @@
         margin-top: 16px;
     }
 
+    .vc-modal-field {
+        margin-top: 14px;
+        text-align: left;
+    }
+
+    .vc-modal-label {
+        display: block;
+        font-size: 12px;
+        color: #c7c7c7;
+        margin-bottom: 6px;
+    }
+
+    .vc-modal-input {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(10, 12, 16, 0.7);
+        color: #fff;
+    }
+
     .vc-btn {
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: #1b2231;
@@ -1241,6 +1269,7 @@
     const modalCancel = document.getElementById('vc-modal-cancel');
     const modalLeaveOnly = document.getElementById('vc-modal-leave-only');
     const modalConfirm = document.getElementById('vc-modal-confirm');
+    const warrantyInput = document.getElementById('vc-warranty-minutes');
     const sessionWarningModal = document.getElementById('vc-session-warning-backdrop');
     const sessionWarningOk = document.getElementById('vc-session-warning-ok');
     const sessionEndedModal = document.getElementById('vc-session-ended-backdrop');
@@ -1259,7 +1288,7 @@
     let isScreenSharing = false;
     let selfHangup = false;
     let unreadChatCount = 0;
-    let sessionDurationMinutes = 60; // Default 1 hour
+    let sessionDurationMinutes = {{ (int) ($sessionDurationMinutes ?? 60) }};
     let sessionFiveMinuteWarningShown = false;
     let sessionEndTimeNotificationShown = false;
     let sessionAutoEnded = false;
@@ -1682,14 +1711,20 @@
 
     async function endSessionByAdmin() {
         try {
+            const warrantyValue = warrantyInput ? parseInt(warrantyInput.value || '0', 10) : null;
+            const payload = (Number.isFinite(warrantyValue) && warrantyValue >= 0)
+                ? { warranty_minutes: warrantyValue }
+                : {};
             const res = await fetch(endRoomUrl, {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                body: JSON.stringify(payload)
             });
 
             let json = null;
@@ -1748,6 +1783,7 @@
         if (modalText && message) modalText.textContent = message;
         if (modalLeaveOnly) modalLeaveOnly.style.display = isAdmin ? '' : 'none';
         if (modalConfirm) modalConfirm.textContent = isAdmin ? 'End for Everyone' : 'End Now';
+        if (warrantyInput) warrantyInput.value = '';
         if (modal) modal.style.display = 'flex';
     }
 

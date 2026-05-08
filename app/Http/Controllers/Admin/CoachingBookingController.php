@@ -147,6 +147,16 @@ class CoachingBookingController extends Controller
             // This SDK version expects the room status string directly, not an attributes array.
             $client->video->v1->rooms($sid)->update('completed');
 
+            $warrantyMinutes = request()->input('warranty_minutes');
+            if ($warrantyMinutes !== null && $warrantyMinutes !== '') {
+                $warrantyMinutes = (int) $warrantyMinutes;
+                if ($warrantyMinutes < 0) {
+                    $warrantyMinutes = 0;
+                }
+                app(\App\Services\CoachingWarrantyService::class)
+                    ->issueFromBooking($booking, $warrantyMinutes, 'admin_end');
+            }
+
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json(['success' => true, 'room_sid' => $sid]);
             }

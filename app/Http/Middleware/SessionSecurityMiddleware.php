@@ -33,6 +33,10 @@ class SessionSecurityMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! config('constants.security.session_security_enabled', true)) {
+            return $next($request);
+        }
+
         // Only apply to authenticated users
         if (!Auth::check()) {
             return $next($request);

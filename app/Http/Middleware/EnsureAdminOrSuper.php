@@ -31,6 +31,7 @@ class EnsureAdminOrSuper
             'admin/lessons*',
             'admin/coaching/bookings*',
             'admin/coaching/slot-capacities*',
+            'admin/coaching/warranty-tickets*',
             'admin/users/packages*',
             'admin/packages*',
             'admin/transactions*',
