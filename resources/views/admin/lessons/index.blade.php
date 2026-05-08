@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Daftar Lesson')
+@section('title', 'Lesson List')
 
 @section('content')
 <div class="content-wrapper">
     <div class="d-flex justify-content-between align-items-center mb-4 header">
-        <h2>Daftar Lesson</h2>
-        <a href="{{ route('admin.lessons.create') }}" class="btn-add">+ Add Lessons</a>
+        <h2>Lessons</h2>
+        <a href="{{ route('admin.lessons.create') }}" class="btn-add">+ Add Lesson</a>
     </div>
 
     @if(session('success'))
@@ -29,9 +29,9 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>Judul</th>
+                    <th>Title</th>
                     <th>Type</th>
-                    <th>Aksi</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,7 +53,7 @@
                     </tr>
                 @empty
                     <tr style="pointer-events: none; background: transparent;">
-                        <td colspan="3" class="text-center pt-5">Belum ada lesson</td>
+                        <td colspan="3" class="text-center pt-5">No lessons yet</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -65,10 +65,10 @@
     <!-- Modal Konfirmasi -->
     <div class="modal-confirm" id="modalConfirm">
         <div class="modal_content">
-            <p class="mb-4 mt-2">Yakin Hapus?</p>
+            <p class="mb-4 mt-2">Are you sure you want to delete this?</p>
             <div class="actions mt-4">
-                <button id="confirmYes" class="btn-submit">Iya</button>
-                <button id="confirmNo" class="btn-back">Batal</button>
+                <button id="confirmYes" class="btn-submit">Yes</button>
+                <button id="confirmNo" class="btn-back">Cancel</button>
             </div>
         </div>
     </div>

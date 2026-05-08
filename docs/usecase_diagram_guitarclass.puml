@@ -1,0 +1,90 @@
+@startuml Use Case Diagram - Guitarclassbynde
+title Use Case Diagram — Guitarclassbynde
+
+left to right direction
+skinparam usecase {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+}
+skinparam actor {
+  BackgroundColor #E2E8F0
+}
+skinparam note {
+  BackgroundColor #FFF7ED
+  BorderColor #C2410C
+}
+
+actor "Tamu" as Guest
+actor "Peserta Didik" as Student
+actor "Admin" as Admin
+
+rectangle "Sistem Guitarclassbynde" {
+  together {
+    usecase "Login" as UC_Login
+    usecase "Registrasi" as UC_Register
+    usecase "Verifikasi email" as UC_Verify
+    usecase "Logout" as UC_Logout
+  }
+
+  together {
+    usecase "Lihat dan pilih kelas" as UC_Browse
+    usecase "Kelola profil" as UC_Profile
+    usecase "Melakukan pembayaran" as UC_Pay
+  }
+
+  together {
+    usecase "Akses materi video" as UC_Video
+    usecase "Ikuti tutorial lagu" as UC_Song
+    usecase "Lihat progress belajar" as UC_Progress
+    usecase "Melihat jadwal sesi" as UC_Schedule
+    usecase "Mendaftar sesi coaching" as UC_Book
+    usecase "Melihat status booking" as UC_Status
+    usecase "Melakukan sesi videocall" as UC_Call
+  }
+
+  usecase "Buat dan kelola\nsesi coaching" as UC_AdminCoach
+}
+
+Guest --> UC_Login
+Guest --> UC_Register
+
+Student --> UC_Verify
+Student --> UC_Browse
+Student --> UC_Profile
+Student --> UC_Pay
+Student --> UC_Video
+Student --> UC_Song
+Student --> UC_Progress
+Student --> UC_Schedule
+Student --> UC_Book
+Student --> UC_Status
+Student --> UC_Call
+Student --> UC_Logout
+
+Admin --> UC_Login
+Admin --> UC_Logout
+Admin --> UC_AdminCoach
+
+' Fitur konten & coaching: wajib melalui konteks "sudah berbayar" (satu gelembung pembayaran)
+UC_Video ..> UC_Pay : <<include>>
+UC_Song ..> UC_Pay : <<include>>
+UC_Progress ..> UC_Pay : <<include>>
+UC_Schedule ..> UC_Pay : <<include>>
+UC_Book ..> UC_Pay : <<include>>
+UC_Status ..> UC_Pay : <<include>>
+UC_Call ..> UC_Pay : <<include>>
+
+note as N1
+  **<<include>> ke Melakukan pembayaran** di sini bermaksud:
+  fitur tersebut **hanya dipakai jika** pengguna sudah
+  menyelesaikan pembayaran / punya hak akses dari transaksi
+  (bukan artinya setiap buka video sistem menagih ulang).
+  **Lihat kelas** & **Kelola profil** tidak di-include ke bayar:
+  bisa dipakai sebelum atau tanpa langganan penuh, sesuai kebijakan produk.
+end note
+
+note bottom of UC_Logout
+  **Precondition:** pengguna sedang terautentikasi.
+end note
+
+@enduml

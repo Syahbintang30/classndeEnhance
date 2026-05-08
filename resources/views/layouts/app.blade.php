@@ -214,7 +214,7 @@
                                 $u = auth()->user();
                                 $hasCourseAccess = $u->hasLmsAccess();
                                 $hasCoachingAccess = method_exists($u, 'hasCoachingAccess') && $u->hasCoachingAccess();
-                                $showSongTutorial = $hasCourseAccess;
+                                $showSongTutorial = $hasCourseAccess && $u->hasIntermediateAccess();
                             }
                         @endphp
 
@@ -232,7 +232,7 @@
                                 <a href="{{ route('lms.dashboard') }}" class="{{ request()->routeIs('lms.dashboard') ? 'active' : '' }}">Home</a>
                             @endauth
                             @if($hasCourseAccess)
-                                <a href="{{ route('lms.entry') }}" class="{{ request()->routeIs('kelas.show') || request()->routeIs('lms.entry') ? 'active' : '' }}">Courses</a>
+                                <a href="{{ route('lms.entry') }}" class="{{ request()->routeIs('kelas.show') || request()->routeIs('lms.entry') ? 'active' : '' }}">Lessons</a>
                             @endif
                             @auth
                                 <a href="{{ $coachingLink }}" class="{{ request()->routeIs('coaching.*') ? 'active' : '' }}">Coaching</a>

@@ -33,20 +33,20 @@
                     </tr>
                 @empty
                     <tr style="pointer-events: none; background: transparent;">
-                        <td colspan="6" class="text-center pt-5">Belum ada vouchers</td>
+                        <td colspan="6" class="text-center pt-5">No vouchers available yet</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
         {{-- {{ $vouchers->links('pagination::bootstrap-5') }} --}}
     </div>
-    <!-- Modal Konfirmasi -->
+    <!-- Confirmation Modal -->
     <div class="modal-confirm" id="modalConfirm">
         <div class="modal_content">
-            <p class="mb-4 mt-2">Yakin Hapus?</p>
+            <p class="mb-4 mt-2">Are you sure you want to delete this voucher?</p>
             <div class="actions mt-4">
-                <button id="confirmYes" class="btn-submit">Iya</button>
-                <button id="confirmNo" class="btn-back">Batal</button>
+                <button id="confirmYes" class="btn-submit">Yes</button>
+                <button id="confirmNo" class="btn-back">Cancel</button>
             </div>
         </div>
     </div>

@@ -440,7 +440,7 @@
         <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
         <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
         @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess())
+        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
         @endif
         <button id="theme-toggle-profile" type="button" class="lms-theme-btn" aria-label="Toggle theme">
@@ -486,36 +486,36 @@
             </div>
             <h2 class="profile-name">{{ auth()->user()->name }}</h2>
             <p class="profile-email">{{ auth()->user()->email }}</p>
-            <a href="{{ route('registerclass') }}" class="profile-btn-explore">Jelajahi Kursus</a>
+            <a href="{{ route('registerclass') }}" class="profile-btn-explore">Explore Courses</a>
         </div>
 
         <!-- RIGHT: Account Details -->
         <div class="profile-right">
             <div>
-                <h1 class="profile-section-title">Akun Saya</h1>
+                <h1 class="profile-section-title">My Account</h1>
 
                 <div class="info-grid">
                     <div class="info-card">
-                        <span class="info-label">Nama Lengkap</span>
+                        <span class="info-label">Full Name</span>
                         <div class="info-value">{{ auth()->user()->name }}</div>
                     </div>
                     <div class="info-card">
-                        <span class="info-label">Alamat Email</span>
+                        <span class="info-label">Email Address</span>
                         <div class="info-value" style="font-size:13px;">{{ auth()->user()->email }}</div>
                     </div>
                     <div class="subscription-card">
                         <div>
-                            <span class="info-label">Status Langganan</span>
+                            <span class="info-label">Subscription Status</span>
                             <div style="display:flex;align-items:center;margin-top:4px;">
                                 @php
                                     $pid = auth()->user()->package_id;
                                     $pkgName = match($pid) { 1 => 'Beginner', 2 => 'Intermediate', 3 => 'Intermediate', default => (isset($package) && $package ? $package->name : 'None') };
                                 @endphp
                                 <span class="info-value">{{ $pkgName }}</span>
-                                <span class="status-badge">Aktif</span>
+                                <span class="status-badge">Active</span>
                             </div>
                         </div>
-                        <a href="{{ route('registerclass') }}" class="manage-link">Kelola →</a>
+                        <a href="{{ route('registerclass') }}" class="manage-link">Manage →</a>
                     </div>
                 </div>
             </div>
@@ -525,21 +525,21 @@
                 <a href="{{ route('profile.edit') }}" class="action-btn">
                     <div class="action-left">
                         <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <span class="action-label">Edit Profil</span>
+                        <span class="action-label">Edit Profile</span>
                     </div>
                     <svg class="action-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
                 <a href="{{ route('profile.edit') }}#password" class="action-btn">
                     <div class="action-left">
                         <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <span class="action-label">Ubah Sandi</span>
+                        <span class="action-label">Change Password</span>
                     </div>
                     <svg class="action-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
                 <a href="{{ route('profile.referrals') }}" class="action-btn">
                     <div class="action-left">
                         <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        <span class="action-label">Referral Saya</span>
+                        <span class="action-label">My Referrals</span>
                     </div>
                     <svg class="action-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
@@ -547,12 +547,12 @@
 
             <!-- Referral Section -->
             <div class="referral-card">
-                <h3 class="referral-title">Kode Referral Anda</h3>
-                <p class="referral-desc">Bagikan kode ini ke teman dan dapatkan keuntungan bersama.</p>
+                <h3 class="referral-title">Your Referral Code</h3>
+                <p class="referral-desc">Share this code with your friends and enjoy the benefits together.</p>
                 <div class="referral-row">
                     <div class="referral-code-box">
                         <span class="referral-code">{{ auth()->user()->referral_code ?? '—' }}</span>
-                        <button class="copy-btn" onclick="copyCode('{{ auth()->user()->referral_code ?? '' }}', this)" title="Salin">
+                        <button class="copy-btn" onclick="copyCode('{{ auth()->user()->referral_code ?? '' }}', this)" title="Copy">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                         </button>
                     </div>

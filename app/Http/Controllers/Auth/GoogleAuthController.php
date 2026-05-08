@@ -28,7 +28,7 @@ class GoogleAuthController extends Controller
 
         return redirect()
             ->route('login')
-            ->with('error', 'Google Login belum dikonfigurasi. Isi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET.');
+            ->with('error', 'Google Login is not configured yet. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
     }
 
     // Simpan package_id ke session jika ada
@@ -61,12 +61,12 @@ class GoogleAuthController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return redirect()->route('login')->with('error', 'Login Google gagal. Silakan coba lagi.');
+            return redirect()->route('login')->with('error', 'Google login failed. Please try again.');
         }
 
         $email = strtolower(trim((string) $googleUser->getEmail()));
         if ($email === '') {
-            return redirect()->route('login')->with('error', 'Akun Google Anda tidak memiliki email yang valid.');
+            return redirect()->route('login')->with('error', 'Your Google account does not have a valid email address.');
         }
 
         $user = User::where('google_id', $googleUser->getId())

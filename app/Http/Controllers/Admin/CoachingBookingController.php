@@ -144,8 +144,8 @@ class CoachingBookingController extends Controller
                 return redirect()->back()->with('error', 'No active Twilio room attached to booking');
             }
 
-            // Twilio Video API update is performed via RoomContext: rooms(<sid>)->update(...)
-            $client->video->v1->rooms($sid)->update(['status' => 'completed']);
+            // This SDK version expects the room status string directly, not an attributes array.
+            $client->video->v1->rooms($sid)->update('completed');
 
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json(['success' => true, 'room_sid' => $sid]);

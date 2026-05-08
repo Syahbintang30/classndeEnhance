@@ -62,7 +62,7 @@
                 </tr>
             @empty
                 <tr style="pointer-events: none; background: transparent;">
-                    <td colspan="4" class="text-center pt-5">Belum ada users</td>
+                    <td colspan="4" class="text-center pt-5">No users found yet</td>
                 </tr>
             @endforelse
         </tbody>

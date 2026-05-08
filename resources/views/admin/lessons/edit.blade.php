@@ -9,11 +9,11 @@
 <form action="{{ route('admin.lessons.update', $lesson->id) }}" method="POST">
     @csrf @method('PUT')
     <div class="mb-3">
-        <label class="label">Judul</label>
+        <label class="label">Title</label>
         <input type="text" name="title" value="{{ $lesson->title }}" class="input form-control" required>
     </div>
     <div class="mb-3">
-        <label class="label">Position (urutan)</label>
+        <label class="label">Position (order)</label>
         <input type="number" name="position" value="{{ $lesson->position ?? 0 }}" class="input form-control">
     </div>
     <div class="select-menu">
@@ -40,7 +40,7 @@
     
     <div class="d-flex justify-content-end mt-3 gap-3">
         <button class="btn-submit">Update</button>
-        <a href="{{ route('admin.lessons.index') }}" class="btn-back">Kembali</a>
+        <a href="{{ route('admin.lessons.index') }}" class="btn-back">Back</a>
     </div>
 </form>
 @endsection

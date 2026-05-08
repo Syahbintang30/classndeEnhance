@@ -99,7 +99,7 @@
             </form>
 
             <div class="auth-footer-v2">
-                Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
+                Don’t have an account yet? <a href="{{ route('register') }}">Sign up here</a>
             </div>
         </section>
     </main>

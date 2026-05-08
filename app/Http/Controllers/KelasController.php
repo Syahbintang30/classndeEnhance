@@ -210,7 +210,7 @@ class KelasController extends Controller
                                 'name' => 'Upgrade Intermediate',
                                 'slug' => 'upgrade-intermediate',
                                 'price' => $diff,
-                                'description' => 'Upgrade from Beginner to Intermediate — bayar selisih harga saja.',
+                                'description' => 'Upgrade from Beginner to Intermediate — pay only the price difference.',
                                 'benefits' => "Upgrade fee to move from Beginner to Intermediate.",
                                 'image' => null,
                             ]);
@@ -436,11 +436,12 @@ class KelasController extends Controller
             $rawAmount = $price * max(1, $qty);
             $appliedReferralPercent = 0;
             $referralCode = session('pre_register.referral') ?: request()->input('referral');
-            if (! empty($referralCode)) {
-                $refUser = \App\Models\User::where('referral_code', $referralCode)->first();
-                $dbVal = \App\Models\Setting::get('referral.discount_percent', null);
-                $discountPercent = $dbVal !== null ? (int) $dbVal : (int) config('referral.discount_percent', 2);
-                if ($refUser) { $appliedReferralPercent = (int) $discountPercent; }
+            if ($package && ($package->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
+                if ($user) {
+                    $appliedReferralPercent = \App\Services\ReferralService::referrerCoachingDiscountPercent($user);
+                }
+            } else if (! empty($referralCode)) {
+                $appliedReferralPercent = \App\Services\ReferralService::guestCourseDiscountPercent($referralCode, $package);
             }
 
             $grossAmount = $appliedReferralPercent > 0 ? (int) round($rawAmount * (100 - $appliedReferralPercent) / 100) : (int) $rawAmount;
@@ -480,7 +481,7 @@ class KelasController extends Controller
     // only happen once the payment reaches 'settlement'. Keep a lightweight
     // acknowledgement and redirect the user to the payment UI where the
     // settlement will be processed via webhook / client polling.
-    return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'package_id' => $request->input('package_id')])->with('info', 'Silakan lanjutkan pembayaran untuk menyelesaikan pembelian. Akses paket akan diberikan setelah pembayaran terkonfirmasi.');
+    return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'package_id' => $request->input('package_id')])->with('info', 'Please continue to payment to complete your purchase. Package access will be granted after the payment is confirmed.');
     }
 
     /**
@@ -713,7 +714,7 @@ class KelasController extends Controller
             // Include order_id so client-side polling or waiting UI can pick it up.
             if (! in_array($lowerStat, ['settlement','capture','success'])) {
             return redirect()->route('kelas.payment', ['lesson' => $lesson->id, 'order_id' => $orderId])
-                ->with('info', 'Pembayaran belum dikonfirmasi. Silakan selesaikan atau tunggu konfirmasi di halaman pembayaran.');
+                ->with('info', 'Payment has not been confirmed yet. Please complete it or wait for confirmation on the payment page.');
             }
         }
 
@@ -807,7 +808,7 @@ class KelasController extends Controller
         if (! $hasSettlement) {
             // If we haven't recorded settlement yet, keep user on payment page
             return redirect()->route('kelas.payment', ['lesson' => $lesson->id])
-                ->with('error', 'Pembayaran belum dikonfirmasi. Silakan selesaikan pembayaran di halaman pembayaran.');
+                ->with('error', 'Payment has not been confirmed yet. Please complete the payment on the payment page.');
         }
 
         $package = null;

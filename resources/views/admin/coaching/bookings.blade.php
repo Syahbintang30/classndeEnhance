@@ -27,8 +27,8 @@
                         <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
 
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal mulai" />
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal akhir" />
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Start date" />
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="End date" />
 
                     <button class="btn btn-sm btn-primary">Filter</button>
                     @if(request()->hasAny(['q', 'status', 'date_from', 'date_to']))
@@ -187,7 +187,7 @@
                                     </div>
                                 @else
                                     @if($hasMeetingFinished || $isPastByTime)
-                                        <span class="badge bg-danger meeting-finished-badge">Meeting selesai</span>
+                                        <span class="badge bg-danger meeting-finished-badge">Meeting ended</span>
                                     @elseif(strtolower($b->status) === 'accepted' && $isLiveWindow)
                                         <span class="badge bg-warning text-dark meeting-finished-badge">On Going</span>
                                     @elseif(strtolower($b->status) === 'accepted')

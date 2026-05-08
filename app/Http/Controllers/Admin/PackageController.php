@@ -13,6 +13,22 @@ use App\Services\SecureFileUploadService;
 
 class PackageController extends Controller
 {
+    private function normalizeCurrencyInputs(Request $request): void
+    {
+        foreach (['price', 'member_price', 'non_member_price'] as $field) {
+            $value = $request->input($field);
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $normalized = preg_replace('/\D+/', '', (string) $value);
+            $request->merge([
+                $field => $normalized === '' ? null : $normalized,
+            ]);
+        }
+    }
+
     public function index()
     {
         $packages = Package::orderBy('id')->get();
@@ -31,6 +47,8 @@ class PackageController extends Controller
 
     public function store(Request $request)
     {
+        $this->normalizeCurrencyInputs($request);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:packages,slug',
@@ -109,6 +127,8 @@ class PackageController extends Controller
 
     public function update(Request $request, Package $package)
     {
+        $this->normalizeCurrencyInputs($request);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => [

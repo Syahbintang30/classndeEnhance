@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Lesson')
+@section('title', 'Lesson Details')
 
 @section('content')
 <div class="content-wrapper">
     <div class="d-flex justify-content-between align-items-center mb-4 header">
-        <h2>{{ $lesson->title }} Detail</h2>
-        <a href="{{ route('admin.topics.create', $lesson->id) }}" class="btn-add">+ Tambah Topik</a>
+        <h2>{{ $lesson->title }} Details</h2>
+        <a href="{{ route('admin.topics.create', $lesson->id) }}" class="btn-add">+ Add Topic</a>
     </div>
 
     {{-- Lesson-level headline/subheadline/youtube/description removed; topics contain per-topic data now --}}
@@ -15,10 +15,10 @@
             <thead>
                 <tr>
                     <th>Position</th>
-                    <th>Judul Topik</th>
+                    <th>Topic Title</th>
                     <th>Video URL</th>
                     <th>Description</th>
-                    <th>Aksi</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,9 +28,9 @@
                     <td>{{ $topic->title }}</td>
                     <td>
                         @if($topic->bunny_guid)
-                            <a href="{{ route('topics.stream', $topic->id) }}" target="_blank">Lihat Video (Bunny)</a>
+                            <a href="{{ route('topics.stream', $topic->id) }}" target="_blank">View Video (Bunny)</a>
                         @elseif(!empty($topic->video_url))
-                            <a href="{{ $topic->video_url }}" target="_blank">Lihat Video</a>
+                            <a href="{{ $topic->video_url }}" target="_blank">View Video</a>
                         @else
                             -
                         @endif
@@ -50,7 +50,7 @@
                 </tr>
                 @empty
                     <tr style="pointer-events: none; background: transparent;">
-                        <td colspan="5" class="text-center pt-5">Belum ada topik</td>
+                        <td colspan="5" class="text-center pt-5">No topics yet</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -59,10 +59,10 @@
         <!-- Modal Konfirmasi -->
         <div class="modal-confirm" id="modalConfirm">
             <div class="modal_content">
-                <p class="mb-4 mt-2">Yakin Hapus?</p>
+                <p class="mb-4 mt-2">Are you sure you want to delete this?</p>
                 <div class="actions mt-4">
-                    <button id="confirmYes" class="btn-submit">Iya</button>
-                    <button id="confirmNo" class="btn-back">Batal</button>
+                    <button id="confirmYes" class="btn-submit">Yes</button>
+                    <button id="confirmNo" class="btn-back">Cancel</button>
                 </div>
             </div>
         </div>

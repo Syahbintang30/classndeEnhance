@@ -2,19 +2,19 @@
    Applied across admin pages so modules match dashboard language. */
 
 .admin-shell {
-    --u-bg: #050505;
-    --u-surface: #0c0c0e;
-    --u-surface-soft: rgba(255, 255, 255, 0.02);
-    --u-border: rgba(255, 255, 255, 0.08);
-    --u-text: #f5f7fb;
-    --u-muted: #9aa3b2;
+    --u-bg: #f6f8fc;
+    --u-surface: #ffffff;
+    --u-surface-soft: rgba(37, 99, 235, 0.03);
+    --u-border: rgba(15, 23, 42, 0.08);
+    --u-text: #162033;
+    --u-muted: #64748b;
     --u-primary: #1f6feb;
     --u-success: #1ea971;
     --u-warning: #facc15;
     --u-danger: #ef4444;
     --u-radius-sm: 10px;
     --u-radius-md: 14px;
-    --u-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
+    --u-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
 }
 
 .admin-shell .admin-content {
@@ -55,7 +55,7 @@
 .admin-shell .admin-content .card,
 .admin-shell .admin-content .panel,
 .admin-shell .admin-content .box {
-    background: linear-gradient(180deg, rgba(16, 16, 18, 0.94), rgba(9, 9, 10, 0.94)) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98)) !important;
     border: 1px solid var(--u-border) !important;
     border-radius: var(--u-radius-md) !important;
     box-shadow: var(--u-shadow);
@@ -77,14 +77,14 @@
 .admin-shell .admin-content input[type="password"] {
     min-height: 40px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
     color: var(--u-text) !important;
 }
 
 .admin-shell .admin-content .form-control::placeholder,
 .admin-shell .admin-content textarea::placeholder {
-    color: rgba(255, 255, 255, 0.45);
+    color: #94a3b8;
 }
 
 .admin-shell .admin-content .form-control:focus,
@@ -92,7 +92,7 @@
 .admin-shell .admin-content textarea:focus {
     border-color: rgba(99, 163, 255, 0.55) !important;
     box-shadow: 0 0 0 0.15rem rgba(31, 111, 235, 0.2) !important;
-    background: rgba(255, 255, 255, 0.04) !important;
+    background: #ffffff !important;
 }
 
 /* Buttons */
@@ -125,16 +125,16 @@
 .admin-shell .admin-content .btn-outline-primary,
 .admin-shell .admin-content .btn-outline-secondary,
 .admin-shell .admin-content .btn-outline-danger {
-    background: transparent !important;
+    background: #ffffff !important;
     color: var(--u-text) !important;
-    border-color: rgba(255, 255, 255, 0.14) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
 }
 
 .admin-shell .admin-content .btn-outline-primary:hover,
 .admin-shell .admin-content .btn-outline-secondary:hover,
 .admin-shell .admin-content .btn-outline-danger:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #fff !important;
+    background: rgba(37, 99, 235, 0.08) !important;
+    color: #0f172a !important;
 }
 
 /* Badges */
@@ -159,7 +159,8 @@
 }
 
 .admin-shell .admin-content .badge.bg-secondary {
-    background: #3e4652 !important;
+    background: #e2e8f0 !important;
+    color: #334155 !important;
 }
 
 /* Tables */
@@ -177,8 +178,8 @@
 .admin-shell .admin-content .table thead th,
 .admin-shell .admin-content .custom-table thead th,
 .admin-shell .admin-content .light-custom-table thead th {
-    background: linear-gradient(180deg, rgba(16, 16, 19, 0.98), rgba(10, 10, 12, 0.98)) !important;
-    color: #fff !important;
+    background: linear-gradient(180deg, #f8fafc, #eef2f7) !important;
+    color: #0f172a !important;
     border-bottom: 1px solid var(--u-border) !important;
     font-weight: 700;
     white-space: nowrap;
@@ -190,14 +191,14 @@
 .admin-shell .admin-content .custom-table th,
 .admin-shell .admin-content .light-custom-table td,
 .admin-shell .admin-content .light-custom-table th {
-    border-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(148, 163, 184, 0.16) !important;
     vertical-align: top;
 }
 
 .admin-shell .admin-content .table.table-hover tbody tr:hover td,
 .admin-shell .admin-content .custom-table tbody tr:hover td,
 .admin-shell .admin-content .light-custom-table tbody tr:hover td {
-    background: rgba(255, 255, 255, 0.03) !important;
+    background: rgba(37, 99, 235, 0.04) !important;
 }
 
 /* Tabs / subnav buttons */
@@ -211,27 +212,27 @@
 .admin-shell .admin-content .modal-content,
 .admin-shell .admin-content .modal-inner,
 .admin-shell .admin-content .modal_content {
-    background: linear-gradient(180deg, #101113, #0b0c0f) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
     border-radius: 12px !important;
     color: var(--u-text) !important;
 }
 
 .admin-shell .admin-content .modal-header,
 .admin-shell .admin-content .modal-footer {
-    border-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(148, 163, 184, 0.18) !important;
 }
 
 /* Pagination */
 .admin-shell .admin-content .pagination .page-link {
-    background: rgba(255, 255, 255, 0.02) !important;
-    color: #e6ebf5 !important;
-    border-color: rgba(255, 255, 255, 0.09) !important;
+    background: #ffffff !important;
+    color: #334155 !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
     border-radius: 8px !important;
 }
 
 .admin-shell .admin-content .pagination .page-link:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
+    background: #eff6ff !important;
 }
 
 .admin-shell .admin-content .pagination .page-item.active .page-link {
@@ -242,20 +243,20 @@
 
 /* Settings page refinements */
 .admin-shell .admin-content .settings-clean-page .card-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18) !important;
     padding-top: 0.9rem;
     padding-bottom: 0.9rem;
 }
 
 .admin-shell .admin-content .settings-clean-page .form-label {
     font-weight: 700;
-    color: #e8eef8;
+    color: #1e293b;
     margin-bottom: 0.35rem;
 }
 
 .admin-shell .admin-content .settings-clean-page .form-check-label {
     font-weight: 700;
-    color: #ecf2ff;
+    color: #1e293b;
 }
 
 .admin-shell .admin-content .settings-clean-page .form-check small,

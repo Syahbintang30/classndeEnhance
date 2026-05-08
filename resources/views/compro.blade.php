@@ -248,9 +248,9 @@
                 </a>
 
                 <div class="hidden md:flex items-center space-x-10 md:justify-self-center">
-                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Tentang Kelas</a>
-                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Sistem Belajar</a>
-                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Harga</a>
+                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">About the Class</a>
+                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Learning System</a>
+                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Pricing</a>
                 </div>
 
                 <div class="hidden md:flex items-center gap-4 md:justify-self-end">
@@ -258,10 +258,10 @@
                         <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
                         <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
                     </button>
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Masuk LMS</a>
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Enter LMS</a>
                     @if (! $isLoggedIn)
                         <a href="{{ url('/registerclass') }}" class="register-cta bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all transform hover:scale-105">
-                            Daftar Sekarang
+                            Register Now
                         </a>
                     @endif
                 </div>
@@ -273,17 +273,17 @@
 
             <div id="mobile-menu" class="md:hidden hidden pb-6 border-t border-white/10">
                 <div class="flex flex-col gap-4 pt-5">
-                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Tentang Kelas</a>
-                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Sistem Belajar</a>
-                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Investasi</a>
+                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">About the Class</a>
+                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Learning System</a>
+                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Pricing</a>
                     <button id="theme-toggle-mobile" type="button" class="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 transition-all" aria-label="Toggle theme">
                         <svg id="theme-icon-moon-mobile" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
                         <svg id="theme-icon-sun-mobile" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
                     </button>
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Masuk LMS</a>
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Enter LMS</a>
                     @if (! $isLoggedIn)
                         <a href="{{ url('/registerclass') }}" class="register-cta inline-flex justify-center bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all">
-                            Daftar Sekarang
+                            Register Now
                         </a>
                     @endif
                 </div>
@@ -297,22 +297,22 @@
         
 
             <h1 class="hero-heading font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-tight mb-8">
-                Kuasai Gitar dengan<br>
-                <span class="hero-italic italic text-gray-400">Metode Terstruktur.</span>
+                Master Guitar with a<br>
+                <span class="hero-italic italic text-gray-400">Structured Method.</span>
             </h1>
 
             <p class="hero-body text-lg md:text-xl text-textDim max-w-2xl mx-auto leading-relaxed mb-12 font-light">
-                Akses seumur hidup ke materi video kualitas tinggi, disempurnakan dengan sesi <strong class="hero-strong text-white font-medium">1-on-1 Coaching</strong> untuk memastikan progres belajar Anda tidak pernah stagnan.
+                Get lifetime access to high-quality video lessons, enhanced with <strong class="hero-strong text-white font-medium">1-on-1 Coaching</strong> to keep your learning progress moving forward.
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="hero-btn-primary w-full sm:w-auto bg-white text-black font-semibold px-8 py-4 rounded-full text-base transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
-                    {{ $isLoggedIn ? 'Masuk LMS' : 'Mulai Perjalanan Anda' }}
+                    {{ $isLoggedIn ? 'Enter LMS' : 'Start Your Journey' }}
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </a>
                 <a href="#video-preview" class="hero-btn-secondary w-full sm:w-auto bg-transparent border border-white/20 text-white font-medium px-8 py-4 rounded-full text-base hover:bg-white/5 transition flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    Lihat Preview
+                    Watch Preview
                 </a>
             </div>
         </div>
@@ -350,15 +350,15 @@
                 </div>
                 <video id="promo-preview-video" class="absolute inset-0 w-full h-full object-cover hidden" playsinline muted loop controls></video>
             </div>
-            <p class="text-center text-textDim text-sm mt-6 font-light">Cuplikan materi kelas. Kualitas streaming didukung oleh Bunny.net</p>
+            <p class="text-center text-textDim text-sm mt-6 font-light">Class material preview. Streaming quality is powered by Bunny.net.</p>
         </div>
     </section>
 
     <section id="fitur" class="features-section py-24 px-6 bg-surface/50 border-y border-white/5">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <h2 class="feature-title font-serif text-3xl md:text-4xl text-white mb-4">Sistem Belajar <span class="hero-italic italic text-gray-400">Premium.</span></h2>
-                <p class="feature-body text-textDim max-w-2xl mx-auto">Platform ini dibangun khusus dengan teknologi terkini untuk memastikan pengalaman belajar yang interaktif dan tanpa hambatan.</p>
+                <h2 class="feature-title font-serif text-3xl md:text-4xl text-white mb-4">Premium <span class="hero-italic italic text-gray-400">Learning System.</span></h2>
+                <p class="feature-body text-textDim max-w-2xl mx-auto">This platform is built with modern technology to deliver an interactive and seamless learning experience.</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-12 md:gap-8">
@@ -366,8 +366,8 @@
                     <div class="feature-icon-wrap w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>
-                    <h3 class="feature-title font-serif text-2xl text-white">Video HD Tanpa Batas</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Materi video di-hosting secara privat menggunakan <span class="feature-highlight text-gray-300 font-medium">Bunny CDN</span>. Tonton berulang kali seumur hidup tanpa masalah buffering berlebih.</p>
+                    <h3 class="feature-title font-serif text-2xl text-white">Unlimited HD Video</h3>
+                    <p class="feature-body text-textDim leading-relaxed font-light">Video lessons are hosted privately with <span class="feature-highlight text-gray-300 font-medium">Bunny CDN</span>. Rewatch them anytime for life with smooth streaming.</p>
                 </div>
 
                 <div class="space-y-6 group">
@@ -375,7 +375,7 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
                     </div>
                     <h3 class="feature-title font-serif text-2xl text-white">Live Coaching 1-on-1</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Punya kendala teknik? Jadwalkan sesi <span class="italic">Video Call</span> langsung dengan instruktur di dalam web. Didukung oleh teknologi <span class="feature-highlight text-gray-300 font-medium">Twilio WebRTC</span> yang jernih.</p>
+                    <p class="feature-body text-textDim leading-relaxed font-light">Need help with technique? Book a live <span class="italic">video call</span> directly with the instructor on the website. Powered by clear and reliable <span class="feature-highlight text-gray-300 font-medium">Twilio WebRTC</span>.</p>
                 </div>
 
                 <div class="space-y-6 group">
@@ -391,8 +391,8 @@
 
     <section id="harga" class="pricing-section py-32 px-6 relative bg-black">
         <div class="max-w-4xl mx-auto text-center mb-16">
-            <h2 class="pricing-heading font-serif text-4xl md:text-5xl text-white mb-6">Pilih Level <span class="hero-italic italic text-gray-400">Belajarmu.</span></h2>
-            <p class="pricing-sub text-gray-400 text-lg font-light">Investasi sekali untuk skill seumur hidup. Tanpa langganan bulanan.</p>
+            <h2 class="pricing-heading font-serif text-4xl md:text-5xl text-white mb-6">Choose Your <span class="hero-italic italic text-gray-400">Learning Level.</span></h2>
+            <p class="pricing-sub text-gray-400 text-lg font-light">A one-time investment for a lifetime skill. No monthly subscription.</p>
         </div>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
@@ -437,9 +437,9 @@
                             @endforeach
                         </div>
                         @if($isLoggedIn)
-                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Dapatkan Akses Sekarang</a>
+                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Get Access Now</a>
                         @else
-                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Dapatkan Akses Sekarang</a>
+                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Get Access Now</a>
                         @endif
                     </div>
                 </div>
@@ -465,9 +465,9 @@
                             </div>
                         </div>
                         @if($isLoggedIn)
-                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Pilih Paket</a>
+                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Choose Package</a>
                         @else
-                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Pilih Paket</a>
+                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Choose Package</a>
                         @endif
                     </div>
                 </div>
@@ -486,29 +486,29 @@
                 </div>
 
                 <nav class="flex flex-col gap-2">
-                    <a href="#tentang" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">TENTANG KELAS</a>
-                    <a href="#fitur" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">SISTEM BELAJAR</a>
+                    <a href="#tentang" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">ABOUT THE CLASS</a>
+                    <a href="#fitur" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">LEARNING SYSTEM</a>
                     <a href="#video-preview" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">VIDEO PREVIEW</a>
                 </nav>
 
                 <nav class="flex flex-col gap-2">
-                    <a href="#harga" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HARGA PAKET</a>
+                    <a href="#harga" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">PACKAGE PRICING</a>
                     @foreach($packages as $pkg)
                     <a href="#harga" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">{{ strtoupper($pkg->name) }}</a>
                     @endforeach
                 </nav>
 
                 <nav class="flex flex-col gap-2">
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">MASUK LMS</a>
-                    <a href="{{ url('/registerclass') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">DAFTAR SEKARANG</a>
+                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">ENTER LMS</a>
+                    <a href="{{ url('/registerclass') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">REGISTER NOW</a>
                     <a href="{{ route('coaching.index') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">BOOK COACHING</a>
                 </nav>
 
                 <nav class="flex flex-col gap-2">
                     <a href="mailto:support@guitarclassbynde.id?subject=Support%20NDE%20Guitar%20Class" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">EMAIL SUPPORT</a>
                     <a href="https://wa.me/+6281273796646" target="_blank" rel="noopener" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">WHATSAPP ADMIN</a>
-                    <a href="{{ route('coaching.index') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">BANTUAN COACHING</a>
-                    <a href="{{ url('/ndeofficial') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HALAMAN UTAMA</a>
+                    <a href="{{ route('coaching.index') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">COACHING HELP</a>
+                    <a href="{{ url('/ndeofficial') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HOME PAGE</a>
                 </nav>
             </div>
 

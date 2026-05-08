@@ -32,20 +32,9 @@ class EnsureAdminOrSuper
             'admin/coaching/bookings*',
             'admin/coaching/slot-capacities*',
             'admin/users/packages*',
+            'admin/packages*',
+            'admin/transactions*',
         ];
-
-        // If there's a configured coaching package, allow editing that package only
-        try {
-            $coachingSlug = config('coaching.coaching_package_slug');
-            if ($coachingSlug) {
-                $coachingPkg = \App\Models\Package::where('slug', $coachingSlug)->first();
-                if ($coachingPkg) {
-                    $allowed[] = 'admin/packages/' . $coachingPkg->id . '/edit*';
-                }
-            }
-        } catch (\Throwable $e) {
-            // silently ignore config/db errors and proceed with base allowed list
-        }
 
         $path = ltrim($request->path(), '/'); // normalize
 

@@ -11,7 +11,18 @@ class SongTutorialController extends Controller
     // Show the song tutorial main viewer. If no song lessons exist, show the generic index.
     $lessons = \App\Models\Lesson::where('type', 'song')->with('topics')->orderBy('position')->get();
         if ($lessons->isEmpty()) {
-            return view('song_tutorial.index', ['hasIntermediate' => false, 'userPackage' => null]);
+            $u = $request->user();
+            return view('song_tutorial.index', [
+                'hasIntermediate' => $u && $this->userIsIntermediate($u),
+                'userPackage' => $u ? $u->package_id : null,
+            ]);
+        }
+        $user = $request->user();
+        if ($user && ! $this->userIsIntermediate($user)) {
+            return view('song_tutorial.index', [
+                'hasIntermediate' => false,
+                'userPackage' => $user->package_id,
+            ]);
         }
         // Redirect to first lesson viewer (same UX as /song-tutorial/{lesson})
         $first = $lessons->first();
@@ -86,8 +97,15 @@ class SongTutorialController extends Controller
     /**
      * Return the lesson main content as a partial (AJAX) - mirrors KelasController::content
      */
-    public function content(\App\Models\Lesson $lesson)
+    public function content(\App\Models\Lesson $lesson, Request $request)
     {
+        $user = $request->user();
+        if (! $user || ! $this->userIsIntermediate($user)) {
+            abort(403);
+        }
+        if (($lesson->type ?? null) !== 'song') {
+            abort(404);
+        }
         $lesson->load(['topics' => function($q){ $q->orderBy('position'); }]);
         // reuse the same partial used by kelas
         return view('kelas._lesson_content', compact('lesson'));

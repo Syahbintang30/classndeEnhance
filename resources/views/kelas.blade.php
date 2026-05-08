@@ -622,7 +622,7 @@
         <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
         <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
         @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess())
+        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
         @endif
     </div>

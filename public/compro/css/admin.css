@@ -11,9 +11,9 @@
 }
 
 .admin-nav .nav-wrap {
-    background: #000;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+    background: #ffffff;
+    border-bottom: 1px solid rgba(15,23,42,0.08);
+    box-shadow: 0 6px 20px rgba(15,23,42,0.08);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
@@ -27,28 +27,38 @@
     gap: 18px;
 }
 
-/* Make primary admin text white for consistent dark theme */
-body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .custom-table td, .modal_content {
-    color: #fff !important;
+/* Keep admin content readable on the global light theme */
+body.admin-shell,
+body.admin-shell .content-wrapper,
+body.admin-shell .card,
+body.admin-shell .card-body,
+body.admin-shell .custom-table,
+body.admin-shell .custom-table th,
+body.admin-shell .custom-table td,
+body.admin-shell .modal_content {
+    color: #162033 !important;
 }
 
 /* Ensure links in content are visible */
-.content a, a.btn-add, .admin-nav .nav-links a, .admin-nav .dropdown-item {
-    color: #fff !important;
+body.admin-shell .content a,
+body.admin-shell a.btn-add,
+body.admin-shell .admin-nav .nav-links a,
+body.admin-shell .admin-nav .dropdown-item {
+    color: #162033 !important;
 }
 
 /* Brand */
 .admin-nav .navbar-brand {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #fff;
+    color: #162033;
     text-decoration: none;
     transition: transform .18s ease, filter .18s ease;
 }
 .admin-nav .navbar-brand:hover {
     transform: translateY(-3px);
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
-    color: #fff;
+    filter: drop-shadow(0 8px 20px rgba(15,23,42,0.12));
+    color: #162033;
 }
 
 /* Links */
@@ -58,7 +68,7 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     gap: 20px;
 }
 .admin-nav .nav-links a {
-    color: rgba(255,255,255,0.9);
+    color: #475569;
     text-decoration: none;
     position: relative;
     padding: 6px 18px;
@@ -76,7 +86,7 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     transition: width .22s cubic-bezier(.2,.9,.2,1);
 }
 .admin-nav .nav-links a:hover {
-    color: #fff;
+    color: #162033;
     transform: translateY(-3px);
 }
 .admin-nav .nav-links a:hover:before,
@@ -84,39 +94,39 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     width: 100%;
 }
 .admin-nav .nav-links a.active {
-    color: #fff;
+    color: #162033;
     background-color: transparent;
 }
 
 /* User dropdown */
 .admin-nav .nav-username {
-    color: rgba(255,255,255,0.92);
+    color: #334155;
     font-weight: 600;
 }
 
 /* Dropdown menu overrides (Bootstrap) */
 .admin-nav .dropdown-menu {
-    background: rgba(18,18,18,0.76);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.96);
+    border: 1px solid rgba(15,23,42,0.08);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.65);
+    box-shadow: 0 12px 40px rgba(15,23,42,0.10);
 }
 .admin-nav .dropdown-item {
-    color: #d1d5db;
+    color: #334155;
     transition: background .15s ease, color .15s ease;
 }
 .admin-nav .dropdown-item:hover {
-    background: rgba(255,255,255,0.08);
-    color: #fff;
+    background: rgba(37,99,235,0.08);
+    color: #162033;
 }
 .admin-nav .nav-link.show {
-    color: #d1d5db !important;
+    color: #334155 !important;
 }
 
 /* Logout button */
 .admin-nav .dropdown-item button {
-    color: #d1d5db;
+    color: #334155;
     background: transparent;
     border: none;
     padding: 8px 12px;
@@ -125,15 +135,15 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     transition: background .15s ease, color .15s ease;
 }
 .admin-nav .dropdown-item button:hover {
-    background: rgba(255,255,255,0.08);
-    color: #fff;
+    background: rgba(37,99,235,0.08);
+    color: #162033;
 }
 
 .admin-nav .navbar-toggler {
-    background: rgba(255,255,255);
+    background: #e2e8f0;
     border: none;
     border-radius: 8px;
-    color: rgba(255,255,255,.8);
+    color: #334155;
     padding: 8px;
 }
 
@@ -151,7 +161,7 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     position: absolute;
     top: 100%; 
     left: 0;
-    background-color: #000; 
+    background-color: #ffffff; 
     z-index: 999;
     padding: 1rem 0 2rem 0;
   }
@@ -179,7 +189,7 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 
 /* Header */
 .header h2 {
-    color: #fff;
+    color: #162033;
     font-size: 20px ;
     font-weight: 700 ;
     align-items: center;
@@ -188,22 +198,22 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 }
 
 .header p{
-    color: #666;
+    color: #64748b;
     font-size: 14px;
     font-weight: 500;
     margin-top: 7px;
 }
 
 .btn-add {
-    background-color: #111;
-    color: #fff;
+    background-color: #eff6ff;
+    color: #1d4ed8;
     padding: 0.5rem 1.25rem;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.12s ease;
-    border: 1px solid #2a2a2a;
+    border: 1px solid #bfdbfe;
 }
 
 .btn-delete{
@@ -219,29 +229,29 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 }
 
 .btn-add:hover {
-    background-color: #1a1a1a;
-    color: #fff;
+    background-color: #dbeafe;
+    color: #1d4ed8;
     transform: translateY(-2px);
 }
 
 /* Card Table */
 .card-table {
-    background-color: rgba(255,255,255,0.04);
+    background-color: #ffffff;
     border-radius: 1rem;
     padding: 1rem 1.5rem 1.5rem 1.5rem;
-    border: 1px solid #222;
-    box-shadow: 0 3px 15px rgba(0,0,0, 0.3);
+    border: 1px solid rgba(15,23,42,0.08);
+    box-shadow: 0 3px 15px rgba(15,23,42, 0.08);
 }
 
 /* Dark card general */
 .card.shadow-sm {
-    background-color: rgba(10,10,10,0.7);
-    border: 1px solid #212121;
-    color: #fff;
+    background-color: #ffffff;
+    border: 1px solid rgba(15,23,42,0.08);
+    color: #162033;
 }
 .card.shadow-sm .card-body {
     background: transparent;
-    color: #fff;
+    color: #162033;
 }
 
 /* Table */
@@ -263,19 +273,19 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 }
 
 .custom-table td {
-    color: #fff;
+    color: #162033;
     padding: 1.25rem 1.5rem;
     vertical-align: middle;
 }
 
 .custom-table tbody tr:hover td {
-    background-color: #2a2a2a;
+    background-color: #eff6ff;
 }
 
 .custom-table td, 
 .custom-table th {
-  border-right: 1px solid #333; 
-  color: #fff;
+  border-right: 1px solid rgba(148,163,184,0.2); 
+  color: #162033;
 }
 
 .custom-table td:first-child,
@@ -292,7 +302,7 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 .actions .icon-btn {
     background: transparent;
     border: none;
-    color: #fff;
+    color: #334155;
     font-size: 1.1rem;
     margin-right: 0.5rem;
     cursor: pointer;
@@ -311,9 +321,9 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 
 .pagination .page-link {
     background-color: transparent;
-    color: #d1d5db;
+    color: #475569;
     margin: 0 0.2rem;
-    border: 1px solid #2a2a2a;
+    border: 1px solid rgba(148,163,184,0.28);
     width: 2.2rem;
     height: 2.2rem;
     display: flex;
@@ -323,14 +333,14 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 }
 
 .pagination .page-link:hover {
-    background-color: #1f1f1f;
-    color: #fff;
+    background-color: #eff6ff;
+    color: #162033;
 }
 
 .pagination .page-item.active .page-link {
-    background: linear-gradient(90deg,#222,#333);
+    background: linear-gradient(90deg,#2563eb,#1d4ed8);
     color: #fff;
-    border: 1px solid #444;
+    border: 1px solid #1d4ed8;
 }
 
 /* Dark variant for previously white tables — matches admin base UI */
@@ -338,30 +348,30 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background: rgba(8,8,8,0.95);
-    color: #fff;
+    background: #ffffff;
+    color: #162033;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 6px 20px rgba(15,23,42,0.08);
+    border: 1px solid rgba(15,23,42,0.08);
 }
 .light-custom-table th,
 .light-custom-table td{
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    color: #e6eef8;
+    border-bottom: 1px solid rgba(148,163,184,0.16);
+    color: #162033;
 }
 .light-custom-table thead th{
-    background: linear-gradient(180deg, rgba(16,16,16,0.95), rgba(10,10,10,0.95));
+    background: linear-gradient(180deg, #f8fafc, #eef2f7);
     font-weight: 700;
-    color: #fff;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: #162033;
+    border-bottom: 1px solid rgba(148,163,184,0.20);
 }
 .light-custom-table tbody tr:hover td{
-    background: rgba(255,255,255,0.02);
+    background: rgba(37,99,235,0.04);
 }
 .light-custom-table td.actions .icon-btn{
-    color: #fff;
+    color: #334155;
 }
 .light-custom-table td:first-child, .light-custom-table th:first-child{
     padding-left: 18px;
@@ -372,11 +382,11 @@ body, .content-wrapper, .card, .card-body, .custom-table, .custom-table th, .cus
 
 .small.text-muted {
     margin-top: 0.5rem;
-    color: #fff !important;
+    color: #64748b !important;
 }
 
 form .label{
-    color: #fff;
+    color: #162033;
     display: block;
     margin-bottom: 8px;
 }
@@ -386,22 +396,22 @@ form .input{
     margin-bottom: 8px;
     width: 100%;
     padding: 14px;
-    background: transparent;
-    border: 1px solid #333;
-    color: #fff;
+    background: #fff;
+    border: 1px solid rgba(148,163,184,0.28);
+    color: #162033;
     border-radius: 4px;
 }
 
 form .form-control{
-    background-color: transparent;
-    border: 1px solid #333;
-    color: #fff;
+    background-color: #fff;
+    border: 1px solid rgba(148,163,184,0.28);
+    color: #162033;
 }
 
 form .form-control:focus{
-    background-color: rgba(255,255,255,0.03);
-    color: #fff;
-    border-color: #4b4b4b;
+    background-color: #fff;
+    color: #162033;
+    border-color: #93c5fd;
     box-shadow: none;
 }
 
@@ -411,26 +421,26 @@ form .form-control:disabled{
 }
 
 .form-text, .form-text.text-muted, form small{
-        color: #fff !important;
+        color: #64748b !important;
 }
 
 /* placeholder styling */
 
 /* Force cards to be dark (override any default white .card) */
 .card {
-    background-color: rgba(8,8,8,0.9) !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
-    color: #fff !important;
+    background-color: #ffffff !important;
+    border: 1px solid rgba(15,23,42,0.08) !important;
+    color: #162033 !important;
 }
 .card .card-body {
     background: transparent !important;
-    color: #fff !important;
+    color: #162033 !important;
 }
 
 /* Specifically override the inline-styled filter container used in transactions view */
 .card .card-body > div[style] {
     background: transparent !important;
-    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    border-bottom: 1px solid rgba(148,163,184,0.20) !important;
     padding: 12px !important;
     display: flex !important;
     gap: 12px !important;
@@ -439,26 +449,26 @@ form .form-control:disabled{
 
 /* Make form controls dark */
 .form-select, .form-control, .form-select.form-select-sm, .input-group .form-control, input[type="date"] {
-    background-color: rgba(255,255,255,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
-    color: #fff !important;
+    background-color: #ffffff !important;
+    border: 1px solid rgba(148,163,184,0.28) !important;
+    color: #162033 !important;
 }
 .input-group-text {
-    background: rgba(255,255,255,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
-    color: #fff !important;
+    background: #f8fafc !important;
+    border: 1px solid rgba(148,163,184,0.28) !important;
+    color: #334155 !important;
 }
 
 /* Outline buttons used in filter presets */
 .btn-outline-secondary, .btn-outline-danger {
-    background: transparent !important;
-    color: #fff !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
+    background: #ffffff !important;
+    color: #162033 !important;
+    border: 1px solid rgba(148,163,184,0.28) !important;
 }
 
 /* Make the small input (search) dark too */
 .card .card-body .form-control[placeholder], .card .card-body input[placeholder] {
-    color: #fff !important;
+    color: #162033 !important;
 }
 
 /* Style native select dropdowns and options for dark theme; works in most browsers */
@@ -466,61 +476,61 @@ form .form-control:disabled{
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-color: rgba(255,255,255,0.02) !important;
-    color: #fff !important;
+    background-color: #ffffff !important;
+    color: #162033 !important;
 }
 .form-select option, select option {
-    background-color: #090909 !important;
-    color: #fff !important;
+    background-color: #ffffff !important;
+    color: #162033 !important;
 }
 .form-select:focus, select:focus {
     outline: none !important;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.03) !important;
-    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.08) !important;
+    border-color: rgba(37,99,235,0.28) !important;
 }
 
 /* Date input tweaks (WebKit-based browsers) */
 input[type="date"] {
-    color: #fff !important;
-    background-color: rgba(255,255,255,0.02) !important;
+    color: #162033 !important;
+    background-color: #ffffff !important;
 }
 input[type="date"]::-webkit-datetime-edit {
-    color: #fff !important;
+    color: #162033 !important;
 }
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1) contrast(120%) !important;
+    filter: none !important;
 }
 
 /* Firefox date icon */
 input[type="date"]::-moz-focus-inner {
-    color: #fff !important;
+    color: #162033 !important;
 }
 
 /* Ensure dropdown expansion arrow isn't white-on-white in some browsers */
 .form-select::-ms-expand {
-    filter: invert(1) !important;
+    filter: none !important;
 }
 
 /* Fallback: when browser refuses to style native dropdown menu, provide a small dark backdrop */
 .form-select[aria-expanded="true"]{
-    background-color: rgba(0,0,0,0.95) !important;
+    background-color: #ffffff !important;
 }
 input::placeholder,
 textarea::placeholder,
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-    color: #fff !important;
+    color: #94a3b8 !important;
 }
 
 input[type="file"] {
-    color: #fff; /* 'No file chosen' text */
+    color: #334155; /* 'No file chosen' text */
 }
 
 input[type="file"]::file-selector-button,
 input[type="file"]::-webkit-file-upload-button {
-    background: #111;
-    color: #fff;
-    border: 1px solid #333;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
     padding: 6px 10px;
     border-radius: 6px;
 }
@@ -533,9 +543,9 @@ input[type="file"]::-webkit-file-upload-button {
 .select-menu .select-btn{
     display: flex;
     height: 55px;
-    background: #111;
-    border: 1px solid #333;
-    color: rgba(255,255,255, 1);
+    background: #ffffff;
+    border: 1px solid rgba(148,163,184,0.28);
+    color: #162033;
     padding: 20px;
     font-size: 16px;
     font-weight: 400;
@@ -559,8 +569,8 @@ input[type="file"]::-webkit-file-upload-button {
     padding: 20px;
     margin-top: 10px;
     border-radius: 4px;
-    background-color: #111;
-    border: 1px solid #333;
+    background-color: #ffffff;
+    border: 1px solid rgba(148,163,184,0.28);
     display: none;
 }
 
@@ -570,19 +580,19 @@ input[type="file"]::-webkit-file-upload-button {
 }
 
 select option {
-    background-color: #1a1a1a;
-    color: #fff;            
-    border: 1px solid #333;
+    background-color: #ffffff;
+    color: #162033;            
+    border: 1px solid rgba(148,163,184,0.28);
 }
 
 select option:checked {
-    background-color: #333;
-    color: #fff;
+    background-color: #dbeafe;
+    color: #162033;
 }
 
 select option:hover {
-    background-color: #666 !important; 
-    color: #fff;
+    background-color: #eff6ff !important; 
+    color: #162033;
 }
 
 .options .option{
@@ -592,7 +602,7 @@ select option:hover {
     padding: 0 16px;
     border-radius: 4px;
     align-items: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid rgba(148,163,184,0.2);
 }
 
 .options .option:last-child {
@@ -600,17 +610,17 @@ select option:hover {
 }
 
 .options .option:hover{
-    background: #333;
+    background: #eff6ff;
 }
 
 .option .option-text{
     font-size: 16px;
-    color: #fff;
+    color: #162033;
 }
 
 .btn-submit {
-    background: #fff;
-    color: #000;
+    background: #1d4ed8;
+    color: #fff;
     padding: 10px 36px;
     border-radius: 24px;
     font-weight: 700;
@@ -620,13 +630,13 @@ select option:hover {
 }
 
 .btn-back{
-    color: #fff;
+    color: #1d4ed8;
     padding: 10px 26px;
     background-color: transparent;
     border-radius: 24px;
     font-weight: 500;
     font-size: 14px;
-    border: 1px solid #fff;
+    border: 1px solid #bfdbfe;
     text-decoration: none;
     text-transform: uppercase;
 }
@@ -643,15 +653,15 @@ select option:hover {
 }
 
 .modal_content {
-    background-color: rgba(20,20,20,.9);
-    color: #fff;
+    background-color: rgba(255,255,255,.98);
+    color: #162033;
     padding: 24px;
     border-radius: 12px;
     text-align: center;
     max-width: 320px;
     width: 100%;
-    box-shadow: 0 5px 5px rgba(255,255,255,0.08);
-    border: 1px solid #333;
+    box-shadow: 0 12px 32px rgba(15,23,42,0.10);
+    border: 1px solid rgba(148,163,184,0.28);
 }
 
 .modal_content .actions {
@@ -661,109 +671,140 @@ select option:hover {
     gap: 10px;
 }
 
-/* === Global Admin Dark Theme Overrides ===
-   Centralized overrides to ensure all admin pages use dark black background
-   and white text. These rules are intentionally specific and use !important
+/* === Global Admin Light Theme Overrides ===
+   Centralized overrides to keep all admin pages consistent with the
+   light visual system. These rules stay specific and use !important
    only where necessary to override Bootstrap defaults. */
 
-body {
-    background: #060606 !important;
-    color: #fff !important;
+body.admin-shell {
+    background: #f4f7fb !important;
+    color: #162033 !important;
 }
 
-/* Ensure containers and common layout blocks are dark */
-.container, .container-fluid, .content-wrapper, .main, .card, .card-body, .table-responsive {
+/* Ensure containers and common layout blocks follow the light shell */
+body.admin-shell .container,
+body.admin-shell .container-fluid,
+body.admin-shell .content-wrapper,
+body.admin-shell .main,
+body.admin-shell .card,
+body.admin-shell .card-body,
+body.admin-shell .table-responsive {
     background: transparent !important;
-    color: #fff !important;
+    color: #162033 !important;
 }
 
 /* Cards */
-.card {
-    background-color: #070707 !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
-    color: #fff !important;
+body.admin-shell .card {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(15,23,42,0.08) !important;
+    color: #162033 !important;
 }
-.card .card-body { background: transparent !important; }
+body.admin-shell .card .card-body { background: transparent !important; }
 
 /* Tables (general) */
-table.table, .table thead, .table tbody, .table th, .table td {
-    color: #fff !important;
+body.admin-shell table.table,
+body.admin-shell .table thead,
+body.admin-shell .table tbody,
+body.admin-shell .table th,
+body.admin-shell .table td {
+    color: #162033 !important;
 }
-.table thead th {
-    background: #0a0a0a !important;
-    color: #fff !important;
-    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+body.admin-shell .table thead th {
+    background: #f8fafc !important;
+    color: #162033 !important;
+    border-bottom: 1px solid rgba(148,163,184,0.18) !important;
 }
-.table tbody tr td {
+body.admin-shell .table tbody tr td {
     background: transparent !important;
 }
-.table.table-hover tbody tr:hover td {
-    background: rgba(255,255,255,0.02) !important;
+body.admin-shell .table.table-hover tbody tr:hover td {
+    background: rgba(37,99,235,0.04) !important;
 }
-.table th, .table td {
-    border-color: rgba(255,255,255,0.04) !important;
+body.admin-shell .table th,
+body.admin-shell .table td {
+    border-color: rgba(148,163,184,0.16) !important;
 }
 
 /* Form controls */
-.form-control, .form-select, textarea, input[type="text"], input[type="email"], input[type="number"], input[type="date"] {
-    background-color: rgba(255,255,255,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
-    color: #fff !important;
+body.admin-shell .form-control,
+body.admin-shell .form-select,
+body.admin-shell textarea,
+body.admin-shell input[type="text"],
+body.admin-shell input[type="email"],
+body.admin-shell input[type="number"],
+body.admin-shell input[type="date"] {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(148,163,184,0.28) !important;
+    color: #162033 !important;
 }
-.form-control:focus, .form-select:focus {
-    background-color: rgba(255,255,255,0.03) !important;
-    border-color: rgba(255,255,255,0.12) !important;
+body.admin-shell .form-control:focus,
+body.admin-shell .form-select:focus {
+    background-color: #ffffff !important;
+    border-color: rgba(37,99,235,0.28) !important;
     box-shadow: none !important;
 }
 
 /* Buttons: keep color contrast for primary/outline types */
-.btn, .btn-outline-primary, .btn-outline-secondary, .btn-primary, .btn-secondary {
+body.admin-shell .btn,
+body.admin-shell .btn-primary,
+body.admin-shell .btn-secondary {
     color: #fff !important;
 }
-.btn-primary { background-color: #1f6feb !important; border-color: #175bd1 !important; }
-.btn-outline-primary { background: transparent !important; border: 1px solid rgba(255,255,255,0.08) !important; }
-.btn-outline-secondary { background: transparent !important; border: 1px solid rgba(255,255,255,0.06) !important; }
-.btn:disabled, .btn.disabled { opacity: 0.6; }
+body.admin-shell .btn-primary { background-color: #1f6feb !important; border-color: #175bd1 !important; }
+body.admin-shell .btn-outline-primary,
+body.admin-shell .btn-outline-secondary {
+    background: #ffffff !important;
+    border: 1px solid rgba(148,163,184,0.28) !important;
+    color: #162033 !important;
+}
+body.admin-shell .btn:disabled,
+body.admin-shell .btn.disabled { opacity: 0.6; }
 
 /* Badges */
-.badge { color: #fff !important; }
-.badge.bg-success { background-color: #198754 !important; }
-.badge.bg-danger { background-color: #dc3545 !important; }
-.badge.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
+body.admin-shell .badge { color: #fff !important; }
+body.admin-shell .badge.bg-success { background-color: #198754 !important; }
+body.admin-shell .badge.bg-danger { background-color: #dc3545 !important; }
+body.admin-shell .badge.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
 
 /* Dropdowns / menus */
-.dropdown-menu, .dropdown-item {
-    background: rgba(10,10,10,0.98) !important;
-    color: #e6eef8 !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
+body.admin-shell .dropdown-menu,
+body.admin-shell .dropdown-item {
+    background: rgba(255,255,255,0.98) !important;
+    color: #162033 !important;
+    border: 1px solid rgba(148,163,184,0.18) !important;
 }
-.dropdown-item:hover { background: rgba(255,255,255,0.04) !important; color: #fff !important; }
+body.admin-shell .dropdown-item:hover { background: rgba(37,99,235,0.08) !important; color: #162033 !important; }
 
 /* Pagination */
-.pagination .page-link { background: transparent !important; color: #d1d5db !important; border: 1px solid rgba(255,255,255,0.04) !important; }
-.pagination .page-item.active .page-link { background: linear-gradient(90deg,#222,#2b2b2b) !important; color: #fff !important; }
+body.admin-shell .pagination .page-link { background: #ffffff !important; color: #475569 !important; border: 1px solid rgba(148,163,184,0.24) !important; }
+body.admin-shell .pagination .page-item.active .page-link { background: linear-gradient(90deg,#2563eb,#1d4ed8) !important; color: #fff !important; }
 
 /* Modals and overlays */
-.modal, .modal-backdrop, .modal-inner, .modal_content {
-    background: rgba(6,6,6,0.95) !important;
-    color: #fff !important;
+body.admin-shell .modal,
+body.admin-shell .modal-inner,
+body.admin-shell .modal_content {
+    color: #162033 !important;
 }
-.modal .modal-dialog .modal-content { background: #0b0b0b !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.04) !important; }
+body.admin-shell .modal .modal-dialog .modal-content { background: #ffffff !important; color: #162033 !important; border: 1px solid rgba(148,163,184,0.20) !important; }
 
 /* Toasts */
-.toast.text-bg-secondary { background: #0b0b0b !important; color: #fff !important; }
-.toast.text-bg-success { background: #198754 !important; color: #fff !important; }
+body.admin-shell .toast.text-bg-secondary { background: #ffffff !important; color: #162033 !important; border: 1px solid rgba(148,163,184,0.20) !important; }
+body.admin-shell .toast.text-bg-success { background: #198754 !important; color: #fff !important; }
 
-/* Small muted text: use light gray rather than Bootstrap default dim */
-.text-muted, .small.text-muted { color: rgba(255,255,255,0.6) !important; }
+/* Small muted text */
+body.admin-shell .text-muted,
+body.admin-shell .small.text-muted { color: #64748b !important; }
 
 /* Links */
-a, a.btn, .admin-nav .nav-links a, .admin-nav .dropdown-item { color: #fff !important; }
+body.admin-shell a:not(.btn-primary):not(.btn-success):not(.btn-danger),
+body.admin-shell .admin-nav .nav-links a,
+body.admin-shell .admin-nav .dropdown-item { color: inherit !important; }
 
-/* Make sure any inline white backgrounds are visually overridden */
-[style*="background:#fff"], [style*="background: #fff"] {
-    background: transparent !important;
-    color: #fff !important;
+/* Keep inline white panels aligned with the light theme */
+body.admin-shell [style*="background:#fff"],
+body.admin-shell [style*="background: #fff"] {
+    background: #ffffff !important;
+    color: #162033 !important;
 }
 
 /* safe defaults for svg icons and images that assume dark text */
@@ -847,47 +888,48 @@ img, svg { filter: none !important; }
 /* === Overrides for list groups, alerts and small components (Payment Methods page) === */
 .list-group {
     background: transparent !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(148,163,184,0.18) !important;
     border-radius: 8px;
 }
 .list-group-item {
-    background: transparent !important;
-    border-bottom: 1px solid rgba(255,255,255,0.03) !important;
-    color: #fff !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(148,163,184,0.14) !important;
+    color: #162033 !important;
 }
 .list-group-item:last-child { border-bottom: none !important; }
-.list-group-item .form-label, .list-group-item label { color: rgba(255,255,255,0.9) !important; }
-.list-group-item .form-control, .list-group-item .form-control-sm { background: rgba(255,255,255,0.02) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.06) !important; }
-.list-group-item .form-control:focus { box-shadow: none !important; border-color: rgba(255,255,255,0.12) !important; }
+.list-group-item .form-label, .list-group-item label { color: #334155 !important; }
+.list-group-item .form-control, .list-group-item .form-control-sm { background: #ffffff !important; color: #162033 !important; border: 1px solid rgba(148,163,184,0.28) !important; }
+.list-group-item .form-control:focus { box-shadow: none !important; border-color: rgba(37,99,235,0.28) !important; }
 
 /* Alerts (success/error) */
-.alert { background: rgba(15,15,15,0.95) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.04) !important; }
-.alert.alert-success { background: rgba(24,135,84,0.12) !important; color: #dff0d8 !important; }
-.alert.alert-danger { background: rgba(220,53,69,0.08) !important; color: #f8d7da !important; }
+.alert { background: #ffffff !important; color: #162033 !important; border: 1px solid rgba(148,163,184,0.18) !important; }
+.alert.alert-success { background: rgba(24,135,84,0.10) !important; color: #166534 !important; }
+.alert.alert-danger { background: rgba(220,53,69,0.08) !important; color: #991b1b !important; }
 
 /* Form-check inside list items */
-.form-check, .form-check-input, .form-check-label { color: #fff !important; }
+body.admin-shell .form-check,
+body.admin-shell .form-check-label { color: #162033 !important; }
 
 .modal-content.custom{
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    color: #fff;
+    background-color: #ffffff;
+    border: 1px solid rgba(148,163,184,0.28);
+    color: #162033;
 }
 
 .modal-content .modal-header{
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid rgba(148,163,184,0.18);
 }
 
 .modal-content .modal-footer{
-    border-top: 1px solid #333;
+    border-top: 1px solid rgba(148,163,184,0.18);
 }
 
 .card.custom{
-    background-color: transparent;
-    border: 1px solid #333;
-    color: #fff;
+    background-color: #ffffff;
+    border: 1px solid rgba(148,163,184,0.20);
+    color: #162033;
 }
 
 .card.custom hr{
-    color: #666;
+    color: #94a3b8;
 }

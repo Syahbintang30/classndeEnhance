@@ -8,7 +8,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="card-title mb-3 text-white">Edit Package</h3>
+                    <h3 class="card-title mb-3">Edit Package</h3>
 
                     @if ($errors->any())
                         <div class="alert alert-danger">
@@ -31,41 +31,41 @@
                             </div>
 
                             <div class="mb-3 col-md-6">
-                                <label class="form-label text-white">Price (Rupiah ex:125000)</label>
-                                <input name="price" value="{{ old('price',$package->price) }}" type="number" class="form-control" />
+                                <label class="form-label">Price (Rupiah ex:125000)</label>
+                                <input name="price" value="{{ old('price',$package->price) }}" type="text" inputmode="numeric" autocomplete="off" data-currency-input class="form-control" />
                             </div>
 
                             <div class="mb-3 col-md-6">
-                                <label class="form-label text-white">Member Price (opsional)</label>
-                                <input name="member_price" value="{{ old('member_price',$package->member_price) }}" type="number" class="form-control" />
+                                <label class="form-label">Member Price (optional)</label>
+                                <input name="member_price" value="{{ old('member_price',$package->member_price) }}" type="text" inputmode="numeric" autocomplete="off" data-currency-input class="form-control" />
                             </div>
 
                             <div class="mb-3 col-md-6">
-                                <label class="form-label text-white">Non-Member Price (opsional)</label>
-                                <input name="non_member_price" value="{{ old('non_member_price',$package->non_member_price) }}" type="number" class="form-control" />
+                                <label class="form-label">Non-Member Price (optional)</label>
+                                <input name="non_member_price" value="{{ old('non_member_price',$package->non_member_price) }}" type="text" inputmode="numeric" autocomplete="off" data-currency-input class="form-control" />
                             </div>
 
                             <div class="mb-3 col-md-12">
-                                <label class="form-label text-white">Slug (e.g. beginner/intermediate/coaching-ticket)</label>
+                                <label class="form-label">Slug (e.g. beginner/intermediate/coaching-ticket)</label>
                                 <input name="slug" value="{{ old('slug',$package->slug) }}" class="form-control" />
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <div class="form-text text-muted mb-2">Untuk package coaching-ticket: isi kedua harga ini agar checkout otomatis bedakan member vs non-member. Jika kosong, sistem fallback ke Price.</div>
+                            <div class="form-text text-muted mb-2">For the `coaching-ticket` package, fill in both prices so checkout can automatically distinguish member vs non-member pricing. If left empty, the system will fall back to the main Price.</div>
 
-                            <label class="form-label text-white">Description</label>
+                            <label class="form-label">Description</label>
                             <textarea name="description" class="form-control" rows="5">{{ old('description', $package->description) }}</textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-white">Benefits (one per line)</label>
+                            <label class="form-label">Benefits (one per line)</label>
                             <textarea name="benefits" class="form-control" rows="5" placeholder="Write each benefit on its own line">{{ old('benefits', $package->benefits) }}</textarea>
                             <div class="form-text">Benefits will be shown as a list on the class cards. Use one benefit per line.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-white">Image (optional)</label>
+                            <label class="form-label">Image (optional)</label>
                             @if(!empty($package->image))
                                 <div class="mb-2"><img src="{{ asset('storage/'.$package->image) }}" alt="{{ $package->name }}" style="height:96px;object-fit:cover;border-radius:6px"></div>
                             @endif
@@ -84,3 +84,15 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-currency-input]').forEach(function (input) {
+        input.addEventListener('input', function () {
+            this.value = this.value.replace(/\D+/g, '');
+        });
+    });
+});
+</script>
+@endpush

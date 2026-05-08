@@ -7,9 +7,9 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h2 class="mb-1">System Settings</h2>
-            <p class="mb-0 text-muted">Atur konfigurasi inti sistem dalam satu tempat.</p>
+            <p class="mb-0 text-muted">Manage the core system configuration in one place.</p>
         </div>
-        <form method="POST" action="{{ route('admin.settings.reset') }}" onsubmit="return confirm('Reset semua setting ke default?')">
+        <form method="POST" action="{{ route('admin.settings.reset') }}" onsubmit="return confirm('Reset all settings to default?')">
             @csrf
             <button type="submit" class="btn btn-outline-secondary btn-sm">Reset Default</button>
         </form>
@@ -24,7 +24,7 @@
 
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Gagal menyimpan.</strong>
+            <strong>Failed to save.</strong>
             <ul class="mb-0 mt-2">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -41,7 +41,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="mb-0">Package Access</h5>
-                    <small class="text-muted">Paket yang dianggap punya akses intermediate.</small>
+                    <small class="text-muted">Packages that are considered to have intermediate access.</small>
                 </div>
             </div>
             <div class="card-body">
@@ -49,7 +49,7 @@
                     <div class="col-lg-6">
                         <label for="intermediate_package_id" class="form-label">Primary Package</label>
                         <select name="intermediate_package_id" id="intermediate_package_id" class="form-select">
-                            <option value="">Pilih package</option>
+                            <option value="">Select a package</option>
                             @foreach($packages as $package)
                                 <option value="{{ $package->id }}" {{ ($settings['intermediate_package_id']->value ?? '2') == $package->id ? 'selected' : '' }}>
                                     {{ $package->name }} (ID {{ $package->id }})
@@ -67,7 +67,7 @@
                             value="{{ $settings['intermediate_package_slugs']->value ?? 'intermediate,upgrade-intermediate' }}"
                             placeholder="intermediate,upgrade-intermediate"
                         >
-                        <small class="text-muted">Pisahkan dengan koma.</small>
+                        <small class="text-muted">Separate values with commas.</small>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Coaching Window</h5>
-                <small class="text-muted">Kontrol batas booking dan rentang join sesi.</small>
+                <small class="text-muted">Control booking limits and the allowed session join window.</small>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -135,7 +135,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Notifications</h5>
-                <small class="text-muted">Aktifkan atau nonaktifkan email notifikasi.</small>
+                <small class="text-muted">Enable or disable notification emails.</small>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -150,7 +150,7 @@
                                 {{ ($settings['notifications.admin_booking_enabled']->value ?? 'true') === 'true' ? 'checked' : '' }}
                             >
                             <label class="form-check-label" for="admin_booking_notifications">Admin booking email</label>
-                            <small class="text-muted d-block">Kirim notif ke admin saat user membuat booking.</small>
+                            <small class="text-muted d-block">Send an email to the admin when a user creates a booking.</small>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -164,7 +164,7 @@
                                 {{ ($settings['notifications.user_booking_status_enabled']->value ?? 'true') === 'true' ? 'checked' : '' }}
                             >
                             <label class="form-check-label" for="user_status_notifications">User status email</label>
-                            <small class="text-muted d-block">Kirim notif ke user saat status booking berubah.</small>
+                            <small class="text-muted d-block">Send an email to the user when the booking status changes.</small>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
     <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Package Reference</h6>
-            <small class="text-muted">Untuk lookup cepat ID dan slug.</small>
+            <small class="text-muted">Quick reference for package IDs and slugs.</small>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

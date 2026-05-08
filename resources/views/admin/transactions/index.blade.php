@@ -79,7 +79,7 @@
             <div class="d-flex justify-content-between align-items-start mb-3 header">
                 <div>
                     <h2 class="mb-1">Transactions</h2>
-                    <p class="mb-0 text-muted">Pantau histori pembayaran dan filter cepat per periode.</p>
+                    <p class="mb-0 text-muted">Track payment history and quickly filter by date range.</p>
                 </div>
             </div>
 
@@ -103,9 +103,9 @@
                                     <input type="date" name="to" id="filter-to" value="{{ request()->get('to') }}" class="form-control form-control-sm" title="To date" />
                                 </div>
                                 <div class="txn-preset-row">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="today">Hari ini</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="week">Minggu ini</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="month">Bulan ini</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="today">Today</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="week">This Week</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-preset="month">This Month</button>
                                     <button type="button" class="btn btn-sm btn-outline-danger" id="preset-clear">Clear</button>
                                 </div>
                             </div>
@@ -155,7 +155,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">Belum ada transaksi.</td>
+                                        <td colspan="8" class="text-center text-muted py-4">No transactions found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

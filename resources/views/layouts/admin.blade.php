@@ -28,17 +28,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --adm-bg: #050505;
-            --adm-surface: #0a0a0a;
-            --adm-card: #111111;
-            --adm-border: rgba(255, 255, 255, 0.10);
-            --adm-text: #f5f5f5;
-            --adm-muted: #8a8a8a;
-            --adm-primary: #ffffff;
-            --adm-primary-soft: rgba(255, 255, 255, 0.08);
+            --adm-bg: #f6f8fc;
+            --adm-surface: #ffffff;
+            --adm-card: #ffffff;
+            --adm-border: rgba(15, 23, 42, 0.10);
+            --adm-text: #162033;
+            --adm-muted: #6b7280;
+            --adm-primary: #1d4ed8;
+            --adm-primary-soft: rgba(29, 78, 216, 0.10);
             --adm-ok: #22c55e;
             --adm-warn: #f43f5e;
-            --adm-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+            --adm-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
         }
 
         body.admin-shell,
@@ -51,7 +51,9 @@
 
         body.admin-shell {
             margin: 0;
-            background: radial-gradient(circle at 100% -20%, rgba(255, 255, 255, 0.05) 0%, #050505 40%) !important;
+            background:
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.10) 0%, rgba(59, 130, 246, 0) 28%),
+                linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%) !important;
             color: var(--adm-text) !important;
         }
 
@@ -90,9 +92,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #050505;
-            background: linear-gradient(145deg, #ffffff, #d4d4d4);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, .45);
+            color: #ffffff;
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
         }
 
         .admin-shell .menu-label {
@@ -111,7 +113,7 @@
             padding: .65rem .75rem;
             border-radius: 10px;
             text-decoration: none;
-            color: #d4d4d4;
+            color: #475569;
             font-size: .92rem;
             font-weight: 600;
             transition: background .16s ease, color .16s ease, transform .16s ease;
@@ -119,15 +121,15 @@
         }
 
         .admin-shell .side-link:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
+            background: rgba(37, 99, 235, 0.08);
+            color: #0f172a;
             transform: translateX(1px);
         }
 
         .admin-shell .side-link.active {
             color: var(--adm-primary);
             background: var(--adm-primary-soft);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+            box-shadow: inset 0 0 0 1px rgba(29, 78, 216, .10);
         }
 
         .admin-shell .side-link i {
@@ -144,7 +146,7 @@
             position: sticky;
             top: 0;
             z-index: 1010;
-            background: rgba(5, 5, 5, .88) !important;
+            background: rgba(248, 251, 255, .92) !important;
             border-bottom: 1px solid var(--adm-border) !important;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -160,7 +162,7 @@
         .admin-shell .side-toggle {
             border: 1px solid var(--adm-border);
             background: var(--adm-card);
-            color: #f5f5f5;
+            color: var(--adm-text);
             border-radius: 10px;
             width: 40px;
             height: 40px;
@@ -182,7 +184,7 @@
             border-radius: 12px;
             height: 42px;
             padding: 0 .95rem 0 2.2rem;
-            color: #f5f5f5;
+            color: var(--adm-text);
         }
 
         .admin-shell .top-search i {
@@ -199,10 +201,10 @@
             top: calc(100% + 8px);
             left: 0;
             right: 0;
-            background: #0b0b0b;
+            background: #ffffff;
             border: 1px solid var(--adm-border);
             border-radius: 12px;
-            box-shadow: 0 16px 42px rgba(0, 0, 0, .45);
+            box-shadow: 0 16px 42px rgba(15, 23, 42, .12);
             overflow: hidden;
             z-index: 1050;
             display: none;
@@ -223,7 +225,7 @@
             text-align: left;
             border: 0;
             background: transparent;
-            color: #ececec;
+            color: var(--adm-text);
             padding: .62rem .78rem;
             font-size: .9rem;
             cursor: pointer;
@@ -231,7 +233,7 @@
 
         .admin-shell .top-search-item:hover,
         .admin-shell .top-search-item.active {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(37, 99, 235, 0.08);
         }
 
         .admin-shell .top-search-item small {
@@ -268,9 +270,9 @@
 
         .admin-shell .btn-lms {
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, .28);
-            background: #ffffff;
-            color: #050505;
+            border: 1px solid rgba(37, 99, 235, .22);
+            background: #eff6ff;
+            color: #1d4ed8;
             padding: .45rem .75rem;
             font-size: .85rem;
             font-weight: 700;
@@ -286,7 +288,7 @@
         .admin-shell .btn-lms:visited,
         .admin-shell .btn-lms:hover,
         .admin-shell .btn-lms:focus {
-            color: #050505 !important;
+            color: #1d4ed8 !important;
             text-decoration: none;
         }
 
@@ -294,7 +296,7 @@
             border: 1px solid var(--adm-border);
             border-radius: 999px;
             background: var(--adm-card);
-            color: #f5f5f5;
+            color: var(--adm-text);
             padding: .35rem .6rem;
             font-size: .85rem;
             font-weight: 700;
@@ -307,8 +309,8 @@
             width: 28px;
             height: 28px;
             border-radius: 999px;
-            background: linear-gradient(140deg, #ffffff, #d4d4d4);
-            color: #050505;
+            background: linear-gradient(140deg, #dbeafe, #bfdbfe);
+            color: #1d4ed8;
             font-size: .75rem;
             display: inline-flex;
             align-items: center;
@@ -328,7 +330,7 @@
         }
 
         .admin-shell .dropdown-item {
-            color: #e5e5e5;
+            color: var(--adm-text);
             font-weight: 600;
         }
 
@@ -337,15 +339,15 @@
             text-align: left;
             border: none;
             background: transparent;
-            color: #e5e5e5;
+            color: var(--adm-text);
             font-weight: 600;
             padding: 0;
         }
 
         .admin-shell .dropdown-item:hover,
         .admin-shell .dropdown-item button:hover {
-            color: #ffffff;
-            background: transparent;
+            color: #0f172a;
+            background: rgba(37, 99, 235, 0.08);
         }
 
         @media (max-width: 1200px) {
@@ -360,7 +362,7 @@
                 transform: translateX(-100%);
                 transition: transform .22s ease;
                 width: 272px;
-                box-shadow: 18px 0 40px rgba(15, 23, 42, .25);
+                box-shadow: 18px 0 40px rgba(15, 23, 42, .12);
             }
 
             .admin-shell .admin-sidebar.open {
@@ -386,7 +388,7 @@
         <aside id="adminSidebar" class="admin-sidebar">
             <a class="brand" href="{{ route('admin.dashboard') }}">
                 <span class="brand-badge"><i class="ph ph-chart-pie-slice"></i></span>
-                <span>ClassNDE Admin</span>
+                <span>Guitarclassbynde Admin</span>
             </a>
 
             <div class="menu-label">Main</div>
@@ -405,15 +407,15 @@
             <a class="side-link {{ request()->is('admin/coaching/slot-capacities*') ? 'active' : '' }}" href="{{ url('/admin/coaching/slot-capacities') }}">
                 <i class="ph ph-timer"></i> Slot Capacity
             </a>
+            <a class="side-link {{ request()->is('admin/packages*') ? 'active' : '' }}" href="{{ route('admin.packages.index') }}">
+                <i class="ph ph-package"></i> Packages
+            </a>
+            <a class="side-link {{ request()->is('admin/transactions*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
+                <i class="ph ph-credit-card"></i> Transactions
+            </a>
 
             @if($isSuper)
                 <div class="menu-label">Super Admin</div>
-                <a class="side-link {{ request()->is('admin/packages*') ? 'active' : '' }}" href="{{ route('admin.packages.index') }}">
-                    <i class="ph ph-package"></i> Packages
-                </a>
-                <a class="side-link {{ request()->is('admin/transactions*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
-                    <i class="ph ph-credit-card"></i> Transactions
-                </a>
                 <a class="side-link {{ request()->is('admin/vouchers*') ? 'active' : '' }}" href="{{ route('admin.vouchers.index') }}">
                     <i class="ph ph-ticket"></i> Vouchers
                 </a>
@@ -448,7 +450,7 @@
                     <div class="top-actions">
                         <a class="btn-lms" href="{{ route('lms.entry') }}" target="_blank" rel="noopener" aria-label="Buka LMS">
                             <i class="ph ph-graduation-cap"></i>
-                            <span>Buka LMS</span>
+                            <span>Open LMS</span>
                         </a>
                         <a class="icon-btn-lite" href="{{ route('admin.dashboard') }}" title="Refresh dashboard"><i class="ph ph-arrow-clockwise"></i></a>
                         <div class="dropdown user-dropdown">
@@ -578,7 +580,7 @@
                     .slice(0, 8);
 
                 if (!filteredItems.length) {
-                    results.innerHTML = '<div class="top-search-empty">Tidak ada menu yang cocok.</div>';
+                    results.innerHTML = '<div class="top-search-empty">No matching menu found.</div>';
                     results.classList.add('show');
                     activeIndex = -1;
                     return;

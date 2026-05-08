@@ -373,7 +373,7 @@
         <a href="{{ route('lms.entry') }}" class="lms-nav-link">Lessons</a>
         <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link">Coaching</a>
         @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess())
+        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link">Song Tutorial</a>
         @endif
         <button id="theme-toggle-ep" type="button" class="lms-theme-btn" aria-label="Toggle theme">
@@ -387,8 +387,8 @@
     <div class="ep-inner">
 
         <div>
-            <h1 class="ep-page-title">Edit Profil</h1>
-            <p class="ep-page-sub">Kelola informasi akun dan keamanan Anda</p>
+            <h1 class="ep-page-title">Edit Profile</h1>
+            <p class="ep-page-sub">Manage your account information and security</p>
         </div>
 
         <!-- Flash Messages -->
@@ -413,8 +413,8 @@
 
         <!-- Profile Info Section -->
         <div class="ep-section">
-            <h2 class="ep-section-title">Informasi Profil</h2>
-            <p class="ep-section-sub">Perbarui detail akun dan alamat email Anda.</p>
+            <h2 class="ep-section-title">Profile Information</h2>
+            <p class="ep-section-sub">Update your account details and email address.</p>
 
             <!-- Avatar -->
             <div class="ep-avatar-row">
@@ -430,9 +430,9 @@
                 <div>
                     <button id="change-photo" type="button" class="ep-change-photo-btn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 2.97 2.97L8 18l-4 1 1-4 11.5-11.5z"></path></svg>
-                        Ganti Foto
+                        Change Photo
                     </button>
-                    <p style="font-size:12px;color:var(--ep-muted);margin:6px 0 0;">JPG, PNG maks. 2MB</p>
+                    <p style="font-size:12px;color:var(--ep-muted);margin:6px 0 0;">JPG, PNG max. 2MB</p>
                 </div>
             </div>
 
@@ -442,13 +442,13 @@
                 <input id="photo" name="photo" type="file" accept="image/*" style="display:none">
 
                 <div class="ep-field">
-                    <label class="ep-label" for="name">Nama Lengkap</label>
+                    <label class="ep-label" for="name">Full Name</label>
                     <input class="ep-input" id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255">
                     @if($errors->has('name'))<div class="ep-field-error">{{ $errors->first('name') }}</div>@endif
                 </div>
 
                 <div class="ep-field">
-                    <label class="ep-label" for="email">Alamat Email</label>
+                    <label class="ep-label" for="email">Email Address</label>
                     <input class="ep-input" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255">
                     @if($errors->has('email'))<div class="ep-field-error">{{ $errors->first('email') }}</div>@endif
                 </div>
@@ -456,24 +456,24 @@
                 <div class="ep-btn-row">
                     <button type="submit" class="ep-btn-primary">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                        Simpan Perubahan
+                        Save Changes
                     </button>
-                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Batal</a>
+                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Cancel</a>
                 </div>
             </form>
         </div>
 
         <!-- Password Section -->
         <div class="ep-section" id="password">
-            <h2 class="ep-section-title">Ubah Kata Sandi</h2>
-            <p class="ep-section-sub">Pastikan akun Anda menggunakan kata sandi yang kuat dan unik.</p>
+            <h2 class="ep-section-title">Change Password</h2>
+            <p class="ep-section-sub">Make sure your account uses a strong and unique password.</p>
 
             <form method="post" action="{{ route('password.update') }}">
                 @csrf
                 @method('put')
 
                 <div class="ep-field">
-                    <label class="ep-label" for="current_password">Kata Sandi Saat Ini</label>
+                    <label class="ep-label" for="current_password">Current Password</label>
                     <div class="ep-input-wrap">
                         <input class="ep-input ep-input-with-toggle" id="current_password" name="current_password" type="password" required autocomplete="current-password" placeholder="••••••••">
                         <button type="button" class="ep-pw-toggle" data-target="current_password">
@@ -485,9 +485,9 @@
 
                 <div class="ep-grid-2">
                     <div class="ep-field">
-                        <label class="ep-label" for="password_input">Kata Sandi Baru</label>
+                        <label class="ep-label" for="password_input">New Password</label>
                         <div class="ep-input-wrap">
-                            <input class="ep-input ep-input-with-toggle" id="password_input" name="password" type="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
+                            <input class="ep-input ep-input-with-toggle" id="password_input" name="password" type="password" required autocomplete="new-password" placeholder="Minimum 8 characters">
                             <button type="button" class="ep-pw-toggle" data-target="password_input">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
@@ -496,9 +496,9 @@
                     </div>
 
                     <div class="ep-field">
-                        <label class="ep-label" for="password_confirmation">Konfirmasi Kata Sandi Baru</label>
+                        <label class="ep-label" for="password_confirmation">Confirm New Password</label>
                         <div class="ep-input-wrap">
-                            <input class="ep-input ep-input-with-toggle" id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" placeholder="Ulangi kata sandi baru">
+                            <input class="ep-input ep-input-with-toggle" id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" placeholder="Repeat your new password">
                             <button type="button" class="ep-pw-toggle" data-target="password_confirmation">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
@@ -510,9 +510,9 @@
                 <div class="ep-btn-row">
                     <button type="submit" class="ep-btn-primary">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        Simpan Kata Sandi
+                        Save Password
                     </button>
-                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Batal</a>
+                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Cancel</a>
                 </div>
             </form>
         </div>
@@ -524,11 +524,11 @@
 <div id="cropper-modal">
     <div id="cropper-dialog" style="width:100%;max-width:720px;background:linear-gradient(180deg,#0b0b0b,#0f0f0f);border-radius:14px;padding:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 24px 80px rgba(0,0,0,0.6);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div style="font-weight:700;color:#fff;font-size:15px;">Sesuaikan Foto</div>
+            <div style="font-weight:700;color:#fff;font-size:15px;">Adjust Photo</div>
             <div style="display:flex;gap:8px;">
-                <button id="crop-remove" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Hapus Foto</button>
-                <button id="crop-cancel" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Batal</button>
-                <button id="crop-apply" type="button" style="background:#0f172a;border:none;padding:7px 14px;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">Terapkan</button>
+                <button id="crop-remove" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Remove Photo</button>
+                <button id="crop-cancel" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Cancel</button>
+                <button id="crop-apply" type="button" style="background:#0f172a;border:none;padding:7px 14px;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">Apply</button>
             </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
@@ -631,9 +631,9 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
         var srcX=Math.max(0,Math.round((-offX)/state.scale)); var srcY=Math.max(0,Math.round((-offY)/state.scale));
         var srcW=Math.min(cropImage.naturalWidth-srcX,Math.round(areaW/state.scale));
         var srcH=Math.min(cropImage.naturalHeight-srcY,Math.round(areaH/state.scale));
-        try{ ctx.fillStyle='#111'; ctx.fillRect(0,0,outSize,outSize); ctx.drawImage(cropImage,srcX,srcY,srcW,srcH,0,0,outSize,outSize); }catch(e){ alert('Gagal crop gambar'); hideModal(); return; }
+        try{ ctx.fillStyle='#111'; ctx.fillRect(0,0,outSize,outSize); ctx.drawImage(cropImage,srcX,srcY,srcW,srcH,0,0,outSize,outSize); }catch(e){ alert('Failed to crop image'); hideModal(); return; }
         canvas.toBlob(function(blob){
-            if(!blob){ alert('Gagal membuat gambar'); hideModal(); return; }
+            if(!blob){ alert('Failed to generate image'); hideModal(); return; }
             var file = new File([blob],'profile.jpg',{type:'image/jpeg'});
             var dt = new DataTransfer(); dt.items.add(file); nativeInput.files=dt.files;
             ensurePreviewImage().src = URL.createObjectURL(file);
@@ -644,7 +644,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     cancel.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
 
     rem.addEventListener('click', function(){
-        if(!confirm('Hapus foto profil?')) return;
+        if(!confirm('Remove profile photo?')) return;
         var f=document.createElement('form'); f.method='POST'; f.action='{{ route('profile.update') }}'; f.style.display='none';
         var t=document.createElement('input'); t.type='hidden'; t.name='_token'; t.value='{{ csrf_token() }}'; f.appendChild(t);
         var m=document.createElement('input'); m.type='hidden'; m.name='_method'; m.value='PATCH'; f.appendChild(m);

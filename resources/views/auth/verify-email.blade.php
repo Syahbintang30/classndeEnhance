@@ -11,19 +11,19 @@
             </svg>
         </div>
 
-        <h1 class="verify-title">Verifikasi email dulu</h1>
+        <h1 class="verify-title">Verify your email first</h1>
         <p class="verify-text">
-            Untuk aktivasi akun, buka link verifikasi yang kami kirim ke email kamu.
+            To activate your account, open the verification link we sent to your email.
             @if($supportsEmailVerificationSend)
-                Kalau belum masuk, klik kirim ulang lalu cek folder inbox atau spam.
+                If you have not received it yet, click resend and check your inbox or spam folder.
             @else
-                Mode lokal saat ini tidak mengirim email ke inbox karena mailer diset ke log.
+                Local mode is not sending real emails right now because the mailer is set to log.
             @endif
         </p>
 
         @if (session('status'))
             <div class="verify-alert success">
-                {{ session('status') == 'verification-link-sent' ? 'Link verifikasi baru sudah dikirim. Cek inbox atau folder spam ya.' : session('status') }}
+                {{ session('status') == 'verification-link-sent' ? 'A new verification link has been sent. Please check your inbox or spam folder.' : session('status') }}
             </div>
         @endif
 
@@ -32,7 +32,7 @@
                 <form method="POST" action="{{ route('verification.send') }}" class="verify-form">
                     @csrf
                     <button type="submit" class="btn-main">
-                        Kirim ulang email verifikasi
+                        Resend verification email
                     </button>
                 </form>
             @endif
@@ -44,13 +44,13 @@
                     <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
                     <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
                 </svg>
-                Hubungkan dengan Google (opsional)
+                Connect with Google (optional)
             </a>
 
             <form method="POST" action="{{ route('logout') }}" class="verify-form">
                 @csrf
                 <button type="submit" class="btn-ghost">
-                    Keluar
+                    Log out
                 </button>
             </form>
         </div>

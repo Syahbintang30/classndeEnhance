@@ -86,7 +86,7 @@
         /* ===== LIGHT MODE ===== */
         :root[data-theme="light"] body.lms-theme,
         :root[data-theme="light"] .coaching-page {
-            background: #f6f3ee !important;
+            background: #f6f7fb !important;
         }
 
         :root[data-theme="light"] .booking-header h1,

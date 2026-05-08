@@ -33,7 +33,7 @@ class LessonController extends Controller
 
         Lesson::create($request->only(['title', 'position', 'type']));
 
-        return redirect()->route('admin.lessons.index')->with('success', 'Lesson berhasil ditambahkan.');
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson added successfully.');
     }
 
     public function show(Lesson $lesson)
@@ -60,12 +60,12 @@ class LessonController extends Controller
 
         $lesson->update($request->only(['title', 'position', 'type']));
 
-        return redirect()->route('admin.lessons.index')->with('success', 'Lesson berhasil diperbarui.');
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson updated successfully.');
     }
 
     public function destroy(Lesson $lesson)
     {
         $lesson->delete();
-        return redirect()->route('admin.lessons.index')->with('success', 'Lesson berhasil dihapus.');
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson deleted successfully.');
     }
 }

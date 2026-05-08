@@ -1,0 +1,370 @@
+' Diagram aktivitas per use case — Guitarclassbynde
+' Tiap @startuml: tepat satu |start| dan satu |stop|.
+' Sumber alur: routes/web.php, routes/auth.php, controller terkait.
+
+@startuml AD_01_Login
+title Aktivitas — Login
+
+start
+:Pengguna membuka GET /login;
+if (Ada redirect_to?) then (ya)
+  :Simpan url.intended di sesi;
+endif
+:Tampilkan halaman login;
+:Pengguna mengirim POST /login;
+if (Email dan password valid?) then (tidak)
+  :Redirect back + pesan error;
+else (ya)
+  :Regenerasi ID sesi;
+  if (User admin/superadmin?) then (ya)
+    :Redirect ke /admin (intended);
+  else (tidak)
+    if (Email belum terverifikasi?) then (ya)
+      :Kirim/ingatkan email verifikasi;
+      :Redirect ke halaman verify-email;
+    else (tidak)
+      if (Email termasuk pola akun admin?) then (ya)
+        :Redirect ke /admin;
+      else (tidak)
+        if (Punya akses LMS?) then (ya)
+          :Redirect ke lms.entry;
+        else (tidak)
+          if (Punya akses coaching saja?) then (ya)
+            :Redirect ke coaching.upcoming;
+          else (tidak)
+            :Redirect ke /checkout;
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_02_Registrasi
+title Aktivitas — Registrasi
+
+start
+:Pengguna membuka GET /register;
+if (Ada redirect_to?) then (ya)
+  :Simpan url.intended;
+endif
+:Tampilkan form registrasi;
+:Pengguna mengirim POST /register;
+if (Validasi input lolos?) then (tidak)
+  :Kembali ke form + error validasi;
+else (ya)
+  if (Memilih paket / package_id?) then (ya)
+    :Simpan pre_register di sesi (tanpa password);
+    :Redirect ke kelas.buy + package_id;
+  else (tidak)
+    if (Kode referral diisi tapi tidak valid?) then (ya)
+      :Kembali + error referral;
+    else (tidak)
+      :Buat User + hash password;
+      if (Kode referral valid?) then (ya)
+        :Set referred_by;
+      endif
+      :Event Registered + email verifikasi;
+      :Auth::login(user);
+      :Redirect verification.notice;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_03_Verifikasi_Email
+title Aktivitas — Verifikasi email
+
+start
+:Pengguna dalam alur verifikasi;
+if (Membuka link signed\nGET /verify-email/{id}/{hash}?) then (ya)
+  if (Tanda tangan dan hash valid?) then (ya)
+    :Set email_verified_at;
+    :Redirect ke beranda / intended;
+  else (tidak)
+    :Tampilkan gagal verifikasi;
+  endif
+else (tidak)
+  :Pengguna buka GET /verify-email (notice);
+  if (Sudah verified?) then (ya)
+    :Redirect ke dashboard;
+  else (tidak)
+    :Tampilkan instruksi + opsi kirim ulang;
+    if (POST kirim ulang (throttle)?) then (ya)
+      :Kirim ulang email verifikasi;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_04_Lihat_Pilih_Kelas
+title Aktivitas — Lihat dan pilih kelas (/checkout)
+
+start
+:Pengguna membuka GET /checkout;
+if (Belum login?) then (ya)
+  :Redirect /register?redirect_to=checkout;
+else (tidak)
+  if (Admin?) then (ya)
+    :Redirect dashboard admin;
+  else (tidak)
+    if (Sudah punya akses LMS?) then (ya)
+      :Redirect lms.entry;
+    else (tidak)
+      :Muat paket dan lesson course;
+      :Tampilkan kelas.buy;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_05_Kelola_Profil
+title Aktivitas — Kelola profil
+
+start
+:Pengguna buka GET /profile atau /profile/edit;
+if (URL /profile (ringkasan)?) then (ya)
+  :Muat paket, tiket, booking, referral;
+  :Tampilkan view profile;
+else (tidak)
+  if (Method PATCH /profile?) then (ya)
+    if (Validasi input lolos?) then (tidak)
+      :Kembali ke edit + error;
+    else (ya)
+      if (Hapus foto?) then (ya)
+        :Hapus file dan clear photo;
+      else (tidak)
+        if (Upload foto baru?) then (ya)
+          :Simpan file aman;
+        endif
+        :Update nama, email, password opsional;
+        if (Email berubah?) then (ya)
+          :Reset email_verified_at;
+        endif
+      endif
+      :Redirect profile.edit + status;
+    endif
+  else (tidak)
+    :Tampilkan form edit profil;
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_06_Pembayaran
+title Aktivitas — Melakukan pembayaran
+
+start
+:Pengguna di kelas.buy / kelas.payment;
+:Sistem susun order Midtrans;
+:Tampilkan Snap + metode bayar aktif;
+:Pengguna menyelesaikan flow Midtrans;
+if (Pembayaran sukses/settlement?) then (ya)
+  if (Sesi pre_register ada?) then (ya)
+    :Buat user dari data sesi;
+  endif
+  :Simpan Transaction + entitlement paket;
+  :Redirect thank you / lanjut LMS;
+else (tidak)
+  :Tampilkan pending atau gagal / coba lagi;
+endif
+stop
+@enduml
+
+
+@startuml AD_07_Akses_Materi_Video
+title Aktivitas — Akses materi video
+
+start
+:Pengguna buka lesson course (registerclass/kelas);
+if (Belum login?) then (ya)
+  :Redirect login;
+else (tidak)
+  if (Bukan admin dan tanpa akses LMS?) then (ya)
+    :Redirect lms/access-pending;
+  else (tidak)
+    if (Lesson bukan type course?) then (ya)
+      :Redirect ke course pertama;
+    else (tidak)
+      :Render view kelas + topics;
+      if (Request AJAX .../content?) then (ya)
+        if (Tanpa akses LMS?) then (ya)
+          :HTTP 403;
+        else (tidak)
+          :Partial konten topik;
+        endif
+      endif
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_08_Tutorial_Lagu
+title Aktivitas — Ikuti tutorial lagu
+
+start
+:Pengguna buka /song-tutorial/{lesson} atau index;
+if (Tidak ada lesson type song?) then (ya)
+  :Tampilkan index kosong / CTA;
+else (tidak)
+  if (Tanpa akses intermediate?) then (ya)
+    :Tampilkan landing ajakan beli/login;
+  else (tidak)
+    :Render song_tutorial.show;
+    if (AJAX konten?) then (ya)
+      :Partial materi;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_09_Lihat_Progress
+title Aktivitas — Lihat progress belajar
+
+start
+:GET /api/topics/{topic}/progress\n(auth + verified);
+:Cari Topic;
+if (Topic tidak ada?) then (ya)
+  :Response default / 404 sesuai implementasi;
+else (tidak)
+  if (Tabel progress tidak ada?) then (ya)
+    :JSON nol;
+  else (tidak)
+    :Ambil TopicProgress user;
+    :JSON completed dan watched_seconds;
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_10_Jadwal_Sesi
+title Aktivitas — Melihat jadwal sesi (slot coaching)
+
+start
+:GET /coaching/availability?date= (auth+verified);
+if (Tidak login?) then (ya)
+  :JSON 403;
+else (tidak)
+  if (Parameter date kosong?) then (ya)
+    :JSON 400;
+  else (tidak)
+    :Baca kapasitas slot dan booking aktif;
+    :Hitung sisa slot per jam;
+    :JSON slots;
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_11_Daftar_Coaching
+title Aktivitas — Mendaftar sesi coaching
+
+start
+:POST /coaching/book (auth+verified);
+:Validasi booking_time dan catatan;
+if (Waktu tidak valid / terlalu jauh?) then (ya)
+  :Error validasi / redirect;
+else (tidak)
+  if (Tidak ada tiket tersedia?) then (ya)
+    :Error minta beli tiket;
+  else (tidak)
+    :Transaksi: cek kapasitas slot;
+    if (Slot penuh / gagal DB?) then (ya)
+      :Rollback + pesan error;
+    else (tidak)
+      :Booking accepted + tiket habis;
+      :Opsional ruang Twilio + email admin;
+      :Redirect thankyou atau JSON ok;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_12_Status_Booking
+title Aktivitas — Melihat status booking
+
+start
+:Pengguna (sudah login) buka\n/coaching atau /coaching/upcoming;
+:Query booking user (bukan cancelled);
+if (Halaman /coaching?) then (ya)
+  :Tampilkan index + tiket;
+else (tidak)
+  :Tampilkan upcoming + feedback jika ada;
+endif
+stop
+@enduml
+
+
+@startuml AD_13_Sesi_Videocall
+title Aktivitas — Sesi videocall
+
+start
+:GET /coaching/session/{booking};
+if (Bukan pemilik, coach, atau admin?) then (ya)
+  :HTTP 403;
+else (tidak)
+  if (Twilio tidak dikonfigurasi?) then (ya)
+    :HTTP 500;
+  else (tidak)
+    if (Luar jendela waktu dan bukan admin?) then (ya)
+      :HTTP 403;
+    else (tidak)
+      :Siapkan room + access token;
+      :Tampilkan coaching.session;
+    endif
+  endif
+endif
+stop
+@enduml
+
+
+@startuml AD_14_Logout
+title Aktivitas — Logout
+
+start
+:POST /logout;
+:Logout dan invalidate sesi;
+:Regenerate token;
+:Redirect /ndeofficial (compro);
+stop
+@enduml
+
+
+@startuml AD_15_Admin_Kelola_Coaching
+title Aktivitas — Kelola sesi coaching (Admin)
+
+start
+:Admin buka /admin/coaching/bookings;
+:Muat daftar booking;
+if (Aksi terima booking?) then (ya)
+  :POST accept;
+elseif (Aksi tolak?) then (ya)
+  :POST reject;
+elseif (Buat ruang video?) then (ya)
+  :POST create-room;
+elseif (Akhiri ruang?) then (ya)
+  :POST end-room;
+else (lain)
+  :Kelola slot-capacities GET/POST;
+endif
+:Update tampilan / pesan;
+stop
+@enduml

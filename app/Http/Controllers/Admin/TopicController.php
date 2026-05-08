@@ -32,7 +32,7 @@ class TopicController extends Controller
 
         $lesson->topics()->create($data);
 
-        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topik berhasil ditambahkan.');
+        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topic added successfully.');
     }
 
     public function edit(Lesson $lesson, Topic $topic)
@@ -53,13 +53,13 @@ class TopicController extends Controller
     // Do not write video_url; frontend will resolve playback URL from bunny_guid.
     $topic->update($data);
 
-        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topik berhasil diperbarui.');
+        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topic updated successfully.');
     }
 
     public function destroy(Lesson $lesson, Topic $topic)
     {
         $topic->delete();
-        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topik berhasil dihapus.');
+        return redirect()->route('admin.lessons.show', $lesson->id)->with('success', 'Topic deleted successfully.');
     }
 
     // ...existing code...

@@ -100,9 +100,9 @@
                 <div class="cc-title">Order Summary</div>
                 <p class="muted">
                     @if($isCoachingMember ?? false)
-                        Anda terdeteksi sebagai member aktif (Beginner/Intermediate). Harga tiket coaching menggunakan harga khusus member.
+                        You are detected as an active member (Beginner/Intermediate). Your coaching ticket uses the special member price.
                     @else
-                        Anda belum memiliki paket Beginner/Intermediate aktif. Harga tiket coaching menggunakan harga normal non-member.
+                        You do not currently have an active Beginner/Intermediate package. Your coaching ticket uses the regular non-member price.
                     @endif
                 </p>
 
@@ -113,13 +113,13 @@
                             <div id="pkgName" class="v">{{ $package ? $package->name : 'Not configured' }}</div>
                             <div id="pkgPrice" class="price">Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</div>
                             <div class="muted" style="margin-top:6px;font-size:12px;">
-                                {{ ($isCoachingMember ?? false) ? 'Harga Member' : 'Harga Non-Member' }}
+                                {{ ($isCoachingMember ?? false) ? 'Member Price' : 'Non-Member Price' }}
                             </div>
                         </div>
 
                         <div class="info-block" style="margin-top:12px;">
                             <div class="h">Schedule</div>
-                            <div id="scheduleDisplay" class="v">{{ $scheduleDisplay ?? 'Belum memilih tanggal/jam' }}</div>
+                            <div id="scheduleDisplay" class="v">{{ $scheduleDisplay ?? 'No date/time selected yet' }}</div>
                         </div>
                     </div>
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function(){
         const packageId = {{ $package ? $package->id : 'null' }};
         try {
             if (!packageId) {
-                throw new Error('Paket coaching tidak ditemukan. Hubungi admin untuk konfigurasi paket.');
+                throw new Error('Coaching package not found. Please contact the admin to configure the package.');
             }
 
             const createBody = { package_id: packageId };

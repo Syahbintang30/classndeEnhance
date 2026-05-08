@@ -379,7 +379,7 @@
         <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
         <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
         @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess())
+        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
         @endif
     </div>
@@ -455,7 +455,7 @@
                                         // Runtime-state label aligned with admin dashboard semantics.
                                         if ($isPast) {
                                             $badgeClass = 'finished';
-                                            $badgeText = 'Meeting selesai';
+                                            $badgeText = 'Meeting ended';
                                         } else {
                                             if ($s === 'rejected') {
                                                 $badgeClass = 'rejected';
@@ -473,14 +473,14 @@
                                                 }
                                             } else {
                                                 $badgeClass = 'finished';
-                                                $badgeText = 'Meeting selesai';
+                                                $badgeText = 'Meeting ended';
                                             }
                                         }
                                     @endphp
                                     <span class="status-badge {{ $badgeClass }}">{{ $badgeText }}</span>
                             </div>
 
-                            <div class="muted"><span class="label">Jadwal:</span> {{ $dt->translatedFormat('d F Y') }}, {{ $dt->format('H:i') }} WIB</div>
+                            <div class="muted"><span class="label">Schedule:</span> {{ $dt->translatedFormat('d F Y') }}, {{ $dt->format('H:i') }} WIB</div>
                             @if($b->notes)
                                 @php
                                     $rawNotes = (string) $b->notes;
@@ -520,14 +520,14 @@
                                             <div class="meta"><span class="notes-label">Notes:</span>{{ $displayNotes }}</div>
                                         @endif
                                         @if($hasMeetingFinishedEvent)
-                                            <div class="meeting-finished-box">Meeting selesai</div>
+                                            <div class="meeting-finished-box">Meeting ended</div>
                                         @endif
                                     </div>
                                 @endif
                             @endif
                             {{-- feedback moved into booking->notes; notes displayed above --}}
                             @if(strtolower($b->status) === 'rejected')
-                                <div class="muted" style="margin-top:8px">Alasan: {{ $b->admin_note ?? 'Admin sibuk, mohon reschedule' }} — Tiket Anda telah dikembalikan.</div>
+                                <div class="muted" style="margin-top:8px">Reason: {{ $b->admin_note ?? 'The admin is unavailable, please reschedule.' }} — Your ticket has been returned.</div>
                             @endif
                         </div>
 

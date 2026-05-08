@@ -10,7 +10,6 @@
 
 @section('content')
 @php
-    $selectedMethod = old('payment_method') ?: '';
     $orderName = $package ? $package->name : ($lesson->title ?? 'Lifetime Access');
     $orderNote = isset($package) && $package && isset($package->slug) && $package->slug === 'coaching-ticket'
         ? "You're one step closer to achieving your goals with our professional coach"
@@ -390,79 +389,19 @@
             color: var(--checkout-text);
         }
 
-        .payment-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
+        .checkout-midtrans-note {
             margin-bottom: 20px;
-        }
-
-        .payment-option {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 84px;
+            padding: 16px 18px;
             border-radius: 14px;
-            border: 1px solid var(--checkout-payment-border);
-            background: var(--checkout-surface);
-            cursor: pointer;
-            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,.03);
-        }
-
-        .payment-option:hover {
-            border-color: rgba(15,15,15,.22);
-            background: var(--checkout-payment-hover);
-            transform: translateY(-1px);
-        }
-
-        .payment-option.is-selected {
-            border-color: #111111;
-            background: var(--checkout-payment-active);
-            box-shadow: 0 8px 16px rgba(0,0,0,.06);
-        }
-
-        .payment-option__indicator {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 24px;
-            height: 24px;
-            border-radius: 999px;
-            background: #111111;
-            color: #ffffff;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,.12);
-        }
-
-        .payment-option.is-selected .payment-option__indicator {
-            display: inline-flex;
-        }
-
-        .payment-option__logo {
-            max-height: 36px;
-            max-width: 82%;
-            object-fit: contain;
-            display: block;
-        }
-
-        .payment-option__fallback {
-            width: 44px;
-            height: 44px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             border: 1px solid var(--checkout-border);
-            color: var(--checkout-text);
-            font-weight: 700;
-            font-size: 14px;
             background: var(--checkout-surface-soft);
+        }
+
+        .checkout-midtrans-note p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--checkout-text-muted);
         }
 
         .checkout-security {
@@ -708,14 +647,6 @@
                 font-size: 22px;
             }
 
-            .payment-grid {
-                gap: 12px;
-            }
-
-            .payment-option {
-                height: 78px;
-            }
-
             .checkout-summary-card,
             .checkout-payment-card {
                 padding: 20px;
@@ -824,55 +755,12 @@
             </section>
 
             <section class="checkout-payment-card">
-                <h2 class="checkout-payment-title">Choose Your Payment Method</h2>
+                <h2 class="checkout-payment-title">Complete Your Payment</h2>
 
-                <div class="payment-grid" id="payment-methods-list" data-total="{{ $order['gross_amount'] }}" data-order-id="{{ $order['order_id'] }}">
-                    @forelse($methods as $method)
-                        @php
-                            $name = strtolower((string) ($method->name ?? ''));
-                            $displayName = strtolower((string) ($method->display_name ?? ''));
-                            if ($name === 'qris' || $displayName === 'qris') {
-                                continue;
-                            }
+                <div id="payment-methods-list" data-total="{{ $order['gross_amount'] }}" data-order-id="{{ $order['order_id'] }}"></div>
 
-                            if ($selectedMethod === '') {
-                                $selectedMethod = $method->name ?? '';
-                            }
-
-                            $methodId = 'payment-' . $method->id;
-                            $logoUrl = $method->logo_url ? asset($method->logo_url) : null;
-                            $logoFallback = strtoupper(mb_substr($method->display_name ?? $method->name ?? '?', 0, 1));
-                        @endphp
-
-                        <label class="payment-option {{ $selectedMethod === $method->name ? 'is-selected' : '' }}" for="{{ $methodId }}" data-payment-option>
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                id="{{ $methodId }}"
-                                value="{{ $method->name }}"
-                                class="checkout-hidden"
-                                data-details="{{ $method->account_details }}"
-                                data-name="{{ $method->display_name }}"
-                                {{ $selectedMethod === $method->name ? 'checked' : '' }}
-                            >
-
-                            <span class="payment-option__indicator" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="m5 13 4 4L19 7"></path>
-                                </svg>
-                            </span>
-
-                            @if($logoUrl)
-                                <img src="{{ $logoUrl }}" alt="{{ $method->display_name }}" class="payment-option__logo" />
-                            @else
-                                <span class="payment-option__fallback">{{ $logoFallback }}</span>
-                            @endif
-                        </label>
-                    @empty
-                        <div style="grid-column:1 / -1;padding:16px;border:1px dashed var(--checkout-border);border-radius:14px;color:var(--checkout-text-muted);background:var(--checkout-surface-soft);">
-                            No payment method is available right now.
-                        </div>
-                    @endforelse
+                <div class="checkout-midtrans-note">
+                    <p>Select your payment method directly in the Midtrans popup after clicking the pay button. Available channels such as bank transfer, e-wallets, and other supported options will appear there.</p>
                 </div>
 
                 <div class="checkout-security" id="payment-details-display">
@@ -925,15 +813,6 @@
     let activeSnapToken = null;
     let isCreatingSnapToken = false;
     let appliedVoucher = null;
-    const selectedMethodInitial = @json($selectedMethod);
-
-    function updatePaymentOptionState(selectedValue) {
-        document.querySelectorAll('[data-payment-option]').forEach(function (option) {
-            var input = option.querySelector('input[type="radio"]');
-            if (!input) return;
-            option.classList.toggle('is-selected', input.value === selectedValue);
-        });
-    }
 
     function formatIDR(amount) {
         return 'Rp ' + Number(amount || 0).toLocaleString('id-ID');
@@ -1016,14 +895,7 @@
         });
     }
 
-    updatePaymentOptionState(selectedMethodInitial);
     updateTotalsAfterDiscounts();
-
-    document.querySelectorAll('input[name="payment_method"]').forEach(function (input) {
-        input.addEventListener('change', function () {
-            updatePaymentOptionState(this.value);
-        });
-    });
 
     document.getElementById('pay-button').addEventListener('click', function(){
         if (isCreatingSnapToken) {
@@ -1035,14 +907,7 @@
             return;
         }
 
-        const selected = document.querySelector('input[name="payment_method"]:checked');
-        if (! selected) {
-            alert('Please select a payment method first.');
-            return;
-        }
-
-        const paymentMethod = selected.value;
-        const payload = { order_id: '{{ $order['order_id'] }}', gross_amount: getCurrentAmount(), payment_method: paymentMethod };
+        const payload = { order_id: '{{ $order['order_id'] }}', gross_amount: getCurrentAmount() };
         payload.referral = '{{ $order['referral_code'] ?? '' }}';
         if (typeof appliedVoucher !== 'undefined' && appliedVoucher && appliedVoucher.code) {
             payload.voucher_code = appliedVoucher.code;

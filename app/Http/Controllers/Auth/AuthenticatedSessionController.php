@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
             $request->authenticate();
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Attach a friendly error message and redirect back with old input
-            return redirect()->back()->withInput($request->only('email', 'remember'))->withErrors($e->errors())->with('error', 'Login gagal. Periksa email dan password Anda.');
+            return redirect()->back()->withInput($request->only('email', 'remember'))->withErrors($e->errors())->with('error', 'Login failed. Please check your email and password.');
         }
 
         $request->session()->regenerate();
@@ -59,7 +59,7 @@ class AuthenticatedSessionController extends Controller
 
         if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
             $shouldSendEmailVerification = Config::get('mail.default') !== 'log';
-            $statusMessage = 'Akun belum diverifikasi. Silakan cek inbox email kamu untuk link verifikasi.';
+            $statusMessage = 'Your account has not been verified yet. Please check your email inbox for the verification link.';
 
             if ($shouldSendEmailVerification) {
                 try {
@@ -69,7 +69,7 @@ class AuthenticatedSessionController extends Controller
                         'user_id' => $user->id,
                         'error' => $e->getMessage(),
                     ]);
-                    $statusMessage = 'Akun belum diverifikasi. Kami gagal mengirim email otomatis, silakan klik kirim ulang verifikasi.';
+                    $statusMessage = 'Your account has not been verified yet. We could not send the email automatically, so please click to resend verification.';
                 }
             } else {
                 $statusMessage = 'Akun belum diverifikasi. Mailer masih mode log, aktifkan SMTP lalu kirim ulang verifikasi.';

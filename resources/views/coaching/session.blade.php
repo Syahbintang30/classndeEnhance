@@ -13,7 +13,7 @@
                 <span class="vc-avatar">{{ strtoupper(substr($participantName, 0, 1)) }}</span>
                 <span>{{ $participantName }}</span>
                 <span class="vc-dot">·</span>
-                <span>Sesi {{ $sessionLabel }}</span>
+                <span>Session {{ $sessionLabel }}</span>
             </h1>
 
             <div class="vc-meta-row">
@@ -27,7 +27,7 @@
                     <span id="vc-countdown-text">1:00:00</span>
                 </span>
                 @if(($isAdmin ?? false) && !empty($booking->notes))
-                    <span class="vc-pill vc-pill-note">Catatan: {{ \Illuminate\Support\Str::limit($booking->notes, 90) }}</span>
+                    <span class="vc-pill vc-pill-note">Notes: {{ \Illuminate\Support\Str::limit($booking->notes, 90) }}</span>
                 @endif
             </div>
         </div>
@@ -52,29 +52,29 @@
     <main class="vc-main">
         <section class="vc-video-grid">
             <div class="vc-video-card" id="remote-media">
-                <div class="vc-empty" id="vc-empty-state">Menunggu peserta lain bergabung...</div>
+                <div class="vc-empty" id="vc-empty-state">Waiting for the other participant to join...</div>
             </div>
 
             <div class="vc-video-card vc-local" id="local-media">
                 <div class="vc-local-fallback" id="vc-local-fallback">
                     <div class="vc-fallback-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
-                    <span>Kamera mati</span>
+                    <span>Camera off</span>
                 </div>
-                <div class="vc-tile-label">Anda</div>
+                <div class="vc-tile-label">You</div>
             </div>
         </section>
 
         <aside class="vc-sidepanel" id="vc-sidepanel" hidden>
             <div class="vc-sidepanel-head">
-                <h2>Detail Sesi</h2>
+                <h2>Session Details</h2>
                 <button type="button" id="vc-close-sidepanel" class="vc-close-panel" aria-label="Close panel">&times;</button>
             </div>
 
             <div class="vc-sidepanel-body">
                 <div class="vc-detail-card">
-                    <h3>Info Booking</h3>
-                    <p><strong>Peserta:</strong> {{ $participantName }}</p>
-                    <p><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y H:i') }}</p>
+                    <h3>Booking Info</h3>
+                    <p><strong>Participant:</strong> {{ $participantName }}</p>
+                    <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y H:i') }}</p>
                     <p><strong>Status:</strong> {{ ucfirst($booking->status) }}</p>
                 </div>
 
@@ -95,15 +95,15 @@
 
             <div class="vc-chat-body" id="vc-chat-messages">
                 <div class="vc-chat-welcome">
-                    <p>Selamat datang di chat sesi! 💬</p>
-                    <p class="vc-chat-welcome-small">Kirim pesan untuk berkomunikasi dengan peserta lain.</p>
+                    <p>Welcome to the session chat! 💬</p>
+                    <p class="vc-chat-welcome-small">Send a message to communicate with the other participant.</p>
                 </div>
             </div>
 
             <div class="vc-chat-footer">
                 <form id="vc-chat-form" class="vc-chat-form">
-                    <input type="text" id="vc-chat-input" class="vc-chat-input" placeholder="Ketik pesan..." maxlength="500" autocomplete="off">
-                    <button type="submit" id="vc-chat-send" class="vc-chat-send" aria-label="Kirim pesan">
+                    <input type="text" id="vc-chat-input" class="vc-chat-input" placeholder="Type a message..." maxlength="500" autocomplete="off">
+                    <button type="submit" id="vc-chat-send" class="vc-chat-send" aria-label="Send message">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -117,7 +117,7 @@
         <div class="vc-bottom-left">
             <span id="vc-live-time">--:--</span>
             <span class="vc-divider">|</span>
-            <span id="vc-people-count">1 orang di panggilan</span>
+            <span id="vc-people-count">1 person in the call</span>
         </div>
 
         <div class="vc-controls">
@@ -174,7 +174,7 @@
                 </span>
             </button>
 
-            <button id="ctl-detail" class="vc-control-btn vc-desktop-only" title="Buka chat" aria-label="Open chat">
+            <button id="ctl-detail" class="vc-control-btn vc-desktop-only" title="Open chat" aria-label="Open chat">
                 <span class="vc-icon" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -183,13 +183,13 @@
                 <span id="vc-chat-badge" class="vc-chat-badge" hidden>0</span>
             </button>
 
-            <button id="hangup" class="vc-control-btn vc-hangup" title="Akhiri panggilan" aria-label="Akhiri panggilan">
+            <button id="hangup" class="vc-control-btn vc-hangup" title="End call" aria-label="End call">
                 <span class="vc-icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 1h2a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L7.1 8.6a16 16 0 0 0 8.3 8.3l1.15-1.18a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
-                <span class="vc-hangup-label">Akhiri</span>
+                <span class="vc-hangup-label">End</span>
             </button>
         </div>
 
@@ -203,32 +203,32 @@
 
 <div id="vc-modal-backdrop" class="vc-modal-backdrop" aria-hidden="true">
     <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-modal-title">
-        <h3 id="vc-modal-title">Akhiri Sesi</h3>
-        <p id="vc-modal-text">Yakin ingin mengakhiri sesi ini?</p>
+        <h3 id="vc-modal-title">End Session</h3>
+        <p id="vc-modal-text">Are you sure you want to end this session?</p>
         <div class="vc-modal-actions">
-            <button id="vc-modal-cancel" class="vc-btn">Batal</button>
-            <button id="vc-modal-leave-only" class="vc-btn">Keluar saja</button>
-            <button id="vc-modal-confirm" class="vc-btn vc-btn-danger">Akhiri Sekarang</button>
+            <button id="vc-modal-cancel" class="vc-btn">Cancel</button>
+            <button id="vc-modal-leave-only" class="vc-btn">Leave only</button>
+            <button id="vc-modal-confirm" class="vc-btn vc-btn-danger">End Now</button>
         </div>
     </div>
 </div>
 
 <div id="vc-session-ended-backdrop" class="vc-modal-backdrop" aria-hidden="true">
     <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-session-ended-title">
-        <h3 id="vc-session-ended-title">Meeting Selesai</h3>
-        <p id="vc-session-ended-text">Waktu sesi coaching telah mencapai batas 1 jam. Sesi akan ditutup untuk semua peserta.</p>
+        <h3 id="vc-session-ended-title">Meeting Ended</h3>
+        <p id="vc-session-ended-text">This coaching session has reached the 1-hour limit. The session will now close for all participants.</p>
         <div class="vc-modal-actions">
-            <button id="vc-session-ended-ok" class="vc-btn vc-btn-danger">Mengerti</button>
+            <button id="vc-session-ended-ok" class="vc-btn vc-btn-danger">Understood</button>
         </div>
     </div>
 </div>
 
 <div id="vc-session-warning-backdrop" class="vc-modal-backdrop" aria-hidden="true">
     <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-session-warning-title">
-        <h3 id="vc-session-warning-title">Peringatan Sesi</h3>
-        <p id="vc-session-warning-text">Sesi coaching akan berakhir dalam 5 menit. Silakan selesaikan diskusi Anda.</p>
+        <h3 id="vc-session-warning-title">Session Warning</h3>
+        <p id="vc-session-warning-text">This coaching session will end in 5 minutes. Please wrap up your discussion.</p>
         <div class="vc-modal-actions">
-            <button id="vc-session-warning-ok" class="vc-btn">Mengerti</button>
+            <button id="vc-session-warning-ok" class="vc-btn">Understood</button>
         </div>
     </div>
 </div>
@@ -1210,7 +1210,7 @@
     const leaveUrl = {!! json_encode(route('coaching.index')) !!};
     const csrfToken = {!! json_encode(csrf_token()) !!};
     const bookingTime = new Date({!! json_encode($booking->booking_time->getTimestamp() * 1000) !!});
-    const currentUserName = {!! json_encode(auth()->user()->name ?? 'Anda') !!};
+    const currentUserName = {!! json_encode(auth()->user()->name ?? 'You') !!};
 
     const localMedia = document.getElementById('local-media');
     const remoteMedia = document.getElementById('remote-media');
@@ -1348,7 +1348,7 @@
     function updatePeople() {
         const total = 1 + (room ? room.participants.size : 0);
         if (peopleCount) {
-            peopleCount.textContent = total + ' orang di panggilan';
+            peopleCount.textContent = total + ' people in the call';
         }
     }
 
@@ -1561,7 +1561,7 @@
             }, { once: true });
         } catch (e) {
             if (e && e.name === 'NotAllowedError') return;
-            showFloatingNotice('Gagal memulai share screen. Coba lagi.');
+            showFloatingNotice('Failed to start screen sharing. Please try again.');
         }
     }
 
@@ -1609,7 +1609,7 @@
         const initial = name.trim().charAt(0).toUpperCase() || 'P';
         fallback.innerHTML =
             '<div class="vc-fallback-avatar">' + escapeHtml(initial) + '</div>' +
-            '<span>Kamera mati</span>';
+            '<span>Camera off</span>';
         return fallback;
     }
 
@@ -1700,7 +1700,7 @@
             }
 
             if (!res.ok || !(json && json.success)) {
-                const msg = (json && json.error) ? json.error : 'Gagal mengakhiri sesi untuk semua peserta.';
+                const msg = (json && json.error) ? json.error : 'Failed to end the session for all participants.';
                 showFloatingNotice(msg);
                 return false;
             }
@@ -1708,7 +1708,7 @@
             return true;
         } catch (e) {
             log('endRoom request failed: ' + (e && e.message ? e.message : e));
-            showFloatingNotice('Gagal mengakhiri sesi. Periksa koneksi lalu coba lagi.');
+            showFloatingNotice('Failed to end the session. Check your connection and try again.');
             return false;
         }
     }
@@ -1747,7 +1747,7 @@
     function openEndModal(message) {
         if (modalText && message) modalText.textContent = message;
         if (modalLeaveOnly) modalLeaveOnly.style.display = isAdmin ? '' : 'none';
-        if (modalConfirm) modalConfirm.textContent = isAdmin ? 'Akhiri untuk Semua' : 'Akhiri Sekarang';
+        if (modalConfirm) modalConfirm.textContent = isAdmin ? 'End for Everyone' : 'End Now';
         if (modal) modal.style.display = 'flex';
     }
 
@@ -1777,7 +1777,7 @@
             booking_id: bookingId,
             duration_minutes: sessionDurationMinutes
         });
-        showFloatingNotice('Sesi akan berakhir dalam 5 menit.');
+        showFloatingNotice('The session will end in 5 minutes.');
         if (sessionWarningModal) {
             sessionWarningModal.style.display = 'flex';
             if (sessionWarningHideTimer) {
@@ -1871,7 +1871,7 @@
 
             if (!isAdmin && endedByAdmin) {
                 await sendEvent('session_ended_by_admin', { booking_id: bookingId });
-                showFloatingNotice('Sesi diakhiri oleh admin. Anda akan diarahkan kembali...');
+                showFloatingNotice('The session was ended by the admin. You will be redirected...');
                 setTimeout(function () {
                     window.location.href = leaveUrl;
                 }, 1500);
@@ -1928,7 +1928,7 @@
                     appendChatMessage(currentUserName, message, true, Date.now());
                     chatInput.value = '';
                 } catch (_) {
-                    showFloatingNotice('Gagal mengirim chat. Coba lagi.');
+                    showFloatingNotice('Failed to send chat message. Please try again.');
                 }
             });
         }
@@ -1968,8 +1968,8 @@
         if (btnHangup) {
             btnHangup.addEventListener('click', function () {
                 const message = isAdmin
-                    ? 'Akhiri sesi untuk semua peserta? User juga akan langsung keluar dari room.'
-                    : 'Yakin ingin meninggalkan sesi ini?';
+                    ? 'End the session for all participants? The user will also be removed from the room immediately.'
+                    : 'Are you sure you want to leave this session?';
                 openEndModal(message);
             });
         }
@@ -2072,7 +2072,7 @@
             await connectRoom();
         } catch (e) {
             log(e && e.message ? e.message : e);
-            alert('Gagal terhubung ke sesi video. Coba refresh halaman.');
+            alert('Failed to connect to the video session. Please refresh the page and try again.');
         }
     }
 

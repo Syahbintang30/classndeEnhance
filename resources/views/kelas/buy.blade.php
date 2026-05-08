@@ -12,9 +12,9 @@
     </nav>
 
     <section class="checkout-hero">
-        <span class="checkout-pill">PILIH PAKET BELAJAR</span>
-        <h1>Langkah Terakhir untuk <span>Memulai Perjalanan.</span></h1>
-        <p>Pilih paket yang paling sesuai dengan kebutuhan kamu. Akses materi seumur hidup dan mulai belajar dengan alur terstruktur.</p>
+        <span class="checkout-pill">CHOOSE YOUR LEARNING PACKAGE</span>
+        <h1>The Final Step to <span>Start Your Journey.</span></h1>
+        <p>Choose the package that best fits your needs. Get lifetime access to the course materials and start learning with a structured path.</p>
     </section>
 
     @php
@@ -82,7 +82,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="co-card__cta co-card__cta--dark">Dapatkan Akses Sekarang</div>
+                        <div class="co-card__cta co-card__cta--dark">Get Access Now</div>
                     </div>
                 </a>
                 @else
@@ -102,7 +102,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="co-card__cta co-card__cta--light">Pilih Paket</div>
+                        <div class="co-card__cta co-card__cta--light">Choose Package</div>
                     </div>
                 </a>
                 @endif
@@ -111,7 +111,7 @@
 
         @if(!$paymentBase)
             <div style="margin-top:14px;padding:12px 14px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);border-radius:12px;color:#ffd9d9;font-size:13px;">
-                Belum ada materi yang bisa dipilih untuk checkout saat ini.
+                No course material is currently available for checkout.
             </div>
         @endif
     </div>
