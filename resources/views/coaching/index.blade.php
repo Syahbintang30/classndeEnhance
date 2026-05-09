@@ -256,6 +256,7 @@
                     <input type="hidden" id="booking_time" name="booking_time" value="" />
                     @if($hasSelectedWarranty)
                         <input type="hidden" name="warranty_ticket_id" value="{{ $selectedWarrantyTicket->id }}" />
+                        <input type="hidden" name="use_warranty" value="1" />
                     @endif
                     <div>
                         <label for="session_notes" style="font-weight: 600; font-size: 14px; margin-bottom: 8px; display: block;">What would you like to focus on? (Optional)</label>
@@ -501,6 +502,10 @@
             payload.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
             payload.append('booking_time', bookingInput.value);
             payload.append('notes', document.getElementById('session_notes').value || '');
+            const warrantyInput = form.querySelector('input[name="warranty_ticket_id"]');
+            if (warrantyInput && warrantyInput.value) {
+                payload.append('warranty_ticket_id', warrantyInput.value);
+            }
             try {
                 const resp = await fetch(coachingBookUrl, {
                     method: 'POST', body: payload.toString(),

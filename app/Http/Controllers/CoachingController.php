@@ -63,6 +63,7 @@ class CoachingController extends Controller
             'keluh_kesah' => "nullable|string|max:{$keluhKesahMaxLength}",
             'want_to_learn' => 'nullable|string|max:255',
             'warranty_ticket_id' => 'nullable|integer',
+            'use_warranty' => 'nullable|boolean',
         ]);
 
     logger()->info('CoachingController@storeBooking called', ['user_id' => $user->id ?? null, 'payload' => $data]);
@@ -105,11 +106,22 @@ class CoachingController extends Controller
         }
 
         $warrantyTicket = null;
-        if (! empty($data['warranty_ticket_id'])) {
-            $warrantyTicket = \App\Models\CoachingWarrantyTicket::where('id', $data['warranty_ticket_id'])
-                ->where('user_id', $user->id)
-                ->where('status', 'available')
-                ->first();
+        $warrantyTicketId = $data['warranty_ticket_id'] ?? $request->input('warranty_ticket');
+        $useWarranty = ! empty($data['use_warranty']) || ! empty($warrantyTicketId);
+
+        if ($useWarranty) {
+            if (! empty($warrantyTicketId)) {
+                $warrantyTicket = \App\Models\CoachingWarrantyTicket::where('id', (int) $warrantyTicketId)
+                    ->where('user_id', $user->id)
+                    ->where('status', 'available')
+                    ->first();
+            } else {
+                $warrantyTicket = \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)
+                    ->where('status', 'available')
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
             if (! $warrantyTicket) {
                 if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
                     return response()->json(['ok' => false, 'errors' => ['warranty_ticket' => ['Invalid warranty ticket.']]], 422);
