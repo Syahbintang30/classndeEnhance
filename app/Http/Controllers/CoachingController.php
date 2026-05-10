@@ -341,6 +341,14 @@ class CoachingController extends Controller
             abort(500, 'Twilio not configured');
         }
 
+        $status = strtolower((string) $booking->status);
+        if (in_array($status, ['ended', 'finished', 'completed'], true)) {
+            abort(403, 'Session already ended');
+        }
+        if (! $isAdmin && ! in_array($status, ['accepted', 'scheduled'], true)) {
+            abort(403, 'Session not available');
+        }
+
     // Prepare room uniqueName
     $roomName = 'coaching-' . $booking->id;
 
@@ -403,6 +411,14 @@ class CoachingController extends Controller
         }
         if (! $this->twilio->isConfigured()) {
             return response()->json(['error' => 'Twilio not configured'], 500);
+        }
+
+        $status = strtolower((string) $booking->status);
+        if (in_array($status, ['ended', 'finished', 'completed'], true)) {
+            return response()->json(['error' => 'Session already ended'], 403);
+        }
+        if (! in_array($status, ['accepted', 'scheduled'], true)) {
+            return response()->json(['error' => 'Session not available'], 403);
         }
 
         $identity = $this->twilio->generateIdentity($user);

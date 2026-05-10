@@ -64,7 +64,7 @@
                                     @php
                                         // hide noisy telemetry and render end-call events as a clean status badge
                                         $notes = $b->notes ?? '';
-                                        $hasMeetingFinished = false;
+                                        $hasMeetingFinished = in_array(strtolower((string) $b->status), ['ended', 'finished', 'completed'], true);
                                         if ($notes) {
                                             $lines = preg_split('/\r?\n/', trim($notes));
                                             $filtered = array_filter($lines, function($l) {

@@ -144,8 +144,18 @@ class CoachingBookingController extends Controller
                 return redirect()->back()->with('error', 'No active Twilio room attached to booking');
             }
 
-            // This SDK version expects the room status string directly, not an attributes array.
-            $client->video->v1->rooms($sid)->update('completed');
+            $roomNotFound = false;
+            try {
+                // This SDK version expects the room status string directly, not an attributes array.
+                $client->video->v1->rooms($sid)->update('completed');
+            } catch (\Twilio\Exceptions\RestException $e) {
+                if ((int) $e->getStatusCode() === 404) {
+                    $roomNotFound = true;
+                    logger()->warning('Twilio room not found on endRoom; continuing', ['booking' => $booking->id, 'sid' => $sid]);
+                } else {
+                    throw $e;
+                }
+            }
 
             $warrantyMinutes = request()->input('warranty_minutes');
             if ($warrantyMinutes !== null && $warrantyMinutes !== '') {
@@ -157,10 +167,20 @@ class CoachingBookingController extends Controller
                     ->issueFromBooking($booking, $warrantyMinutes, 'admin_end');
             }
 
+            // Persist ended status so users cannot rejoin after admin ends the room.
+            $booking->status = 'ended';
+            $booking->save();
+
             if (request()->wantsJson() || request()->ajax()) {
-                return response()->json(['success' => true, 'room_sid' => $sid]);
+                return response()->json([
+                    'success' => true,
+                    'room_sid' => $sid,
+                    'warning' => $roomNotFound ? 'Twilio room not found; warranty still issued.' : null,
+                ]);
             }
-            return redirect()->back()->with('success', 'Room ended');
+            $flashKey = $roomNotFound ? 'warning' : 'success';
+            $flashMessage = $roomNotFound ? 'Room not found; warranty still issued.' : 'Room ended';
+            return redirect()->back()->with($flashKey, $flashMessage);
         } catch (\Throwable $e) {
             logger()->error('Failed to end Twilio room: ' . $e->getMessage(), ['booking' => $booking->id]);
             if (request()->wantsJson() || request()->ajax()) {
