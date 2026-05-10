@@ -10,7 +10,7 @@ use Twilio\Security\RequestValidator;
 class TwilioWebhookController extends Controller
 {
     /**
-     * SECURITY: Validate Twilio webhook IP ranges  
+     * SECURITY: Validate Twilio webhook IP ranges
      */
     private function validateTwilioIP(Request $request)
     {
@@ -27,7 +27,7 @@ class TwilioWebhookController extends Controller
         if (!is_array($twilioIPs) || empty($twilioIPs)) {
             $twilioIPs = [
                 '54.172.60.0/23',
-                '54.244.51.0/24', 
+                '54.244.51.0/24',
                 '54.171.127.192/27',
                 '35.156.191.128/25',
                 '54.65.63.192/27',
@@ -164,6 +164,7 @@ class TwilioWebhookController extends Controller
                     'details' => $payload,
                 ]);
             }
+            
         } catch (\Exception $e) {
             Log::error('Twilio webhook processing error: ' . $e->getMessage());
             return response()->json(['ok' => false], 500);
