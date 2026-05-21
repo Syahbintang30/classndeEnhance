@@ -55,56 +55,46 @@
     .rejected-note { margin-top:6px; }
     .start-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex:0 0 160px; }
     .start-wrap .countdown { margin-left:0; }
-    /* status badges - minimal monochrome pills */
+    /* status badges - rebuilt for clear contrast in both dark & light mode */
     .status-badge {
         display: inline-block;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 12px;
+        padding: 6px 11px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
         margin-left: 8px;
-        letter-spacing: 0.4px;
-        border: 1px solid rgba(255,255,255,0.06);
-        background: rgba(255,255,255,0.04);
-        color: #ffffff;
+        letter-spacing: 0.35px;
+        border: 1px solid transparent;
+        vertical-align: middle;
+        line-height: 1.1;
+        white-space: nowrap;
     }
-    /* Rejected: subtle dark outline with muted white text */
-    .status-badge.rejected {
-        background: transparent;
-        color: rgba(255,255,255,0.9);
-        border-color: rgba(255,255,255,0.12);
-    }
-    /* Pending: light, outlined pill */
     .status-badge.pending {
-        background: rgba(255,255,255,0.06);
-        color: #ffffff;
-        border-style: dashed;
-        border-color: rgba(255,255,255,0.08);
+        background: rgba(251, 191, 36, 0.14);
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.45);
     }
-    /* Scheduled: high-contrast white pill (on dark background) */
     .status-badge.scheduled {
-        background: rgba(255,255,255,0.08);
-        color: #f3f4f6;
-        border-color: rgba(255,255,255,0.18);
+        background: rgba(96, 165, 250, 0.14);
+        color: #93c5fd;
+        border-color: rgba(96, 165, 250, 0.45);
     }
     .status-badge.on-going {
-        background: #facc15;
-        color: #111111;
-        border-color: rgba(0,0,0,0.12);
-        font-weight: 800;
+        background: rgba(52, 211, 153, 0.16);
+        color: #6ee7b7;
+        border-color: rgba(52, 211, 153, 0.48);
     }
-    /* Finished: red badge for clear ended state */
     .status-badge.finished {
-        background: rgba(185, 28, 28, 0.2);
-        color: #fecaca;
-        border-color: rgba(248, 113, 113, 0.45);
-        font-weight: 700;
+        background: rgba(148, 163, 184, 0.16);
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.45);
     }
-    /* history (past) booking box: darker, lower-contrast */
-    .slot.history { background: rgba(0,0,0,0.45) !important; border-color: rgba(255,255,255,0.03) !important; }
-    .slot.history .topic { color: rgba(255,255,255,0.95); }
-    .slot.history .muted, .slot.history .meta { color: rgba(255,255,255,0.75); }
-    .slot.history .status-badge { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.06); }
+    .status-badge.rejected {
+        background: rgba(251, 113, 133, 0.14);
+        color: #fda4af;
+        border-color: rgba(251, 113, 133, 0.5);
+    }
     .btn-reschedule { background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:8px }
 
     .notes-wrap { margin-top: 6px; }
@@ -112,9 +102,9 @@
     .meeting-finished-box {
         display: inline-block;
         margin-top: 8px;
-        background: rgba(185, 28, 28, 0.2);
-        color: #fecaca;
-        border: 1px solid rgba(248, 113, 113, 0.45);
+        background: #ef4444;
+        color: #ffffff;
+        border: 1px solid #ef4444;
         border-radius: 8px;
         padding: 6px 10px;
         font-size: 12px;
@@ -148,7 +138,6 @@
         :root[data-theme="light"] .upcoming strong,
         :root[data-theme="light"] .upcoming .topic,
         :root[data-theme="light"] .upcoming .countdown,
-        :root[data-theme="light"] .upcoming .status-badge,
         :root[data-theme="light"] .upcoming .meeting-finished-box {
             color: #0f172a;
         }
@@ -197,32 +186,11 @@
         }
     
         :root[data-theme="light"] .countdown.soon,
-        :root[data-theme="light"] .countdown.live,
-        :root[data-theme="light"] .status-badge,
-        :root[data-theme="light"] .status-badge.pending,
-        :root[data-theme="light"] .status-badge.scheduled,
-        :root[data-theme="light"] .status-badge.rejected,
-        :root[data-theme="light"] .status-badge.finished,
-        :root[data-theme="light"] .meeting-finished-box,
-        :root[data-theme="light"] .slot.history {
-            background: #ffffff;
+        :root[data-theme="light"] .countdown.live {
+            background: #ffffff !important;
             color: #0f172a;
-            border-color: rgba(15, 23, 42, 0.12) !important;
-            box-shadow: none;
-        }
-
-        :root[data-theme="light"] .slot.history .topic,
-        :root[data-theme="light"] .slot.history .muted,
-        :root[data-theme="light"] .slot.history .meta,
-        :root[data-theme="light"] .slot.history .label,
-        :root[data-theme="light"] .slot.history .status-badge,
-        :root[data-theme="light"] .slot.history .meeting-finished-box {
-            color: #334155;
-        }
-
-        :root[data-theme="light"] .slot.history .status-badge {
-            background: #f8fafc;
-            border-color: rgba(15, 23, 42, 0.12) !important;
+            border-color: rgba(15, 23, 42, 0.06) !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
         }
 
         :root[data-theme="light"] .make-another .btn {
@@ -237,22 +205,48 @@
         }
 
         :root[data-theme="light"] .status-badge.on-going {
-            background: #fde68a;
-            color: #0f172a;
-            border-color: rgba(15, 23, 42, 0.12);
+            background: #dcfce7 !important;
+            color: #166534 !important;
+            border-color: #86efac !important;
         }
 
         :root[data-theme="light"] .status-badge.finished {
-            background: #fee2e2;
-            color: #991b1b;
-            border-color: rgba(153, 27, 27, 0.12) !important;
+            background: #e2e8f0 !important;
+            color: #334155 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+
+        :root[data-theme="light"] .meeting-finished-box {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444 !important;
         }
 
         :root[data-theme="light"] .status-badge.rejected,
         :root[data-theme="light"] .status-badge.pending,
         :root[data-theme="light"] .status-badge.scheduled {
-            background: #f8fafc;
-            color: #0f172a;
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        :root[data-theme="light"] .status-badge.pending {
+            background: #fef3c7 !important;
+            color: #92400e !important;
+            border-color: #fcd34d !important;
+        }
+
+        :root[data-theme="light"] .status-badge.scheduled {
+            background: #dbeafe !important;
+            color: #1e3a8a !important;
+            border-color: #93c5fd !important;
+        }
+
+        :root[data-theme="light"] .status-badge.rejected {
+            background: #ffe4e6 !important;
+            color: #9f1239 !important;
+            border-color: #fda4af !important;
         }
 
         :root[data-theme="light"] .countdown.soon {
@@ -344,6 +338,28 @@
         font-weight: 600;
     }
 
+    .lms-admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: #0f172a;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 13px;
+        border: 1px solid rgba(15, 23, 42, 0.2);
+        transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+    }
+
+    .lms-admin-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+        background: #111827;
+        color: #ffffff;
+    }
+
     :root[data-theme="light"] .lms-navbar {
         background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
         border-bottom-color: rgba(15, 23, 42, 0.08);
@@ -358,6 +374,17 @@
     :root[data-theme="light"] .lms-nav-link:hover,
     :root[data-theme="light"] .lms-nav-link.active {
         color: #0f172a;
+    }
+
+    :root[data-theme="light"] .lms-admin-btn {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: rgba(15, 23, 42, 0.2);
+    }
+
+    :root[data-theme="light"] .lms-admin-btn:hover {
+        background: #111827;
+        color: #ffffff;
     }
     </style>
 @endpush
@@ -378,9 +405,20 @@
     <div class="lms-navbar-right">
         <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
         <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
-        @php $user = auth()->user(); @endphp
+        @php
+            $user = auth()->user();
+            $isAdminPanel = false;
+            try {
+                $isAdminPanel = $user && (\Illuminate\Support\Facades\Gate::allows('admin') || ($user->is_superadmin ?? false));
+            } catch (\Throwable $e) {
+                $isAdminPanel = false;
+            }
+        @endphp
         @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
             <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
+        @endif
+        @if($isAdminPanel)
+            <a href="{{ route('admin.dashboard') }}" class="lms-admin-btn">Admin Panel</a>
         @endif
     </div>
 </nav>
@@ -468,7 +506,7 @@
                     try {
                         $sessionEnd = $dt->copy()->addMinutes($sessionLength);
                         $isPast = $sessionEnd->lt($now);
-                        $isLiveWindow = $now->gte($dt->copy()->subMinutes(10)) && $now->lte($sessionEnd);
+                        $isLiveWindow = $now->gte($dt) && $now->lte($sessionEnd);
                     } catch (\Throwable $e) {
                         // Fallback: if any error, do not mark as past to avoid prematurely showing 'selesai'
                         $isPast = false;
@@ -487,7 +525,7 @@
                             @endphp
                             <div class="topic">{{ $sessionLabel }}@if(!empty($b->topic)) - {{ $b->topic }}@endif
                                     @php
-                                        $s = strtolower($b->status);
+                                        $s = strtolower((string) $b->status);
                                         // Runtime-state label aligned with admin dashboard semantics.
                                         if ($isPast) {
                                             $badgeClass = 'finished';
@@ -503,6 +541,9 @@
                                                 if ($isLiveWindow) {
                                                     $badgeClass = 'on-going';
                                                     $badgeText = 'On Going';
+                                                } elseif ($now->lt($dt)) {
+                                                    $badgeClass = 'pending';
+                                                    $badgeText = 'Pending';
                                                 } else {
                                                     $badgeClass = 'scheduled';
                                                     $badgeText = 'Scheduled';
@@ -511,6 +552,11 @@
                                                 $badgeClass = 'finished';
                                                 $badgeText = 'Meeting ended';
                                             }
+                                        }
+                                        // Safety fallback so UI never renders an empty badge.
+                                        if (trim((string) $badgeText) === '') {
+                                            $badgeClass = 'pending';
+                                            $badgeText = 'Status unknown';
                                         }
                                     @endphp
                                     <span class="status-badge {{ $badgeClass }}">{{ $badgeText }}</span>
@@ -544,11 +590,11 @@
                                         $cleanLines[] = $line;
                                     }
 
-                                    if ($hasMeetingFinishedEvent) {
-                                        // Render this as a separate red status box below notes.
-                                    }
-
                                     $displayNotes = trim(implode(' ', $cleanLines));
+                                    if ($hasMeetingFinishedEvent) {
+                                        $notice = 'Meeting dipaksa selesai oleh admin karena kendala koneksi. Anda mendapatkan warranty tickets untuk melanjutkan sesi dengan sisa waktu yang diberikan admin. Silakan cek di Warranty Tickets.';
+                                        $displayNotes = trim($displayNotes === '' ? $notice : ($displayNotes . ' ' . $notice));
+                                    }
                                 @endphp
                                 @if($displayNotes !== '' || $hasMeetingFinishedEvent)
                                     <div class="notes-wrap">
@@ -560,6 +606,10 @@
                                         @endif
                                     </div>
                                 @endif
+                            @else
+                                <div class="notes-wrap">
+                                    <div class="meta"><span class="notes-label">Notes:</span>-</div>
+                                </div>
                             @endif
                             {{-- feedback moved into booking->notes; notes displayed above --}}
                             @if(strtolower($b->status) === 'rejected')
@@ -568,22 +618,28 @@
                         </div>
 
                         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:160px">
-                            @if(strtolower($b->status) === 'rejected')
+                            @php
+                                $statusLower = strtolower((string) $b->status);
+                                $isEndedStatus = in_array($statusLower, ['ended', 'finished', 'completed'], true);
+                            @endphp
+                            @if($statusLower === 'rejected')
                                 <form method="GET" action="{{ route('coaching.index') }}">
                                     <button type="button" class="btn-reschedule" onclick="window.location.href='{{ route('coaching.index') }}'">Reschedule</button>
                                 </form>
                             @else
-                                <div class="start-wrap">
-                                    <button type="button" class="btn start-btn" disabled
-                                        data-booking-time="{{ $dtLocal }}"
-                                        data-status="{{ $b->status }}"
-                                        data-href="{{ $sessionUrl }}"
-                                        title="Tombol akan aktif 10 menit sebelum sesi dimulai"
-                                    >
-                                        <span class="start-label">Join Session</span>
-                                    </button>
-                                    <span class="countdown"></span>
-                                </div>
+                                @if($isLiveWindow && !$isPast && !$isEndedStatus && in_array($statusLower, ['accepted', 'scheduled'], true))
+                                    <div class="start-wrap">
+                                        <button type="button" class="btn start-btn" disabled
+                                            data-booking-time="{{ $dtLocal }}"
+                                            data-status="{{ $b->status }}"
+                                            data-href="{{ $sessionUrl }}"
+                                            title="Join is available only when the session is live"
+                                        >
+                                            <span class="start-label">Join Session</span>
+                                        </button>
+                                        <span class="countdown"></span>
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -609,15 +665,15 @@
             
             function formatDelta(ms) {
                 // ms is milliseconds until target (can be negative)
-                if (ms <= 0) return 'Dimulai';
+                if (ms <= 0) return 'Live';
                 const total = Math.floor(ms / 1000);
                 const days = Math.floor(total / 86400);
                 const hours = Math.floor((total % 86400) / 3600);
                 const mins = Math.floor((total % 3600) / 60);
                 const parts = [];
-                if (days) parts.push(days + ' hari');
-                if (hours) parts.push(hours + ' jam');
-                parts.push(mins + ' menit');
+                if (days) parts.push(days + ' day' + (days === 1 ? '' : 's'));
+                if (hours) parts.push(hours + ' hour' + (hours === 1 ? '' : 's'));
+                parts.push(mins + ' min');
                 return parts.join(' ');
             }
 
@@ -693,10 +749,11 @@
                     // default: disabled
                     let enabled = false;
 
+                    let endWindow = null;
                     if ((status === 'accepted' || status === 'scheduled') && dt) {
-                        // enable only within tight window: from 10 minutes before start until 60 minutes after start
-                        const startWindow = new Date(dt.getTime() - (10 * 60 * 1000));
-                        const endWindow = new Date(dt.getTime() + (60 * 60 * 1000));
+                        // enable only within window: from start until 60 minutes after start
+                        const startWindow = new Date(dt.getTime());
+                        endWindow = new Date(dt.getTime() + (60 * 60 * 1000));
                         if (now >= startWindow && now <= endWindow) enabled = true;
                     }
 
@@ -719,11 +776,17 @@
                     const slot = btn.closest('.slot');
                     const cd = slot ? slot.querySelector('.countdown') : null;
                     if (cd && dt) {
-                        const delta = dt.getTime() - Date.now();
-                        cd.textContent = formatDelta(delta);
-                        // add small class when soon (less than 1 day) to highlight
-                        if (delta <= (24 * 60 * 60 * 1000) && delta > 0) cd.classList.add('soon'); else cd.classList.remove('soon');
-                        if (delta <= 0 && delta >= -(60 * 60 * 1000)) cd.classList.add('live'); else cd.classList.remove('live');
+                        if (endWindow && now > endWindow) {
+                            cd.textContent = 'Ended';
+                            cd.classList.remove('soon');
+                            cd.classList.remove('live');
+                        } else {
+                            const delta = dt.getTime() - Date.now();
+                            cd.textContent = formatDelta(delta);
+                            // add small class when soon (less than 1 day) to highlight
+                            if (delta <= (24 * 60 * 60 * 1000) && delta > 0) cd.classList.add('soon'); else cd.classList.remove('soon');
+                            if (delta <= 0 && delta >= -(60 * 60 * 1000)) cd.classList.add('live'); else cd.classList.remove('live');
+                        }
                     }
 
                     // if rejected, show admin_note (already printed in markup) and ensure reschedule button is visible (handled by server side markup)

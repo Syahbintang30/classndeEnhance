@@ -93,7 +93,8 @@ class GoogleAuthController extends Controller
                 $updates['email_verified_at'] = now();
             }
 
-            if (empty($user->photo) && $googleUser->getAvatar()) {
+            // Keep Google avatar in sync so broken/old URLs are refreshed on next login.
+            if ($googleUser->getAvatar() && $user->google_id === $googleUser->getId()) {
                 $updates['photo'] = $googleUser->getAvatar();
             }
 

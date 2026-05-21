@@ -181,6 +181,7 @@
                 .nav-profile-avatar svg { width: 100%; height: 100%; display: block; border: 0; flex: 0 0 100%; }
                 .nav-profile-avatar img { object-fit: cover; object-position: center; max-width: none; min-width: 100%; min-height: 100%; transform: scale(1.28); transform-origin: center; }
                 .nav-profile-avatar svg { padding: 7px; box-sizing: border-box; }
+                .nav-profile-fallback { width: 100%; height: 100%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; line-height: 1; color: #ffffff; text-transform: uppercase; }
                 @media (max-width:900px) {
                     .nav-links { display: none; position: absolute; left: 16px; right: 16px; top: 84px; flex-direction: column; gap: 10px; background: linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(8, 8, 8, 0.98)); border-radius: 12px; padding: 14px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
                     .nav-links.show { display: flex; }
@@ -258,15 +259,9 @@
                                     <span class="nav-profile-avatar {{ $avatar ? 'nav-profile-avatar--has-image' : '' }}">
                                         @if ($avatar)
                                             <img src="{{ $avatar }}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
-                                            <svg hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                                                <path d="M20 21a8 8 0 0 0-16 0"></path>
-                                                <circle cx="12" cy="7" r="4"></circle>
-                                            </svg>
+                                            <span class="nav-profile-fallback" hidden>{{ mb_substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
                                         @else
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                                                <path d="M20 21a8 8 0 0 0-16 0"></path>
-                                                <circle cx="12" cy="7" r="4"></circle>
-                                            </svg>
+                                            <span class="nav-profile-fallback">{{ mb_substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
                                         @endif
                                     </span>
                                 </button>
@@ -276,6 +271,12 @@
                                         <div style="font-weight:700;color:#fff">{{ auth()->user()->name }}</div>
                                         <div style="font-size:12px;color:rgba(255,255,255,0.65)">{{ auth()->user()->email }}</div>
                                     </div>
+                                    @php
+                                        $showAdminPanel = auth()->user() && (auth()->user()->is_admin || auth()->user()->is_superadmin);
+                                    @endphp
+                                    @if ($showAdminPanel)
+                                        <a href="{{ route('admin.dashboard') }}" style="display:block;padding:8px 10px;color:#fff;text-decoration:none">Admin Panel</a>
+                                    @endif
                                     <a href="{{ route('profile') }}" style="display:block;padding:8px 10px;color:#fff;text-decoration:none">Profile</a>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf

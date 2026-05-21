@@ -107,7 +107,7 @@
                                         $sessionStart = $bt->copy();
                                         $sessionEnd = $bt->copy()->addMinutes($sessionLength);
                                         $isPastByTime = $sessionEnd->lt(now());
-                                        $isLiveWindow = now()->gte($sessionStart->copy()->subMinutes(10)) && now()->lte($sessionEnd);
+                                        $isLiveWindow = now()->gte($sessionStart) && now()->lte($sessionEnd);
                                     @endphp
                                     <div>{{ $bt->translatedFormat('j F Y') }}</div>
                                     <div class="text-muted" style="font-size:13px">{{ $bt->format('H:i') }} · Taken: {{ $taken }}</div>
@@ -231,7 +231,7 @@
     <script>
         (function () {
             function formatDelta(ms) {
-                if (ms <= 0) return 'Dimulai';
+                if (ms <= 0) return 'Live';
                 const total = Math.floor(ms / 1000);
                 const days = Math.floor(total / 86400);
                 const hours = Math.floor((total % 86400) / 3600);
@@ -255,7 +255,7 @@
                 });
             }
 
-            // Enable Open Session buttons when within 10 minutes before start (and up to 60 minutes after)
+            // Enable Open Session buttons when within the session window (start until 60 minutes after)
             // Also show a dynamic remaining-time label: "Open Session (Xm)" where applicable
             function updateOpenSessionButtons() {
                 const now = Date.now();
@@ -267,7 +267,7 @@
                     const dt = new Date(iso);
                     if (isNaN(dt.getTime())) return;
                     const startMs = dt.getTime();
-                    const startWindow = startMs - (10 * 60 * 1000);
+                    const startWindow = startMs;
                     const endWindow = startMs + (60 * 60 * 1000);
 
                     const minutesUntilStart = Math.ceil((startMs - now) / 60000);

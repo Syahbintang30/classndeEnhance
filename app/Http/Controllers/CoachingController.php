@@ -168,11 +168,6 @@ class CoachingController extends Controller
                 // capacity is implicitly 1 per admin design (one person per slot)
                 $capacity = 1;
 
-        // count existing bookings (only active ones: pending or accepted) for that slot
-        $qb = CoachingBooking::whereDate('booking_time', $date)
-            ->whereTime('booking_time', $time)
-            ->whereIn('status', ['pending','accepted']);
-
                 // use row locking only when the driver supports it (mysql, pgsql)
                 $driver = null;
                 try {
@@ -180,6 +175,22 @@ class CoachingController extends Controller
                 } catch (\Throwable $e) {
                     $driver = null;
                 }
+
+                // Lock the slot row to prevent double booking when no booking rows exist yet.
+                $slotQuery = \App\Models\CoachingSlotCapacity::where('date', $date)
+                    ->where('time', $time);
+                if (in_array($driver, ['mysql', 'pgsql', 'pgsql'])) {
+                    $slotQuery = $slotQuery->lockForUpdate();
+                }
+                $slotRow = $slotQuery->first();
+                if (! $slotRow) {
+                    throw new \RuntimeException('Slot not available');
+                }
+
+                // count existing bookings (only active ones: pending or accepted) for that slot
+                $qb = CoachingBooking::whereDate('booking_time', $date)
+                    ->whereTime('booking_time', $time)
+                    ->whereIn('status', ['pending','accepted']);
 
                 if (in_array($driver, ['mysql', 'pgsql', 'pgsql'])) {
                     $qb = $qb->lockForUpdate();
