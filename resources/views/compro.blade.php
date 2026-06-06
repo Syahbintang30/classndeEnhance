@@ -602,8 +602,8 @@
     <section class="faq-top">
         <div class="faq-shell">
             <span class="faq-kicker">FAQ</span>
-            <h2 class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
-            <p class="faq-subtitle">Temukan jawaban singkat seputar layanan, program, dan tiket coaching NDE.</p>
+            <h2 class="faq-title">Frequently Asked Questions</h2>
+            <p class="faq-subtitle">Find quick answers about NDE services, programs, and coaching tickets.</p>
 
             <div class="faq-list">
                 @forelse(($faq_items ?? []) as $faq)
@@ -619,11 +619,11 @@
                 @empty
                     <div class="faq-item is-open">
                         <button class="faq-question" type="button">
-                            <span>Belum ada FAQ yang tersedia.</span>
+                            <span>No FAQ items are available yet.</span>
                             <span class="faq-icon" aria-hidden="true"></span>
                         </button>
                         <div class="faq-answer">
-                            <p>Admin bisa menambahkan FAQ dari dashboard.</p>
+                            <p>Admins can add FAQ items from the dashboard.</p>
                         </div>
                     </div>
                 @endforelse
