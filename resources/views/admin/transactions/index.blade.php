@@ -44,6 +44,19 @@
         vertical-align: middle;
     }
 
+    .txn-page .txn-table thead th {
+        color: #1e293b;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        white-space: nowrap;
+    }
+
+    .txn-page .txn-table tbody tr:hover {
+        background: rgba(29, 78, 216, 0.035);
+    }
+
     .txn-page .txn-order-id {
         font-weight: 700;
         letter-spacing: 0.2px;
@@ -55,7 +68,20 @@
     }
 
     .txn-page .txn-created {
-        color: rgba(255, 255, 255, 0.82);
+        white-space: nowrap;
+    }
+
+    .txn-page .txn-created-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.34rem 0.68rem;
+        border-radius: 999px;
+        background: #eef4ff;
+        color: #1e293b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        font-variant-numeric: tabular-nums;
         white-space: nowrap;
     }
 
@@ -151,7 +177,9 @@
                                         <td>{{ $txn->method }}</td>
                                         <td class="txn-amount">Rp {{ number_format($txn->amount,0,',','.') }}</td>
                                         <td><span class="badge {{ $statusClass }}">{{ strtoupper($txn->status) }}</span></td>
-                                        <td class="txn-created">{{ $txn->created_at->format('Y-m-d H:i') }}</td>
+                                        <td class="txn-created">
+                                            <span class="txn-created-pill">{{ $txn->created_at->format('Y-m-d H:i') }}</span>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>

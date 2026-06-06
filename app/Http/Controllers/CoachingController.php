@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\CoachingBooking;
 use App\Models\CoachingTicket;
+use App\Models\CoachingWarrantyTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\Services\TwilioService;
 
 class CoachingController extends Controller
@@ -19,15 +21,18 @@ class CoachingController extends Controller
 
     public function index()
     {
+        // Halaman utama coaching ini menampilkan semua aset milik user: ticket, booking, dan warranty.
         $user = Auth::user();
         $tickets = $user ? CoachingTicket::where('user_id', $user->id)->get() : collect();
         $bookings = $user ? CoachingBooking::where('user_id', $user->id)->get() : collect();
 
+        // Cek apakah user masih punya ticket aktif yang bisa dipakai booking.
         $hasAvailableTicket = false;
         if ($user) {
             $hasAvailableTicket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->exists();
         }
 
+        // Warranty ticket dipisahkan karena dipakai sebagai kompensasi atau pengganti sesi tertentu.
         $warrantyTickets = $user
             ? \App\Models\CoachingWarrantyTicket::where('user_id', $user->id)->orderByDesc('id')->get()
             : collect();
@@ -45,11 +50,45 @@ class CoachingController extends Controller
             $selectedWarrantyTicket = $warrantyTickets->firstWhere('status', 'available');
         }
 
-    $coachingPkg = \App\Models\Package::where('slug', config('coaching.coaching_package_slug'))->first();
-    return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg', 'warrantyTickets', 'hasWarrantyTicket', 'selectedWarrantyTicket'));
+        // Package coaching diambil dari slug config supaya flow booking tetap fleksibel.
+        $coachingPkg = \App\Models\Package::where('slug', config('coaching.coaching_package_slug'))->first();
+
+        return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg', 'warrantyTickets', 'hasWarrantyTicket', 'selectedWarrantyTicket'));
     }
 
-    // feedback is now saved together with booking inside storeBooking()
+    // Feedback sekarang disimpan bersama booking di storeBooking().
+
+    public function thankyou(?CoachingBooking $booking = null)
+    {
+        // Halaman ini dipakai setelah booking dibuat untuk menampilkan konfirmasi ke user.
+        return view('coaching.thankyou', compact('booking'));
+    }
+
+    public function upcoming()
+    {
+        // Halaman upcoming merangkum booking mendatang plus status ticket user.
+        $user = Auth::user();
+        if ($user) {
+            $qb = CoachingBooking::where('user_id', $user->id)->where('status', '!=', 'cancelled')->orderBy('booking_time');
+            if (Schema::hasTable('coaching_feedbacks')) {
+                $qb = $qb->with('feedback');
+            }
+            $bookings = $qb->get();
+        } else {
+            $bookings = collect();
+        }
+
+        $hasTicket = $user ? CoachingTicket::where('user_id', $user->id)->where('is_used', false)->exists() : false;
+        $tickets = $user ? CoachingTicket::where('user_id', $user->id)->orderByDesc('id')->get() : collect();
+        $warrantyTickets = $user
+            ? CoachingWarrantyTicket::where('user_id', $user->id)->orderByDesc('id')->get()
+            : collect();
+        $hasWarrantyTicket = $user
+            ? CoachingWarrantyTicket::where('user_id', $user->id)->where('status', 'available')->exists()
+            : false;
+
+        return view('coaching.upcoming', compact('bookings', 'hasTicket', 'tickets', 'warrantyTickets', 'hasWarrantyTicket'));
+    }
 
     public function storeBooking(Request $request)
     {
@@ -57,6 +96,7 @@ class CoachingController extends Controller
         if (! $user) return redirect()->route('login');
         $keluhKesahMaxLength = config('constants.business_logic.keluh_kesah_max_length');
         
+        // Validasi input dasar sebelum booking dihitung lebih jauh.
         $data = $request->validate([
             'booking_time' => 'required|string',
             'notes' => 'nullable|string|max:255',
@@ -66,9 +106,9 @@ class CoachingController extends Controller
             'use_warranty' => 'nullable|boolean',
         ]);
 
-    logger()->info('CoachingController@storeBooking called', ['user_id' => $user->id ?? null, 'payload' => $data]);
+        logger()->info('CoachingController@storeBooking called', ['user_id' => $user->id ?? null, 'payload' => $data]);
 
-        // validate booking_time format and window
+        // Pastikan format waktu booking benar dan masih berada dalam jendela waktu yang diizinkan.
         try {
             $dt = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $data['booking_time']);
         } catch (\Throwable $e) {
@@ -77,10 +117,9 @@ class CoachingController extends Controller
             }
             return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Invalid datetime format, expected YYYY-MM-DD HH:MM:SS'])->withInput();
         }
-        // Allow creating a booking for a slot that has already started as long as the session
-        // hasn't finished. This permits users to book in-progress sessions (e.g. slot 01:00,
-        // user books at 01:10) and still join if admin accepts. The session length is
-        // configurable via coaching.session_length_minutes (default 60).
+        // Booking masih boleh dibuat kalau sesi sudah dimulai, selama sesi belum selesai.
+        // Contoh: slot 01:00, user booking jam 01:10, lalu tetap bisa join jika accepted.
+        // Panjang sesi diambil dari coaching.session_length_minutes (default 60).
         $sessionLength = config('coaching.session_length_minutes', 60);
         $now = now();
         try {
@@ -92,7 +131,7 @@ class CoachingController extends Controller
                 return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time is in the past and cannot be booked'])->withInput();
             }
         } catch (\Throwable $e) {
-            // If anything goes wrong comparing times, reject to be safe
+            // Kalau ada masalah saat membandingkan waktu, sistem menolak booking demi keamanan.
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
                 return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Invalid booking time']]], 422);
             }
@@ -105,6 +144,7 @@ class CoachingController extends Controller
             return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time is too far in the future'])->withInput();
         }
 
+        // Warranty ticket bisa dipakai bila user memilihnya, atau otomatis jika tidak punya standard ticket.
         $warrantyTicket = null;
         $warrantyTicketId = $data['warranty_ticket_id'] ?? $request->input('warranty_ticket');
         $useWarranty = ! empty($data['use_warranty']) || ! empty($warrantyTicketId);
@@ -144,7 +184,7 @@ class CoachingController extends Controller
             $sessionLength = (int) $warrantyTicket->warranty_minutes;
         }
 
-        // find available ticket (only required if not using warranty ticket)
+        // Kalau tidak pakai warranty, booking harus mengonsumsi ticket reguler yang masih available.
         $ticket = null;
         if (! $warrantyTicket) {
             $ticket = CoachingTicket::where('user_id', $user->id)->where('is_used', false)->first();
@@ -157,7 +197,7 @@ class CoachingController extends Controller
             }
         }
 
-        // Attempt atomic reservation: use DB::transaction to wrap create operations
+        // Simpan booking secara atomik supaya ticket, slot, dan booking tidak setengah jadi kalau gagal.
         $booking = null;
         try {
             \Illuminate\Support\Facades\DB::transaction(function() use (&$booking, $data, $user, $ticket, $warrantyTicket, $sessionLength) {
@@ -165,10 +205,10 @@ class CoachingController extends Controller
                 $date = $dt->toDateString();
                 $time = $dt->format('H:i');
 
-                // capacity is implicitly 1 per admin design (one person per slot)
+                // Setiap slot dianggap kapasitas 1 sesuai desain coaching saat ini.
                 $capacity = 1;
 
-                // use row locking only when the driver supports it (mysql, pgsql)
+                // Row locking dipakai hanya jika driver mendukung, supaya double booking bisa dicegah.
                 $driver = null;
                 try {
                     $driver = \Illuminate\Support\Facades\DB::getPdo() ? \Illuminate\Support\Facades\DB::getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME) : null;
@@ -176,7 +216,7 @@ class CoachingController extends Controller
                     $driver = null;
                 }
 
-                // Lock the slot row to prevent double booking when no booking rows exist yet.
+                // Kunci baris slot untuk mencegah double booking saat belum ada booking lain.
                 $slotQuery = \App\Models\CoachingSlotCapacity::where('date', $date)
                     ->where('time', $time);
                 if (in_array($driver, ['mysql', 'pgsql', 'pgsql'])) {
@@ -187,7 +227,7 @@ class CoachingController extends Controller
                     throw new \RuntimeException('Slot not available');
                 }
 
-                // count existing bookings (only active ones: pending or accepted) for that slot
+                // Hitung booking aktif (pending/accepted) pada slot ini.
                 $qb = CoachingBooking::whereDate('booking_time', $date)
                     ->whereTime('booking_time', $time)
                     ->whereIn('status', ['pending','accepted']);
@@ -211,7 +251,7 @@ class CoachingController extends Controller
                     ]);
                 }
 
-                // Create approved bookings immediately so users can join without admin review.
+                // Booking langsung dibuat dengan status accepted supaya user bisa join tanpa review admin.
                 $booking = CoachingBooking::create([
                     'user_id' => $user->id,
                     'ticket_id' => $ticket->id,
@@ -222,7 +262,7 @@ class CoachingController extends Controller
                     'notes' => isset($data['notes']) ? $data['notes'] : null,
                 ]);
 
-                // attach feedback fields into booking.notes so everything is centralized
+                // Gabungkan field feedback ke booking.notes supaya semua catatan tersimpan di satu tempat.
                 try {
                     $parts = [];
                     if (!empty($data['keluh_kesah'])) $parts[] = "Keluhan: " . $data['keluh_kesah'];
@@ -238,9 +278,9 @@ class CoachingController extends Controller
 
                 logger()->info('CoachingBooking created inside transaction', ['booking_id' => $booking->id, 'user_id' => $user->id, 'ticket_id' => $ticket->id]);
 
-                // NOTE: CachingBooking table is deprecated — primary source of truth is coaching_bookings.
+                // Catatan: tabel CachingBooking sudah deprecated; sumber data utama ada di coaching_bookings.
 
-                // reserve ticket (skip if already marked used from warranty)
+                // Tandai ticket sebagai terpakai, kecuali kalau sudah di-handle oleh warranty.
                 if (! $warrantyTicket) {
                     $ticket->is_used = true;
                     $ticket->save();
@@ -261,11 +301,11 @@ class CoachingController extends Controller
             return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Failed to create booking, please try again.']);
         }
 
-        // ensure booking is fresh and ticket reserved
+        // Pastikan data booking terbaru dan ticket sudah benar-benar ter-reserve.
         if ($booking) {
             $booking = $booking->fresh();
 
-            // log DB connection details to help debug where records are stored
+            // Log detail koneksi DB untuk membantu melacak lokasi penyimpanan data.
             try {
                 $conn = \Illuminate\Support\Facades\DB::getDefaultConnection();
                 $pdo = \Illuminate\Support\Facades\DB::getPdo();
@@ -275,7 +315,7 @@ class CoachingController extends Controller
                 logger()->warning('Failed to log DB info for booking', ['err' => $e->getMessage()]);
             }
 
-            // Clear cached availability for the booked date range so frontend reflects the new booking
+            // Bersihkan cache ketersediaan agar frontend langsung melihat booking baru.
             try {
                 $dt = \Carbon\Carbon::parse($booking->booking_time);
                 $key = 'coaching_avail_range:' . $dt->toDateString() . ':' . $dt->toDateString();
@@ -286,10 +326,10 @@ class CoachingController extends Controller
             }
         }
 
-        // Attempt to create Twilio room for auto-approved bookings when Twilio is configured.
+        // Coba buat room Twilio untuk booking auto-approved jika Twilio sudah dikonfigurasi.
         try {
             if ($booking && $booking->status === 'accepted' && $this->twilio->isConfigured()) {
-                // Standardize room unique name across the app for consistency
+                // Samakan nama room supaya seluruh aplikasi mengarah ke identitas room yang sama.
                 $roomName = 'coaching-' . $booking->id;
                 logger()->info('Creating Twilio room', ['room' => $roomName, 'booking_id' => $booking->id]);
                 $room = $this->twilio->createOrFetchRoom($roomName);
@@ -305,7 +345,7 @@ class CoachingController extends Controller
             logger()->warning('Failed to create Twilio room during booking', ['booking' => $booking->id ?? null, 'error' => $e->getMessage()]);
         }
 
-        // notify admins
+        // Beri notifikasi ke admin jika alamat email admin tersedia.
         try {
             $adminEmails = env('ADMIN_EMAILS', '');
             if ($adminEmails) {
@@ -318,19 +358,20 @@ class CoachingController extends Controller
             logger()->warning('Failed to notify admins about booking: ' . $e->getMessage());
         }
 
-        // If request expects JSON (AJAX/fetch) return booking id so client can redirect
+        // Jika request mengharapkan JSON, kembalikan booking id supaya frontend bisa redirect sendiri.
         if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
             return response()->json(['ok' => true, 'booking' => $booking->id]);
         }
 
-        // Redirect to a simple thank-you page for regular form submissions
+        // Untuk submit form biasa, arahkan ke halaman thank-you sederhana.
         return redirect()->route('coaching.thankyou', ['booking' => $booking->id])->with('success', 'Booking created successfully');
     }
 
     public function joinSession(CoachingBooking $booking)
     {
+        // Endpoint ini membuka ruang video coaching untuk owner booking, coach, atau admin.
         $user = Auth::user();
-        // basic authorization: owner OR assigned coach OR configured coach emails
+        // Hak akses dasar: pemilik booking, coach yang ditugaskan, atau email coach yang dikonfigurasi.
         $isOwner = $user && $booking->user_id === $user->id;
         $isAssignedCoach = $user && $booking->coach_user_id && $booking->coach_user_id === $user->id;
         $isConfiguredCoach = false;
@@ -338,7 +379,7 @@ class CoachingController extends Controller
             $isConfiguredCoach = in_array($user->email, config('coaching.coaches'));
         }
 
-        // allow admins (users with admin ability) to join from admin panel
+        // Admin juga boleh masuk dari panel admin untuk bantu monitoring sesi.
         $isAdmin = false;
         try {
             $isAdmin = $user && \Illuminate\Support\Facades\Gate::allows('admin');
@@ -360,13 +401,13 @@ class CoachingController extends Controller
             abort(403, 'Session not available');
         }
 
-    // Prepare room uniqueName
-    $roomName = 'coaching-' . $booking->id;
+        // Nama room dibuat konsisten supaya sesi yang sama selalu mengarah ke ruang video yang sama.
+        $roomName = 'coaching-' . $booking->id;
 
-    // ensure related user and ticket are loaded to avoid lazy-loading in the view
-    $booking->loadMissing(['user', 'ticket']);
+        // Load relasi penting lebih awal supaya view tidak kena lazy-loading berulang.
+        $booking->loadMissing(['user', 'ticket']);
 
-        // enforce schedule window for non-admins: allow from 10 minutes before until session duration ends
+        // Batas waktu akses untuk non-admin: mulai 10 menit sebelum sesi sampai durasi sesi habis.
         try {
             $start = \Carbon\Carbon::parse($booking->booking_time);
             $now = now();
@@ -381,18 +422,18 @@ class CoachingController extends Controller
         try {
             $room = $this->twilio->createOrFetchRoom($roomName);
         } catch (\Exception $e) {
-            // log and show friendly message
+            // Catat error dan tampilkan pesan yang ramah ke user.
             logger()->error('Twilio room error: ' . $e->getMessage(), ['booking' => $booking->id]);
             abort(500, 'Failed to prepare video room');
         }
 
-        // Persist twilio_room_sid if not set
+        // Simpan twilio_room_sid kalau belum ada nilainya.
         if (! $booking->twilio_room_sid) {
             $booking->twilio_room_sid = $room->sid ?? null;
             $booking->save();
         }
 
-        // Create Access Token
+        // Token akses dipakai Twilio supaya frontend bisa join room dengan identitas user yang benar.
         $identity = $this->twilio->generateIdentity($user);
         try {
             $accessToken = $this->twilio->createAccessToken($identity, $roomName);
@@ -401,7 +442,7 @@ class CoachingController extends Controller
             abort(500, 'Failed to generate access token');
         }
 
-        // pass isAdmin flag to view so UI can render admin controls
+        // Flag admin dikirim ke view supaya UI bisa menampilkan kontrol khusus admin bila perlu.
         $sessionDurationMinutes = (int) ($booking->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
         return view('coaching.session', compact('booking', 'accessToken', 'roomName', 'sessionDurationMinutes'))
             ->with('isAdmin', $isAdmin);
@@ -409,6 +450,7 @@ class CoachingController extends Controller
 
     public function token(Request $request, CoachingBooking $booking)
     {
+        // Endpoint ini mengeluarkan token JSON untuk frontend yang join session via AJAX.
         $user = Auth::user();
         $isOwner = $user && $booking->user_id === $user->id;
         $isAssignedCoach = $user && $booking->coach_user_id && $booking->coach_user_id === $user->id;
@@ -435,7 +477,7 @@ class CoachingController extends Controller
         $identity = $this->twilio->generateIdentity($user);
         $roomName = 'coaching-' . $booking->id;
 
-        // enforce schedule window: allow token from 10 minutes before start until session duration ends
+        // Token hanya boleh keluar di jendela waktu sesi yang sudah ditentukan.
         try {
             $start = \Carbon\Carbon::parse($booking->booking_time);
             $now = now();
@@ -444,7 +486,7 @@ class CoachingController extends Controller
                 return response()->json(['error' => 'Token not available at this time'], 403);
             }
         } catch (\Throwable $e) {
-            // if parsing fails, deny to be safe
+            // Kalau parsing gagal, tolak akses demi keamanan.
             return response()->json(['error' => 'Invalid booking time'], 400);
         }
 
@@ -463,6 +505,7 @@ class CoachingController extends Controller
 
     public function logEvent(Request $request, CoachingBooking $booking)
     {
+        // Event log dipakai untuk mencatat momen penting selama sesi coaching berjalan.
         $user = Auth::user();
         $isOwner = $user && $booking->user_id === $user->id;
         $isAssignedCoach = $user && $booking->coach_user_id && $booking->coach_user_id === $user->id;
@@ -478,7 +521,7 @@ class CoachingController extends Controller
             'meta' => 'nullable|array',
         ]);
 
-        // Append human-friendly timeline notes and avoid noisy raw telemetry strings.
+        // Simpan event dalam bentuk timeline yang mudah dibaca, bukan telemetry mentah.
         try {
             $event = strtolower(trim((string) ($data['event'] ?? 'event')));
             $line = null;
@@ -488,7 +531,7 @@ class CoachingController extends Controller
             } elseif ($event === 'session_ended_by_admin') {
                 $line = '[' . now()->toDateTimeString() . '] Meeting selesai (diakhiri admin)';
             } elseif ($event === 'connect_error') {
-                // Keep connect errors in server logs only, not in user-facing notes.
+                // Simpan error koneksi hanya di log server, bukan di catatan yang dilihat user.
                 logger()->warning('Coaching connect_error event', ['booking_id' => $booking->id, 'meta' => $data['meta'] ?? null]);
             } else {
                 $line = '[' . now()->toDateTimeString() . '] ' . ($data['event'] ?? 'event');
@@ -539,7 +582,7 @@ class CoachingController extends Controller
         return redirect()->back()->with('success','Note saved');
     }
 
-    // Return availability for a given date (simple implementation)
+    // Mengembalikan ketersediaan slot untuk tanggal tertentu.
     public function availability(Request $request)
     {
         $user = Auth::user();
@@ -548,29 +591,29 @@ class CoachingController extends Controller
         $date = $request->query('date');
         if (! $date) return response()->json(['error' => 'date missing'], 400);
 
-        // find bookings on that date (only active ones count against capacity)
+        // Ambil booking pada tanggal itu, dan hanya status aktif yang dihitung ke kapasitas.
         $booked = CoachingBooking::whereDate('booking_time', $date)
             ->whereIn('status', ['pending','accepted'])
             ->get();
 
-        // Pre-compute times booked by current user (to label "Your booking")
+        // Pre-compute jam booking milik user agar frontend bisa menandai "booking saya".
         $myBookedTimes = [];
         foreach ($booked as $b) {
             try {
                 if ($b->user_id === ($user->id ?? null)) {
                     $myBookedTimes[] = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
                 }
-            } catch (\Throwable $e) { /* ignore parse issues */ }
+            } catch (\Throwable $e) { /* abaikan masalah parsing */ }
         }
 
-        // load admin-defined capacities for this date
+        // Muat kapasitas slot yang sudah ditetapkan admin untuk tanggal ini.
         $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $date)->get();
 
         $sessionLength = (int) config('coaching.session_length_minutes', 60);
         $now = now();
         $result = [];
         if ($capacityRows->count() > 0) {
-            // Build slots from admin-defined times (exact HH:MM keys)
+            // Bangun daftar slot dari waktu yang ditentukan admin (key HH:MM persis).
             foreach ($capacityRows as $r) {
                 $time = $r->time;
                 try {
@@ -586,7 +629,7 @@ class CoachingController extends Controller
                 $result[$time] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
             }
 
-            // Count bookings for exact times (HH:MM)
+            // Hitung booking untuk waktu yang cocok persis (HH:MM).
             foreach ($booked as $b) {
                 $t = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
                 if (isset($result[$t])) {
@@ -598,7 +641,7 @@ class CoachingController extends Controller
                 }
             }
         } else {
-            // No admin-defined slots for this date - return empty slots so frontend hides availability
+            // Tidak ada slot buatan admin untuk tanggal ini, jadi frontend menyembunyikan availability.
             $result = [];
         }
 
@@ -606,8 +649,8 @@ class CoachingController extends Controller
     }
 
     /**
-     * Return availability summary for a date range (inclusive).
-     * Response format: { days: { 'YYYY-MM-DD': remainingCount, ... } }
+     * Mengembalikan ringkasan ketersediaan untuk rentang tanggal (inklusif).
+     * Format response: { days: { 'YYYY-MM-DD': remainingCount, ... } }
      */
     public function availabilityRange(Request $request)
     {
@@ -627,12 +670,12 @@ class CoachingController extends Controller
 
         if ($endDt->lt($startDt)) return response()->json(['error' => 'end must be >= start'], 400);
 
-        // small validation to avoid huge ranges
+        // Validasi kecil supaya rentang tanggal tidak terlalu besar.
         if ($endDt->diffInDays($startDt) > 92) return response()->json(['error' => 'range too large'], 400);
 
         $sessionLength = (int) config('coaching.session_length_minutes', 60);
         $days = [];
-        // optional short cache to reduce DB load if many users hit same month
+        // Cache pendek opsional untuk mengurangi beban DB kalau banyak user membuka bulan yang sama.
         $cacheKey = 'coaching_avail_range:' . $startDt->toDateString() . ':' . $endDt->toDateString();
         $cached = \Illuminate\Support\Facades\Cache::get($cacheKey);
         if ($cached) return response()->json(['days' => $cached]);
@@ -677,7 +720,7 @@ class CoachingController extends Controller
             $days[$ds] = $remainingCount;
         }
 
-        // cache for short time (10s) to smooth spikes
+        // Cache sebentar (10 detik) untuk meredam lonjakan trafik.
         \Illuminate\Support\Facades\Cache::put($cacheKey, $days, 10);
 
         return response()->json(['days' => $days]);
