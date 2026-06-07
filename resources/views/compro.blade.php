@@ -440,25 +440,6 @@
             </div>
         </div>
 
-        <div class="tech-section max-w-7xl mx-auto mt-24 border-y border-white/5 py-8">
-            <p class="tech-label text-center text-xs font-semibold tracking-widest text-textDim uppercase mb-6">Infrastruktur Teknologi Pendukung</p>
-            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                <div class="tech-logo flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
-                    Bunny.net
-                </div>
-                <div class="tech-logo flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
-                    Twilio CPaaS
-                </div>
-                <div class="tech-logo flex items-center gap-2 text-xl font-bold tracking-tighter text-white">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-5.514 0-10-4.486-10-10s4.486-10 10-10 10 4.486 10 10-4.486 10-10 10zm-1-11v-4h2v4h-2zm0 4v-2h2v2h-2z"/></svg>
-                    Midtrans
-                </div>
-            </div>
-        </div>
-    </section>
-
     <section id="video-preview" class="py-20 px-6">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-6">
@@ -505,8 +486,8 @@
                     <div class="feature-icon-wrap w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     </div>
-                    <h3 class="feature-title font-serif text-2xl text-white">Akses Kelas Otomatis</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Checkout terintegrasi penuh dengan <span class="feature-highlight text-gray-300 font-medium">Midtrans</span>. Bayar menggunakan QRIS, Gopay, atau Virtual Account, kelas Anda langsung terbuka otomatis detik itu juga.</p>
+                    <h3 class="feature-title font-serif text-2xl text-white">Automated Course Enrollment</h3>
+                    <p class="feature-body text-textDim leading-relaxed font-light">Fully integrated checkout with <span class="feature-highlight text-gray-300 font-medium">Midtrans </span>Pay with QRIS, Gopay, or Virtual Account, and your class will be opened automatically immediately.</p>
                 </div>
             </div>
         </div>
