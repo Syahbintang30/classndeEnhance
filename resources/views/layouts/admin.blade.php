@@ -422,9 +422,9 @@
                 <a class="side-link {{ request()->is('admin/vouchers*') ? 'active' : '' }}" href="{{ route('admin.vouchers.index') }}">
                     <i class="ph ph-ticket"></i> Vouchers
                 </a>
-                <a class="side-link {{ request()->is('admin/payment-methods*') ? 'active' : '' }}" href="{{ route('admin.payment-methods.index') }}">
+                <!-- <a class="side-link {{ request()->is('admin/payment-methods*') ? 'active' : '' }}" href="{{ route('admin.payment-methods.index') }}">
                     <i class="ph ph-wallet"></i> Payment Methods
-                </a>
+                </a> -->
                 <a class="side-link {{ request()->is('admin/referral*') ? 'active' : '' }}" href="{{ route('admin.referral.settings.form') }}">
                     <i class="ph ph-share-network"></i> Referral
                 </a>

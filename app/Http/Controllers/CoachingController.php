@@ -251,7 +251,7 @@ class CoachingController extends Controller
                     ]);
                 }
 
-                // Booking langsung dibuat dengan status accepted supaya user bisa join tanpa review admin.
+                // Auto-approve: sistem langsung menyetujui booking karena validasi tiket dan kapasitas slot sudah dilakukan otomatis.
                 $booking = CoachingBooking::create([
                     'user_id' => $user->id,
                     'ticket_id' => $ticket->id,
