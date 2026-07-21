@@ -184,24 +184,28 @@
         <!-- FAQ Accordion List -->
         <div class="space-y-4 max-w-4xl mx-auto">
             <template x-for="(faq, idx) in filteredFaqs" :key="idx">
-                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all duration-300">
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all duration-300"
+                     :class="{ 'border-blue-500/40 bg-zinc-950/80 shadow-[0_0_30px_rgba(59,130,246,0.15)]': activeAccordion === idx }">
                     <button @click="activeAccordion = (activeAccordion === idx ? null : idx)" 
-                            class="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
+                            class="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors focus:outline-none">
                         <span class="font-bold text-white text-sm sm:text-base flex items-center gap-3">
-                            <span class="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-center justify-center font-mono font-bold shrink-0"
+                            <span class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-center justify-center font-mono font-bold shrink-0 shadow-sm transition-all"
+                                  :class="{ 'bg-blue-600 text-white border-blue-500 shadow-blue-600/30': activeAccordion === idx }"
                                   x-text="(idx + 1) < 10 ? '0' + (idx + 1) : (idx + 1)">
                             </span>
-                            <span x-text="faq.question"></span>
+                            <span x-text="faq.question" class="transition-colors" :class="{ 'text-blue-300': activeAccordion === idx }"></span>
                         </span>
-                        <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 shrink-0 transition-transform duration-300"
-                             :class="{ 'rotate-180 text-blue-400 bg-blue-500/10 border-blue-500/20': activeAccordion === idx }">
+                        <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 shrink-0 transition-all duration-300"
+                             :class="{ 'rotate-180 text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-md': activeAccordion === idx }">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
                     <div x-show="activeAccordion === idx" 
                          x-collapse
-                         class="px-6 pb-6 pt-2 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-zinc-950/40"
-                         x-text="faq.answer">
+                         class="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        <div class="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/5 text-gray-300 leading-relaxed shadow-inner"
+                             x-text="faq.answer">
+                        </div>
                     </div>
                 </div>
             </template>
