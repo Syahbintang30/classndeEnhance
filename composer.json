@@ -12,6 +12,7 @@
         "laravel/socialite": "^5.26",
         "laravel/tinker": "^2.10.1",
         "midtrans/midtrans-php": "*",
+        "railsware/mailtrap-php": "^3.12",
         "twilio/sdk": "^8.7"
     },
     "require-dev": {
