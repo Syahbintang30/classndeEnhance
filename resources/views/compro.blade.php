@@ -79,7 +79,8 @@
     @php
         $isLoggedIn = auth()->check();
         $lmsUrl = route('lms.dashboard');
-        $lessonId = isset($lessons) ? ($lessons->first()->id ?? 1) : 1;
+        $firstLesson = \App\Models\Lesson::orderBy('position')->first();
+        $lessonId = $firstLesson ? $firstLesson->id : 9;
     @endphp
 
     <!-- ─── HERO SECTION (HIGH CONVERTING SALES HOOK) ───────────────────── -->

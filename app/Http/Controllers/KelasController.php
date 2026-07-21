@@ -298,11 +298,20 @@ class KelasController extends Controller
     /**
      * Show purchase page for a lesson (beli kelas).
      */
-    public function buy(Lesson $lesson)
+    public function buy($lesson)
     {
-    /** @var \App\Models\User|null $user */
-    $user = Auth::user();
-    $packages = Package::orderBy('price')->get();
+        $lessonModel = $lesson instanceof Lesson ? $lesson : Lesson::find($lesson);
+        if (!$lessonModel) {
+            $lessonModel = Lesson::orderBy('position')->first();
+        }
+        if (!$lessonModel) {
+            $lessonModel = new Lesson(['id' => 1, 'title' => 'Guitarclassbynde Course']);
+        }
+        $lesson = $lessonModel;
+
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $packages = Package::orderBy('price')->get();
 
         // determine package from request or user's existing package
         $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
