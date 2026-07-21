@@ -147,9 +147,9 @@
             <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
                 @php $avatar = $user->photoUrl(); @endphp
                 <div class="relative shrink-0">
-                    <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden shrink-0" style="width:80px;height:80px;border-radius:9999px;">
+                    <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 shadow-xl overflow-hidden shrink-0 relative block" style="width:80px;height:80px;border-radius:9999px;padding:0;margin:0;">
                         @if($avatar)
-                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" style="width:80px !important;height:80px !important;min-width:80px !important;min-height:80px !important;max-width:none !important;max-height:none !important;object-fit:cover !important;object-position:center !important;border-radius:9999px !important;display:block !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" style="position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;min-width:100% !important;min-height:100% !important;max-width:none !important;max-height:none !important;object-fit:cover !important;object-position:center 35% !important;border-radius:9999px !important;display:block !important;margin:0 !important;padding:0 !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                             <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                         @else
                             <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
@@ -157,12 +157,20 @@
                     </div>
                 </div>
 
-                <div class="space-y-1.5">
-                    <button id="change-photo" type="button" class="px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-xs font-bold text-white transition flex items-center gap-2 cursor-pointer shadow-md">
-                        <i class="fa-solid fa-camera text-blue-400 text-xs"></i>
-                        <span>Change Photo</span>
-                    </button>
-                    <p class="text-[11px] text-gray-400">Supported formats: JPG, PNG (Max 2MB)</p>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <button id="change-photo" type="button" class="px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-xs font-bold text-white transition flex items-center gap-2 cursor-pointer shadow-md">
+                            <i class="fa-solid fa-camera text-blue-400 text-xs"></i>
+                            <span>Change Photo</span>
+                        </button>
+                        @if($avatar)
+                            <button id="crop-remove" type="button" class="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                                <span>Remove</span>
+                            </button>
+                        @endif
+                    </div>
+                    <p class="text-[11px] text-gray-400">Supported formats: JPG, PNG (Max 2MB). Auto-centered.</p>
                 </div>
             </div>
 
@@ -271,75 +279,6 @@
 
 </div>
 
-<!-- Avatar Cropper Modal -->
-<div id="cropper-modal">
-    <div id="cropper-dialog" class="w-full max-w-lg bg-zinc-950 border border-white/10 rounded-[2rem] p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-2xl">
-        
-        <!-- Glowing Accent Top Line -->
-        <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
-
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between border-b border-white/10 pb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-sm shadow-md">
-                    <i class="fa-solid fa-crop-simple"></i>
-                </div>
-                <div>
-                    <h3 class="font-display text-2xl text-white tracking-wide uppercase leading-none">Adjust Profile Photo</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Position and scale your photo within the circular frame.</p>
-                </div>
-            </div>
-            <button id="crop-cancel" type="button" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
-        </div>
-
-        <!-- Cropper Canvas & Circular Mask Box -->
-        <div class="flex flex-col items-center gap-5">
-            <div id="cropper-area" class="relative w-[300px] h-[300px] rounded-2xl bg-black border border-white/10 overflow-hidden shadow-2xl select-none touch-none cursor-grab active:cursor-grabbing">
-                <!-- Image Container -->
-                <img id="crop-image" src="" alt="Photo to crop" class="absolute select-none pointer-events-auto">
-                
-                <!-- Circular Mask Overlay -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] rounded-full border-2 border-white/90 shadow-[0_0_0_9999px_rgba(8,8,10,0.75)] pointer-events-none z-10 flex items-center justify-center">
-                    <div class="w-full h-full rounded-full border border-dashed border-blue-400/40"></div>
-                </div>
-            </div>
-
-            <!-- Instruction Hint -->
-            <div class="text-xs text-gray-400 font-medium flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
-                <i class="fa-solid fa-hand-pointer text-blue-400 text-xs"></i>
-                <span>Drag photo to center &amp; use slider to zoom</span>
-            </div>
-
-            <!-- Zoom Controls Slider -->
-            <div class="flex items-center gap-3 w-full max-w-xs justify-center text-xs text-gray-300">
-                <i class="fa-solid fa-magnifying-glass-minus text-gray-400 text-xs"></i>
-                <input id="crop-zoom" type="range" min="1" max="3" step="0.001" value="1" class="w-full accent-blue-500 cursor-pointer h-1.5 bg-white/10 rounded-lg">
-                <i class="fa-solid fa-magnifying-glass-plus text-gray-400 text-xs"></i>
-            </div>
-        </div>
-
-        <!-- Modal Action Footer Buttons -->
-        <div class="flex items-center justify-between pt-2 border-t border-white/10">
-            <button id="crop-remove" type="button" class="px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition flex items-center gap-2">
-                <i class="fa-solid fa-trash-can text-xs"></i>
-                <span>Remove</span>
-            </button>
-            <div class="flex items-center gap-2">
-                <button id="crop-cancel-btn" type="button" class="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white text-xs font-bold transition">
-                    Cancel
-                </button>
-                <button id="crop-apply" type="button" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-blue-600/30 transition hover:scale-105 flex items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-check text-xs"></i>
-                    <span>Apply Photo</span>
-                </button>
-            </div>
-        </div>
-
-    </div>
-</div>
-
 <script>
 // Scroll to password section if hash
 (function(){
@@ -365,187 +304,79 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     });
 });
 
-// Precision Circular Avatar Cropper Logic (60fps Hardware Accelerated)
+// Automatic Center Auto-Crop & Photo Processor
 (function(){
     var changeBtn = document.getElementById('change-photo');
     var nativeInput = document.getElementById('photo');
     var preview = document.getElementById('photo-preview');
-    var modal = document.getElementById('cropper-modal');
-    var cropImage = document.getElementById('crop-image');
-    var cropArea = document.getElementById('cropper-area');
-    var zoom = document.getElementById('crop-zoom');
-    var apply = document.getElementById('crop-apply');
-    var cancel = document.getElementById('crop-cancel');
-    var cancelBtn = document.getElementById('crop-cancel-btn');
     var rem = document.getElementById('crop-remove');
-    
-    var state = { x: 0, y: 0, scale: 1, baseScale: 1, isDown: false, startX: 0, startY: 0 };
-    var areaSize = 300; // 300x300px cropper viewport area
-    var circleSize = 240; // 240x240px circular mask diameter
-    var rafId = null;
 
     function ensurePreviewImage(){
         if(preview && preview.tagName === 'IMG') return preview;
         var img = document.createElement('img');
         img.id = 'photo-preview';
-        img.className = 'w-full h-full object-cover object-center rounded-full block';
+        img.style.position = 'absolute';
+        img.style.top = '0';
+        img.style.left = '0';
         img.style.width = '100%';
         img.style.height = '100%';
         img.style.objectFit = 'cover';
-        img.style.objectPosition = 'center';
+        img.style.objectPosition = 'center 35%';
         img.style.borderRadius = '9999px';
+        img.style.display = 'block';
         img.alt = '';
         if(preview && preview.parentNode) preview.parentNode.replaceChild(img, preview);
         preview = img;
         return preview;
     }
 
-    function showModal(){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
-    function hideModal(){ modal.style.display='none'; document.body.style.overflow=''; }
+    if (changeBtn && nativeInput) {
+        changeBtn.addEventListener('click', function(){ nativeInput.click(); });
 
-    if (changeBtn) changeBtn.addEventListener('click', function(){ nativeInput.click(); });
-
-    if (nativeInput) {
         nativeInput.addEventListener('change', function(){
-            var f = this.files && this.files[0]; if(!f) return;
+            var file = this.files && this.files[0];
+            if (!file) return;
+
             var reader = new FileReader();
             reader.onload = function(e){
-                cropImage.src = e.target.result;
-                cropImage.onload = function(){
-                    var nw = cropImage.naturalWidth || 800;
-                    var nh = cropImage.naturalHeight || 800;
-                    state.baseScale = Math.max(circleSize / nw, circleSize / nh);
-                    state.scale = 1;
-                    state.x = 0;
-                    state.y = 0;
-                    if(zoom) zoom.value = 1;
-                    scheduleTransform();
-                    showModal();
+                var img = new Image();
+                img.onload = function(){
+                    var nw = img.naturalWidth || img.width || 800;
+                    var nh = img.naturalHeight || img.height || 800;
+
+                    // Calculate square crop with upper/face focus for portrait photos
+                    var cropSize = Math.min(nw, nh);
+                    var srcX = (nw - cropSize) / 2;
+                    var srcY = nh > nw ? Math.max(0, (nh - cropSize) * 0.15) : (nh - cropSize) / 2;
+
+                    var outSize = 600;
+                    var canvas = document.createElement('canvas');
+                    canvas.width = outSize;
+                    canvas.height = outSize;
+                    var ctx = canvas.getContext('2d');
+
+                    // Clean canvas fill & centered square draw
+                    ctx.fillStyle = '#08080a';
+                    ctx.fillRect(0, 0, outSize, outSize);
+                    ctx.drawImage(img, srcX, srcY, cropSize, cropSize, 0, 0, outSize, outSize);
+
+                    canvas.toBlob(function(blob){
+                        if (!blob) return;
+                        var newFile = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+                        var dt = new DataTransfer();
+                        dt.items.add(newFile);
+                        nativeInput.files = dt.files;
+
+                        var prev = ensurePreviewImage();
+                        prev.src = URL.createObjectURL(newFile);
+                        prev.style.display = 'block';
+                    }, 'image/jpeg', 0.95);
                 };
+                img.src = e.target.result;
             };
-            reader.readAsDataURL(f);
+            reader.readAsDataURL(file);
         });
     }
-
-    function scheduleTransform(){
-        if(rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(updateTransform);
-    }
-
-    function updateTransform(){
-        if(!cropImage) return;
-        var nw = cropImage.naturalWidth || 800;
-        var nh = cropImage.naturalHeight || 800;
-        var totalScale = state.baseScale * state.scale;
-        var dispW = nw * totalScale;
-        var dispH = nh * totalScale;
-        
-        // Strict boundary clamping: image MUST ALWAYS 100% cover the 240px circular mask!
-        var maxX = Math.max(0, (dispW - circleSize) / 2);
-        var maxY = Math.max(0, (dispH - circleSize) / 2);
-        state.x = Math.max(-maxX, Math.min(maxX, state.x));
-        state.y = Math.max(-maxY, Math.min(maxY, state.y));
-
-        cropImage.style.willChange = 'transform, width, height';
-        cropImage.style.width = dispW + 'px';
-        cropImage.style.height = dispH + 'px';
-        cropImage.style.left = ((areaSize - dispW) / 2) + 'px';
-        cropImage.style.top = ((areaSize - dispH) / 2) + 'px';
-        cropImage.style.transform = 'translate3d(' + state.x + 'px, ' + state.y + 'px, 0)';
-    }
-
-    if (cropArea) {
-        cropArea.addEventListener('pointerdown', function(e){
-            state.isDown = true;
-            state.startX = e.clientX;
-            state.startY = e.clientY;
-            cropArea.setPointerCapture(e.pointerId);
-        });
-        window.addEventListener('pointermove', function(e){
-            if(!state.isDown) return;
-            state.x += (e.clientX - state.startX);
-            state.y += (e.clientY - state.startY);
-            state.startX = e.clientX;
-            state.startY = e.clientY;
-            scheduleTransform();
-        });
-        window.addEventListener('pointerup', function(){ state.isDown = false; });
-
-        // Smooth Mouse Wheel Zoom
-        cropArea.addEventListener('wheel', function(e){
-            e.preventDefault();
-            var delta = e.deltaY < 0 ? 0.08 : -0.08;
-            var newScale = Math.max(1, Math.min(3, state.scale + delta));
-            state.scale = newScale;
-            if(zoom) zoom.value = newScale;
-            scheduleTransform();
-        }, { passive: false });
-    }
-
-    if (zoom) {
-        zoom.addEventListener('input', function(){
-            state.scale = parseFloat(this.value);
-            scheduleTransform();
-        });
-    }
-
-    if (apply) {
-        apply.addEventListener('click', function(){
-            var nw = cropImage.naturalWidth;
-            var nh = cropImage.naturalHeight;
-            if(!nw || !nh) return hideModal();
-
-            var totalScale = state.baseScale * state.scale;
-            var dispW = nw * totalScale;
-            var dispH = nh * totalScale;
-            
-            // Re-clamp state before canvas export
-            var maxX = Math.max(0, (dispW - circleSize) / 2);
-            var maxY = Math.max(0, (dispH - circleSize) / 2);
-            state.x = Math.max(-maxX, Math.min(maxX, state.x));
-            state.y = Math.max(-maxY, Math.min(maxY, state.y));
-
-            var cropX_in_disp = (dispW / 2) - (circleSize / 2) - state.x;
-            var cropY_in_disp = (dispH / 2) - (circleSize / 2) - state.y;
-
-            var srcW = circleSize / totalScale;
-            var srcH = circleSize / totalScale;
-            var srcX = Math.max(0, Math.min(nw - srcW, cropX_in_disp / totalScale));
-            var srcY = Math.max(0, Math.min(nh - srcH, cropY_in_disp / totalScale));
-
-            var outCanvasSize = 600;
-            var canvas = document.createElement('canvas');
-            canvas.width = outCanvasSize;
-            canvas.height = outCanvasSize;
-            var ctx = canvas.getContext('2d');
-
-            try {
-                ctx.fillStyle = '#08080a';
-                ctx.fillRect(0, 0, outCanvasSize, outCanvasSize);
-                ctx.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, outCanvasSize, outCanvasSize);
-            } catch(e) {
-                alert('Failed to crop image');
-                hideModal();
-                return;
-            }
-
-            canvas.toBlob(function(blob){
-                if(!blob){ alert('Failed to generate image'); hideModal(); return; }
-                var file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
-                var dt = new DataTransfer();
-                dt.items.add(file);
-                nativeInput.files = dt.files;
-                
-                var prev = ensurePreviewImage();
-                prev.src = URL.createObjectURL(file);
-                prev.style.display = 'block';
-                hideModal();
-            }, 'image/jpeg', 0.95);
-        });
-    }
-
-    if (cancel) cancel.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
-    if (cancelBtn) cancelBtn.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
 
     if (rem) {
         rem.addEventListener('click', function(){
