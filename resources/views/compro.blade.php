@@ -193,10 +193,10 @@
         <div class="text-center space-y-3">
             <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">The Ultimate Learning Ecosystem</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                3 Fitur Utama <span class="text-blue-500">Nde Guitar Pro</span>
+                3 Core Pillars of <span class="text-blue-500">Nde Guitar Pro</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                Pengalaman belajar gitar paling efektif yang menggabungkan fleksibilitas video materi, bimbingan tatap muka, dan kurikulum lagu.
+                The most effective guitar learning system combining video flexibility, 1-on-1 live coaching, and song tutorials.
             </p>
         </div>
 
@@ -208,15 +208,15 @@
                     <i class="fa-solid fa-laptop-code"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Pilar 1 • Lifetime Access</span>
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Pillar 1 • Lifetime Access</span>
                     <h3 class="font-display text-3xl text-white">Video Lessons 24/7</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Akses materi video HD berstruktur yang dapat Anda pelajari <strong class="text-white">kapan saja dan di mana saja</strong> tanpa batasan waktu melalui semua perangkat.
+                    Access structured HD video modules that you can learn <strong class="text-white">anytime and anywhere</strong> at your own pace across all devices.
                 </p>
                 <div class="pt-2 text-xs font-bold text-blue-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Tonton Ulang Tanpa Batas</span>
+                    <span>Unlimited Rewatch Access</span>
                 </div>
             </div>
 
@@ -226,15 +226,15 @@
                     <i class="fa-solid fa-video"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Pilar 2 • On-Website Video Call</span>
+                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Pillar 2 • On-Website Video Call</span>
                     <h3 class="font-display text-3xl text-white">1-on-1 Live Coaching</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Bimbingan tatap muka <strong class="text-white">Video Call langsung di dalam website</strong> bersama Nde untuk evaluasi posisi jari, ritme, dan koreksi kesalahan secara *real-time*.
+                    Live 1-on-1 <strong class="text-white">video call coaching inside the website</strong> with Nde for real-time technique & finger placement correction.
                 </p>
                 <div class="pt-2 text-xs font-bold text-purple-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Sistem Booking Jadwal Terintegrasi</span>
+                    <span>Integrated Booking Schedule</span>
                 </div>
             </div>
 
@@ -244,15 +244,15 @@
                     <i class="fa-solid fa-compact-disc"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Pilar 3 • Intermediate Tier</span>
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Pillar 3 • Intermediate Tier</span>
                     <h3 class="font-display text-3xl text-white">Song Tutorial Library</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Perpustakaan bedah lagu khusus <strong class="text-white">Intermediate Student</strong> untuk menguasai aransemen lagu populer, teknik petikan, dan progresi kunci tingkat lanjut.
+                    Exclusive song breakdown library for <strong class="text-white">Intermediate Students</strong> to master popular song arrangements, strumming, and advanced chords.
                 </p>
                 <div class="pt-2 text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Pembaruan Modul Lagu Rutin</span>
+                    <span>Regular Song Updates</span>
                 </div>
             </div>
 
