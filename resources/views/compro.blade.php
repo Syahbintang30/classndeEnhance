@@ -268,57 +268,76 @@
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             
             <!-- Old Way Card -->
-            <div class="glass-panel p-8 border-red-500/20 bg-red-500/5 space-y-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-xmark"></i>
+            <div class="glass-panel p-8 border-red-500/20 bg-red-500/5 flex flex-col justify-between space-y-6 hover:border-red-500/40 transition">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-base shrink-0">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Frustrating Old Way</h3>
+                        </div>
+                        <span class="px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">High Risk</span>
                     </div>
-                    <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Frustrating Old Way</h3>
+
+                    <ul class="space-y-4 text-xs sm:text-sm text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Watching random YouTube tutorials with no clear structure or path.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">No feedback from a mentor, leading to bad finger habits and pain.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Stuck on basic chord switching for months without progress.</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <ul class="space-y-4 text-xs sm:text-sm text-gray-400">
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>Watching random YouTube tutorials with no clear structure or path.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>No feedback from a mentor, leading to bad finger habits and pain.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>Stuck on basic chord switching for months without progress.</span>
-                    </li>
-                </ul>
+                <div class="pt-4 border-t border-red-500/10 flex items-center gap-2 text-xs font-bold text-red-400/80">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>90% Quit Within 3 Months</span>
+                </div>
             </div>
 
             <!-- Nde System Card -->
-            <div class="glass-panel p-8 border-emerald-500/30 bg-emerald-500/5 space-y-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 px-4 py-1 bg-emerald-500 text-black text-[10px] font-extrabold uppercase rounded-bl-xl">Recommended</div>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-check"></i>
+            <div class="glass-panel p-8 border-emerald-500/30 bg-emerald-500/5 flex flex-col justify-between space-y-6 hover:border-emerald-500/50 transition">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Nde Guitar Pro System</h3>
+                        </div>
+                        <span class="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">Recommended</span>
                     </div>
-                    <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Nde Guitar Pro System</h3>
+
+                    <ul class="space-y-4 text-xs sm:text-sm text-gray-300 font-medium">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Structured 100% step-by-step video curriculum from zero to advanced.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Direct 1-on-1 live video coaching calls with Nde for instant fixes.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Built-in 5 Suite Practice Tools (Tuner, Metronome, Chord/Scale, Quiz).</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <ul class="space-y-4 text-xs sm:text-sm text-gray-300 font-medium">
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>Structured 100% step-by-step video curriculum from zero to advanced.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>Direct 1-on-1 live video coaching calls with Nde for instant technique fixes.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 flex-shrink-0"></i>
-                        <span>Built-in Practice Suite (Tuner, Metronome, Chord/Scale Visualizer, Ear Quiz).</span>
-                    </li>
-                </ul>
+                <div class="pt-4 border-t border-emerald-500/10 flex items-center gap-2 text-xs font-bold text-emerald-400">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>98% Success Rate Guaranteed</span>
+                </div>
             </div>
 
         </div>
