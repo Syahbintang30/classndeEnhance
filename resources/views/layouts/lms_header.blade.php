@@ -27,92 +27,110 @@
     <!-- Center: Floating Glass Pill Navigation (100% Dead-Centered) -->
     <div class="hidden md:flex items-center justify-center flex-1">
         <nav class="flex items-center gap-1 bg-zinc-950/70 border border-white/10 backdrop-blur-xl rounded-full p-1.5 shadow-2xl">
-            <a href="{{ route('lms.dashboard') }}" class="{{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                <i class="fa-solid fa-chart-pie text-[11px]"></i>
-                <span>Dashboard</span>
-            </a>
-            
-            <a href="{{ route('kelas') }}" class="{{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                <i class="fa-solid fa-book-open text-[11px]"></i>
-                <span>Lessons</span>
-            </a>
-            
-            <a href="{{ route('coaching.upcoming') }}" class="{{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                <i class="fa-solid fa-user-ninja text-[11px]"></i>
-                <span>1-on-1 Coaching</span>
-            </a>
-            
-            <a href="{{ route('practice.index') }}" class="{{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                <i class="fa-solid fa-toolbox text-[11px]"></i>
-                <span>Practice Tools</span>
-            </a>
-            
-            @if(auth()->check() && auth()->user()->hasIntermediateAccess())
-            <a href="{{ route('song.tutorial.index') }}" class="{{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                <i class="fa-solid fa-music text-[11px]"></i>
-                <span>Song Library</span>
-            </a>
+            @if(request()->routeIs('compro') && !auth()->check())
+                <a href="#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
+                <a href="#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
+                <a href="#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
+            @else
+                <a href="{{ route('lms.dashboard') }}" class="{{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-[11px]"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="{{ route('kelas') }}" class="{{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-[11px]"></i>
+                    <span>Lessons</span>
+                </a>
+                
+                <a href="{{ route('coaching.upcoming') }}" class="{{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-user-ninja text-[11px]"></i>
+                    <span>1-on-1 Coaching</span>
+                </a>
+                
+                <a href="{{ route('practice.index') }}" class="{{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-toolbox text-[11px]"></i>
+                    <span>Practice Tools</span>
+                </a>
+                
+                @if(auth()->check() && auth()->user()->hasIntermediateAccess())
+                <a href="{{ route('song.tutorial.index') }}" class="{{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-music text-[11px]"></i>
+                    <span>Song Library</span>
+                </a>
+                @endif
             @endif
         </nav>
     </div>
 
-    <!-- Right Side User Menu -->
+    <!-- Right Side User Menu / Guest Actions -->
     <div class="flex items-center justify-end min-w-[200px] sm:min-w-[240px] shrink-0 space-x-3">
         {{-- Mobile hamburger --}}
         <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-gray-300 hover:text-white">
             <i class="fa-solid fa-bars text-lg"></i>
         </button>
 
-        <!-- User Dropdown & Avatar Pill -->
-        <div class="hidden md:flex items-center relative" x-data="{ open: false }">
-            <div @click="open = !open" @click.away="open = false" class="flex items-center gap-2.5 bg-zinc-950/60 border border-white/10 rounded-full px-3 py-1.5 hover:border-blue-500/40 transition-all cursor-pointer group shadow-md">
-                <div class="relative">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xs shadow-md border border-white/20">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+        @auth
+            <!-- User Dropdown & Avatar Pill for Logged In User -->
+            <div class="hidden md:flex items-center relative" x-data="{ open: false }">
+                <div @click="open = !open" @click.away="open = false" class="flex items-center gap-2.5 bg-zinc-950/60 border border-white/10 rounded-full px-3 py-1.5 hover:border-blue-500/40 transition-all cursor-pointer group shadow-md">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xs shadow-md border border-white/20">
+                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#08080a] rounded-full"></span>
                     </div>
-                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#08080a] rounded-full"></span>
+                    
+                    <div class="hidden xl:block text-left leading-none pr-1">
+                        <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors mb-0.5">{{ auth()->user()->name ?? 'Student' }}</div>
+                        <div class="text-[9px] font-semibold text-gray-400">{{ auth()->user()->hasIntermediateAccess() ? 'Intermediate Student' : 'Student' }}</div>
+                    </div>
+                    
+                    <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 group-hover:text-gray-300"></i>
                 </div>
                 
-                <div class="hidden xl:block text-left leading-none pr-1">
-                    <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors mb-0.5">{{ auth()->user()->name ?? 'Student' }}</div>
-                    <div class="text-[9px] font-semibold text-gray-400">{{ (auth()->check() && auth()->user()->hasIntermediateAccess()) ? 'Intermediate Student' : 'Student' }}</div>
+                <!-- Dropdown Menu -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="transform opacity-0 scale-95 -translate-y-2"
+                     x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="transform opacity-0 scale-95 -translate-y-2"
+                     class="absolute right-0 top-full mt-2.5 w-52 bg-[#0c0c12] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 shadow-black/80"
+                     style="display: none;">
+                    
+                    @if(auth()->user()->is_admin || auth()->user()->is_superadmin)
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl transition font-semibold mb-1">
+                        <i class="fa-solid fa-shield-halved text-xs"></i> Admin Panel
+                    </a>
+                    <div class="border-t border-white/5 my-1"></div>
+                    @endif
+                    
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
+                        <i class="fa-solid fa-gear text-xs text-gray-500"></i> Settings
+                    </a>
+                    
+                    <div class="border-t border-white/5 my-1"></div>
+                    
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition font-semibold">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Log out
+                        </button>
+                    </form>
                 </div>
-                
-                <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 group-hover:text-gray-300"></i>
             </div>
-            
-            <!-- Dropdown Menu -->
-            <div x-show="open" 
-                 x-transition:enter="transition ease-out duration-150"
-                 x-transition:enter-start="transform opacity-0 scale-95 -translate-y-2"
-                 x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
-                 x-transition:leave="transition ease-in duration-100"
-                 x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
-                 x-transition:leave-end="transform opacity-0 scale-95 -translate-y-2"
-                 class="absolute right-0 top-full mt-2.5 w-52 bg-[#0c0c12] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 shadow-black/80"
-                 style="display: none;">
-                
-                @if(auth()->check() && (auth()->user()->is_admin || auth()->user()->is_superadmin))
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl transition font-semibold mb-1">
-                    <i class="fa-solid fa-shield-halved text-xs"></i> Admin Panel
+        @else
+            <!-- Guest Actions (Login & Join Class Buttons) -->
+            <div class="hidden md:flex items-center gap-3">
+                <a href="{{ route('login') }}" class="text-xs font-bold text-gray-300 hover:text-white px-4 py-2 rounded-xl transition hover:bg-white/5">
+                    Log in
                 </a>
-                <div class="border-t border-white/5 my-1"></div>
-                @endif
-                
-                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
-                    <i class="fa-solid fa-gear text-xs text-gray-500"></i> Settings
+                <a href="{{ url('/registerclass') }}" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/25 transition-all hover:scale-105">
+                    Get Access
                 </a>
-                
-                <div class="border-t border-white/5 my-1"></div>
-                
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition font-semibold">
-                        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Log out
-                    </button>
-                </form>
             </div>
-        </div>
+        @endauth
     </div>
 </header>
 
