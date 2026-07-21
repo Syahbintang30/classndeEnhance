@@ -147,12 +147,12 @@
             <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
                 @php $avatar = $user->photoUrl(); @endphp
                 <div class="relative shrink-0">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden">
+                    <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden shrink-0">
                         @if($avatar)
-                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                            <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" class="w-full h-full object-cover object-center rounded-full block" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:9999px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                         @else
-                            <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                            <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                         @endif
                     </div>
                 </div>
@@ -338,7 +338,12 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
         if(preview && preview.tagName === 'IMG') return preview;
         var img = document.createElement('img');
         img.id = 'photo-preview';
-        img.className = 'w-full h-full object-cover';
+        img.className = 'w-full h-full object-cover object-center rounded-full block';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.objectPosition = 'center';
+        img.style.borderRadius = '9999px';
         img.alt = '';
         if(preview && preview.parentNode) preview.parentNode.replaceChild(img, preview);
         preview = img;

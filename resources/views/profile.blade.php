@@ -56,9 +56,9 @@
 
             <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
                 @php $avatar = auth()->user()->photoUrl(); @endphp
-                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 border-2 border-white/20 flex items-center justify-center font-bold text-3xl text-white shadow-xl overflow-hidden shrink-0">
+                <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 flex items-center justify-center font-bold text-3xl text-white shadow-xl overflow-hidden shrink-0">
                     @if($avatar)
-                        <img src="{{ $avatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                        <img src="{{ $avatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover object-center rounded-full block">
                     @else
                         <span>{{ mb_substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
                     @endif

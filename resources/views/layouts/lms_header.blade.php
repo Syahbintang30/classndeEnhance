@@ -77,9 +77,15 @@
                 <!-- User Dropdown -->
                 <div class="relative" x-data="{ open: false }">
                     <div @click="open = !open" @click.away="open = false" class="flex items-center gap-2.5 bg-zinc-950/60 border border-white/10 rounded-full px-3 py-1.5 hover:border-blue-500/40 transition-all cursor-pointer group shadow-md">
-                        <div class="relative">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xs shadow-md border border-white/20">
-                                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                        @php $headerAvatar = auth()->user()->photoUrl(); @endphp
+                        <div class="relative shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-bold text-white text-xs shadow-md overflow-hidden shrink-0">
+                                @if($headerAvatar)
+                                    <img src="{{ $headerAvatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover object-center rounded-full block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                    <span class="hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs rounded-full">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
+                                @else
+                                    <span class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs rounded-full">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
+                                @endif
                             </div>
                             <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#08080a] rounded-full"></span>
                         </div>
