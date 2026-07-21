@@ -88,3 +88,27 @@ Artisan::command('send-invoice {--to=syahbintang30@gmail.com} {--package=interme
         return 1;
     }
 })->purpose('Send sample payment invoice email');
+
+Artisan::command('send-verify {--to=syahbintang30@gmail.com}', function () {
+    $toEmail = $this->option('to');
+    $user = \App\Models\User::where('email', $toEmail)->first() ?: new \App\Models\User([
+        'name' => 'Syah Bintang',
+        'email' => $toEmail,
+    ]);
+
+    $this->info("Sending verification email to {$toEmail}...");
+
+    try {
+        $user->sendEmailVerificationNotification();
+        $this->info('Verification email sent successfully!');
+        return 0;
+    } catch (\Throwable $e) {
+        $this->error('Failed to send verification email: ' . $e->getMessage());
+        return 1;
+    }
+})->purpose('Send sample verification email');
+
+// Schedule automatic daily cleanup for unverified accounts older than 24 hours
+\Illuminate\Support\Facades\Schedule::command('auth:prune-unverified --hours=24')->daily();
+
+

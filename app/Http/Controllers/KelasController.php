@@ -44,17 +44,10 @@ class KelasController extends Controller
             return redirect()->route('lms.pending');
         }
 
-        // Redirect to the first course lesson instead of dashboard
-        $firstLesson = Lesson::where('type', 'course')
-            ->orderBy('position')
-            ->first();
-
-        if ($firstLesson) {
-            return redirect()->route('kelas.show', ['lesson' => $firstLesson->id]);
-        }
-
+        // Redirect to LMS customer dashboard for users with course access
         return redirect()->route('lms.dashboard');
     }
+
 
     /**
      * Premium customer dashboard with modules and learning progress.

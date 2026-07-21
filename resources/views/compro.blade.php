@@ -453,14 +453,19 @@
                             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
                         </div>
 
+                        @php
+                            $isTicketPkg = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
+                            $pricingUnit = $isTicketPkg ? '/ 1x' : '/ lifetime';
+                        @endphp
                         <div>
                             <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ $pkg->slug }}</div>
                             <h3 class="font-display text-3xl text-white tracking-wide uppercase">{{ $pkg->name }}</h3>
                             <div class="font-display text-4xl text-white mt-2">
                                 Rp {{ $priceFormatted }}
-                                <span class="text-xs font-sans text-gray-400 font-normal">/ lifetime</span>
+                                <span class="text-xs font-sans text-gray-400 font-normal">{{ $pricingUnit }}</span>
                             </div>
                         </div>
+
 
                         <ul class="space-y-3 text-xs text-gray-300 font-medium">
                             @foreach($benefits as $b)

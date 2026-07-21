@@ -123,9 +123,14 @@
                         <div class="border-t border-white/5 my-1"></div>
                         @endif
                         
+                        <a href="{{ route('profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
+                            <i class="fa-solid fa-id-card text-xs text-blue-400"></i> My Profile
+                        </a>
+
                         <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
                             <i class="fa-solid fa-gear text-xs text-gray-500"></i> Settings
                         </a>
+
                         
                         <div class="border-t border-white/5 my-1"></div>
                         
@@ -210,6 +215,11 @@
                 <i class="fa-solid fa-music"></i> Song Library
             </a>
             @endif
+
+            <a href="{{ route('profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
+                <i class="fa-solid fa-id-card text-blue-400"></i> My Profile
+            </a>
+
         @endif
     </div>
 </div>

@@ -123,11 +123,12 @@ class RegisteredUserController extends Controller
         ]);
     }
 
-    // Keep user signed in and send them to verification notice directly.
+    // Keep user signed in and redirect them directly to package selection (buy.blade.php / checkout).
     Auth::login($user);
-    return redirect()->route('verification.notice')
-        ->with('status', 'Registration successful. A verification link has been sent to your email. Please check your inbox or spam folder.');
+    return redirect()->route('registerclass')
+        ->with('status', 'Registration successful! A verification link has been sent to your email. Please check your inbox or spam folder.');
     }
+
 
     private function normalizeIntendedUrl(Request $request, ?string $url): ?string
     {

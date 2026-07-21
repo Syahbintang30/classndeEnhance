@@ -1,105 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Session Ended - Nde</title>
+@extends('layouts.app')
+
+@section('title', 'Session Ended - Guitarclassbynde')
+
+@push('head')
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            important: true,
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
-                    colors: {
-                        dark: {
-                            900: '#000000',
-                            800: '#0A0A0A',
-                            700: '#1A1A1A',
-                        }
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
-        body {
-            background-color: #000000;
-            background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.07) 0%, transparent 60%);
-            background-attachment: fixed;
-        }
+        body { background-color: #08080a !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        .font-display { font-family: 'Bebas Neue', cursive !important; letter-spacing: 1px; }
+        body > nav { display: none !important; }
     </style>
-</head>
-<body class="text-gray-300 min-h-screen flex flex-col font-sans antialiased selection:bg-white selection:text-black">
+@endpush
 
-    <header class="w-full px-8 py-6 flex items-center justify-between z-10">
-        <a href="{{ url('/ndeofficial') }}" class="flex items-center cursor-pointer" aria-label="NDE Home">
-            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="h-[52px] w-auto" />
-        </a>
+@section('content')
+<div class="min-h-screen bg-[#08080a] flex flex-col relative selection:bg-blue-600 selection:text-white overflow-x-hidden" x-data="{ mobileMenuOpen: false }">
+    
+    <!-- Ambient Glass Background Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-red-600/10 rounded-full blur-[160px] mix-blend-screen"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[160px] mix-blend-screen"></div>
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 36px 36px;"></div>
+    </div>
 
-        <nav class="hidden md:flex items-center gap-8 text-sm">
-            <a href="{{ url('/ndeofficial#tentang') }}" class="text-gray-400 hover:text-white transition-colors">About the Class</a>
-            <a href="{{ url('/ndeofficial#sistem-belajar') }}" class="text-gray-400 hover:text-white transition-colors">Learning System</a>
-            <a href="{{ url('/ndeofficial#harga') }}" class="text-gray-400 hover:text-white transition-colors">Pricing</a>
-        </nav>
+    <!-- Header Navigation -->
+    <div class="relative z-30">
+        @include('layouts.lms_header')
+    </div>
 
-        <div class="hidden md:block">
-            <a href="{{ route('login') }}" class="text-white text-sm font-medium hover:text-gray-300 transition-colors">
-                Enter LMS
-            </a>
-        </div>
-    </header>
+    <!-- Main Content Container -->
+    <main class="flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center relative z-10 min-h-[calc(100vh-120px)]">
+        
+        <!-- Centered Glass Card -->
+        <div class="w-full max-w-[620px] mx-auto">
+            <div class="bg-zinc-950/70 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] p-7 sm:p-10 shadow-[0_0_60px_-15px_rgba(239,68,68,0.2)] relative overflow-hidden space-y-6">
+                
+                <!-- Top Red Accent Line -->
+                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
 
-    <main class="flex-1 flex flex-col items-center justify-center p-6 -mt-10">
-        <div class="w-full max-w-4xl mx-auto flex flex-col items-center text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-800 bg-dark-800/50 text-[10px] tracking-[0.15em] text-gray-400 uppercase mb-8">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500/80"></span>
-                Security Session Ended
-            </div>
+                <!-- Icon & Kicker Badge -->
+                <div class="text-center space-y-3">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600/20 to-amber-600/20 border border-red-500/30 text-red-400 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-red-500/10">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/25 text-red-400 text-[11px] font-extrabold uppercase tracking-widest">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                        <span>SECURITY SESSION ENDED</span>
+                    </div>
 
-            <div class="space-y-6 max-w-3xl">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-tight tracking-wide">
-                    Your session has ended or a <br class="hidden md:block" />
-                    <span class="italic text-gray-300">security issue was detected.</span>
-                </h1>
-                <p class="text-gray-400/80 text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-light">
-                    We detected a change that made your session no longer secure, such as a network/IP change or a login from another device. To protect your account, you have been signed out.
-                </p>
-            </div>
-
-            <div class="mt-12 text-left max-w-2xl mx-auto space-y-5">
-                <div class="flex items-start gap-4">
-                    <i data-lucide="log-in" class="w-5 h-5 text-gray-500 mt-0.5 shrink-0"></i>
-                    <p class="text-gray-400 font-light"><strong class="text-white font-medium">Sign in again</strong> to continue your learning activity in the LMS.</p>
+                    <h1 class="font-display text-3xl sm:text-4xl text-white tracking-wide uppercase leading-none pt-1">
+                        Your Session Has <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-red-500">Ended</span>
+                    </h1>
+                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
+                        We detected a change that made your session no longer secure, such as an IP/network change, session expiration, or access restriction.
+                    </p>
                 </div>
-                <div class="flex items-start gap-4">
-                    <i data-lucide="wifi" class="w-5 h-5 text-gray-500 mt-0.5 shrink-0"></i>
-                    <p class="text-gray-400 font-light">If you are using a VPN or public network, try switching to a <strong class="text-white font-medium">private network</strong>.</p>
-                </div>
-                <div class="flex items-start gap-4">
-                    <i data-lucide="users" class="w-5 h-5 text-gray-500 mt-0.5 shrink-0"></i>
-                    <p class="text-gray-400 font-light">Make sure you are <strong class="text-white font-medium">not sharing your account</strong> with another user at the same time.</p>
-                </div>
-            </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mt-12">
-                <a href="{{ route('login') }}" class="px-8 py-3.5 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-full transition-all flex items-center justify-center gap-2">
-                    Enter LMS &rarr;
-                </a>
-                <a href="{{ url('/') }}" class="px-8 py-3.5 bg-transparent hover:bg-dark-800 border border-gray-700 text-white text-sm font-medium rounded-full transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                    Back to Home
-                </a>
+                <!-- Security Checklist Cards -->
+                <div class="space-y-3 pt-2">
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3 text-xs text-gray-200">
+                        <div class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30 text-xs">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                        </div>
+                        <span><strong class="text-white font-bold">Sign in again</strong> to refresh your secure session token in the LMS.</span>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3 text-xs text-gray-200">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30 text-xs">
+                            <i class="fa-solid fa-wifi"></i>
+                        </div>
+                        <span>If using a VPN or public proxy, try switching to a <strong class="text-white font-bold">private network</strong>.</span>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3 text-xs text-gray-200">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30 text-xs">
+                            <i class="fa-solid fa-user-lock"></i>
+                        </div>
+                        <span>Ensure you are <strong class="text-white font-bold">not sharing your account credentials</strong> with another device.</span>
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <a href="{{ route('login') }}" class="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider text-center shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Sign In Again</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+
+                    <a href="{{ route('compro') }}" class="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white text-xs font-bold transition text-center flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-house text-xs"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
+
             </div>
         </div>
     </main>
 
-    <script>
-        lucide.createIcons();
-    </script>
-</body>
-</html>
+</div>
+@endsection

@@ -37,30 +37,37 @@ Route::middleware('guest')->group(function () {
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
-
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
 });
+
+Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->name('password.reset');
+
+Route::post('reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store');
+
+Route::get('password-reset-success', function () {
+    return view('auth.password-reset-success');
+})->name('password.reset.success');
+
+
 
 Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])
     ->name('auth.google.redirect');
 Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
     ->name('auth.google.callback');
 
+Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');

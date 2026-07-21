@@ -33,13 +33,16 @@ Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
 Route::redirect('/', '/ndeofficial');
 
 // Jalur checkout/lms lama tetap hidup supaya link lama dan bookmark user tidak putus.
-Route::get('/checkout', [KelasController::class, 'index'])->middleware('rate.limit:default')->name('registerclass');
+Route::get('/checkout', [KelasController::class, 'index'])->middleware(['auth', 'rate.limit:default'])->name('registerclass');
+
 Route::redirect('/registerclass', '/checkout');
-Route::redirect('/dashboard', '/checkout')->name('dashboard');
-Route::get('/lms', [KelasController::class, 'lmsEntry'])->name('lms.entry');
+Route::get('/dashboard', [KelasController::class, 'lmsEntry'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/lms', [KelasController::class, 'lmsEntry'])->middleware(['auth', 'verified'])->name('lms.entry');
 Route::get('/lms/dashboard', [KelasController::class, 'customerDashboard'])->middleware(['auth', 'verified'])->name('lms.dashboard');
-Route::view('/lms/access-pending', 'lms.access-pending')->middleware('auth')->name('lms.pending');
-Route::get('/kelas', [KelasController::class, 'lmsEntry'])->name('kelas');
+Route::view('/lms/access-pending', 'lms.access-pending')->middleware(['auth', 'verified'])->name('lms.pending');
+Route::get('/kelas', [KelasController::class, 'lmsEntry'])->middleware(['auth', 'verified'])->name('kelas');
+
 Route::get('/registerclass/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified'])->name('kelas.show');
 Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified'])->name('kelas.content');
 
@@ -49,10 +52,13 @@ Route::get('/kelas/{lesson}', [KelasController::class, 'show'])->middleware(['au
 Route::get('/kelas/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified']);
 
 // Jalur song tutorial dipertahankan sebagai entry point konten belajar yang sudah ada di sisi frontend.
-Route::get('/song-tutorial/index', [SongTutorialController::class, 'index'])->name('song.tutorial.index');
-Route::get('/song-tutorial', [SongTutorialController::class, 'index'])->name('song.tutorial');
-Route::get('/song-tutorial/{lesson}', [SongTutorialController::class, 'show'])->name('song.tutorial.show');
-Route::get('/song-tutorial/{lesson}/content', [SongTutorialController::class, 'content'])->name('song.tutorial.content');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/song-tutorial/index', [SongTutorialController::class, 'index'])->name('song.tutorial.index');
+    Route::get('/song-tutorial', [SongTutorialController::class, 'index'])->name('song.tutorial');
+    Route::get('/song-tutorial/{lesson}', [SongTutorialController::class, 'show'])->name('song.tutorial.show');
+    Route::get('/song-tutorial/{lesson}/content', [SongTutorialController::class, 'content'])->name('song.tutorial.content');
+});
+
 
 // Semua route admin dikunci middleware admin + audit log supaya perubahan tercatat dan akses aman.
 Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureAdminOrSuper::class, 'audit.log'])->group(function () {

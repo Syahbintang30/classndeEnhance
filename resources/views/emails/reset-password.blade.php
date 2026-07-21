@@ -1,7 +1,3 @@
-@php
-    $logoPath = public_path('compro/img/logo_styled.png');
-    $logoSrc = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : asset('compro/img/logo_styled.png');
-@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,10 +23,12 @@
                             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 16px;">
-                                            <img src="{{ $logoSrc }}" alt="Guitarclassbynde Logo" style="height: 48px; width: auto; max-height: 48px; display: block; border: 0;" />
+                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 20px;">
+                                            <div style="font-size: 26px; font-weight: 900; color: #ffffff; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1;">
+                                                GUITARCLASS<span style="color: #3b82f6;">BYNDE</span>
+                                            </div>
                                         </a>
-                                        <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
+                                        <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
                                             Reset Your <span style="color: #60a5fa;">Password</span>
                                         </h1>
                                     </td>
@@ -43,10 +41,10 @@
                     <tr>
                         <td style="padding: 10px 40px 30px 40px; text-align: center;">
                             <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">
-                                Hello, <strong style="color: #ffffff;">{{ $user->name ?? 'Student' }}</strong>! 🔑
+                                Hello, <strong style="color: #ffffff;">{{ $user->name ?? 'Student' }}</strong>! 👋
                             </p>
                             <p style="margin: 0 0 28px 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">
-                                You are receiving this email because we received a password reset request for your Guitarclassbynde account. Click the button below to choose a new password.
+                                You are receiving this email because we received a password reset request for your <strong style="color: #ffffff;">Guitarclassbynde</strong> student account.
                             </p>
 
                             <!-- CTA Button -->
@@ -60,8 +58,12 @@
                                 </tr>
                             </table>
 
+                            <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.5; color: #a1a1aa;">
+                                This password reset link will expire in <strong>60 minutes</strong>.
+                            </p>
+
                             <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #71717a;">
-                                This password reset link will expire in 60 minutes. If you did not request a password reset, no further action is required.
+                                If you did not request a password reset, no further action is required.
                             </p>
                         </td>
                     </tr>

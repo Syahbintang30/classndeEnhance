@@ -337,6 +337,8 @@ class PaymentController extends Controller
                                     ]);
                                 }
                             }
+                        } catch (\Throwable $e) {}
+
                         // Send invoice email idempotently when payment is settled
                         try {
                             $invoiceSentKey = 'invoice_sent:' . $txn->order_id;
@@ -354,6 +356,7 @@ class PaymentController extends Controller
                 } else {
                     Log::warning('Midtrans webhook: upgrade-intermediate purchase not eligible, skipping grant', ['order_id' => $orderId, 'user_id' => $txn->user_id]);
                 }
+
             } catch (\Throwable $e) {
                 Log::error('Midtrans webhook: failed to create user package', ['err' => $e->getMessage(), 'order_id' => $orderId]);
             }

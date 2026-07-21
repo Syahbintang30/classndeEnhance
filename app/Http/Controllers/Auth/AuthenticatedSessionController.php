@@ -57,26 +57,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(url('/admin'));
         }
 
-        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
-            $shouldSendEmailVerification = Config::get('mail.default') !== 'log';
-            $statusMessage = 'Your account has not been verified yet. Please check your email inbox for the verification link.';
 
-            if ($shouldSendEmailVerification) {
-                try {
-                    $user->sendEmailVerificationNotification();
-                } catch (\Throwable $e) {
-                    Log::warning('Failed to resend verification email on login', [
-                        'user_id' => $user->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                    $statusMessage = 'Your account has not been verified yet. We could not send the email automatically, so please click to resend verification.';
-                }
-            } else {
-                $statusMessage = 'Akun belum diverifikasi. Mailer masih mode log, aktifkan SMTP lalu kirim ulang verifikasi.';
-            }
-
-            return redirect()->route('verification.notice')->with('status', $statusMessage);
-        }
 
         // If the authenticated user's email looks like an admin account (ends with @admin),
         // redirect them to the admin dashboard immediately.

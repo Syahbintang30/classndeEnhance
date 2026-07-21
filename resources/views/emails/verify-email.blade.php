@@ -1,7 +1,3 @@
-@php
-    $logoPath = public_path('compro/img/logo_styled.png');
-    $logoSrc = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : asset('compro/img/logo_styled.png');
-@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,10 +23,12 @@
                             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 16px;">
-                                            <img src="{{ $logoSrc }}" alt="Guitarclassbynde Logo" style="height: 48px; width: auto; max-height: 48px; display: block; border: 0;" />
+                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 20px;">
+                                            <div style="font-size: 26px; font-weight: 900; color: #ffffff; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1;">
+                                                GUITARCLASS<span style="color: #3b82f6;">BYNDE</span>
+                                            </div>
                                         </a>
-                                        <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
+                                        <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
                                             Verify Your <span style="color: #60a5fa;">Email</span>
                                         </h1>
                                     </td>

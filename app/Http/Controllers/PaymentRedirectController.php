@@ -81,8 +81,49 @@ class PaymentRedirectController extends Controller
             return view('payments.waiting', ['transaction' => $txn]);
         }
 
-        // At this point txn is settled. Prepare data to render the existing kelas.thankyou view
+        // At this point txn is settled. Ensure package access and send invoice email idempotently.
+        try {
+            $buyer = $txn->user ?: (\App\Models\User::find($txn->user_id) ?: \Illuminate\Support\Facades\Auth::user());
+            
+            // Link user if missing
+            if ($buyer && empty($txn->user_id)) {
+                $txn->user_id = $buyer->id;
+                $txn->save();
+            }
+
+            // Ensure package entitlement granted
+            if ($buyer && !empty($txn->package_id)) {
+                $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+                $pkgForUser = \App\Models\Package::find($txn->package_id);
+                if ($pkgForUser && ($pkgForUser->slug ?? null) !== $coachingSlug) {
+                    if (empty($buyer->package_id)) {
+                        $buyer->package_id = $txn->package_id;
+                        $buyer->save();
+                    }
+                    try {
+                        \App\Models\UserPackage::firstOrCreate(
+                            ['user_id' => $buyer->id, 'package_id' => $txn->package_id],
+                            ['purchased_at' => now(), 'source' => 'midtrans-thankyou']
+                        );
+                    } catch (\Throwable $e) {}
+                }
+            }
+
+            // Send official invoice email idempotently
+            $invoiceSentKey = 'invoice_sent:' . $txn->order_id;
+            if (! \Illuminate\Support\Facades\Cache::has($invoiceSentKey)) {
+                \Illuminate\Support\Facades\Cache::put($invoiceSentKey, true, now()->addDays(7));
+                if ($buyer && $buyer->email) {
+                    $buyer->notify(new \App\Notifications\SendPaymentInvoiceNotification($txn));
+                    \Illuminate\Support\Facades\Log::info('Thankyou page: sent invoice email to ' . $buyer->email, ['order_id' => $txn->order_id]);
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Thankyou page: failed granting access or sending invoice email', ['err' => $e->getMessage(), 'order_id' => $txn->order_id]);
+        }
+
         $user = null;
+
         if ($txn && ($txn->user instanceof \App\Models\User)) {
             $user = $txn->user;
         } else {
