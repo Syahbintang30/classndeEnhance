@@ -24,6 +24,7 @@
                 <a href="{{ route('compro') }}#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
                 <a href="{{ route('compro') }}#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
                 <a href="{{ route('compro') }}#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
+                <a href="{{ route('compro') }}#faq" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">FAQ</a>
             @else
                 <a href="{{ route('lms.dashboard') }}" class="{{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-[11px]"></i>
@@ -164,6 +165,9 @@
             </a>
             <a href="{{ route('compro') }}#packages" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
                 <i class="fa-solid fa-tags"></i> Packages & Pricing
+            </a>
+            <a href="{{ route('compro') }}#faq" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
+                <i class="fa-solid fa-circle-question"></i> FAQ
             </a>
             @if(!auth()->check())
                 <div class="border-t border-white/10 my-2 pt-4 space-y-2">

@@ -498,6 +498,83 @@
         </div>
     </section>
 
+    <!-- ─── FAQ SECTION ────────────────────────────────────────────────── -->
+    <section id="faq" class="py-20 px-4 lg:px-8 max-w-5xl mx-auto space-y-12 relative z-10">
+        <div class="text-center space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+                Got Questions?
+            </div>
+            <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
+                Frequently Asked <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Questions</span>
+            </h2>
+            <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
+                Everything you need to know about Guitarclassbynde, course access, practice tools, and 1-on-1 coaching.
+            </p>
+        </div>
+
+        @php
+            $defaultFaqs = [
+                [
+                    'question' => 'What is Guitarclassbynde?',
+                    'answer' => 'Guitarclassbynde is an elite, structured online guitar learning platform founded by Nde. It combines step-by-step video courses, interactive practice tools (Tuner, Metronome, Chord & Scale visualizers), song library tutorials, and live 1-on-1 coaching sessions.'
+                ],
+                [
+                    'question' => 'How long do I get access to my purchased courses?',
+                    'answer' => 'Once enrolled, you get lifetime access to all course modules, materials, and practice suite tools included in your package. You can learn at your own pace whenever you want.'
+                ],
+                [
+                    'question' => 'Do I need prior guitar experience to get started?',
+                    'answer' => 'No experience needed! Our courses start from absolute beginner fundamentals (holding the guitar, open chords, basic strumming) all the way up to advanced soloing, speed picking, and fretboard theory.'
+                ],
+                [
+                    'question' => 'How do 1-on-1 Coaching Sessions work?',
+                    'answer' => 'When you purchase a package with coaching tickets (or standalone coaching tickets), you can schedule live video bimbingan sessions with Nde directly from your dashboard. Choose an open time slot, submit your goals, and meet live!'
+                ],
+                [
+                    'question' => 'What payment channels are supported?',
+                    'answer' => 'We accept instant, automated payments via Midtrans including Bank Transfer (Virtual Accounts for BCA, Mandiri, BNI, BRI), QRIS, GoPay, ShopeePay, and major Credit Cards.'
+                ],
+            ];
+
+            $faqsToDisplay = [];
+            if (isset($faq_items) && count($faq_items) > 0) {
+                foreach ($faq_items as $item) {
+                    $faqsToDisplay[] = [
+                        'question' => $item->question ?? $item->title ?? '',
+                        'answer' => $item->answer ?? $item->content ?? ''
+                    ];
+                }
+            } else {
+                $faqsToDisplay = $defaultFaqs;
+            }
+        @endphp
+
+        <div class="space-y-4" x-data="{ active: 0 }">
+            @foreach($faqsToDisplay as $idx => $faq)
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all duration-300">
+                    <button @click="active = (active === {{ $idx }} ? null : {{ $idx }})" 
+                            class="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-white text-sm sm:text-base flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-center justify-center font-mono font-bold shrink-0">
+                                {{ sprintf('%02d', $idx + 1) }}
+                            </span>
+                            {{ is_array($faq) ? $faq['question'] : ($faq->question ?? '') }}
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 shrink-0 transition-transform duration-300"
+                             :class="{ 'rotate-180 text-blue-400 bg-blue-500/10 border-blue-500/20': active === {{ $idx }} }">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+                    <div x-show="active === {{ $idx }}" 
+                         x-collapse
+                         class="px-6 pb-6 pt-2 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-zinc-950/40">
+                        {{ is_array($faq) ? $faq['answer'] : ($faq->answer ?? '') }}
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     <!-- ─── FINAL HIGH-IMPACT SALES CTA FOOTER ──────────────────────────── -->
     <section class="py-20 px-4 lg:px-8 max-w-5xl mx-auto relative z-10">
         <div class="glass-panel p-10 sm:p-16 text-center space-y-8 relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-zinc-950 to-indigo-900/20 border-blue-500/30">
