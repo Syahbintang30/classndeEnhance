@@ -273,25 +273,70 @@
 
 <!-- Avatar Cropper Modal -->
 <div id="cropper-modal">
-    <div id="cropper-dialog" class="w-full max-w-xl bg-zinc-950 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex justify-between items-center pb-2 border-b border-white/10">
-            <h3 class="font-bold text-white text-base">Adjust Photo</h3>
-            <div class="flex gap-2">
-                <button id="crop-remove" type="button" class="px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition">Remove</button>
-                <button id="crop-cancel" type="button" class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white text-xs font-bold transition">Cancel</button>
-                <button id="crop-apply" type="button" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md transition">Apply</button>
+    <div id="cropper-dialog" class="w-full max-w-lg bg-zinc-950 border border-white/10 rounded-[2rem] p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-2xl">
+        
+        <!-- Glowing Accent Top Line -->
+        <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-sm shadow-md">
+                    <i class="fa-solid fa-crop-simple"></i>
+                </div>
+                <div>
+                    <h3 class="font-display text-2xl text-white tracking-wide uppercase leading-none">Adjust Profile Photo</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Position and scale your photo within the circular frame.</p>
+                </div>
             </div>
+            <button id="crop-cancel" type="button" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
         </div>
-        <div class="flex flex-col items-center gap-4">
-            <div id="cropper-area">
-                <img id="crop-image" src="" alt="to crop">
-                <div class="absolute inset-0 border-2 border-dashed border-white/30 shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] pointer-events-none rounded-xl"></div>
+
+        <!-- Cropper Canvas & Circular Mask Box -->
+        <div class="flex flex-col items-center gap-5">
+            <div id="cropper-area" class="relative w-[300px] h-[300px] rounded-2xl bg-black border border-white/10 overflow-hidden shadow-2xl select-none touch-none cursor-grab active:cursor-grabbing">
+                <!-- Image Container -->
+                <img id="crop-image" src="" alt="Photo to crop" class="absolute select-none pointer-events-auto">
+                
+                <!-- Circular Mask Overlay -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] rounded-full border-2 border-white/90 shadow-[0_0_0_9999px_rgba(8,8,10,0.75)] pointer-events-none z-10 flex items-center justify-center">
+                    <div class="w-full h-full rounded-full border border-dashed border-blue-400/40"></div>
+                </div>
             </div>
+
+            <!-- Instruction Hint -->
+            <div class="text-xs text-gray-400 font-medium flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
+                <i class="fa-solid fa-hand-pointer text-blue-400 text-xs"></i>
+                <span>Drag photo to center &amp; use slider to zoom</span>
+            </div>
+
+            <!-- Zoom Controls Slider -->
             <div class="flex items-center gap-3 w-full max-w-xs justify-center text-xs text-gray-300">
-                <span class="font-bold">Zoom</span>
-                <input id="crop-zoom" type="range" min="0.5" max="3" step="0.01" value="1" class="w-full accent-blue-500 cursor-pointer">
+                <i class="fa-solid fa-magnifying-glass-minus text-gray-400 text-xs"></i>
+                <input id="crop-zoom" type="range" min="1" max="3" step="0.01" value="1" class="w-full accent-blue-500 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                <i class="fa-solid fa-magnifying-glass-plus text-gray-400 text-xs"></i>
             </div>
         </div>
+
+        <!-- Modal Action Footer Buttons -->
+        <div class="flex items-center justify-between pt-2 border-t border-white/10">
+            <button id="crop-remove" type="button" class="px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+                <span>Remove</span>
+            </button>
+            <div class="flex items-center gap-2">
+                <button id="crop-cancel-btn" type="button" class="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white text-xs font-bold transition">
+                    Cancel
+                </button>
+                <button id="crop-apply" type="button" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-blue-600/30 transition hover:scale-105 flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-check text-xs"></i>
+                    <span>Apply Photo</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -320,7 +365,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     });
 });
 
-// Cropper logic
+// Precision Circular Avatar Cropper Logic
 (function(){
     var changeBtn = document.getElementById('change-photo');
     var nativeInput = document.getElementById('photo');
@@ -331,8 +376,12 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     var zoom = document.getElementById('crop-zoom');
     var apply = document.getElementById('crop-apply');
     var cancel = document.getElementById('crop-cancel');
+    var cancelBtn = document.getElementById('crop-cancel-btn');
     var rem = document.getElementById('crop-remove');
-    var state = { x:0, y:0, scale:1, isDown:false, startX:0, startY:0 };
+    
+    var state = { x: 0, y: 0, scale: 1, baseScale: 1, isDown: false, startX: 0, startY: 0 };
+    var areaSize = 300; // 300x300px cropper viewport area
+    var circleSize = 240; // 240x240px circular mask diameter
 
     function ensurePreviewImage(){
         if(preview && preview.tagName === 'IMG') return preview;
@@ -361,44 +410,117 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
             var reader = new FileReader();
             reader.onload = function(e){
                 cropImage.src = e.target.result;
-                cropImage.onload = function(){ state.scale=1; state.x=0; state.y=0; updateTransform(); zoom.value=1; showModal(); };
+                cropImage.onload = function(){
+                    var nw = cropImage.naturalWidth || 800;
+                    var nh = cropImage.naturalHeight || 800;
+                    state.baseScale = Math.max(circleSize / nw, circleSize / nh);
+                    state.scale = 1;
+                    state.x = 0;
+                    state.y = 0;
+                    if(zoom) zoom.value = 1;
+                    updateTransform();
+                    showModal();
+                };
             };
             reader.readAsDataURL(f);
         });
     }
 
-    if (cropImage) {
-        cropImage.addEventListener('pointerdown', function(e){ state.isDown=true; state.startX=e.clientX; state.startY=e.clientY; cropImage.setPointerCapture(e.pointerId); });
-        window.addEventListener('pointermove', function(e){ if(!state.isDown) return; state.x += e.clientX-state.startX; state.y += e.clientY-state.startY; state.startX=e.clientX; state.startY=e.clientY; updateTransform(); });
-        window.addEventListener('pointerup', function(){ state.isDown=false; });
+    function updateTransform(){
+        if(!cropImage) return;
+        var nw = cropImage.naturalWidth || 800;
+        var nh = cropImage.naturalHeight || 800;
+        var totalScale = state.baseScale * state.scale;
+        var dispW = nw * totalScale;
+        var dispH = nh * totalScale;
+        
+        cropImage.style.width = dispW + 'px';
+        cropImage.style.height = dispH + 'px';
+        cropImage.style.left = ((areaSize - dispW) / 2) + 'px';
+        cropImage.style.top = ((areaSize - dispH) / 2) + 'px';
+        cropImage.style.transform = 'translate(' + state.x + 'px, ' + state.y + 'px)';
     }
 
-    if (zoom) zoom.addEventListener('input', function(){ state.scale=parseFloat(this.value); updateTransform(); });
-    function updateTransform(){ if(cropImage) cropImage.style.transform='translate('+state.x+'px,'+state.y+'px) scale('+state.scale+')'; }
+    if (cropArea) {
+        cropArea.addEventListener('pointerdown', function(e){
+            state.isDown = true;
+            state.startX = e.clientX;
+            state.startY = e.clientY;
+            cropArea.setPointerCapture(e.pointerId);
+        });
+        window.addEventListener('pointermove', function(e){
+            if(!state.isDown) return;
+            state.x += (e.clientX - state.startX);
+            state.y += (e.clientY - state.startY);
+            state.startX = e.clientX;
+            state.startY = e.clientY;
+            updateTransform();
+        });
+        window.addEventListener('pointerup', function(){ state.isDown = false; });
+    }
+
+    if (zoom) {
+        zoom.addEventListener('input', function(){
+            state.scale = parseFloat(this.value);
+            updateTransform();
+        });
+    }
 
     if (apply) {
         apply.addEventListener('click', function(){
-            var outSize = Math.min(800, Math.round(cropArea.clientWidth * (window.devicePixelRatio||1)));
-            var canvas = document.createElement('canvas'); canvas.width=outSize; canvas.height=outSize;
+            var nw = cropImage.naturalWidth;
+            var nh = cropImage.naturalHeight;
+            if(!nw || !nh) return hideModal();
+
+            var totalScale = state.baseScale * state.scale;
+            var dispW = nw * totalScale;
+            var dispH = nh * totalScale;
+            var imgLeft = ((areaSize - dispW) / 2) + state.x;
+            var imgTop = ((areaSize - dispH) / 2) + state.y;
+            var maskLeft = (areaSize - circleSize) / 2; // 30px
+            var maskTop = (areaSize - circleSize) / 2; // 30px
+
+            var cropX_in_disp = maskLeft - imgLeft;
+            var cropY_in_disp = maskTop - imgTop;
+
+            var srcX = cropX_in_disp / totalScale;
+            var srcY = cropY_in_disp / totalScale;
+            var srcW = circleSize / totalScale;
+            var srcH = circleSize / totalScale;
+
+            var outCanvasSize = 600;
+            var canvas = document.createElement('canvas');
+            canvas.width = outCanvasSize;
+            canvas.height = outCanvasSize;
             var ctx = canvas.getContext('2d');
-            var areaW=cropArea.clientWidth; var areaH=cropArea.clientHeight;
-            var iRW=cropImage.naturalWidth*state.scale; var iRH=cropImage.naturalHeight*state.scale;
-            var offX=(areaW/2)-(iRW/2)+state.x; var offY=(areaH/2)-(iRH/2)+state.y;
-            var srcX=Math.max(0,Math.round((-offX)/state.scale)); var srcY=Math.max(0,Math.round((-offY)/state.scale));
-            var srcW=Math.min(cropImage.naturalWidth-srcX,Math.round(areaW/state.scale));
-            var srcH=Math.min(cropImage.naturalHeight-srcY,Math.round(areaH/state.scale));
-            try{ ctx.fillStyle='#111'; ctx.fillRect(0,0,outSize,outSize); ctx.drawImage(cropImage,srcX,srcY,srcW,srcH,0,0,outSize,outSize); }catch(e){ alert('Failed to crop image'); hideModal(); return; }
+
+            try {
+                ctx.fillStyle = '#08080a';
+                ctx.fillRect(0, 0, outCanvasSize, outCanvasSize);
+                ctx.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, outCanvasSize, outCanvasSize);
+            } catch(e) {
+                alert('Failed to crop image');
+                hideModal();
+                return;
+            }
+
             canvas.toBlob(function(blob){
                 if(!blob){ alert('Failed to generate image'); hideModal(); return; }
-                var file = new File([blob],'profile.jpg',{type:'image/jpeg'});
-                var dt = new DataTransfer(); dt.items.add(file); nativeInput.files=dt.files;
-                ensurePreviewImage().src = URL.createObjectURL(file);
+                var file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+                var dt = new DataTransfer();
+                dt.items.add(file);
+                nativeInput.files = dt.files;
+                
+                var prev = ensurePreviewImage();
+                prev.src = URL.createObjectURL(file);
+                prev.style.display = 'block';
                 hideModal();
-            },'image/jpeg',0.9);
+            }, 'image/jpeg', 0.92);
         });
     }
 
     if (cancel) cancel.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
+    if (cancelBtn) cancelBtn.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
 
     if (rem) {
         rem.addEventListener('click', function(){
