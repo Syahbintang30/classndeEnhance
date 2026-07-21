@@ -78,16 +78,16 @@
                 <div class="relative" x-data="{ open: false }">
                     <div @click="open = !open" @click.away="open = false" class="flex items-center gap-2.5 bg-zinc-950/60 border border-white/10 rounded-full px-3 py-1.5 hover:border-blue-500/40 transition-all cursor-pointer group shadow-md">
                         @php $headerAvatar = auth()->user()->photoUrl(); @endphp
-                        <div class="relative shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-bold text-white text-xs shadow-md overflow-hidden shrink-0">
+                        <div class="relative shrink-0 w-8 h-8">
+                            <div class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-bold text-white text-xs shadow-md overflow-hidden shrink-0" style="width: 32px !important; height: 32px !important; border-radius: 9999px !important;">
                                 @if($headerAvatar)
-                                    <img src="{{ $headerAvatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover object-center rounded-full block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                    <img src="{{ $headerAvatar }}" alt="{{ auth()->user()->name }}" style="width: 32px !important; height: 32px !important; min-width: 32px !important; min-height: 32px !important; max-width: none !important; max-height: none !important; object-fit: cover !important; object-position: center !important; border-radius: 9999px !important; display: block !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                                     <span class="hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs rounded-full">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
                                 @else
                                     <span class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs rounded-full">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
                                 @endif
                             </div>
-                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#08080a] rounded-full"></span>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border border-zinc-950 rounded-full z-10"></span>
                         </div>
                         
                         <div class="hidden xl:block text-left leading-none pr-1">

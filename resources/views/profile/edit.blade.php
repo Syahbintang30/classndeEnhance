@@ -147,9 +147,9 @@
             <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
                 @php $avatar = $user->photoUrl(); @endphp
                 <div class="relative shrink-0">
-                    <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden shrink-0">
+                    <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden shrink-0" style="width:80px;height:80px;border-radius:9999px;">
                         @if($avatar)
-                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" class="w-full h-full object-cover object-center rounded-full block" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:9999px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" style="width:80px !important;height:80px !important;min-width:80px !important;min-height:80px !important;max-width:none !important;max-height:none !important;object-fit:cover !important;object-position:center !important;border-radius:9999px !important;display:block !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                             <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
                         @else
                             <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
@@ -315,7 +315,7 @@
             <!-- Zoom Controls Slider -->
             <div class="flex items-center gap-3 w-full max-w-xs justify-center text-xs text-gray-300">
                 <i class="fa-solid fa-magnifying-glass-minus text-gray-400 text-xs"></i>
-                <input id="crop-zoom" type="range" min="1" max="3" step="0.01" value="1" class="w-full accent-blue-500 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                <input id="crop-zoom" type="range" min="1" max="3" step="0.001" value="1" class="w-full accent-blue-500 cursor-pointer h-1.5 bg-white/10 rounded-lg">
                 <i class="fa-solid fa-magnifying-glass-plus text-gray-400 text-xs"></i>
             </div>
         </div>
@@ -365,7 +365,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     });
 });
 
-// Precision Circular Avatar Cropper Logic
+// Precision Circular Avatar Cropper Logic (60fps Hardware Accelerated)
 (function(){
     var changeBtn = document.getElementById('change-photo');
     var nativeInput = document.getElementById('photo');
@@ -382,6 +382,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     var state = { x: 0, y: 0, scale: 1, baseScale: 1, isDown: false, startX: 0, startY: 0 };
     var areaSize = 300; // 300x300px cropper viewport area
     var circleSize = 240; // 240x240px circular mask diameter
+    var rafId = null;
 
     function ensurePreviewImage(){
         if(preview && preview.tagName === 'IMG') return preview;
@@ -418,12 +419,17 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
                     state.x = 0;
                     state.y = 0;
                     if(zoom) zoom.value = 1;
-                    updateTransform();
+                    scheduleTransform();
                     showModal();
                 };
             };
             reader.readAsDataURL(f);
         });
+    }
+
+    function scheduleTransform(){
+        if(rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(updateTransform);
     }
 
     function updateTransform(){
@@ -434,11 +440,18 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
         var dispW = nw * totalScale;
         var dispH = nh * totalScale;
         
+        // Strict boundary clamping: image MUST ALWAYS 100% cover the 240px circular mask!
+        var maxX = Math.max(0, (dispW - circleSize) / 2);
+        var maxY = Math.max(0, (dispH - circleSize) / 2);
+        state.x = Math.max(-maxX, Math.min(maxX, state.x));
+        state.y = Math.max(-maxY, Math.min(maxY, state.y));
+
+        cropImage.style.willChange = 'transform, width, height';
         cropImage.style.width = dispW + 'px';
         cropImage.style.height = dispH + 'px';
         cropImage.style.left = ((areaSize - dispW) / 2) + 'px';
         cropImage.style.top = ((areaSize - dispH) / 2) + 'px';
-        cropImage.style.transform = 'translate(' + state.x + 'px, ' + state.y + 'px)';
+        cropImage.style.transform = 'translate3d(' + state.x + 'px, ' + state.y + 'px, 0)';
     }
 
     if (cropArea) {
@@ -454,15 +467,25 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
             state.y += (e.clientY - state.startY);
             state.startX = e.clientX;
             state.startY = e.clientY;
-            updateTransform();
+            scheduleTransform();
         });
         window.addEventListener('pointerup', function(){ state.isDown = false; });
+
+        // Smooth Mouse Wheel Zoom
+        cropArea.addEventListener('wheel', function(e){
+            e.preventDefault();
+            var delta = e.deltaY < 0 ? 0.08 : -0.08;
+            var newScale = Math.max(1, Math.min(3, state.scale + delta));
+            state.scale = newScale;
+            if(zoom) zoom.value = newScale;
+            scheduleTransform();
+        }, { passive: false });
     }
 
     if (zoom) {
         zoom.addEventListener('input', function(){
             state.scale = parseFloat(this.value);
-            updateTransform();
+            scheduleTransform();
         });
     }
 
@@ -475,18 +498,20 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
             var totalScale = state.baseScale * state.scale;
             var dispW = nw * totalScale;
             var dispH = nh * totalScale;
-            var imgLeft = ((areaSize - dispW) / 2) + state.x;
-            var imgTop = ((areaSize - dispH) / 2) + state.y;
-            var maskLeft = (areaSize - circleSize) / 2; // 30px
-            var maskTop = (areaSize - circleSize) / 2; // 30px
+            
+            // Re-clamp state before canvas export
+            var maxX = Math.max(0, (dispW - circleSize) / 2);
+            var maxY = Math.max(0, (dispH - circleSize) / 2);
+            state.x = Math.max(-maxX, Math.min(maxX, state.x));
+            state.y = Math.max(-maxY, Math.min(maxY, state.y));
 
-            var cropX_in_disp = maskLeft - imgLeft;
-            var cropY_in_disp = maskTop - imgTop;
+            var cropX_in_disp = (dispW / 2) - (circleSize / 2) - state.x;
+            var cropY_in_disp = (dispH / 2) - (circleSize / 2) - state.y;
 
-            var srcX = cropX_in_disp / totalScale;
-            var srcY = cropY_in_disp / totalScale;
             var srcW = circleSize / totalScale;
             var srcH = circleSize / totalScale;
+            var srcX = Math.max(0, Math.min(nw - srcW, cropX_in_disp / totalScale));
+            var srcY = Math.max(0, Math.min(nh - srcH, cropY_in_disp / totalScale));
 
             var outCanvasSize = 600;
             var canvas = document.createElement('canvas');
@@ -515,7 +540,7 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
                 prev.src = URL.createObjectURL(file);
                 prev.style.display = 'block';
                 hideModal();
-            }, 'image/jpeg', 0.92);
+            }, 'image/jpeg', 0.95);
         });
     }
 
