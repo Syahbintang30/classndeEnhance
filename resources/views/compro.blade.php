@@ -149,7 +149,7 @@
             <div class="lg:col-span-5 relative">
                 <div class="glass-panel p-2 relative overflow-hidden shadow-2xl group">
                     <div class="relative rounded-2xl overflow-hidden aspect-video sm:aspect-square bg-zinc-950">
-                        <img src="{{ asset('compro/img/ndehero.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+                        <img src="{{ asset('compro/img/nde2.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
                         
                         <!-- Floating Glass Badge -->
                         <div class="absolute bottom-4 left-4 right-4 bg-zinc-950/80 border border-white/10 rounded-xl p-4 backdrop-blur-md flex items-center justify-between">
