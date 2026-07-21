@@ -355,7 +355,8 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 3 Cards Top Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- 1. Tuner -->
             <div class="glass-panel p-6 space-y-3 border-blue-500/20 hover:border-blue-500/40 transition">
                 <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xl">
@@ -382,9 +383,12 @@
                 <h3 class="font-display text-2xl text-white">Chord Library</h3>
                 <p class="text-gray-400 text-xs leading-relaxed">Interactive Rosewood fretboard with audio strum audio playback.</p>
             </div>
+        </div>
 
+        <!-- 2 Cards Centered Bottom Row -->
+        <div class="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto">
             <!-- 4. Scale Visualizer -->
-            <div class="glass-panel p-6 space-y-3 border-cyan-500/20 hover:border-cyan-500/40 transition">
+            <div class="glass-panel p-6 space-y-3 border-cyan-500/20 hover:border-cyan-500/40 transition flex-1">
                 <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
@@ -393,7 +397,7 @@
             </div>
 
             <!-- 5. Trainer Quiz Game -->
-            <div class="glass-panel p-6 space-y-3 border-rose-500/20 hover:border-rose-500/40 transition sm:col-span-2 lg:col-span-1">
+            <div class="glass-panel p-6 space-y-3 border-rose-500/20 hover:border-rose-500/40 transition flex-1">
                 <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
                     <i class="fa-solid fa-gamepad"></i>
                 </div>
