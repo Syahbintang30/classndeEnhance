@@ -4,6 +4,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
@@ -14,10 +16,10 @@
                 extend: {
                     colors: {
                         brand: {
-                            black: '#0a0a0c',
-                            card: '#121218',
-                            border: '#222230',
-                            accent: '#0066ff',
+                            black: '#08080a',
+                            card: 'rgba(18, 18, 24, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            accent: '#0066ff'
                         }
                     },
                     fontFamily: {
@@ -29,13 +31,27 @@
         }
     </script>
     <style>
-        .tw-dash { font-family: 'Plus Jakarta Sans', sans-serif !important; }
-        .tw-dash .font-display { font-family: 'Bebas Neue', cursive; letter-spacing: 1px; }
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .tw-dash .font-display {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+        }
+        .glass-panel {
+            background: rgba(18, 18, 26, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
         body > nav { display: none !important; }
         
         .needle-container {
             width: 100%;
-            height: 150px;
+            height: 160px;
             position: relative;
             overflow: hidden;
         }
@@ -45,88 +61,145 @@
             left: 50%;
             width: 4px;
             height: 140px;
-            background-color: #fff;
+            background-color: #ffffff;
             transform-origin: bottom center;
             border-radius: 4px;
-            transition: transform 0.1s ease-out, background-color 0.2s;
+            transition: transform 0.12s ease-out, background-color 0.2s;
             z-index: 10;
+            box-shadow: 0 0 15px currentColor;
         }
         .tuner-dial {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
-            height: 150px;
-            border-top-left-radius: 150px;
-            border-top-right-radius: 150px;
-            border: 4px solid #333;
+            width: 320px;
+            height: 160px;
+            border-top-left-radius: 160px;
+            border-top-right-radius: 160px;
+            border: 4px solid rgba(255,255,255,0.1);
             border-bottom: none;
+            background: radial-gradient(circle at bottom, rgba(59, 130, 246, 0.08), transparent 70%);
         }
         .tick {
             position: absolute;
             bottom: 0;
             left: 50%;
             width: 2px;
-            height: 15px;
-            background: #555;
+            height: 16px;
+            background: rgba(255,255,255,0.2);
             transform-origin: bottom center;
         }
-        .tick-center { height: 25px; background: #3b82f6; width: 4px; }
+        .tick-center {
+            height: 28px;
+            background: #10b981;
+            width: 4px;
+            box-shadow: 0 0 10px #10b981;
+        }
     </style>
 @endpush
 
 @section('content')
-<div class="tw-dash min-h-screen flex flex-col antialiased text-gray-200">
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
+     x-data="tunerApp()" 
+     x-init="initTuner()">
+
+    {{-- Ambient Mesh Background Glow --}}
+    <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-32 w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    {{-- ─── TOP NAVIGATION BAR ──────────────────────────────────────────── --}}
     @include('layouts.lms_header')
 
-    <main class="flex-1 w-full flex items-center justify-center p-4">
-        <div class="w-full max-w-lg bg-zinc-900/80 backdrop-blur-md rounded-[32px] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden text-center"
-             x-data="tunerApp()" x-init="initTuner()">
-            
-            <a href="{{ route('practice.index') }}" class="absolute top-6 left-6 text-gray-400 hover:text-white transition">
-                <i class="fa-solid fa-arrow-left"></i> Back
+    <main class="flex-1 max-w-2xl mx-auto w-full px-4 lg:px-8 py-8 space-y-8 relative z-10">
+        
+        <!-- BACK & TITLE HEADER -->
+        <div class="flex items-center justify-between gap-4">
+            <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition">
+                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
             </a>
-
-            <h1 class="font-display text-4xl text-white mt-4 mb-2">Guitar <span class="text-blue-500">Tuner</span></h1>
-            <p class="text-gray-400 text-sm mb-8">Allow microphone access and pluck a string.</p>
             
-            <div x-show="!isListening" class="py-10">
-                <button @click="startListening()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-full text-lg shadow-[0_0_20px_rgba(37,99,235,0.4)] transition hover:scale-105 active:scale-95">
-                    <i class="fa-solid fa-microphone mr-2"></i> Start Tuner
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-microphone text-blue-400"></i> Realtime Mic Pitch Detection
+            </div>
+        </div>
+
+        <!-- MAIN TUNER GLASS CARD -->
+        <div class="glass-panel p-6 sm:p-8 relative overflow-hidden text-center space-y-8">
+            
+            <div class="space-y-1">
+                <h1 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
+                    Guitar <span class="text-blue-400">Tuner</span>
+                </h1>
+                <p class="text-gray-400 text-xs max-w-sm mx-auto">
+                    Allow microphone access and pluck any guitar string to tune in real-time.
+                </p>
+            </div>
+
+            <!-- STRING TARGET SELECTOR PILLS -->
+            <div class="space-y-2">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Standard Tuning Reference</span>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button @click="targetString = 'AUTO'" :class="targetString === 'AUTO' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3.5 py-1.5 rounded-full border text-xs transition">Auto Detect</button>
+                    <button @click="targetString = 'E2'" :class="targetString === 'E2' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">6E (82.4Hz)</button>
+                    <button @click="targetString = 'A2'" :class="targetString === 'A2' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">5A (110.0Hz)</button>
+                    <button @click="targetString = 'D3'" :class="targetString === 'D3' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">4D (146.8Hz)</button>
+                    <button @click="targetString = 'G3'" :class="targetString === 'G3' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">3G (196.0Hz)</button>
+                    <button @click="targetString = 'B3'" :class="targetString === 'B3' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">2B (246.9Hz)</button>
+                    <button @click="targetString = 'E4'" :class="targetString === 'E4' ? 'bg-blue-600 text-white font-bold border-blue-400' : 'bg-zinc-950/60 text-gray-400 border-white/5'" class="px-3 py-1.5 rounded-full border text-xs transition">1E (329.6Hz)</button>
+                </div>
+            </div>
+
+            <!-- START TUNER BUTTON (OFF STATE) -->
+            <div x-show="!isListening" class="py-8 space-y-4">
+                <button @click="startListening()" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-3xl shadow-lg shadow-blue-600/40 transition-all hover:scale-105 active:scale-95 flex items-center justify-center mx-auto">
+                    <i class="fa-solid fa-microphone"></i>
                 </button>
-                <p class="text-xs text-gray-500 mt-4" x-text="errorMsg"></p>
+                <div class="text-xs font-bold text-blue-400 uppercase tracking-widest">Click to Start Mic Listener</div>
+                <p class="text-xs text-red-400 max-w-sm mx-auto" x-text="errorMsg"></p>
             </div>
 
-            <div x-show="isListening" style="display: none;" class="w-full">
-                <!-- The Dial -->
-                <div class="needle-container mb-4">
+            <!-- ACTIVE TUNER DIAL & NEEDLE (ON STATE) -->
+            <div x-show="isListening" style="display: none;" class="w-full space-y-6">
+                
+                <!-- TUNER DIAL ARC -->
+                <div class="needle-container">
                     <div class="tuner-dial"></div>
-                    <!-- Ticks -->
                     <template x-for="i in 9">
-                        <div class="tick" :class="{'tick-center': i === 5}" :style="`height: 150px; transform: translateX(-50%) rotate(${(i-5) * 15}deg)`"></div>
+                        <div class="tick" :class="{'tick-center': i === 5}" :style="`height: 160px; transform: translateX(-50%) rotate(${(i-5) * 15}deg)`"></div>
                     </template>
-                    <div class="needle" :style="`transform: translateX(-50%) rotate(${needleAngle}deg); background-color: ${needleColor};`" style="transform: translateX(-50%) rotate(0deg);"></div>
+                    <div class="needle" :style="`transform: translateX(-50%) rotate(${needleAngle}deg); background-color: ${needleColor}; color: ${needleColor};`" style="transform: translateX(-50%) rotate(0deg);"></div>
                 </div>
 
-                <!-- Note Display -->
-                <div class="flex items-center justify-center gap-4 mb-4">
-                    <div class="text-7xl font-display font-bold text-white transition-colors" :style="`color: ${needleColor}`" x-text="currentNote">--</div>
-                    <div class="text-3xl font-display text-gray-400" x-text="currentCents > 0 ? '+' + currentCents : currentCents">0</div>
+                <!-- NOTE NAME & CENTS DISPLAY -->
+                <div class="space-y-1">
+                    <div class="flex items-baseline justify-center gap-3">
+                        <div class="text-7xl sm:text-8xl font-display font-bold transition-colors" :style="`color: ${needleColor}`" x-text="currentNote">--</div>
+                        <div class="text-2xl font-bold font-mono text-gray-400" x-text="currentCents > 0 ? '+' + currentCents + ' cents' : currentCents + ' cents'">0</div>
+                    </div>
+                    <div class="text-xs font-bold tracking-widest uppercase py-1 px-3 rounded-full inline-block border" :style="`color: ${needleColor}; border-color: ${needleColor}40; background-color: ${needleColor}10`" x-text="tuneStatus">Waiting...</div>
                 </div>
                 
-                <div class="text-sm font-semibold tracking-widest uppercase mb-8" :style="`color: ${needleColor}`" x-text="tuneStatus">Waiting...</div>
-                
-                <!-- Frequency -->
-                <div class="bg-black/50 rounded-lg p-3 inline-block border border-zinc-800">
-                    <span class="text-gray-400 text-xs uppercase tracking-wider">Frequency</span>
-                    <div class="font-mono text-lg text-white mt-1"><span x-text="frequency">0.00</span> Hz</div>
+                <!-- FREQUENCY STATS BOX -->
+                <div class="bg-zinc-950/70 border border-white/5 rounded-2xl p-4 inline-flex items-center gap-6">
+                    <div class="text-center">
+                        <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider block">Pitch Frequency</span>
+                        <div class="font-mono text-lg font-bold text-white mt-0.5"><span x-text="frequency">0.00</span> <span class="text-xs text-gray-500">Hz</span></div>
+                    </div>
+                    <div class="w-px h-8 bg-white/5"></div>
+                    <div class="text-center">
+                        <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider block">Target Standard</span>
+                        <div class="font-mono text-lg font-bold text-blue-400 mt-0.5" x-text="targetString">AUTO</div>
+                    </div>
                 </div>
 
-                <div class="mt-8">
-                    <button @click="stopListening()" class="text-gray-400 hover:text-white text-sm underline decoration-zinc-700 underline-offset-4">Stop Listening</button>
+                <div class="pt-2">
+                    <button @click="stopListening()" class="py-2.5 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-bold text-gray-300 hover:text-white transition">
+                        Stop Mic Listener
+                    </button>
                 </div>
             </div>
+
         </div>
     </main>
 </div>
@@ -136,6 +209,7 @@ function tunerApp() {
     return {
         isListening: false,
         errorMsg: '',
+        targetString: 'AUTO',
         audioContext: null,
         analyser: null,
         mediaStreamSource: null,
@@ -154,9 +228,8 @@ function tunerApp() {
 
         async startListening() {
             try {
-                // Check if the browser supports mediaDevices (it gets disabled on non-localhost HTTP)
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    throw new Error("Browser API for microphone is disabled. Ini biasanya terjadi jika Anda tidak mengakses web lewat 'http://localhost:8000' (menggunakan IP biasa seperti 192.168.x.x memblokir fitur ini).");
+                    throw new Error("Browser API for microphone is disabled. Pastikan Anda mengakses web lewat 'http://localhost:8000'.");
                 }
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -171,11 +244,11 @@ function tunerApp() {
             } catch (err) {
                 console.error("Mic Error:", err);
                 if (err.name === 'NotAllowedError' || err.message.includes('Permission denied')) {
-                    this.errorMsg = 'Akses diblokir oleh browser! Anda harus mengklik icon Kamera/Mikrofon (atau icon gembok) di kolom URL/Address Bar di atas, lalu ubah izin Microphone menjadi "Allow", kemudian refresh halaman ini.';
+                    this.errorMsg = 'Akses mikrofon diblokir oleh browser! Klik icon kamera/gembok di address bar untuk mengizinkan (Allow) Microphone.';
                 } else if (err.name === 'NotFoundError') {
                     this.errorMsg = 'Microphone tidak terdeteksi di perangkat Anda.';
                 } else {
-                    this.errorMsg = 'Error: ' + err.message + ' (Pastikan klik "Allow" dan akses via localhost!)';
+                    this.errorMsg = 'Error: ' + err.message;
                 }
             }
         },
@@ -209,17 +282,16 @@ function tunerApp() {
                 this.currentNote = noteName;
                 this.currentCents = cents;
                 
-                // Map -50 to +50 cents to -60 to +60 degrees
                 this.needleAngle = (cents / 50) * 60;
                 
                 if (Math.abs(cents) < 5) {
-                    this.needleColor = '#10b981'; // emerald
-                    this.tuneStatus = 'IN TUNE';
+                    this.needleColor = '#10b981'; // emerald in tune
+                    this.tuneStatus = 'PERFECT - IN TUNE';
                 } else if (cents < 0) {
-                    this.needleColor = '#f59e0b'; // amber
+                    this.needleColor = '#f59e0b'; // amber flat
                     this.tuneStatus = 'FLAT (TUNE UP)';
                 } else {
-                    this.needleColor = '#ef4444'; // red
+                    this.needleColor = '#ef4444'; // red sharp
                     this.tuneStatus = 'SHARP (TUNE DOWN)';
                 }
             }
@@ -235,7 +307,7 @@ function tunerApp() {
                 rms += val * val;
             }
             rms = Math.sqrt(rms / SIZE);
-            if (rms < 0.01) return -1; // Not enough signal
+            if (rms < 0.01) return -1;
 
             let r1 = 0, r2 = SIZE - 1, thres = 0.2;
             for (let i = 0; i < SIZE / 2; i++)

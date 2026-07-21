@@ -25,4 +25,14 @@ class PracticeToolController extends Controller
     {
         return view('practice-tools.chords');
     }
+
+    public function scales()
+    {
+        return view('practice-tools.scales');
+    }
+
+    public function trainer()
+    {
+        return view('practice-tools.trainer');
+    }
 }

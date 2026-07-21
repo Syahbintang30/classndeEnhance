@@ -78,6 +78,11 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
+        .topic-item::before, .topic-item:before {
+            display: none !important;
+            content: none !important;
+            width: 0 !important;
+        }
         .topic-item.completed .topic-check {
             background: #3b82f6; /* blue-500 */
             border-color: #3b82f6;
@@ -87,10 +92,11 @@
             background-size: 12px 12px;
         }
         
-        .topic-item.selected .topic-box {
-            background: rgba(59, 130, 246, 0.1);
-            border-left-color: #3b82f6;
-            color: #ffffff;
+        .topic-item.selected {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
         }
         
         .lesson-block.active .lesson-header {
@@ -160,46 +166,56 @@
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             
-            <div class="p-5 border-b border-white/5 flex items-center justify-between">
-                <h3 class="font-display text-xl text-white tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-list-ul text-blue-400"></i> Course Syllabus
+            <div class="p-5 border-b border-white/10 flex items-center justify-between">
+                <h3 class="font-display text-2xl text-white tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-list-ul text-blue-500"></i> Course Syllabus
                 </h3>
             </div>
             
-            <ul class="menu p-0 m-0 list-none">
-            @forelse($lessons as $ls)
-                <li class="lesson-block border-b border-white/5 last:border-b-0">
-                    <a href="{{ route('kelas.show', $ls->id) }}" class="lesson-header flex items-center justify-between p-4 cursor-pointer text-gray-300 hover:bg-white/5 transition">
-                        <div class="lesson-left flex items-center gap-3 font-semibold text-sm">
-                            <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-                                <i class="fa-solid fa-book-open text-xs"></i>
-                            </div>
-                            {{ $ls->title }}
-                        </div>
-                        <span class="lesson-arrow text-gray-500 text-lg transition-transform duration-200">
-                            <i class="fa-solid fa-chevron-right text-xs"></i>
-                        </span>
-                    </a>
-                    @php $topics = $ls->topics ?? collect(); @endphp
-                    <ul class="topic-list bg-black/50">
-                        @forelse($topics as $topic)
-                            <li class="topic-item" 
-                                data-bunny-guid="{{ $topic->bunny_guid }}"
-                                data-description="{{ $topic->description }}"
-                                data-topic-id="{{ $topic->id }}">
-                                <div class="topic-box flex items-center gap-3 py-3 pr-4 pl-12 text-sm text-gray-400 cursor-pointer border-l-2 border-transparent transition hover:bg-white/5">
-                                    <input type="checkbox" class="topic-check" disabled>
-                                    <span class="truncate">{{ $topic->title }}</span>
+            <div class="p-4">
+                <!-- SINGLE UNIFIED SYLLABUS CONTAINER -->
+                <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl">
+                    @forelse($lessons as $index => $ls)
+                        @php $topics = $ls->topics ?? collect(); @endphp
+                        <div x-data="{ open: {{ $index === 0 ? 'true' : 'false' }} }">
+                            
+                            <!-- Accordion Header Button -->
+                            <button @click="open = !open" type="button" class="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition group cursor-pointer">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">
+                                        <i class="fa-solid fa-book-open"></i>
+                                    </div>
+                                    <div class="truncate">
+                                        <span class="font-bold text-sm text-white group-hover:text-blue-400 transition block truncate">{{ $ls->title }}</span>
+                                        <span class="text-[10px] text-gray-400 font-medium">{{ count($topics) }} Topics</span>
+                                    </div>
                                 </div>
-                            </li>
-                        @empty
-                        @endforelse
-                    </ul>
-                </li>
-            @empty
-            @endforelse
-        </ul>
-    </aside>
+                                
+                                <i class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform duration-300 flex-shrink-0 ml-2"
+                                   :class="open ? 'rotate-180 text-blue-400' : ''"></i>
+                            </button>
+
+                            <!-- Collapsible Topics Body -->
+                            <div x-show="open" x-transition.opacity class="p-3 pt-2 space-y-1 bg-black/50 border-t border-white/5">
+                                @forelse($topics as $tIndex => $topic)
+                                    <div class="topic-item cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition flex items-center gap-2.5" 
+                                         data-bunny-guid="{{ $topic->bunny_guid }}"
+                                         data-description="{{ $topic->description }}"
+                                         data-topic-id="{{ $topic->id }}">
+                                        <input type="checkbox" class="topic-check" disabled>
+                                        <span class="truncate">{{ $topic->title }}</span>
+                                    </div>
+                                @empty
+                                    <div class="text-xs text-gray-500 italic px-2 py-1">No topics available</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-8 text-gray-500 text-xs">No lessons available yet.</div>
+                    @endforelse
+                </div>
+            </div>
+        </aside>
 
     <!-- Main Content Area -->
     <div class="main-wrapper flex-1 relative overflow-y-auto w-full">

@@ -178,6 +178,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tuner', [PracticeToolController::class, 'tuner'])->name('tuner');
         Route::get('/metronome', [PracticeToolController::class, 'metronome'])->name('metronome');
         Route::get('/chords', [PracticeToolController::class, 'chords'])->name('chords');
+        Route::get('/scales', [PracticeToolController::class, 'scales'])->name('scales');
+        Route::get('/trainer', [PracticeToolController::class, 'trainer'])->name('trainer');
     });
 });
 

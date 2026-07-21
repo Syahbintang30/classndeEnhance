@@ -85,7 +85,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">
-                    <i class="fa-solid fa-bolt text-amber-400"></i> Keep Up The Momentum
+                    <i class="fa-solid fa-bolt text-blue-400"></i> Keep Up The Momentum
                 </div>
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white tracking-wide uppercase leading-none">
                     @php $firstName = explode(' ', auth()->user()->name ?? 'STUDENT')[0]; @endphp

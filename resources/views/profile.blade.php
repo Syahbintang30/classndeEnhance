@@ -427,28 +427,7 @@
 </style>
 
 <!-- LMS Navbar -->
-<nav class="lms-navbar">
-    <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        Home
-    </a>
-
-    <div class="lms-navbar-right">
-        <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
-        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
-        @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
-            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
-        @endif
-        <button id="theme-toggle-profile" type="button" class="lms-theme-btn" aria-label="Toggle theme">
-            <svg id="theme-profile-moon" style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            <svg id="theme-profile-sun" style="width:15px;height:15px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-        </button>
-    </div>
-</nav>
+@include('layouts.lms_header')
 
 <!-- Flash messages -->
 @if(session('status') || session('success') || session('error') || $errors->any())

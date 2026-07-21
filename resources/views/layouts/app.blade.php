@@ -144,7 +144,8 @@
         $hideGlobalNav = Route::currentRouteName() === 'compro'
             || request()->routeIs('kelas.payment')
             || request()->routeIs('coaching.session')
-            || request()->routeIs('song.tutorial.show')
+            || request()->routeIs('song.tutorial.*')
+            || request()->is('song-tutorial*')
             || request()->routeIs('admin.audit.*')
             || request()->is('admin/audit*')
             || request()->routeIs('login')
