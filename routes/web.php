@@ -27,6 +27,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 // Halaman landing utama /ndeofficial: narik data promo, paket, dan FAQ untuk halaman marketing.
 Route::get('/ndeofficial', [LandingController::class, 'index'])->name('compro');
+Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
 
 // Root domain diarahkan ke landing page agar URL utama tetap konsisten.
 Route::redirect('/', '/ndeofficial');

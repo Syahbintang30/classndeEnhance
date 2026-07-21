@@ -544,8 +544,9 @@
                         'answer' => $item->answer ?? $item->content ?? ''
                     ];
                 }
+                $faqsToDisplay = array_slice($faqsToDisplay, 0, 3);
             } else {
-                $faqsToDisplay = $defaultFaqs;
+                $faqsToDisplay = array_slice($defaultFaqs, 0, 3);
             }
         @endphp
 
@@ -572,6 +573,14 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        <!-- View All FAQs Button -->
+        <div class="text-center pt-2">
+            <a href="{{ route('faq') }}" class="inline-flex items-center gap-2.5 py-3 px-8 rounded-full bg-white/5 border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10 text-xs font-bold text-gray-300 hover:text-white transition-all shadow-md group">
+                <span>View All FAQs</span>
+                <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+            </a>
         </div>
     </section>
 

@@ -28,4 +28,13 @@ class LandingController extends Controller
             'faq_items' => $faqItems,
         ]);
     }
+
+    public function faq()
+    {
+        $faqItems = FaqItem::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+
+        return view('faq', [
+            'faq_items' => $faqItems,
+        ]);
+    }
 }
