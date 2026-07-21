@@ -60,10 +60,11 @@
             0%, 100% { height: 4px; }
             50% { height: 16px; }
         }
-        .bar-anim { animation: soundwave 1s infinite ease-in-out; }
-        .bar-anim:nth-child(2) { animation-delay: 0.2s; }
-        .bar-anim:nth-child(3) { animation-delay: 0.4s; }
-        .bar-anim:nth-child(4) { animation-delay: 0.1s; }
+        .bar-anim { height: 6px; }
+        .group:hover .bar-anim { animation: soundwave 1s infinite ease-in-out; }
+        .group:hover .bar-anim:nth-child(2) { animation-delay: 0.2s; }
+        .group:hover .bar-anim:nth-child(3) { animation-delay: 0.4s; }
+        .group:hover .bar-anim:nth-child(4) { animation-delay: 0.1s; }
     </style>
 @endpush
 
