@@ -311,26 +311,22 @@
                                     @endif
                                 </div>
 
-                                <div class="flex items-center gap-3 min-w-[180px] justify-end">
+                                <div class="flex items-center gap-3 min-w-[200px] justify-end">
                                     @php
                                         $statusLower = strtolower((string) $b->status);
-                                        $isEndedStatus = in_array($statusLower, ['ended', 'finished', 'completed'], true);
                                     @endphp
                                     @if($statusLower === 'rejected')
                                         <button type="button" class="py-2.5 px-5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition" onclick="window.location.href='{{ route('coaching.index') }}'">Reschedule</button>
-                                    @else
-                                        @if($isLiveWindow && !$isPast && !$isEndedStatus && in_array($statusLower, ['accepted', 'scheduled'], true))
-                                            <button type="button" class="start-btn w-full py-3 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2" disabled
-                                                data-booking-time="{{ $dtLocal }}"
-                                                data-status="{{ $b->status }}"
-                                                data-href="{{ $sessionUrl }}"
-                                                title="Join is available only when the session is live">
-                                                <i class="fa-solid fa-video text-base animate-pulse"></i>
+                                    @elseif(in_array($statusLower, ['accepted', 'scheduled'], true))
+                                        <div class="booking-timer-wrapper flex flex-col items-end gap-2 w-full sm:w-auto" data-booking-time="{{ $dtLocal }}" data-status="{{ $b->status }}" data-href="{{ $sessionUrl }}">
+                                            <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/90 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block">--:--:--</span>
+                                            <button type="button" class="start-btn w-full py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 hidden cursor-pointer" disabled>
+                                                <i class="fa-solid fa-video text-sm animate-pulse"></i>
                                                 <span class="start-label">Join Session</span>
                                             </button>
-                                        @else
-                                            <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/80 text-gray-300 border border-white/5 tracking-widest text-center inline-block"></span>
-                                        @endif
+                                        </div>
+                                    @else
+                                        <span class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-white/5 border border-white/10 uppercase">{{ $b->status }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -354,7 +350,7 @@
                 const mins = Math.floor((total % 3600) / 60);
                 const secs = Math.floor(total % 60);
                 
-                const dStr = days > 0 ? String(days).padStart(2, '0') + 'd ' : '';
+                const dStr = days > 0 ? days + (days === 1 ? ' day ' : ' days ') : '';
                 const hStr = String(hours).padStart(2, '0') + ':';
                 const mStr = String(mins).padStart(2, '0') + ':';
                 const sStr = String(secs).padStart(2, '0');
@@ -372,57 +368,66 @@
 
             const boundClicks = new WeakMap();
 
-            function updateStartButtons() {
-                const buttons = document.querySelectorAll('.start-btn');
+            function updateCountdowns() {
+                const wrappers = document.querySelectorAll('.booking-timer-wrapper');
                 const now = new Date();
-                buttons.forEach(btn => {
-                    const status = (btn.dataset.status || '').toLowerCase();
-                    const dtStr = btn.dataset.bookingTime || '';
+
+                wrappers.forEach(wrap => {
+                    const dtStr = wrap.dataset.bookingTime || '';
                     const dt = parseLocalDateTime(dtStr);
-                    let enabled = false;
+                    const href = wrap.dataset.href || '';
+                    const cd = wrap.querySelector('.countdown');
+                    const btn = wrap.querySelector('.start-btn');
 
-                    let endWindow = null;
-                    if ((status === 'accepted' || status === 'scheduled') && dt) {
-                        const startWindow = new Date(dt.getTime());
-                        endWindow = new Date(dt.getTime() + (60 * 60 * 1000));
-                        if (now >= startWindow && now <= endWindow) enabled = true;
-                    }
+                    if (!dt) return;
 
-                    if (enabled) {
-                        btn.disabled = false;
-                        btn.setAttribute('aria-disabled', 'false');
-                        btn.style.opacity = '';
-                        if (!boundClicks.has(btn)) {
-                            btn.addEventListener('click', startBtnClickHandler);
-                            boundClicks.set(btn, true);
+                    const startWindow = dt.getTime();
+                    const endWindow = dt.getTime() + (60 * 60 * 1000); // 1 hour session window
+
+                    if (now.getTime() >= startWindow && now.getTime() <= endWindow) {
+                        // LIVE NOW!
+                        if (cd) {
+                            cd.textContent = 'LIVE NOW';
+                            cd.className = 'countdown px-4 py-2 rounded-xl font-mono text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 tracking-widest text-center shadow-[0_0_15px_rgba(16,185,129,0.2)] inline-block font-bold animate-pulse';
+                        }
+                        if (btn) {
+                            btn.classList.remove('hidden');
+                            btn.classList.add('flex');
+                            btn.disabled = false;
+                            btn.removeAttribute('disabled');
+                            btn.style.opacity = '1';
+                            if (!boundClicks.has(btn)) {
+                                btn.addEventListener('click', function(){
+                                    if (href) window.location.href = href;
+                                });
+                                boundClicks.set(btn, true);
+                            }
+                        }
+                    } else if (now.getTime() > endWindow) {
+                        // EXPIRED / ENDED
+                        if (cd) {
+                            cd.textContent = 'Session Completed';
+                            cd.className = 'countdown px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 bg-white/5 border border-white/10 inline-block';
+                        }
+                        if (btn) {
+                            btn.classList.add('hidden');
                         }
                     } else {
-                        btn.disabled = true;
-                        btn.setAttribute('aria-disabled', 'true');
-                        btn.style.opacity = '0.6';
-                    }
-
-                    const slot = btn.closest('.glass-panel');
-                    const cd = slot ? slot.querySelector('.countdown') : null;
-                    if (cd && dt) {
-                        if (endWindow && now > endWindow) {
-                            cd.textContent = '00:00:00';
-                        } else {
-                            const delta = dt.getTime() - Date.now();
-                            cd.textContent = formatDelta(delta);
+                        // UPCOMING COUNTDOWN TICKING!
+                        const msUntilStart = startWindow - now.getTime();
+                        if (cd) {
+                            cd.textContent = formatDelta(msUntilStart);
+                            cd.className = 'countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/80 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block';
+                        }
+                        if (btn) {
+                            btn.classList.add('hidden');
                         }
                     }
                 });
             }
 
-            function startBtnClickHandler(e) {
-                const btn = e.currentTarget;
-                const href = btn.dataset.href;
-                if (href) window.location.href = href;
-            }
-
-            updateStartButtons();
-            setInterval(updateStartButtons, 1000);
+            updateCountdowns();
+            setInterval(updateCountdowns, 1000);
         });
     </script>
 @endpush
