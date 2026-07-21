@@ -106,14 +106,14 @@
             </div>
             
             <div class="p-4">
-                <!-- SINGLE UNIFIED CONTAINER CARD -->
-                <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl">
+                <!-- SINGLE UNIFIED CONTAINER CARD (EXCLUSIVE ACCORDION) -->
+                <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl"
+                     x-data="{ activeSection: 0 }">
                     @forelse($lessons as $index => $ls)
                         @php $topics = $ls->topics ?? collect(); @endphp
-                        <div x-data="{ open: {{ $index === 0 ? 'true' : 'false' }} }">
-                            
+                        <div>
                             <!-- Accordion Header Button -->
-                            <button @click="open = !open" type="button" class="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition group cursor-pointer">
+                            <button @click="activeSection = (activeSection === {{ $index }} ? null : {{ $index }})" type="button" class="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition group cursor-pointer">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">
                                         <i class="fa-solid fa-music"></i>
@@ -125,11 +125,11 @@
                                 </div>
                                 
                                 <i class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform duration-300 flex-shrink-0 ml-2"
-                                   :class="open ? 'rotate-180 text-blue-400' : ''"></i>
+                                   :class="activeSection === {{ $index }} ? 'rotate-180 text-blue-400' : ''"></i>
                             </button>
 
                             <!-- Collapsible Topics Body -->
-                            <div x-show="open" x-transition.opacity class="p-3 pt-2 space-y-1 bg-black/50 border-t border-white/5">
+                            <div x-show="activeSection === {{ $index }}" x-transition.opacity class="p-3 pt-2 space-y-1 bg-black/50 border-t border-white/5">
                                 @forelse($topics as $tIndex => $topic)
                                     <div class="topic-item cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition flex items-center gap-2.5 {{ ($index === 0 && $tIndex === 0) ? 'selected' : '' }}" 
                                          data-bunny-guid="{{ $topic->bunny_guid }}"
