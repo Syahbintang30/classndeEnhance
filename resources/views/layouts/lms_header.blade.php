@@ -12,8 +12,8 @@
     <!-- Left: Logo -->
     <div class="flex items-center justify-start min-w-[200px] sm:min-w-[240px]">
         <a href="{{ route('compro') }}" class="flex items-center gap-2.5 group shrink-0">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-base shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
-                <i class="fa-solid fa-guitar"></i>
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform p-1.5 border border-white/10">
+                <img src="{{ asset('compro/img/logo_icon_white.png') }}" alt="Guitarclassbynde Logo" class="h-full w-auto object-contain filter drop-shadow">
             </div>
             <div class="flex items-center gap-2">
                 <span class="font-display text-2xl tracking-wide text-white group-hover:text-blue-400 transition-colors">
@@ -137,7 +137,12 @@
 <div x-show="mobileMenuOpen" x-transition.opacity class="mobile-menu-overlay fixed inset-0 z-50 bg-black/80 backdrop-blur-md md:hidden" style="display: none;" @click="mobileMenuOpen = false">
     <div @click.stop class="mobile-menu-panel bg-zinc-950 border-r border-white/10 w-72 h-full p-6 space-y-4 overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
-            <span class="font-display text-2xl text-white">GUITARCLASS<span class="text-blue-500">BYNDE</span></span>
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center p-1 shadow-md shadow-blue-600/30 border border-white/10">
+                    <img src="{{ asset('compro/img/logo_icon_white.png') }}" alt="Logo" class="h-full w-auto object-contain">
+                </div>
+                <span class="font-display text-2xl text-white">GUITARCLASS<span class="text-blue-500">BYNDE</span></span>
+            </div>
             <button @click="mobileMenuOpen = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
