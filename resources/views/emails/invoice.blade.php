@@ -23,10 +23,10 @@
                             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td align="left" valign="middle">
-                                        <div style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase;">
-                                            GUITARCLASS<span style="color: #3b82f6;">BYNDE</span>
-                                        </div>
-                                        <div style="font-size: 11px; color: #71717a; margin-top: 2px;">
+                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block;">
+                                            <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" style="height: 42px; width: auto; max-height: 42px; display: block; border: 0;" />
+                                        </a>
+                                        <div style="font-size: 11px; color: #71717a; margin-top: 4px;">
                                             Official Payment Receipt
                                         </div>
                                     </td>

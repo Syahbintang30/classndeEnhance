@@ -48,30 +48,36 @@ Artisan::command('send-mail {--to=syahbintang30@gmail.com}', function () {
     }
 })->purpose('Send test email with Mailtrap Real Sending API');
 
-Artisan::command('send-invoice {--to=syahbintang30@gmail.com}', function () {
+Artisan::command('send-invoice {--to=syahbintang30@gmail.com} {--package=intermediate}', function () {
     $toEmail = $this->option('to');
+    $pkgSlug = $this->option('package');
+
     $user = \App\Models\User::where('email', $toEmail)->first() ?: new \App\Models\User([
         'name' => 'Syah Bintang',
         'email' => $toEmail,
     ]);
 
-    $package = \App\Models\Package::first() ?: new \App\Models\Package([
-        'name' => 'Mastering Acoustic & Electric Guitar',
-        'description' => 'Complete step-by-step video lessons and 1-on-1 coaching session access.',
+    $dbPkg = \App\Models\Package::where('slug', $pkgSlug)->first();
+    $package = $dbPkg ?: new \App\Models\Package([
+        'name' => 'Paket Intermediate Class',
+        'description' => 'Akses penuh materi intermediate & teknik melodi profesional.',
+        'price' => 250000,
     ]);
+
+    $amount = (int) ($package->price ?: 250000);
 
     $txn = new \App\Models\Transaction([
         'order_id' => 'nde-' . strtoupper(\Illuminate\Support\Str::random(8)),
         'user_id' => $user->id ?? 1,
         'package_id' => $package->id ?? 1,
         'method' => 'Midtrans (QRIS / Bank Transfer)',
-        'amount' => 499000,
-        'original_amount' => 549000,
+        'amount' => $amount,
+        'original_amount' => $amount,
         'status' => 'settlement',
     ]);
     $txn->setRelation('package', $package);
 
-    $this->info("Sending sample invoice email to {$toEmail}...");
+    $this->info("Sending sample invoice email for {$package->name} (Rp " . number_format($amount, 0, ',', '.') . ") to {$toEmail}...");
 
     try {
         $user->notify(new \App\Notifications\SendPaymentInvoiceNotification($txn));

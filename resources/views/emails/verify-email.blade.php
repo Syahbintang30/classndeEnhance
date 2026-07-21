@@ -23,9 +23,9 @@
                             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td align="center">
-                                        <div style="display: inline-block; padding: 8px 16px; background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 9999px; color: #60a5fa; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;">
-                                            GUITARCLASSBYNDE LMS
-                                        </div>
+                                        <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 16px;">
+                                            <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" style="height: 48px; width: auto; max-height: 48px; display: block; border: 0;" />
+                                        </a>
                                         <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
                                             Verify Your <span style="color: #60a5fa;">Email</span>
                                         </h1>
