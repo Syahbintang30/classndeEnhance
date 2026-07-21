@@ -69,7 +69,7 @@ class CoachingController extends Controller
         // Halaman upcoming merangkum booking mendatang plus status ticket user.
         $user = Auth::user();
         if ($user) {
-            $qb = CoachingBooking::where('user_id', $user->id)->where('status', '!=', 'cancelled')->orderBy('booking_time');
+            $qb = CoachingBooking::where('user_id', $user->id)->where('status', '!=', 'cancelled')->orderByDesc('booking_time');
             if (Schema::hasTable('coaching_feedbacks')) {
                 $qb = $qb->with('feedback');
             }

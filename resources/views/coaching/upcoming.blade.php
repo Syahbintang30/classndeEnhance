@@ -195,7 +195,12 @@
             @else
                 <div class="space-y-4">
                     @php
-                        $sortedBookings = $bookings->sortBy('booking_time')->values();
+                        $chronoBookings = $bookings->sortBy('booking_time')->values();
+                        $sessionNumbers = [];
+                        foreach ($chronoBookings as $cIdx => $cBook) {
+                            $sessionNumbers[$cBook->id] = $cIdx + 1;
+                        }
+                        $sortedBookings = $bookings->sortByDesc('booking_time')->values();
                     @endphp
                     @foreach($sortedBookings as $index => $b)
                         @php
@@ -212,7 +217,8 @@
                             }
                             $dtLocal = $dt->format('Y-m-d H:i:s');
                             $sessionUrl = route('coaching.session', ['booking' => $b->id]);
-                            $sessionLabel = 'Session ' . ($index + 1);
+                            $sessionNum = $sessionNumbers[$b->id] ?? ($index + 1);
+                            $sessionLabel = 'Session ' . $sessionNum;
                             $isGoingOn = $isLiveWindow && !$isPast && in_array(strtolower((string) $b->status), ['accepted', 'scheduled'], true);
                         @endphp
                         
