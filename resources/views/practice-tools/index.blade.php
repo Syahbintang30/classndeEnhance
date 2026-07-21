@@ -109,11 +109,11 @@
             </div>
         </header>
 
-        <!-- 5-CARD PRACTICE SUITE GRID -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 5-CARD PRACTICE SUITE GRID (CENTERED BOTTOM ROW) -->
+        <div class="flex flex-wrap justify-center gap-6">
             
             <!-- 1. Guitar Tuner Card -->
-            <a href="{{ route('practice.tuner') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)]">
+            <a href="{{ route('practice.tuner') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20">Mic Pitch Detection</span>
                     <!-- Equalizer animation -->
@@ -140,7 +140,7 @@
             </a>
 
             <!-- 2. Metronome Card -->
-            <a href="{{ route('practice.metronome') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+            <a href="{{ route('practice.metronome') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">Audio Engine</span>
                     <!-- Equalizer animation -->
@@ -167,7 +167,7 @@
             </a>
 
             <!-- 3. Chord Library Card -->
-            <a href="{{ route('practice.chords') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]">
+            <a href="{{ route('practice.chords') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20">Interactive Fretboard</span>
                     <!-- Equalizer animation -->
@@ -194,7 +194,7 @@
             </a>
 
             <!-- 4. Scale Visualizer Card -->
-            <a href="{{ route('practice.scales') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+            <a href="{{ route('practice.scales') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20">Solo & Improvisation</span>
                     <!-- Equalizer animation -->
@@ -221,7 +221,7 @@
             </a>
 
             <!-- 5. Trainer Quiz Card -->
-            <a href="{{ route('practice.trainer') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_40px_rgba(244,63,94,0.15)] md:col-span-2 lg:col-span-1">
+            <a href="{{ route('practice.trainer') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_40px_rgba(244,63,94,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20">Ear & Memory Game</span>
                     <!-- Equalizer animation -->
