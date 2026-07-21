@@ -1,544 +1,295 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Profile')
+@section('title', 'Edit Profile - Guitarclassbynde')
+
+@push('head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            important: true,
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #08080a !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        .font-display { font-family: 'Bebas Neue', cursive !important; letter-spacing: 1px; }
+        body > nav, .global-nav { display: none !important; }
+        .glass-panel {
+            background: rgba(12, 12, 18, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #cropper-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 99999;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #cropper-area {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 340px;
+            overflow: hidden;
+            background: #000;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            user-select: none;
+            touch-action: none;
+        }
+        #cropper-image {
+            position: absolute;
+            top: 0; left: 0;
+            max-width: none;
+            cursor: move;
+            transform-origin: center center;
+        }
+    </style>
+@endpush
 
 @section('content')
-<style>
-    body > nav { display: none; }
+<div class="min-h-screen bg-[#08080a] text-white flex flex-col relative selection:bg-blue-600 selection:text-white overflow-hidden pb-16">
+    
+    {{-- Ambient Mesh Background Glows --}}
+    <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
 
-    :root {
-        --ep-bg: #0a0a0a;
-        --ep-text: #ffffff;
-        --ep-muted: rgba(255,255,255,0.55);
-        --ep-card: rgba(24,24,27,0.6);
-        --ep-border: rgba(255,255,255,0.08);
-        --ep-input-bg: rgba(10,10,10,0.5);
-        --ep-input-border: rgba(255,255,255,0.08);
-        --ep-label: rgba(255,255,255,0.7);
-        --ep-section-bg: linear-gradient(180deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);
-    }
-
-    :root[data-theme="light"] {
-        --ep-bg: #f5f5f7;
-        --ep-text: #0f172a;
-        --ep-muted: rgba(15,23,42,0.55);
-        --ep-card: #ffffff;
-        --ep-border: rgba(15,23,42,0.08);
-        --ep-input-bg: #ffffff;
-        --ep-input-border: rgba(15,23,42,0.12);
-        --ep-label: #475569;
-        --ep-section-bg: #ffffff;
-    }
-
-    html, body { background: var(--ep-bg) !important; color: var(--ep-text) !important; overflow-x: hidden; }
-    *, *::before, *::after { box-sizing: border-box; }
-
-    /* Navbar */
-    .lms-navbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 72px;
-        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        padding: 0 28px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-
-    .lms-home-link {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #e0e0e0;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-        transition: color 0.2s;
-    }
-
-    .lms-home-link:hover { color: #fff; }
-
-    .lms-navbar-right { display: flex; align-items: center; gap: 28px; }
-
-    .lms-nav-link {
-        color: #888;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-        transition: color 0.2s;
-    }
-
-    .lms-nav-link:hover, .lms-nav-link.active { color: #fff; font-weight: 600; }
-
-    :root[data-theme="light"] .lms-navbar {
-        background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
-        border-bottom-color: rgba(15,23,42,0.08);
-    }
-
-    :root[data-theme="light"] .lms-home-link,
-    :root[data-theme="light"] .lms-nav-link { color: #475569; }
-
-    :root[data-theme="light"] .lms-home-link:hover,
-    :root[data-theme="light"] .lms-nav-link:hover,
-    :root[data-theme="light"] .lms-nav-link.active { color: #0f172a; }
-
-    .lms-theme-btn {
-        width: 34px; height: 34px;
-        display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: transparent;
-        color: #fff;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .lms-theme-btn:hover { background: rgba(255,255,255,0.08); }
-
-    :root[data-theme="light"] .lms-theme-btn {
-        border-color: rgba(15,23,42,0.12);
-        color: #0f172a;
-    }
-
-    :root[data-theme="light"] .lms-theme-btn:hover { background: rgba(15,23,42,0.06); }
-
-    /* Page */
-    .ep-page {
-        min-height: calc(100vh - 72px);
-        background: var(--ep-bg);
-        padding: 40px 24px 60px;
-    }
-
-    .ep-inner {
-        max-width: 720px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    .ep-page-title {
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        color: var(--ep-text);
-        margin: 0 0 4px;
-    }
-
-    :root[data-theme="light"] .ep-page-title { color: #0f172a; }
-
-    .ep-page-sub {
-        font-size: 14px;
-        color: var(--ep-muted);
-        margin: 0 0 8px;
-    }
-
-    /* Section card */
-    .ep-section {
-        background: var(--ep-section-bg);
-        border: 1px solid var(--ep-border);
-        border-radius: 18px;
-        padding: 28px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    }
-
-    :root[data-theme="light"] .ep-section {
-        box-shadow: 0 4px 20px rgba(15,23,42,0.06);
-        backdrop-filter: none;
-    }
-
-    .ep-section-title {
-        font-size: 18px;
-        font-weight: 800;
-        color: var(--ep-text);
-        margin: 0 0 4px;
-        letter-spacing: -0.02em;
-    }
-
-    .ep-section-sub {
-        font-size: 13px;
-        color: var(--ep-muted);
-        margin: 0 0 22px;
-    }
-
-    /* Avatar */
-    .ep-avatar-row {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 24px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid var(--ep-border);
-    }
-
-    .ep-avatar-wrap {
-        width: 80px; height: 80px;
-        border-radius: 999px;
-        overflow: hidden;
-        border: 2px solid var(--ep-border);
-        background: #c91863;
-        flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        color: #ffffff;
-        line-height: 0;
-    }
-
-    :root[data-theme="light"] .ep-avatar-wrap { background: #c91863; }
-    .ep-avatar-wrap--has-image,
-    :root[data-theme="light"] .ep-avatar-wrap--has-image { background: transparent; }
-
-    .ep-avatar-wrap img {
-        width: 100%;
-        height: 100%;
-        object-position: center;
-        display: block;
-        object-fit: cover;
-        max-width: none;
-        min-width: 100%;
-        min-height: 100%;
-        transform: scale(1.28);
-        transform-origin: center;
-    }
-
-    .ep-avatar-fallback {
-        width: 100%;
-        height: 100%;
-        border-radius: inherit;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #c91863;
-        color: #ffffff;
-        font-size: 42px;
-        line-height: 1;
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-
-    .ep-change-photo-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 9px 14px;
-        border-radius: 10px;
-        color: #fff;
-        font-weight: 600;
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .ep-change-photo-btn:hover { background: rgba(255,255,255,0.1); }
-
-    :root[data-theme="light"] .ep-change-photo-btn {
-        background: rgba(15,23,42,0.04);
-        border-color: rgba(15,23,42,0.12);
-        color: #0f172a;
-    }
-
-    :root[data-theme="light"] .ep-change-photo-btn:hover { background: rgba(15,23,42,0.08); }
-
-    /* Form fields */
-    .ep-field { margin-bottom: 18px; }
-
-    .ep-label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ep-label);
-        margin-bottom: 7px;
-    }
-
-    .ep-input {
-        width: 100%;
-        padding: 11px 14px;
-        border-radius: 10px;
-        background: var(--ep-input-bg);
-        border: 1px solid var(--ep-input-border);
-        color: var(--ep-text);
-        font-size: 14px;
-        font-family: inherit;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        outline: none;
-    }
-
-    .ep-input:focus {
-        border-color: rgba(255,255,255,0.25);
-        box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
-    }
-
-    :root[data-theme="light"] .ep-input:focus {
-        border-color: rgba(15,23,42,0.25);
-        box-shadow: 0 0 0 3px rgba(15,23,42,0.04);
-    }
-
-    .ep-input-wrap { position: relative; }
-
-    .ep-pw-toggle {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: transparent;
-        border: none;
-        color: var(--ep-muted);
-        cursor: pointer;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-    }
-
-    .ep-input-with-toggle { padding-right: 42px; }
-
-    .ep-field-error { color: #f87171; font-size: 12px; margin-top: 5px; }
-
-    /* Two-column grid for password fields */
-    .ep-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    @media (max-width: 560px) { .ep-grid-2 { grid-template-columns: 1fr; } }
-
-    /* Buttons */
-    .ep-btn-row { display: flex; gap: 10px; align-items: center; margin-top: 6px; }
-
-    .ep-btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #0f172a;
-        color: #fff;
-        border: none;
-        padding: 11px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .ep-btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
-
-    :root[data-theme="light"] .ep-btn-primary { background: #0f172a; }
-
-    .ep-btn-cancel {
-        display: inline-flex;
-        align-items: center;
-        color: var(--ep-muted);
-        text-decoration: none;
-        padding: 11px 16px;
-        border-radius: 10px;
-        border: 1px solid var(--ep-border);
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-
-    .ep-btn-cancel:hover { color: var(--ep-text); border-color: rgba(255,255,255,0.18); }
-    :root[data-theme="light"] .ep-btn-cancel:hover { border-color: rgba(15,23,42,0.2); }
-
-    /* Flash */
-    .ep-msg { padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-    .ep-msg-success { background: rgba(11,122,68,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
-    .ep-msg-error { background: rgba(192,57,43,0.15); color: #fca5a5; border: 1px solid rgba(248,113,113,0.2); }
-    .ep-msg-error ul { margin: 6px 0 0; padding-left: 18px; }
-
-    /* Cropper modal */
-    #cropper-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .22s ease; }
-    #cropper-modal.open { opacity:1; pointer-events:auto; }
-    #cropper-dialog { transform:translateY(6px) scale(.98); transition:transform .22s cubic-bezier(.2,.9,.2,1), opacity .18s ease; opacity:.98; max-height:calc(100vh - 80px); overflow:auto; box-sizing:border-box; }
-    #cropper-modal.open #cropper-dialog { transform:translateY(0) scale(1); opacity:1; }
-    #crop-area { width:min(400px,82vw); aspect-ratio:1/1; height:auto; background:#111; overflow:hidden; position:relative; border-radius:10px; border:1px solid rgba(255,255,255,0.06); touch-action:none; }
-    #crop-area img { position:absolute; left:0; top:0; will-change:transform; user-select:none; -webkit-user-drag:none; }
-    #crop-zoom { width:200px; max-width:55vw; }
-</style>
-
-<!-- Navbar -->
-<nav class="lms-navbar">
-    <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        Home
-    </a>
-    <div class="lms-navbar-right">
-        <a href="{{ route('lms.entry') }}" class="lms-nav-link">Lessons</a>
-        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link">Coaching</a>
-        @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess() && $user->hasIntermediateAccess())
-            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link">Song Tutorial</a>
-        @endif
-        <button id="theme-toggle-ep" type="button" class="lms-theme-btn" aria-label="Toggle theme">
-            <svg id="ep-moon" style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            <svg id="ep-sun" style="width:15px;height:15px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-        </button>
+    {{-- LMS Floating Glass Pill Header --}}
+    <div class="relative z-20">
+        @include('layouts.lms_header')
     </div>
-</nav>
 
-<div class="ep-page">
-    <div class="ep-inner">
-
-        <div>
-            <h1 class="ep-page-title">Edit Profile</h1>
-            <p class="ep-page-sub">Manage your account information and security</p>
+    {{-- Main Container --}}
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
+        
+        <!-- Header Page Title -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">
+                    Account Settings
+                </div>
+                <h1 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase leading-none">Edit <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Profile</span></h1>
+                <p class="text-gray-400 text-xs sm:text-sm mt-1">Manage your personal information, profile photo, and security settings.</p>
+            </div>
+            <a href="{{ route('profile') }}" class="py-2.5 px-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-xs font-bold text-gray-300 hover:text-white transition inline-flex items-center gap-2 self-start sm:self-auto">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                <span>View Profile</span>
+            </a>
         </div>
 
         <!-- Flash Messages -->
         @if(session('status') || session('success') || session('error') || $errors->any())
-        <div>
+        <div class="space-y-3">
             @if(session('status') === 'profile-updated' || session('success'))
-                <div class="ep-msg ep-msg-success">{{ session('success') ?? 'Profile updated.' }}</div>
+                <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                    <span>{{ session('success') ?? 'Profile updated successfully.' }}</span>
+                </div>
             @endif
             @if(session('status') === 'password-updated')
-                <div class="ep-msg ep-msg-success">Password updated.</div>
+                <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                    <span>Password updated successfully.</span>
+                </div>
             @endif
             @if(session('error'))
-                <div class="ep-msg ep-msg-error">{{ session('error') }}</div>
+                <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-rose-400 text-sm"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
             @endif
             @if($errors->any())
-                <div class="ep-msg ep-msg-error">
-                    <ul>@foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach</ul>
+                <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs space-y-1">
+                    <div class="font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+                        <span>Please fix the following issues:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-0.5 pl-4 text-gray-300">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
         </div>
         @endif
 
-        <!-- Profile Info Section -->
-        <div class="ep-section">
-            <h2 class="ep-section-title">Profile Information</h2>
-            <p class="ep-section-sub">Update your account details and email address.</p>
+        <!-- Card 1: Profile Information Section -->
+        <div class="bg-zinc-950/60 border border-white/10 backdrop-blur-3xl rounded-[2rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
+            
+            <!-- Glowing top accent line -->
+            <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
 
-            <!-- Avatar -->
-            <div class="ep-avatar-row">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="font-display text-2xl sm:text-3xl text-white tracking-wide uppercase">Profile Information</h2>
+                <p class="text-gray-400 text-xs mt-1">Update your account name, email address, and avatar image.</p>
+            </div>
+
+            <!-- Avatar Uploader Row -->
+            <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
                 @php $avatar = $user->photoUrl(); @endphp
-                <div class="ep-avatar-wrap {{ $avatar ? 'ep-avatar-wrap--has-image' : '' }}">
-                    @if($avatar)
-                        <img id="photo-preview" src="{{ $avatar }}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
-                        <span class="ep-avatar-fallback" hidden>{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
-                    @else
-                        <span id="photo-preview" class="ep-avatar-fallback">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
-                    @endif
+                <div class="relative shrink-0">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 border-2 border-white/20 flex items-center justify-center font-bold text-2xl text-white shadow-xl overflow-hidden">
+                        @if($avatar)
+                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                        @else
+                            <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                        @endif
+                    </div>
                 </div>
-                <div>
-                    <button id="change-photo" type="button" class="ep-change-photo-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 2.97 2.97L8 18l-4 1 1-4 11.5-11.5z"></path></svg>
-                        Change Photo
+
+                <div class="space-y-1.5">
+                    <button id="change-photo" type="button" class="px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-xs font-bold text-white transition flex items-center gap-2 cursor-pointer shadow-md">
+                        <i class="fa-solid fa-camera text-blue-400 text-xs"></i>
+                        <span>Change Photo</span>
                     </button>
-                    <p style="font-size:12px;color:var(--ep-muted);margin:6px 0 0;">JPG, PNG max. 2MB</p>
+                    <p class="text-[11px] text-gray-400">Supported formats: JPG, PNG (Max 2MB)</p>
                 </div>
             </div>
 
-            <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+            <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5">
                 @csrf
                 @method('patch')
-                <input id="photo" name="photo" type="file" accept="image/*" style="display:none">
+                <input id="photo" name="photo" type="file" accept="image/*" class="hidden">
 
-                <div class="ep-field">
-                    <label class="ep-label" for="name">Full Name</label>
-                    <input class="ep-input" id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255">
-                    @if($errors->has('name'))<div class="ep-field-error">{{ $errors->first('name') }}</div>@endif
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-300" for="name">Full Name</label>
+                    <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255" class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                    @if($errors->has('name'))
+                        <p class="text-xs text-rose-400 font-medium">{{ $errors->first('name') }}</p>
+                    @endif
                 </div>
 
-                <div class="ep-field">
-                    <label class="ep-label" for="email">Email Address</label>
-                    <input class="ep-input" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255">
-                    @if($errors->has('email'))<div class="ep-field-error">{{ $errors->first('email') }}</div>@endif
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-300" for="email">Email Address</label>
+                    <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255" class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                    @if($errors->has('email'))
+                        <p class="text-xs text-rose-400 font-medium">{{ $errors->first('email') }}</p>
+                    @endif
                 </div>
 
-                <div class="ep-btn-row">
-                    <button type="submit" class="ep-btn-primary">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                        Save Changes
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-blue-600/30 transition hover:scale-105 cursor-pointer flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Changes</span>
                     </button>
-                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Cancel</a>
+                    <a href="{{ route('profile') }}" class="px-5 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-xs font-bold text-gray-300 hover:text-white transition">
+                        Cancel
+                    </a>
                 </div>
             </form>
         </div>
 
-        <!-- Password Section -->
-        <div class="ep-section" id="password">
-            <h2 class="ep-section-title">Change Password</h2>
-            <p class="ep-section-sub">Make sure your account uses a strong and unique password.</p>
+        <!-- Card 2: Password Security Section -->
+        <div class="bg-zinc-950/60 border border-white/10 backdrop-blur-3xl rounded-[2rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6" id="password">
+            
+            <!-- Glowing top accent line -->
+            <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
 
-            <form method="post" action="{{ route('password.update') }}">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="font-display text-2xl sm:text-3xl text-white tracking-wide uppercase">Change Password</h2>
+                <p class="text-gray-400 text-xs mt-1">Ensure your account is using a long and random password to stay secure.</p>
+            </div>
+
+            <form method="post" action="{{ route('password.update') }}" class="space-y-5">
                 @csrf
                 @method('put')
 
-                <div class="ep-field">
-                    <label class="ep-label" for="current_password">Current Password</label>
-                    <div class="ep-input-wrap">
-                        <input class="ep-input ep-input-with-toggle" id="current_password" name="current_password" type="password" required autocomplete="current-password" placeholder="••••••••">
-                        <button type="button" class="ep-pw-toggle" data-target="current_password">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-300" for="current_password">Current Password</label>
+                    <div class="relative">
+                        <input id="current_password" name="current_password" type="password" required autocomplete="current-password" placeholder="••••••••" class="w-full px-4 py-3 pr-12 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                        <button type="button" class="ep-pw-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1" data-target="current_password">
+                            <i class="fa-solid fa-eye text-sm"></i>
                         </button>
                     </div>
-                    @if($errors->has('current_password'))<div class="ep-field-error">{{ $errors->first('current_password') }}</div>@endif
+                    @if($errors->has('current_password'))
+                        <p class="text-xs text-rose-400 font-medium">{{ $errors->first('current_password') }}</p>
+                    @endif
                 </div>
 
-                <div class="ep-grid-2">
-                    <div class="ep-field">
-                        <label class="ep-label" for="password_input">New Password</label>
-                        <div class="ep-input-wrap">
-                            <input class="ep-input ep-input-with-toggle" id="password_input" name="password" type="password" required autocomplete="new-password" placeholder="Minimum 8 characters">
-                            <button type="button" class="ep-pw-toggle" data-target="password_input">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-gray-300" for="password_input">New Password</label>
+                        <div class="relative">
+                            <input id="password_input" name="password" type="password" required autocomplete="new-password" placeholder="Minimum 8 characters" class="w-full px-4 py-3 pr-12 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                            <button type="button" class="ep-pw-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1" data-target="password_input">
+                                <i class="fa-solid fa-eye text-sm"></i>
                             </button>
                         </div>
-                        @if($errors->has('password'))<div class="ep-field-error">{{ $errors->first('password') }}</div>@endif
+                        @if($errors->has('password'))
+                            <p class="text-xs text-rose-400 font-medium">{{ $errors->first('password') }}</p>
+                        @endif
                     </div>
 
-                    <div class="ep-field">
-                        <label class="ep-label" for="password_confirmation">Confirm New Password</label>
-                        <div class="ep-input-wrap">
-                            <input class="ep-input ep-input-with-toggle" id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" placeholder="Repeat your new password">
-                            <button type="button" class="ep-pw-toggle" data-target="password_confirmation">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-gray-300" for="password_confirmation">Confirm New Password</label>
+                        <div class="relative">
+                            <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" placeholder="Repeat your new password" class="w-full px-4 py-3 pr-12 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                            <button type="button" class="ep-pw-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1" data-target="password_confirmation">
+                                <i class="fa-solid fa-eye text-sm"></i>
                             </button>
                         </div>
-                        @if($errors->has('password_confirmation'))<div class="ep-field-error">{{ $errors->first('password_confirmation') }}</div>@endif
+                        @if($errors->has('password_confirmation'))
+                            <p class="text-xs text-rose-400 font-medium">{{ $errors->first('password_confirmation') }}</p>
+                        @endif
                     </div>
                 </div>
 
-                <div class="ep-btn-row">
-                    <button type="submit" class="ep-btn-primary">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        Save Password
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-blue-600/30 transition hover:scale-105 cursor-pointer flex items-center gap-2">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Save Password</span>
                     </button>
-                    <a href="{{ route('profile') }}" class="ep-btn-cancel">Cancel</a>
+                    <a href="{{ route('profile') }}" class="px-5 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-xs font-bold text-gray-300 hover:text-white transition">
+                        Cancel
+                    </a>
                 </div>
             </form>
         </div>
 
-    </div>
+    </main>
+
 </div>
 
-<!-- Cropper Modal -->
+<!-- Avatar Cropper Modal -->
 <div id="cropper-modal">
-    <div id="cropper-dialog" style="width:100%;max-width:720px;background:linear-gradient(180deg,#0b0b0b,#0f0f0f);border-radius:14px;padding:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 24px 80px rgba(0,0,0,0.6);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div style="font-weight:700;color:#fff;font-size:15px;">Adjust Photo</div>
-            <div style="display:flex;gap:8px;">
-                <button id="crop-remove" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Remove Photo</button>
-                <button id="crop-cancel" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:7px 12px;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">Cancel</button>
-                <button id="crop-apply" type="button" style="background:#0f172a;border:none;padding:7px 14px;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">Apply</button>
+    <div id="cropper-dialog" class="w-full max-w-xl bg-zinc-950 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center pb-2 border-b border-white/10">
+            <h3 class="font-bold text-white text-base">Adjust Photo</h3>
+            <div class="flex gap-2">
+                <button id="crop-remove" type="button" class="px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition">Remove</button>
+                <button id="crop-cancel" type="button" class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white text-xs font-bold transition">Cancel</button>
+                <button id="crop-apply" type="button" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md transition">Apply</button>
             </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-            <div id="crop-area">
+        <div class="flex flex-col items-center gap-4">
+            <div id="cropper-area">
                 <img id="crop-image" src="" alt="to crop">
-                <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80%;height:80%;border:2px dashed rgba(255,255,255,0.2);box-shadow:0 0 0 9999px rgba(0,0,0,0.35) inset;pointer-events:none;border-radius:8px"></div>
+                <div class="absolute inset-0 border-2 border-dashed border-white/30 shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] pointer-events-none rounded-xl"></div>
             </div>
-            <div style="display:flex;gap:10px;align-items:center;">
-                <span style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:600;">Zoom</span>
-                <input id="crop-zoom" type="range" min="0.5" max="3" step="0.01" value="1">
+            <div class="flex items-center gap-3 w-full max-w-xs justify-center text-xs text-gray-300">
+                <span class="font-bold">Zoom</span>
+                <input id="crop-zoom" type="range" min="0.5" max="3" step="0.01" value="1" class="w-full accent-blue-500 cursor-pointer">
             </div>
         </div>
     </div>
@@ -558,32 +309,25 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
     btn.addEventListener('click', function(){
         var input = document.getElementById(btn.getAttribute('data-target'));
         if(!input) return;
-        input.type = input.type === 'password' ? 'text' : 'password';
+        var icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            if(icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+        } else {
+            input.type = 'password';
+            if(icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+        }
     });
 });
 
-// Theme toggle
-(function(){
-    function getTheme(){ var m = document.cookie.match(/(?:^|; )theme=([^;]+)/); return m ? decodeURIComponent(m[1]) : 'dark'; }
-    function setTheme(theme){
-        document.documentElement.setAttribute('data-theme', theme);
-        document.cookie = 'theme=' + encodeURIComponent(theme) + '; path=/; max-age=31536000; SameSite=Lax';
-        var moon = document.getElementById('ep-moon'); var sun = document.getElementById('ep-sun');
-        if(moon && sun){ moon.style.display = theme === 'light' ? 'none' : 'block'; sun.style.display = theme === 'light' ? 'block' : 'none'; }
-    }
-    setTheme(getTheme());
-    var btn = document.getElementById('theme-toggle-ep');
-    if(btn) btn.addEventListener('click', function(){ setTheme(getTheme() === 'light' ? 'dark' : 'light'); });
-})();
-
-// Cropper
+// Cropper logic
 (function(){
     var changeBtn = document.getElementById('change-photo');
     var nativeInput = document.getElementById('photo');
     var preview = document.getElementById('photo-preview');
     var modal = document.getElementById('cropper-modal');
     var cropImage = document.getElementById('crop-image');
-    var cropArea = document.getElementById('crop-area');
+    var cropArea = document.getElementById('cropper-area');
     var zoom = document.getElementById('crop-zoom');
     var apply = document.getElementById('crop-apply');
     var cancel = document.getElementById('crop-cancel');
@@ -594,63 +338,73 @@ document.querySelectorAll('.ep-pw-toggle').forEach(function(btn){
         if(preview && preview.tagName === 'IMG') return preview;
         var img = document.createElement('img');
         img.id = 'photo-preview';
+        img.className = 'w-full h-full object-cover';
         img.alt = '';
         if(preview && preview.parentNode) preview.parentNode.replaceChild(img, preview);
         preview = img;
         return preview;
     }
 
-    function showModal(){ modal.style.display='flex'; requestAnimationFrame(function(){ modal.classList.add('open'); }); document.body.style.overflow='hidden'; }
-    function hideModal(){ modal.classList.remove('open'); setTimeout(function(){ modal.style.display='none'; document.body.style.overflow=''; }, 240); }
+    function showModal(){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
+    function hideModal(){ modal.style.display='none'; document.body.style.overflow=''; }
 
-    changeBtn.addEventListener('click', function(){ nativeInput.click(); });
+    if (changeBtn) changeBtn.addEventListener('click', function(){ nativeInput.click(); });
 
-    nativeInput.addEventListener('change', function(){
-        var f = this.files && this.files[0]; if(!f) return;
-        var reader = new FileReader();
-        reader.onload = function(e){
-            cropImage.src = e.target.result;
-            cropImage.onload = function(){ state.scale=1; state.x=0; state.y=0; updateTransform(); zoom.value=1; showModal(); };
-        };
-        reader.readAsDataURL(f);
-    });
+    if (nativeInput) {
+        nativeInput.addEventListener('change', function(){
+            var f = this.files && this.files[0]; if(!f) return;
+            var reader = new FileReader();
+            reader.onload = function(e){
+                cropImage.src = e.target.result;
+                cropImage.onload = function(){ state.scale=1; state.x=0; state.y=0; updateTransform(); zoom.value=1; showModal(); };
+            };
+            reader.readAsDataURL(f);
+        });
+    }
 
-    cropImage.addEventListener('pointerdown', function(e){ state.isDown=true; state.startX=e.clientX; state.startY=e.clientY; cropImage.setPointerCapture(e.pointerId); });
-    window.addEventListener('pointermove', function(e){ if(!state.isDown) return; state.x += e.clientX-state.startX; state.y += e.clientY-state.startY; state.startX=e.clientX; state.startY=e.clientY; updateTransform(); });
-    window.addEventListener('pointerup', function(){ state.isDown=false; });
-    zoom.addEventListener('input', function(){ state.scale=parseFloat(this.value); updateTransform(); });
-    function updateTransform(){ cropImage.style.transform='translate('+state.x+'px,'+state.y+'px) scale('+state.scale+')'; }
+    if (cropImage) {
+        cropImage.addEventListener('pointerdown', function(e){ state.isDown=true; state.startX=e.clientX; state.startY=e.clientY; cropImage.setPointerCapture(e.pointerId); });
+        window.addEventListener('pointermove', function(e){ if(!state.isDown) return; state.x += e.clientX-state.startX; state.y += e.clientY-state.startY; state.startX=e.clientX; state.startY=e.clientY; updateTransform(); });
+        window.addEventListener('pointerup', function(){ state.isDown=false; });
+    }
 
-    apply.addEventListener('click', function(){
-        var outSize = Math.min(800, Math.round(cropArea.clientWidth * (window.devicePixelRatio||1)));
-        var canvas = document.createElement('canvas'); canvas.width=outSize; canvas.height=outSize;
-        var ctx = canvas.getContext('2d');
-        var areaW=cropArea.clientWidth; var areaH=cropArea.clientHeight;
-        var iRW=cropImage.naturalWidth*state.scale; var iRH=cropImage.naturalHeight*state.scale;
-        var offX=(areaW/2)-(iRW/2)+state.x; var offY=(areaH/2)-(iRH/2)+state.y;
-        var srcX=Math.max(0,Math.round((-offX)/state.scale)); var srcY=Math.max(0,Math.round((-offY)/state.scale));
-        var srcW=Math.min(cropImage.naturalWidth-srcX,Math.round(areaW/state.scale));
-        var srcH=Math.min(cropImage.naturalHeight-srcY,Math.round(areaH/state.scale));
-        try{ ctx.fillStyle='#111'; ctx.fillRect(0,0,outSize,outSize); ctx.drawImage(cropImage,srcX,srcY,srcW,srcH,0,0,outSize,outSize); }catch(e){ alert('Failed to crop image'); hideModal(); return; }
-        canvas.toBlob(function(blob){
-            if(!blob){ alert('Failed to generate image'); hideModal(); return; }
-            var file = new File([blob],'profile.jpg',{type:'image/jpeg'});
-            var dt = new DataTransfer(); dt.items.add(file); nativeInput.files=dt.files;
-            ensurePreviewImage().src = URL.createObjectURL(file);
-            hideModal();
-        },'image/jpeg',0.9);
-    });
+    if (zoom) zoom.addEventListener('input', function(){ state.scale=parseFloat(this.value); updateTransform(); });
+    function updateTransform(){ if(cropImage) cropImage.style.transform='translate('+state.x+'px,'+state.y+'px) scale('+state.scale+')'; }
 
-    cancel.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
+    if (apply) {
+        apply.addEventListener('click', function(){
+            var outSize = Math.min(800, Math.round(cropArea.clientWidth * (window.devicePixelRatio||1)));
+            var canvas = document.createElement('canvas'); canvas.width=outSize; canvas.height=outSize;
+            var ctx = canvas.getContext('2d');
+            var areaW=cropArea.clientWidth; var areaH=cropArea.clientHeight;
+            var iRW=cropImage.naturalWidth*state.scale; var iRH=cropImage.naturalHeight*state.scale;
+            var offX=(areaW/2)-(iRW/2)+state.x; var offY=(areaH/2)-(iRH/2)+state.y;
+            var srcX=Math.max(0,Math.round((-offX)/state.scale)); var srcY=Math.max(0,Math.round((-offY)/state.scale));
+            var srcW=Math.min(cropImage.naturalWidth-srcX,Math.round(areaW/state.scale));
+            var srcH=Math.min(cropImage.naturalHeight-srcY,Math.round(areaH/state.scale));
+            try{ ctx.fillStyle='#111'; ctx.fillRect(0,0,outSize,outSize); ctx.drawImage(cropImage,srcX,srcY,srcW,srcH,0,0,outSize,outSize); }catch(e){ alert('Failed to crop image'); hideModal(); return; }
+            canvas.toBlob(function(blob){
+                if(!blob){ alert('Failed to generate image'); hideModal(); return; }
+                var file = new File([blob],'profile.jpg',{type:'image/jpeg'});
+                var dt = new DataTransfer(); dt.items.add(file); nativeInput.files=dt.files;
+                ensurePreviewImage().src = URL.createObjectURL(file);
+                hideModal();
+            },'image/jpeg',0.9);
+        });
+    }
 
-    rem.addEventListener('click', function(){
-        if(!confirm('Remove profile photo?')) return;
-        var f=document.createElement('form'); f.method='POST'; f.action='{{ route('profile.update') }}'; f.style.display='none';
-        var t=document.createElement('input'); t.type='hidden'; t.name='_token'; t.value='{{ csrf_token() }}'; f.appendChild(t);
-        var m=document.createElement('input'); m.type='hidden'; m.name='_method'; m.value='PATCH'; f.appendChild(m);
-        var r=document.createElement('input'); r.type='hidden'; r.name='remove_photo'; r.value='1'; f.appendChild(r);
-        document.body.appendChild(f); f.submit();
-    });
+    if (cancel) cancel.addEventListener('click', function(){ nativeInput.value=''; hideModal(); });
+
+    if (rem) {
+        rem.addEventListener('click', function(){
+            if(!confirm('Remove profile photo?')) return;
+            var f=document.createElement('form'); f.method='POST'; f.action='{{ route('profile.update') }}'; f.style.display='none';
+            var t=document.createElement('input'); t.type='hidden'; t.name='_token'; t.value='{{ csrf_token() }}'; f.appendChild(t);
+            var m=document.createElement('input'); m.type='hidden'; m.name='_method'; m.value='PATCH'; f.appendChild(m);
+            var r=document.createElement('input'); r.type='hidden'; r.name='remove_photo'; r.value='1'; f.appendChild(r);
+            document.body.appendChild(f); f.submit();
+        });
+    }
 })();
 </script>
 @endsection
