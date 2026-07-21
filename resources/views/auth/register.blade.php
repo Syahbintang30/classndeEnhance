@@ -22,533 +22,172 @@
             }
         }
     </script>
+    <style>
+        body { background-color: #08080a !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        .font-display { font-family: 'Bebas Neue', cursive !important; letter-spacing: 1px; }
+        body > nav { display: none !important; }
+    </style>
 @endpush
 
 @section('content')
-<div class="auth-page-v2">
+<div class="min-h-screen bg-[#08080a] text-white flex flex-col relative selection:bg-blue-600 selection:text-white overflow-x-hidden">
+    
+    {{-- Ambient Mesh Background Glows --}}
+    <div class="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+    {{-- LMS Floating Glass Pill Header --}}
     @include('layouts.lms_header')
 
-    <main class="auth-main-v2">
-        <section class="auth-card-v2" aria-label="Register form">
-            <div class="title-group-v2">
-                <div class="badge-v2">CLASSNDE PORTAL</div>
-                <h1 class="title-v2">Create <em>Account</em>.</h1>
+    {{-- Main 2-Column Split Screen --}}
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center relative z-10">
+        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            <!-- Left Column: Cinematic Brand Showcase (50-50 Split) -->
+            <div class="lg:col-span-7 relative hidden lg:block">
+                <div class="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[4/3] bg-zinc-950 group">
+                    <!-- Background image -->
+                    <img src="{{ asset('compro/img/ndehero.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80">
+                    
+                    <!-- Ambient Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+
+                    <!-- Floating Content inside Left Image -->
+                    <div class="absolute inset-0 p-10 flex flex-col justify-between">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider backdrop-blur-md self-start">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Join Mentorship Today</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h2 class="font-display text-5xl text-white tracking-wide uppercase leading-none">
+                                Start Your <br><span class="text-blue-500">Guitar Journey</span> Today
+                            </h2>
+                            <p class="text-gray-300 text-sm leading-relaxed max-w-md">
+                                Get instant access to 100+ video lessons, 1-on-1 coaching calls, and 5 interactive practice tools.
+                            </p>
+
+                            <!-- Mini Checklist -->
+                            <div class="pt-4 space-y-2 border-t border-white/10 text-xs text-gray-300 font-medium">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                    <span>Lifetime Access to Video Curriculum</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                    <span>1-on-1 Video Call Coaching With Nde</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                    <span>5 AI-Powered Practice Tools (Tuner, Metronome, Quiz)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            @if(session('status'))
-                <div class="alert-v2 success">{{ session('status') }}</div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert-v2 error">
-                    <ul>
-                        @foreach($errors->all() as $err)
-                            <li>{{ $err }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('register') }}" id="registerForm" class="auth-form-v2">
-                @csrf
-
-                <a href="{{ route('auth.google.redirect') }}{{ request()->query('package_id') ? '?package_id=' . request()->query('package_id') . '&package_qty=' . request()->query('package_qty', 1) : '' }}" class="btn-v2 btn-outline-v2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
-                        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
-                        <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
-                        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
-                    </svg>
-                    Sign Up with Google
-                </a>
-
-                <div class="divider-v2">
-                    <span>Or continue with email</span>
-                </div>
-
-                <div class="input-group-v2">
-                    <label for="register-name">Name</label>
-                    <div class="input-wrapper-v2">
-                        <input id="register-name" name="name" type="text" value="{{ old('name') }}" required class="input-field-v2 @error('name') input-error @enderror" placeholder="Enter your name">
+            <!-- Right Column: Glassmorphic Register Form -->
+            <div class="lg:col-span-5 w-full max-w-md mx-auto">
+                <div class="bg-zinc-950/70 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 shadow-2xl relative overflow-hidden space-y-6">
+                    
+                    <!-- Top Title -->
+                    <div class="text-center space-y-1.5">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-widest">
+                            New Account Registration
+                        </div>
+                        <h1 class="font-display text-4xl text-white tracking-wide uppercase">Create <span class="text-blue-500">Account</span></h1>
+                        <p class="text-gray-400 text-xs">Fill in your details to start learning guitar.</p>
                     </div>
-                </div>
 
-                <div class="input-group-v2">
-                    <label for="register-email">Email</label>
-                    <div class="input-wrapper-v2">
-                        <input id="register-email" name="email" type="email" value="{{ old('email') }}" required class="input-field-v2 @error('email') input-error @enderror" placeholder="Enter your email">
-                    </div>
-                </div>
+                    @if(session('status'))
+                        <div class="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl font-medium">{{ session('status') }}</div>
+                    @endif
 
-                <div class="input-group-v2">
-                    <label for="register-password">Password</label>
-                    <div class="input-wrapper-v2">
-                        <input id="register-password" name="password" type="password" required class="input-field-v2 @error('password') input-error @enderror" placeholder="Create password">
-                        <button type="button" class="icon-btn-v2" data-target="register-password" aria-label="Toggle password visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    @if($errors->any())
+                        <div class="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl font-medium space-y-1">
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Register Form -->
+                    <form method="POST" action="{{ route('register') }}" id="registerForm" class="space-y-4">
+                        @csrf
+
+                        <!-- Google Sign Up -->
+                        <a href="{{ route('auth.google.redirect') }}{{ request()->query('package_id') ? '?package_id=' . request()->query('package_id') . '&package_qty=' . request()->query('package_qty', 1) : '' }}" class="w-full py-3 px-4 bg-zinc-900 border border-white/10 hover:border-white/20 rounded-xl text-xs font-bold text-gray-200 hover:text-white transition flex items-center justify-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+                                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+                                <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
+                                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+                            </svg>
+                            <span>Sign Up with Google</span>
+                        </a>
+
+                        <div class="flex items-center gap-3 text-[11px] text-gray-500 my-2">
+                            <div class="h-px bg-white/10 flex-1"></div>
+                            <span>Or continue with email</span>
+                            <div class="h-px bg-white/10 flex-1"></div>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="space-y-1.5">
+                            <label for="register-name" class="text-xs font-bold text-gray-300">Full Name</label>
+                            <input id="register-name" name="name" type="text" value="{{ old('name') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter your full name">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1.5">
+                            <label for="register-email" class="text-xs font-bold text-gray-300">Email Address</label>
+                            <input id="register-email" name="email" type="email" value="{{ old('email') }}" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter your email">
+                        </div>
+
+                        <!-- Password -->
+                        <div class="space-y-1.5" x-data="{ showPass: false }">
+                            <label for="register-password" class="text-xs font-bold text-gray-300">Password</label>
+                            <div class="relative flex items-center">
+                                <input id="register-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10" placeholder="Create password">
+                                <button type="button" @click="showPass = !showPass" class="absolute right-3 text-gray-400 hover:text-white transition">
+                                    <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="space-y-1.5" x-data="{ showPassConf: false }">
+                            <label for="register-password-confirmation" class="text-xs font-bold text-gray-300">Confirm Password</label>
+                            <div class="relative flex items-center">
+                                <input id="register-password-confirmation" name="password_confirmation" :type="showPassConf ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10" placeholder="Repeat password">
+                                <button type="button" @click="showPassConf = !showPassConf" class="absolute right-3 text-gray-400 hover:text-white transition">
+                                    <i class="fa-solid" :class="showPassConf ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="package_id" value="{{ request()->query('package_id') }}">
+                        <input type="hidden" name="package_qty" value="{{ request()->query('package_qty', 1) }}">
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-display text-xl tracking-wider shadow-lg shadow-blue-600/30 transition hover:scale-[1.02] cursor-pointer">
+                            CREATE ACCOUNT
                         </button>
-                    </div>
-                </div>
+                    </form>
 
-                <div class="input-group-v2">
-                    <label for="register-password-confirmation">Confirm Password</label>
-                    <div class="input-wrapper-v2">
-                        <input id="register-password-confirmation" name="password_confirmation" type="password" required class="input-field-v2" placeholder="Repeat password">
-                        <button type="button" class="icon-btn-v2" data-target="register-password-confirmation" aria-label="Toggle password visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
+                    <!-- Footer -->
+                    <div class="text-center text-xs text-gray-400 pt-2 border-t border-white/5">
+                        Already have an account? <a href="{{ route('login') }}" class="text-blue-400 font-bold hover:underline">Sign in here</a>
                     </div>
-                </div>
-                <input type="hidden" name="package_id" value="{{ request()->query('package_id') }}">
-                <input type="hidden" name="package_qty" value="{{ request()->query('package_qty', 1) }}">
-                <button type="submit" class="btn-v2 btn-primary-v2">Create Account</button>
-            </form>
 
-            <div class="auth-footer-v2">
-                Already have an account? <a href="{{ route('login') }}">Sign in here</a>
+                </div>
             </div>
-        </section>
+
+        </div>
     </main>
+
 </div>
-
-<style>
-    :root {
-        --bg-base: #0A0A0A;
-        --text-main: #ffffff;
-        --text-muted: #a1a1aa;
-        --border-color: rgba(255, 255, 255, 0.15);
-        --accent-white: #ffffff;
-        --accent-black: #000000;
-        --card-bg: rgba(10, 10, 10, 0.4);
-        --card-border: rgba(255, 255, 255, 0.08);
-        --badge-bg: rgba(255, 255, 255, 0.05);
-        --badge-border: rgba(255, 255, 255, 0.15);
-        --badge-text: #d4d4d8;
-        --field-bg: rgba(0, 0, 0, 0.4);
-        --field-bg-focus: rgba(0, 0, 0, 0.6);
-        --field-placeholder: #71717a;
-        --link-hover: #ffffff;
-    }
-
-    :root[data-theme="light"] {
-        --bg-base: #FAFAFA;
-        --text-main: #1b1b1b;
-        --text-muted: #6d6d6d;
-        --border-color: rgba(15, 15, 15, 0.14);
-        --accent-white: #111111;
-        --accent-black: #ffffff;
-        --card-bg: rgba(255, 255, 255, 0.75);
-        --card-border: rgba(15, 15, 15, 0.08);
-        --badge-bg: rgba(15, 15, 15, 0.06);
-        --badge-border: rgba(15, 15, 15, 0.12);
-        --badge-text: #2b2b2b;
-        --field-bg: rgba(255, 255, 255, 0.8);
-        --field-bg-focus: rgba(255, 255, 255, 0.95);
-        --field-placeholder: #8a8a8a;
-        --link-hover: #111111;
-    }
-
-    .auth-page-v2 {
-        background-color: var(--bg-base);
-        background-image:
-            radial-gradient(circle at top left, rgba(3, 3, 3, 0.72) 0%, rgba(3, 3, 3, 0.42) 18%, rgba(3, 3, 3, 0.12) 48%, rgba(3, 3, 3, 0) 72%),
-            linear-gradient(to left, rgba(3, 3, 3, 0.18) 0%, rgba(3, 3, 3, 0.36) 38%, rgba(3, 3, 3, 0.55) 100%),
-            url('{{ asset('compro/img/ndehero.webp') }}');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        color: var(--text-main);
-        font-family: 'Inter', sans-serif;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .auth-header-v2 {
-        padding: 24px 6%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: relative;
-        z-index: 10;
-    }
-
-    .brand-logo-v2 img {
-        height: 52px;
-        width: auto;
-        display: block;
-    }
-
-    .brand-logo-v2 {
-        display: inline-flex;
-        align-items: center;
-        line-height: 0;
-        flex-shrink: 0;
-        text-decoration: none;
-    }
-
-    .brand-logo-dark { display: block; }
-    .brand-logo-light { display: none; }
-    :root[data-theme="light"] .brand-logo-dark { display: none; }
-    :root[data-theme="light"] .brand-logo-light { display: block; }
-
-    .auth-nav-v2 {
-        display: flex;
-        gap: 24px;
-        align-items: center;
-    }
-
-    .auth-nav-v2 a {
-        color: rgba(255, 255, 255, 0.92);
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: color 0.2s;
-    }
-
-    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2) {
-        color: rgba(17, 17, 17, 0.84);
-    }
-
-    :root[data-theme="light"] .auth-nav-v2 a:not(.btn-nav-v2):hover {
-        color: #111111;
-    }
-
-    .auth-nav-v2 a:hover:not(.btn-nav-v2) {
-        color: var(--link-hover);
-    }
-
-    .btn-nav-v2 {
-        background: var(--accent-white);
-        color: var(--accent-black) !important;
-        padding: 8px 16px;
-        border-radius: 999px;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-
-    .auth-main-v2 {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding: 20px 8%;
-        position: relative;
-        z-index: 10;
-    }
-
-    .auth-card-v2 {
-        width: 100%;
-        max-width: 440px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: var(--card-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--card-border);
-        border-radius: 24px;
-        padding: 48px 40px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-    }
-
-    .title-group-v2 {
-        text-align: center;
-        margin-bottom: 32px;
-        width: 100%;
-    }
-
-    .badge-v2 {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 16px;
-        border: 1px solid var(--badge-border);
-        border-radius: 999px;
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: var(--badge-text);
-        margin-bottom: 24px;
-        background: var(--badge-bg);
-    }
-
-    .badge-v2::before {
-        content: '';
-        display: block;
-        width: 6px;
-        height: 6px;
-        background: var(--badge-text);
-        border-radius: 50%;
-    }
-
-    .title-v2 {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3.8rem;
-        font-weight: 400;
-        line-height: 1;
-        letter-spacing: 1.5px;
-        color: var(--text-main);
-        margin: 0;
-        text-transform: uppercase;
-    }
-
-    .title-v2 em { font-style: normal; color: var(--text-muted); }
-
-    .alert-v2 {
-        width: 100%;
-        border-radius: 12px;
-        padding: 10px 12px;
-        font-size: 0.9rem;
-        margin-bottom: 16px;
-        border: 1px solid transparent;
-    }
-
-    .alert-v2 ul {
-        margin: 0;
-        padding-left: 18px;
-    }
-
-    .alert-v2.success {
-        background: rgba(16, 185, 129, 0.2);
-        border-color: rgba(16, 185, 129, 0.45);
-        color: #d1fae5;
-    }
-
-    .alert-v2.error {
-        background: rgba(239, 68, 68, 0.2);
-        border-color: rgba(248, 113, 113, 0.45);
-        color: #fecaca;
-    }
-        :root[data-theme="light"] .alert-v2.success { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.28); color: #0f5132; }
-        :root[data-theme="light"] .alert-v2.error { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.32); color: #7f1d1d; }
-
-    .auth-form-v2 {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .input-group-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .input-group-v2 label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 500;
-    }
-
-    .input-wrapper-v2 {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .input-field-v2 {
-        width: 100%;
-        background: var(--field-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 14px 16px;
-        color: var(--text-main);
-        font-size: 0.95rem;
-        font-family: inherit;
-        transition: all 0.2s ease;
-    }
-
-    .input-field-v2::placeholder {
-        color: var(--field-placeholder);
-    }
-
-    .input-field-v2:focus {
-        outline: none;
-        border-color: #3b82f6;
-        background: var(--field-bg-focus);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    .input-field-v2.input-error {
-        border-color: rgba(248, 113, 113, 0.8);
-    }
-
-    .icon-btn-v2 {
-        position: absolute;
-        right: 16px;
-        background: none;
-        border: none;
-        color: var(--field-placeholder);
-        cursor: pointer;
-        padding: 0;
-        display: flex;
-    }
-
-    .icon-btn-v2:hover {
-        color: var(--text-main);
-    }
-
-    .btn-v2 {
-        width: 100%;
-        padding: 14px 20px;
-        border-radius: 1rem;
-        font-weight: 600;
-        font-size: 0.95rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        transition: all 0.3s ease;
-        font-family: inherit;
-        border: none;
-        text-decoration: none;
-    }
-
-    .btn-primary-v2 { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #ffffff; margin-top: -4px; font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; font-size: 1.25rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
-    .btn-primary-v2:hover { background: linear-gradient(135deg, #3b82f6, #6366f1); transform: translateY(-2px); box-shadow: 0 14px 35px rgba(37, 99, 235, 0.4); }
-
-    .btn-outline-v2 {
-        background: transparent;
-        color: var(--text-main);
-        border: 1px solid var(--border-color);
-    }
-
-    .btn-outline-v2:hover {
-        border-color: var(--border-color);
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .divider-v2 {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        color: var(--field-placeholder);
-        font-size: 0.8rem;
-        margin: 2px 0;
-    }
-
-    .divider-v2::before,
-    .divider-v2::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .divider-v2 span {
-        padding: 0 16px;
-    }
-
-    .auth-footer-v2 {
-        margin-top: 30px;
-        text-align: center;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-    }
-
-    .auth-footer-v2 a {
-        color: var(--text-main);
-        text-decoration: none;
-        font-weight: 500;
-        border-bottom: 1px solid transparent;
-        padding-bottom: 2px;
-        transition: border-color 0.2s;
-    }
-
-    .auth-footer-v2 a:hover {
-        border-color: var(--text-main);
-    }
-
-    :root[data-theme="light"] .auth-page-v2 {
-        background-image:
-            linear-gradient(to right, rgba(246, 243, 238, 0.1) 0%, rgba(246, 243, 238, 0.35) 60%, rgba(246, 243, 238, 0.55) 100%),
-            url('{{ asset('compro/img/ndehero.webp') }}');
-    }
-
-    :root[data-theme="light"] .auth-nav-v2 a {
-        color: var(--text-muted);
-    }
-
-    :root[data-theme="light"] .auth-nav-v2 a:hover:not(.btn-nav-v2) {
-        color: var(--text-main);
-    }
-
-    :root[data-theme="light"] .title-v2 { color: var(--text-main); }
-    :root[data-theme="light"] .title-v2 em { color: var(--text-muted); }
-
-    :root[data-theme="light"] .badge-v2 {
-        color: var(--badge-text);
-        background: var(--badge-bg);
-        border-color: var(--badge-border);
-    }
-
-    :root[data-theme="light"] .badge-v2::before { background: var(--badge-text); }
-
-    :root[data-theme="light"] .input-group-v2 label,
-    :root[data-theme="light"] .meta-row-v2,
-    :root[data-theme="light"] .divider-v2,
-    :root[data-theme="light"] .auth-footer-v2 { color: var(--text-muted); }
-
-    :root[data-theme="light"] .input-field-v2 {
-        background: var(--field-bg);
-        color: var(--text-main);
-        border-color: var(--border-color);
-    }
-
-    :root[data-theme="light"] .input-field-v2::placeholder { color: var(--field-placeholder); }
-    :root[data-theme="light"] .input-field-v2:focus {
-        background: var(--field-bg-focus);
-        border-color: rgba(15, 15, 15, 0.2);
-    }
-
-    :root[data-theme="light"] .icon-btn-v2 { color: var(--field-placeholder); }
-    :root[data-theme="light"] .icon-btn-v2:hover { color: var(--text-main); }
-
-    :root[data-theme="light"] .btn-outline-v2 {
-        color: var(--text-main);
-        border-color: var(--border-color);
-        background: rgba(255, 255, 255, 0.72);
-    }
-
-    :root[data-theme="light"] .btn-outline-v2:hover { background: rgba(15, 15, 15, 0.04); }
-
-    :root[data-theme="light"] .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); }
-    :root[data-theme="light"] .btn-primary-v2:hover { background: #4DA6FF; color: #FFFFFF; box-shadow: 0 12px 40px rgba(77,166,255,.25); }
-
-    @media (max-width: 900px) {
-        .auth-page-v2 {
-            background-image:
-                linear-gradient(to bottom, rgba(3, 3, 3, 0.6) 0%, rgba(3, 3, 3, 0.95) 100%),
-                url('{{ asset('compro/img/ndehero.webp') }}');
-        }
-        .auth-main-v2 {
-            justify-content: center;
-            padding: 40px 20px;
-        }
-    }
-
-    @media (max-width: 600px) {
-        .auth-header-v2 { padding: 20px; }
-        .brand-logo-v2 img { height: 44px; }
-        .auth-card-v2 { padding: 40px 24px; }
-        .title-v2 { font-size: 2.8rem; }
-        .auth-nav-v2 a:first-child { display: none; }
-    }
-</style>
-
-<script>
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest && e.target.closest('.icon-btn-v2');
-        if (!btn) return;
-        var target = btn.getAttribute('data-target');
-        var input = document.getElementById(target);
-        if (!input) return;
-        input.type = input.type === 'password' ? 'text' : 'password';
-    });
-</script>
 @endsection
