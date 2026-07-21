@@ -43,7 +43,7 @@
     
     <!-- Full Screen Cinematic Background -->
     <div class="absolute inset-0 z-0 pointer-events-none">
-        <img src="{{ asset('compro/img/nde2.webp') }}" alt="Background" class="w-full h-full object-cover opacity-30 scale-105" style="object-position: center 20%; filter: contrast(1.1) brightness(0.7);">
+        <img src="{{ asset('compro/img/ndehero.webp') }}" alt="Background" class="w-full h-full object-cover opacity-30 scale-105" style="object-position: center 20%; filter: contrast(1.1) brightness(0.7);">
         <div class="absolute inset-0 bg-gradient-to-b from-[#08080a]/90 via-[#08080a]/50 to-[#08080a]"></div>
     </div>
     
