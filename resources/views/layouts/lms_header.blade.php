@@ -27,10 +27,10 @@
     <!-- Center: Floating Glass Pill Navigation (100% Dead-Centered) -->
     <div class="hidden md:flex items-center justify-center flex-1">
         <nav class="flex items-center gap-1 bg-zinc-950/70 border border-white/10 backdrop-blur-xl rounded-full p-1.5 shadow-2xl">
-            @if(request()->routeIs('compro') && !auth()->check())
-                <a href="#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
-                <a href="#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
-                <a href="#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
+            @if(!auth()->check() || request()->routeIs('compro', 'login', 'register', 'password.*'))
+                <a href="{{ route('compro') }}#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
+                <a href="{{ route('compro') }}#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
+                <a href="{{ route('compro') }}#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
             @else
                 <a href="{{ route('lms.dashboard') }}" class="{{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-[11px]"></i>
@@ -142,22 +142,44 @@
             <button @click="mobileMenuOpen = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
-        <a href="{{ route('lms.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-            <i class="fa-solid fa-chart-pie"></i> Dashboard
-        </a>
-        <a href="{{ route('kelas') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-            <i class="fa-solid fa-book-open"></i> Lessons
-        </a>
-        <a href="{{ route('coaching.upcoming') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-            <i class="fa-solid fa-user-ninja"></i> 1-on-1 Coaching
-        </a>
-        <a href="{{ route('practice.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-            <i class="fa-solid fa-toolbox"></i> Practice Tools
-        </a>
-        @if(auth()->check() && auth()->user()->hasIntermediateAccess())
-        <a href="{{ route('song.tutorial.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-            <i class="fa-solid fa-music"></i> Song Library
-        </a>
+        @if(!auth()->check() || request()->routeIs('compro', 'login', 'register', 'password.*'))
+            <a href="{{ route('compro') }}#hero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+            <a href="{{ route('compro') }}#tools" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
+                <i class="fa-solid fa-toolbox"></i> Practice Tools
+            </a>
+            <a href="{{ route('compro') }}#packages" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
+                <i class="fa-solid fa-tags"></i> Packages & Pricing
+            </a>
+            @if(!auth()->check())
+                <div class="border-t border-white/10 my-2 pt-4 space-y-2">
+                    <a href="{{ route('login') }}" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-gray-300 hover:text-white bg-white/5">
+                        Log in
+                    </a>
+                    <a href="{{ url('/registerclass') }}" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600">
+                        Get Access
+                    </a>
+                </div>
+            @endif
+        @else
+            <a href="{{ route('lms.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{{ route('kelas') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
+                <i class="fa-solid fa-book-open"></i> Lessons
+            </a>
+            <a href="{{ route('coaching.upcoming') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
+                <i class="fa-solid fa-user-ninja"></i> 1-on-1 Coaching
+            </a>
+            <a href="{{ route('practice.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
+                <i class="fa-solid fa-toolbox"></i> Practice Tools
+            </a>
+            @if(auth()->check() && auth()->user()->hasIntermediateAccess())
+            <a href="{{ route('song.tutorial.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
+                <i class="fa-solid fa-music"></i> Song Library
+            </a>
+            @endif
         @endif
     </div>
 </div>
