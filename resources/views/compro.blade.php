@@ -473,11 +473,24 @@
                     </div>
 
                     <div class="pt-8">
-                        <a href="{{ $isLoggedIn ? route('kelas.buy',$lessonId).'?package_id='.$pkg->id.'&package_qty=1' : route('register').'?package_id='.$pkg->id.'&package_qty=1' }}"
-                           class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-600/30 hover:scale-105' : 'bg-zinc-900 border border-white/10 hover:bg-white/5 text-white' }}">
-                            <span>Get Enrolled Now</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </a>
+                        @php
+                            $isCoachingPkg = ($pkg->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket');
+                            $userHasLmsAccess = $isLoggedIn && auth()->user()->hasLmsAccess();
+                        @endphp
+
+                        @if($userHasLmsAccess && !$isCoachingPkg)
+                            <a href="{{ route('lms.dashboard') }}"
+                               class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30">
+                                <span>Akses Kelas Anda</span>
+                                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+                            </a>
+                        @else
+                            <a href="{{ $isLoggedIn ? route('kelas.buy',$lessonId).'?package_id='.$pkg->id.'&package_qty=1' : route('register').'?package_id='.$pkg->id.'&package_qty=1' }}"
+                               class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-600/30 hover:scale-105' : 'bg-zinc-900 border border-white/10 hover:bg-white/5 text-white' }}">
+                                <span>Get Enrolled Now</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </a>
+                        @endif
                     </div>
 
                 </div>

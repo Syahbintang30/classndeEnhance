@@ -316,6 +316,18 @@ class KelasController extends Controller
         // determine package from request or user's existing package
         $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
         $package = $packageId ? Package::find($packageId) : null;
+        $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+
+        if ($user) {
+            if (($user->is_admin ?? false) || ($user->is_superadmin ?? false)) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            $isCoachingTicket = $package && ($package->slug === $coachingSlug);
+            if ($user->hasLmsAccess() && !$isCoachingTicket) {
+                return redirect()->route('lms.dashboard')->with('status', 'Anda sudah memiliki akses kelas! Selamat belajar.');
+            }
+        }
 
         // package price is canonical; coaching-ticket uses conditional member/non-member pricing
         $price = (int) ($package->price ?? 0);
@@ -379,6 +391,18 @@ class KelasController extends Controller
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
+        if ($user) {
+            if (($user->is_admin ?? false) || ($user->is_superadmin ?? false)) {
+                return redirect()->route('admin.dashboard');
+            }
+            $coachingSlug = config('coaching.coaching_package_slug', 'coaching-ticket');
+            $packageId = request()->input('package_id') ?: ($user->package_id ?? null);
+            $packageCheck = $packageId ? Package::find($packageId) : null;
+            $isCoachingTicket = $packageCheck && ($packageCheck->slug === $coachingSlug);
+            if ($user->hasLmsAccess() && !$isCoachingTicket) {
+                return redirect()->route('lms.dashboard')->with('status', 'Anda sudah memiliki akses kelas! Selamat belajar.');
+            }
+        }
         $packages = Package::orderBy('price')->get();
 
         // Prefer restoring an existing in-flight order by order_id (pending/failed) so amounts are accurate
