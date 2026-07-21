@@ -17,6 +17,15 @@
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                         display: ['"Bebas Neue"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float-slow': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
                     }
                 }
             }
@@ -30,154 +39,127 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-[#08080a] text-white flex flex-col relative selection:bg-blue-600 selection:text-white overflow-x-hidden">
+<div class="min-h-screen bg-[#08080a] flex flex-col relative selection:bg-blue-600 selection:text-white overflow-hidden">
+    
+    <!-- Full Screen Cinematic Background -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <img src="{{ asset('compro/img/nde2.webp') }}" alt="Background" class="w-full h-full object-cover opacity-30 scale-105" style="object-position: center 20%; filter: contrast(1.1) brightness(0.7);">
+        <div class="absolute inset-0 bg-gradient-to-b from-[#08080a]/90 via-[#08080a]/50 to-[#08080a]"></div>
+    </div>
     
     {{-- Ambient Mesh Background Glows --}}
-    <div class="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
 
     {{-- LMS Floating Glass Pill Header --}}
-    @include('layouts.lms_header')
+    <div class="relative z-20">
+        @include('layouts.lms_header')
+    </div>
 
-    {{-- Main 2-Column Split Screen --}}
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center relative z-10">
-        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            <!-- Left Column: Cinematic Brand Showcase (50-50 Split) -->
-            <div class="lg:col-span-7 relative hidden lg:block">
-                <div class="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[4/3] bg-zinc-950 group">
-                    <!-- Background image -->
-                    <img src="{{ asset('compro/img/nde2.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80">
-                    
-                    <!-- Ambient Gradient Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
-
-                    <!-- Floating Content inside Left Image -->
-                    <div class="absolute inset-0 p-10 flex flex-col justify-between">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider backdrop-blur-md self-start">
-                            <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-                            <span>Student Portal</span>
-                        </div>
-
-                        <div class="space-y-4">
-                            <h2 class="font-display text-5xl text-white tracking-wide uppercase leading-none">
-                                Master Guitar <br><span class="text-blue-500">10x Faster</span> With Nde
-                            </h2>
-                            <p class="text-gray-300 text-sm leading-relaxed max-w-md">
-                                Access your 100+ HD video lessons, 1-on-1 live coaching calls, and 5 AI practice tools in one portal.
-                            </p>
-
-                            <!-- Mini Review Card -->
-                            <div class="pt-4 flex items-center gap-4 border-t border-white/10">
-                                <div class="flex -space-x-2">
-                                    <img src="https://i.pravatar.cc/100?img=12" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                                    <img src="https://i.pravatar.cc/100?img=33" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                                    <img src="https://i.pravatar.cc/100?img=47" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                                </div>
-                                <div class="text-xs">
-                                    <div class="text-amber-400 font-bold">★★★★★ <span class="text-white ml-1">4.9/5 Rating</span></div>
-                                    <div class="text-gray-400">Trusted by 1,200+ active students</div>
-                                </div>
-                            </div>
-                        </div>
+    {{-- Main Centered Card Container --}}
+    <main class="flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center relative z-10 min-h-[calc(100vh-100px)]">
+        
+        <!-- Centered Glassmorphic Form Card -->
+        <div class="w-full max-w-[420px] mx-auto animate-float-slow" style="animation-duration: 8s;">
+            <div class="bg-zinc-950/60 border border-white/10 backdrop-blur-3xl rounded-[2rem] p-7 sm:p-8 shadow-[0_0_60px_-15px_rgba(59,130,246,0.3)] relative overflow-hidden space-y-5">
+                
+                <!-- Inner Glow top border -->
+                <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+                
+                <!-- Top Title -->
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-inner mb-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(59,130,246,1)]"></span>
+                        Student Portal
                     </div>
+                    <h1 class="font-display text-4xl text-white tracking-wide uppercase leading-none">Welcome <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Back</span></h1>
+                    <p class="text-gray-400 text-xs">Enter your credentials to access your dashboard.</p>
                 </div>
-            </div>
 
-            <!-- Right Column: Glassmorphic Login Form -->
-            <div class="lg:col-span-5 w-full max-w-md mx-auto">
-                <div class="bg-zinc-950/70 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 shadow-2xl relative overflow-hidden space-y-6">
-                    
-                    <!-- Top Title -->
-                    <div class="text-center space-y-1.5">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-widest">
-                            ClassNde Portal
-                        </div>
-                        <h1 class="font-display text-4xl text-white tracking-wide uppercase">Welcome <span class="text-blue-500">Back</span></h1>
-                        <p class="text-gray-400 text-xs">Enter your credentials to access your dashboard.</p>
+                @if(session('status'))
+                    <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl font-medium text-center">{{ session('status') }}</div>
+                @endif
+
+                @if(session('error') || $errors->any())
+                    <div class="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl font-medium space-y-1">
+                        @if(session('error')) <div>{{ session('error') }}</div> @endif
+                        @if($errors->any())
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $err)
+                                    @if(str_contains(strtolower($err), 'these credentials do not match')) @continue @endif
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                @endif
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                    @csrf
+
+                    <!-- Google Sign In -->
+                    <a href="{{ route('auth.google.redirect') }}" class="w-full py-3 px-4 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 rounded-xl text-[13px] font-bold text-white transition flex items-center justify-center gap-3 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                            <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+                            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+                            <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
+                            <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+                        </svg>
+                        <span>Sign In with Google</span>
+                    </a>
+
+                    <div class="flex items-center gap-3 text-[11px] text-gray-500 my-2 uppercase font-bold tracking-widest">
+                        <div class="h-px bg-white/10 flex-1"></div>
+                        <span>Or</span>
+                        <div class="h-px bg-white/10 flex-1"></div>
                     </div>
 
-                    @if(session('status'))
-                        <div class="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl font-medium">{{ session('status') }}</div>
-                    @endif
+                    <!-- Email -->
+                    <div class="space-y-1.5">
+                        <label for="login-email" class="text-[12px] font-bold text-gray-300">Email Address</label>
+                        <input id="login-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="Enter your email">
+                    </div>
 
-                    @if(session('error') || $errors->any())
-                        <div class="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl font-medium space-y-1">
-                            @if(session('error')) <div>{{ session('error') }}</div> @endif
-                            @if($errors->any())
-                                <ul class="list-disc list-inside">
-                                    @foreach($errors->all() as $err)
-                                        @if(str_contains(strtolower($err), 'these credentials do not match')) @continue @endif
-                                        <li>{{ $err }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-                    @endif
-
-                    <!-- Login Form -->
-                    <form method="POST" action="{{ route('login') }}" class="space-y-4">
-                        @csrf
-
-                        <!-- Google Sign In -->
-                        <a href="{{ route('auth.google.redirect') }}" class="w-full py-3 px-4 bg-zinc-900 border border-white/10 hover:border-white/20 rounded-xl text-xs font-bold text-gray-200 hover:text-white transition flex items-center justify-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
-                                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
-                                <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
-                                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
-                            </svg>
-                            <span>Sign In with Google</span>
-                        </a>
-
-                        <div class="flex items-center gap-3 text-[11px] text-gray-500 my-2">
-                            <div class="h-px bg-white/10 flex-1"></div>
-                            <span>Or continue with email</span>
-                            <div class="h-px bg-white/10 flex-1"></div>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="space-y-1.5">
-                            <label for="login-email" class="text-xs font-bold text-gray-300">Email Address</label>
-                            <input id="login-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter your email">
-                        </div>
-
-                        <!-- Password -->
-                        <div class="space-y-1.5" x-data="{ showPass: false }">
-                            <label for="login-password" class="text-xs font-bold text-gray-300">Password</label>
-                            <div class="relative flex items-center">
-                                <input id="login-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10" placeholder="Enter your password">
-                                <button type="button" @click="showPass = !showPass" class="absolute right-3 text-gray-400 hover:text-white transition">
-                                    <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Meta Row -->
-                        <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
-                            <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
-                                <input type="checkbox" name="remember" class="rounded bg-zinc-900 border-white/10 text-blue-600 focus:ring-0">
-                                <span>Remember me</span>
-                            </label>
+                    <!-- Password -->
+                    <div class="space-y-1.5" x-data="{ showPass: false }">
+                        <div class="flex justify-between items-center">
+                            <label for="login-password" class="text-[12px] font-bold text-gray-300">Password</label>
                             @if(Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="text-blue-400 hover:underline">Forgot password?</a>
+                                <a href="{{ route('password.request') }}" class="text-[11px] text-blue-400 hover:text-blue-300 transition">Forgot?</a>
                             @endif
                         </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-display text-xl tracking-wider shadow-lg shadow-blue-600/30 transition hover:scale-[1.02] cursor-pointer">
-                            SIGN IN
-                        </button>
-                    </form>
-
-                    <!-- Footer -->
-                    <div class="text-center text-xs text-gray-400 pt-2 border-t border-white/5">
-                        Don’t have an account yet? <a href="{{ route('register') }}" class="text-blue-400 font-bold hover:underline">Sign up here</a>
+                        <div class="relative flex items-center">
+                            <input id="login-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-11 backdrop-blur-md" placeholder="Enter your password">
+                            <button type="button" @click="showPass = !showPass" class="absolute right-3.5 text-gray-400 hover:text-white transition text-sm">
+                                <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
                     </div>
 
-                </div>
-            </div>
+                    <!-- Meta Row -->
+                    <div class="flex items-center text-[12px] text-gray-400 pt-1">
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition group">
+                            <div class="relative flex items-center justify-center w-4 h-4 rounded border border-white/20 bg-zinc-900/60 group-hover:border-blue-500 transition">
+                                <input type="checkbox" name="remember" class="absolute opacity-0 w-full h-full cursor-pointer peer">
+                                <i class="fa-solid fa-check text-[10px] text-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <span>Remember me for 30 days</span>
+                        </label>
+                    </div>
 
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-display text-xl tracking-widest shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] cursor-pointer mt-2">
+                        SIGN IN
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="text-center text-[13px] text-gray-400 pt-3 border-t border-white/10">
+                    Don’t have an account yet? <a href="{{ route('register') }}" class="text-blue-400 font-bold hover:text-blue-300 transition">Sign up now</a>
+                </div>
+
+            </div>
         </div>
     </main>
 
