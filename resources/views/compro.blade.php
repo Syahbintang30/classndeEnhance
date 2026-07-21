@@ -188,6 +188,77 @@
         </div>
     </section>
 
+    <!-- ─── 3 CORE PILLARS SHOWCASE SECTION ───────────────────────────── -->
+    <section id="features" class="py-20 px-4 lg:px-8 max-w-7xl mx-auto relative z-10 space-y-12">
+        <div class="text-center space-y-3">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">The Ultimate Learning Ecosystem</span>
+            <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
+                3 Fitur Utama <span class="text-blue-500">Nde Guitar Pro</span>
+            </h2>
+            <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
+                Pengalaman belajar gitar paling efektif yang menggabungkan fleksibilitas video materi, bimbingan tatap muka, dan kurikulum lagu.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Pillar 1: Video Lessons 24/7 -->
+            <div class="glass-panel p-8 space-y-5 border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 relative overflow-hidden group">
+                <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-laptop-code"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Pilar 1 • Lifetime Access</span>
+                    <h3 class="font-display text-3xl text-white">Video Lessons 24/7</h3>
+                </div>
+                <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    Akses materi video HD berstruktur yang dapat Anda pelajari <strong class="text-white">kapan saja dan di mana saja</strong> tanpa batasan waktu melalui semua perangkat.
+                </p>
+                <div class="pt-2 text-xs font-bold text-blue-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    <span>Tonton Ulang Tanpa Batas</span>
+                </div>
+            </div>
+
+            <!-- Pillar 2: 1-on-1 Video Call Coaching -->
+            <div class="glass-panel p-8 space-y-5 border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 relative overflow-hidden group">
+                <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-video"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Pilar 2 • On-Website Video Call</span>
+                    <h3 class="font-display text-3xl text-white">1-on-1 Live Coaching</h3>
+                </div>
+                <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    Bimbingan tatap muka <strong class="text-white">Video Call langsung di dalam website</strong> bersama Nde untuk evaluasi posisi jari, ritme, dan koreksi kesalahan secara *real-time*.
+                </p>
+                <div class="pt-2 text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    <span>Sistem Booking Jadwal Terintegrasi</span>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Exclusive Song Tutorial -->
+            <div class="glass-panel p-8 space-y-5 border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-300 relative overflow-hidden group">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-compact-disc"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Pilar 3 • Intermediate Tier</span>
+                    <h3 class="font-display text-3xl text-white">Song Tutorial Library</h3>
+                </div>
+                <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    Perpustakaan bedah lagu khusus <strong class="text-white">Intermediate Student</strong> untuk menguasai aransemen lagu populer, teknik petikan, dan progresi kunci tingkat lanjut.
+                </p>
+                <div class="pt-2 text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    <span>Pembaruan Modul Lagu Rutin</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <!-- ─── PROBLEM VS SOLUTION (THE SALES COMPARISON) ───────────────────── -->
     <section class="py-20 px-4 lg:px-8 max-w-6xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
