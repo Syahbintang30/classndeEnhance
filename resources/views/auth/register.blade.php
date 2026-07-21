@@ -5,22 +5,12 @@
 @push('head')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 @endpush
 
 @section('content')
 <div class="auth-page-v2">
-    <header class="auth-header-v2">
-        <a href="{{ route('compro') }}" class="brand-logo-v2" aria-label="ClassNDE home">
-            <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE Logo" class="brand-logo-dark">
-            <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE Logo" class="brand-logo-light">
-        </a>
-        <nav class="auth-nav-v2">
-            <a href="{{ route('registerclass') }}">Courses</a>
-            <a href="{{ route('login') }}">Sign in</a>
-            <a href="{{ route('register') }}" class="btn-nav-v2">Register</a>
-        </nav>
-    </header>
+    @include('layouts.lms_header')
 
     <main class="auth-main-v2">
         <section class="auth-card-v2" aria-label="Register form">
@@ -280,11 +270,11 @@
     }
 
     .title-v2 {
-        font-family: 'Anton', sans-serif;
-        font-size: 3.2rem;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3.8rem;
         font-weight: 400;
-        line-height: 1.1;
-        letter-spacing: 1px;
+        line-height: 1;
+        letter-spacing: 1.5px;
         color: var(--text-main);
         margin: 0;
         text-transform: uppercase;
@@ -363,8 +353,9 @@
 
     .input-field-v2:focus {
         outline: none;
-        border-color: rgba(255, 255, 255, 0.4);
+        border-color: #3b82f6;
         background: var(--field-bg-focus);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
     .input-field-v2.input-error {
@@ -388,8 +379,8 @@
 
     .btn-v2 {
         width: 100%;
-        padding: 14px 16px;
-        border-radius: 999px;
+        padding: 14px 20px;
+        border-radius: 1rem;
         font-weight: 600;
         font-size: 0.95rem;
         cursor: pointer;
@@ -403,8 +394,8 @@
         text-decoration: none;
     }
 
-    .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); margin-top: -4px; font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem; border-radius: 999px; }
-    .btn-primary-v2:hover { background: #5CA8F5; color: #FFFFFF; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(92,168,245,.25); }
+    .btn-primary-v2 { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #ffffff; margin-top: -4px; font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; font-size: 1.25rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
+    .btn-primary-v2:hover { background: linear-gradient(135deg, #3b82f6, #6366f1); transform: translateY(-2px); box-shadow: 0 14px 35px rgba(37, 99, 235, 0.4); }
 
     .btn-outline-v2 {
         background: transparent;
