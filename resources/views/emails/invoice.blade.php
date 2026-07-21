@@ -1,3 +1,7 @@
+@php
+    $logoPath = public_path('compro/img/logo_styled.png');
+    $logoSrc = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : asset('compro/img/logo_styled.png');
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +28,7 @@
                                 <tr>
                                     <td align="left" valign="middle">
                                         <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block;">
-                                            <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" style="height: 42px; width: auto; max-height: 42px; display: block; border: 0;" />
+                                            <img src="{{ $logoSrc }}" alt="Guitarclassbynde Logo" style="height: 42px; width: auto; max-height: 42px; display: block; border: 0;" />
                                         </a>
                                         <div style="font-size: 11px; color: #71717a; margin-top: 4px;">
                                             Official Payment Receipt

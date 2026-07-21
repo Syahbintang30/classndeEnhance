@@ -1,3 +1,7 @@
+@php
+    $logoPath = public_path('compro/img/logo_styled.png');
+    $logoSrc = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : asset('compro/img/logo_styled.png');
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +28,7 @@
                                 <tr>
                                     <td align="center">
                                         <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block; margin-bottom: 16px;">
-                                            <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" style="height: 48px; width: auto; max-height: 48px; display: block; border: 0;" />
+                                            <img src="{{ $logoSrc }}" alt="Guitarclassbynde Logo" style="height: 48px; width: auto; max-height: 48px; display: block; border: 0;" />
                                         </a>
                                         <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; text-transform: uppercase;">
                                             Reset Your <span style="color: #60a5fa;">Password</span>
