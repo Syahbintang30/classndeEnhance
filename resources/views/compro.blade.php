@@ -78,7 +78,7 @@
     @php
         $isLoggedIn = auth()->check();
         $lmsUrl = route('lms.dashboard');
-        $lessonId = $lessons->first()->id ?? 1;
+        $lessonId = isset($lessons) ? ($lessons->first()->id ?? 1) : 1;
     @endphp
 
     <!-- ─── HERO SECTION (HIGH CONVERTING SALES HOOK) ───────────────────── -->
