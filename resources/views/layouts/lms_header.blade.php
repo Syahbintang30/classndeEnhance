@@ -17,9 +17,8 @@
             </div>
             <div class="flex items-center gap-2">
                 <span class="font-display text-2xl tracking-wide text-white group-hover:text-blue-400 transition-colors">
-                    NDE <span class="text-blue-500 group-hover:text-white transition-colors">GUITAR</span>
+                    GUITARCLASS<span class="text-blue-500 group-hover:text-white transition-colors">BYNDE</span>
                 </span>
-                <span class="px-2 py-0.5 text-[9px] uppercase tracking-widest font-extrabold bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full">PRO</span>
             </div>
         </a>
     </div>
@@ -138,7 +137,7 @@
 <div x-show="mobileMenuOpen" x-transition.opacity class="mobile-menu-overlay fixed inset-0 z-50 bg-black/80 backdrop-blur-md md:hidden" style="display: none;" @click="mobileMenuOpen = false">
     <div @click.stop class="mobile-menu-panel bg-zinc-950 border-r border-white/10 w-72 h-full p-6 space-y-4 overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
-            <span class="font-display text-2xl text-white">NDE <span class="text-blue-500">GUITAR</span></span>
+            <span class="font-display text-2xl text-white">GUITARCLASS<span class="text-blue-500">BYNDE</span></span>
             <button @click="mobileMenuOpen = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 

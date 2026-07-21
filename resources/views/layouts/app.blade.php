@@ -10,14 +10,14 @@
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
-    <title>@yield('title', 'Nde Official')</title>
-    <meta name="description" content="@yield('meta_description', 'Nde Official - Exclusive Guitar Sessions')">
-    <meta name="keywords" content="@yield('meta_keywords', 'Nde Official, guitar sessions, content creator, Indonesia')">
+    <title>@yield('title', 'Guitarclassbynde')</title>
+    <meta name="description" content="@yield('meta_description', 'Guitarclassbynde - Master Guitar 10x Faster')">
+    <meta name="keywords" content="@yield('meta_keywords', 'Guitarclassbynde, Nde guitar, guitar course, Indonesia')">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta property="og:title" content="@yield('og_title', 'Nde Official')">
-    <meta property="og:description" content="@yield('og_description', 'Nde Official - Exclusive Guitar Sessions')">
+    <meta property="og:title" content="@yield('og_title', 'Guitarclassbynde')">
+    <meta property="og:description" content="@yield('og_description', 'Guitarclassbynde - Master Guitar 10x Faster')">
     <meta property="og:image" content="@yield('og_image', asset('compro/img/ndelogo.png'))">
     <meta property="og:url" content="@yield('og_url', url()->current())">
 

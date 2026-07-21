@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nde Guitar Pro — Master Guitar 10x Faster</title>
+    <title>Guitarclassbynde — Master Guitar 10x Faster</title>
     <meta name="description" content="Master guitar with Nde's proven curriculum, 1-on-1 coaching, HD video lessons, and AI-powered practice tools.">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -193,7 +193,7 @@
         <div class="text-center space-y-3">
             <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">The Ultimate Learning Ecosystem</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                3 Core Pillars of <span class="text-blue-500">Nde Guitar Pro</span>
+                3 Core Pillars of <span class="text-blue-500">Guitarclassbynde</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
                 The most effective guitar learning system combining video flexibility, 1-on-1 live coaching, and song tutorials.
@@ -313,7 +313,7 @@
                             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0">
                                 <i class="fa-solid fa-check"></i>
                             </div>
-                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Nde Guitar Pro System</h3>
+                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Guitarclassbynde System</h3>
                         </div>
                         <span class="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">Recommended</span>
                     </div>
@@ -506,7 +506,7 @@
 
     <!-- FOOTER COPYRIGHT -->
     <footer class="py-8 text-center text-xs text-gray-500 border-t border-white/5 relative z-10">
-        <p>&copy; {{ date('Y') }} NDE GUITAR PRO. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} GUITARCLASSBYNDE. All rights reserved.</p>
     </footer>
 
 </body>
