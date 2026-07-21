@@ -5,7 +5,7 @@
 @push('head')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -107,7 +107,7 @@
 
 <style>
     :root {
-        --bg-base: #030303;
+        --bg-base: #0A0A0A;
         --text-main: #ffffff;
         --text-muted: #a1a1aa;
         --border-color: rgba(255, 255, 255, 0.15);
@@ -125,7 +125,7 @@
     }
 
     :root[data-theme="light"] {
-        --bg-base: #f6f3ee;
+        --bg-base: #FAFAFA;
         --text-main: #1b1b1b;
         --text-muted: #6d6d6d;
         --border-color: rgba(15, 15, 15, 0.14);
@@ -280,20 +280,17 @@
     }
 
     .title-v2 {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Anton', sans-serif;
         font-size: 3.2rem;
         font-weight: 400;
         line-height: 1.1;
-        letter-spacing: -0.5px;
+        letter-spacing: 1px;
         color: var(--text-main);
         margin: 0;
+        text-transform: uppercase;
     }
 
-    .title-v2 em {
-        font-style: italic;
-        font-weight: 500;
-        color: var(--text-muted);
-    }
+    .title-v2 em { font-style: normal; color: var(--text-muted); }
 
     .alert-v2 {
         width: 100%;
@@ -406,16 +403,8 @@
         text-decoration: none;
     }
 
-    .btn-primary-v2 {
-        background: var(--accent-white);
-        color: var(--accent-black);
-        margin-top: -4px;
-    }
-
-    .btn-primary-v2:hover {
-        background: #e5e5e5;
-        transform: translateY(-1px);
-    }
+    .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); margin-top: -4px; font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem; border-radius: 999px; }
+    .btn-primary-v2:hover { background: #5CA8F5; color: #FFFFFF; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(92,168,245,.25); }
 
     .btn-outline-v2 {
         background: transparent;
@@ -521,12 +510,8 @@
 
     :root[data-theme="light"] .btn-outline-v2:hover { background: rgba(15, 15, 15, 0.04); }
 
-    :root[data-theme="light"] .btn-primary-v2 {
-        background: var(--accent-white);
-        color: var(--accent-black);
-    }
-
-    :root[data-theme="light"] .btn-primary-v2:hover { background: #e8e1d8; }
+    :root[data-theme="light"] .btn-primary-v2 { background: var(--accent-white); color: var(--accent-black); }
+    :root[data-theme="light"] .btn-primary-v2:hover { background: #4DA6FF; color: #FFFFFF; box-shadow: 0 12px 40px rgba(77,166,255,.25); }
 
     @media (max-width: 900px) {
         .auth-page-v2 {

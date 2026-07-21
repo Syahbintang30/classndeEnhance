@@ -63,17 +63,18 @@
         <style>
             :root {
                 color-scheme: light dark;
-                --lms-bg: #0a0a0a;
-                --lms-hero: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-                --lms-text: #f5f5f5;
-                --lms-muted: #888888;
+                --lms-bg: #0A0A0A;
+                --lms-hero: #0A0A0A;
+                --lms-text: #FAFAFA;
+                --lms-muted: #A1A1A1;
                 --lms-subtle: #666666;
-                --lms-border: rgba(255, 255, 255, 0.08);
-                --lms-card: linear-gradient(180deg, rgba(30, 30, 30, 0.6) 0%, rgba(20, 20, 20, 0.4) 100%);
-                --lms-heading-gradient: linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%);
+                --lms-border: #282828;
+                --lms-card: #141414;
+                --lms-heading-gradient: #FFFFFF;
+                --lms-primary: #5CA8F5;
                 --lms-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                --lms-nav-bg: linear-gradient(90deg, rgba(6, 6, 6, 0.92), rgba(14, 14, 14, 0.86));
-                --lms-nav-border: 1px solid rgba(255, 255, 255, 0.04);
+                --lms-nav-bg: rgba(10, 10, 10, 0.92);
+                --lms-nav-border: 1px solid #282828;
                 --lms-nav-text: #ffffff;
                 --lms-nav-text-dim: rgba(255, 255, 255, 0.75);
                 --lms-pill-bg: rgba(255, 255, 255, 0.06);
@@ -84,17 +85,18 @@
 
             :root[data-theme="light"] {
                 color-scheme: light;
-                --lms-bg: #f5f5f7;
-                --lms-hero: linear-gradient(135deg, #f5f5f7 0%, #ebe5dc 100%);
-                --lms-text: #0f172a;
-                --lms-muted: #64748b;
+                --lms-bg: #FAFAFA;
+                --lms-hero: #FAFAFA;
+                --lms-text: #121212;
+                --lms-muted: #737373;
                 --lms-subtle: #475569;
-                --lms-border: rgba(15, 23, 42, 0.08);
-                --lms-card: #ffffff;
-                --lms-heading-gradient: linear-gradient(135deg, #0f172a 0%, #4a4a4a 100%);
+                --lms-border: #E5E5E5;
+                --lms-card: #FFFFFF;
+                --lms-heading-gradient: #090909;
+                --lms-primary: #4DA6FF;
                 --lms-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-                --lms-nav-bg: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
-                --lms-nav-border: 1px solid rgba(15, 23, 42, 0.08);
+                --lms-nav-bg: rgba(255, 255, 255, 0.92);
+                --lms-nav-border: 1px solid #E5E5E5;
                 --lms-nav-text: #0f172a;
                 --lms-nav-text-dim: rgba(15, 23, 42, 0.72);
                 --lms-pill-bg: rgba(15, 23, 42, 0.04);

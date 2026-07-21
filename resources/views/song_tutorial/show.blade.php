@@ -3,308 +3,127 @@
 @section('title', 'Song Tutorial')
 
 @section('content')
-<style>
-    /* Hide global navbar */
-    body > nav { display: none; }
+@push('head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    /* Custom LMS Navbar */
-    .lms-navbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 80px;
-        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 0 20px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
+    <script>
+        tailwind.config = {
+            important: true,
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#0a0a0c',
+                            card: '#121218',
+                            border: '#222230',
+                            accent: '#0066ff',
+                            amber: '#f59e0b',
+                            crimson: '#ef4444',
+                            glow: 'rgba(0, 102, 255, 0.15)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .tw-dash .font-display {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+        }
+        
+        body > nav { display: none !important; }
 
-    .lms-navbar-left {
-        display: flex;
-        align-items: center;
-        width: 280px;
-    }
+        .tw-dash ::-webkit-scrollbar { width: 6px; }
+        .tw-dash ::-webkit-scrollbar-track { background: #0d0d12; }
+        .tw-dash ::-webkit-scrollbar-thumb { background: #222232; border-radius: 3px; }
+        .tw-dash ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
-    .lms-home-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #e0e0e0;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-        transition: all 0.2s ease;
-    }
+        .tw-dash a { text-decoration: none; }
+        .tw-dash *:focus { outline: none !important; }
 
-    .lms-home-link:hover { color: #fff; }
+        .sidebar { transition: all 0.3s ease; }
+        
+        .lesson-block.active .lesson-header {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+        .lesson-block.active .lesson-arrow {
+            transform: rotate(90deg);
+        }
+        .topic-list { display: none; }
+        .topic-list.active { display: block; }
+        
+        .topic-item.completed .topic-box { color: #60a5fa; }
+        .topic-item.selected .topic-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #ffffff;
+        }
+    </style>
+@endpush
 
-    .lms-navbar-right {
-        display: flex;
-        align-items: center;
-        gap: 32px;
-    }
+@section('content')
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-black text-gray-200"
+     x-data="{ mobileMenuOpen: false }">
 
-    .lms-nav-link {
-        color: #a0a0a0;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-        transition: all 0.2s ease;
-    }
+    {{-- ─── TOP NAVIGATION BAR ──────────────────────────────────────────── --}}
+    @include('layouts.lms_header')
 
-    .lms-nav-link:hover { color: #fff; }
-    .lms-nav-link.active { color: #fff; font-weight: 600; }
-
-    :root[data-theme="light"] .lms-navbar {
-        background: linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
-        border-bottom-color: rgba(15, 23, 42, 0.08);
-    }
-
-    :root[data-theme="light"] .lms-home-link,
-    :root[data-theme="light"] .lms-nav-link { color: #334155; }
-
-    :root[data-theme="light"] .lms-home-link:hover,
-    :root[data-theme="light"] .lms-nav-link:hover,
-    :root[data-theme="light"] .lms-nav-link.active { color: #0f172a; }
-
-    :root[data-theme="light"] .kelas-container { background: #f5f5f7; }
-
-    :root[data-theme="light"] .sidebar {
-        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-        border-right-color: rgba(15, 23, 42, 0.08);
-    }
-
-    :root[data-theme="light"] .lesson-header { color: #0f172a; }
-    :root[data-theme="light"] .lesson-header:hover { background: rgba(15, 23, 42, 0.04); }
-    :root[data-theme="light"] .lesson-block.active .lesson-header { background: rgba(15, 23, 42, 0.06); color: #0f172a; }
-    :root[data-theme="light"] .lesson-block.active > .lesson-header:before { background: #0f172a; }
-    :root[data-theme="light"] .lesson-logo { background: #e2e8f0; color: #0f172a; }
-    :root[data-theme="light"] .lesson-arrow,
-    :root[data-theme="light"] .lesson-title,
-    :root[data-theme="light"] .topic-item,
-    :root[data-theme="light"] #video-title { color: #0f172a; }
-    :root[data-theme="light"] #video-description { color: #475569; }
-    :root[data-theme="light"] .topic-item .topic-box { color: #111827; }
-    :root[data-theme="light"] .topic-item:hover .topic-box { background: rgba(15, 23, 42, 0.04); color: #0f172a; }
-    :root[data-theme="light"] .topic-item.selected .topic-box { background: rgba(15, 23, 42, 0.08); border-left-color: #0f172a; color: #0f172a; }
-    :root[data-theme="light"] .topic-item.completed .topic-box { color: #0f172a; }
-    :root[data-theme="light"] .player-wrapper #player { box-shadow: 0 8px 34px rgba(15, 23, 42, 0.12); border-color: rgba(15, 23, 42, 0.08); }
-    :root[data-theme="light"] .custom-play-btn { background: rgba(15, 23, 42, 0.08); border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12); }
-    :root[data-theme="light"] .custom-play-btn:before { border-left-color: #0f172a; }
-    :root[data-theme="light"] .video-nav-btn#btn-prev { background: linear-gradient(180deg, #ffffff, #eef2ff); color: #0f172a; }
-    :root[data-theme="light"] .video-nav-btn#btn-next { background: linear-gradient(180deg, #0f172a, #111827); color: #ffffff; }
-
-    /* Layout */
-    * { box-sizing: border-box; }
-
-    .kelas-container {
-        display: flex;
-        min-height: calc(100vh - 80px);
-        background: #0a0a0a;
-    }
-
-    .sidebar {
-        width: 280px;
-        background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        overflow-y: auto;
-        padding: 0;
-        position: relative;
-        z-index: 5;
-    }
-
-    .sidebar::-webkit-scrollbar { width: 6px; }
-    .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-
-    .lesson-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 20px;
-        cursor: pointer;
-        color: #e0e0e0;
-        background: transparent;
-        border: none;
-        width: 100%;
-        text-align: left;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-
-    .lesson-header:hover { background: rgba(255, 255, 255, 0.04); }
-    .lesson-block.active .lesson-header { background: rgba(255, 255, 255, 0.08); color: #fff; }
-    .lesson-left { display: flex; align-items: center; gap: 10px; }
-
-    .lesson-arrow {
-        display: inline-block;
-        font-size: 22px;
-        line-height: 1;
-        font-weight: 700;
-        color: #d8d8d8;
-        transition: transform 0.2s ease;
-    }
-
-    .topic-list { list-style: none; padding: 0; margin: 0; display: none; }
-
-    .topic-item .topic-box {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 20px 10px 42px;
-        color: #a0a0a0;
-        text-decoration: none;
-        font-size: 13px;
-        transition: all 0.2s ease;
-        border-left: 2px solid transparent;
-        cursor: pointer;
-    }
-
-    .topic-item.completed .topic-box { color: #d7f6ff; }
-    .topic-item:hover .topic-box { background: rgba(255, 255, 255, 0.04); color: #d0d0d0; }
-    .topic-item.selected .topic-box { background: rgba(255, 255, 255, 0.08); border-left-color: #888; color: #fff; font-weight: 600; }
-
-    .home-float-btn { display: none; }
-
-    .main-wrapper { flex: 1; padding: 0; overflow-y: auto; position: relative; }
-
-    .content { padding: 14px 56px 28px 56px; max-width: 1120px; margin: 0 auto; }
-
-    .main-wrapper::-webkit-scrollbar { width: 8px; }
-    .main-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-
-    #video-title { font-size: 30px; font-weight: 900; margin: 0 0 12px 0; color: #fff; letter-spacing: -0.02em; text-align: center; }
-    #video-description { font-size: 15px; color: #a0a0a0; margin: 0 0 28px 0; line-height: 1.6; text-align: center; }
-
-    .player-wrapper { width: 100%; max-width: 980px; margin: 0 auto; }
-
-    #player {
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        min-height: unset !important;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        background: #000;
-    }
-
-    .video-placeholder {
-        background-size: cover;
-        background-position: center;
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1;
-    }
-
-    .custom-play-btn {
-        width: 86px;
-        height: 86px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(4px);
-        cursor: pointer;
-        position: relative;
-    }
-
-    .custom-play-btn::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-42%, -50%);
-        width: 0;
-        height: 0;
-        border-left: 22px solid #fff;
-        border-top: 14px solid transparent;
-        border-bottom: 14px solid transparent;
-    }
-
-    .video-controls { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
-
-    .video-nav-btn {
-        appearance: none;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 10px;
-        height: 30px;
-        min-width: 92px;
-        padding: 0 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
-    }
-
-    .video-nav-btn .label { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
-    .video-nav-btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
-    #btn-prev.video-nav-btn { background: linear-gradient(180deg, #b7b7b7 0%, #9f9f9f 100%); color: #0f0f0f; border-color: rgba(255, 255, 255, 0.28); }
-    #btn-next.video-nav-btn { background: linear-gradient(180deg, #111316 0%, #090a0c 100%); color: #fff; }
-    .video-nav-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.05); }
-    .video-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    @media (max-width: 768px) {
-        .kelas-container { flex-direction: column; }
-        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .content { padding: 14px 16px 22px 16px; }
-        #video-title { font-size: 24px; }
-        .video-nav-btn { min-width: 88px; height: 34px; font-size: 13px; padding: 0 9px; }
-    }
-</style>
-
-<!-- Custom LMS Navbar -->
-<nav class="lms-navbar">
-    <div class="lms-navbar-left">
-        <a href="{{ route('lms.dashboard') }}" class="lms-home-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            Home
-        </a>
-    </div>
-    <div class="lms-navbar-right">
-        <a href="{{ route('lms.entry') }}" class="lms-nav-link @if(request()->routeIs('kelas.show') || request()->routeIs('lms.entry')) active @endif">Lessons</a>
-        <a href="{{ route('coaching.upcoming') }}" class="lms-nav-link @if(request()->routeIs('coaching.*')) active @endif">Coaching</a>
-        @php $user = auth()->user(); @endphp
-        @if($user && $user->hasLmsAccess())
-            <a href="{{ route('song.tutorial.index') }}" class="lms-nav-link @if(request()->routeIs('song.tutorial.*')) active @endif">Song Tutorial</a>
-        @endif
-    </div>
-</nav>
-
-<div class="kelas-container" style="display:flex;">
-    <aside class="sidebar" style="width:280px;">
-        <ul class="menu" style="list-style:none;padding:0;margin:0;">
+    <!-- MAIN LESSONS CONTAINER -->
+    <div class="flex-1 flex flex-col md:flex-row w-full max-w-screen-2xl mx-auto overflow-hidden bg-black relative">
+        
+        <!-- Sidebar Navigation for Modules/Topics -->
+        <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-900/40 border-r border-zinc-800/80 overflow-y-auto absolute md:relative z-20 inset-y-0 transform -translate-x-full md:translate-x-0">
+            <!-- Mobile Close Button -->
+            <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="p-4 border-b border-zinc-800/80">
+                <h3 class="font-display text-xl text-white tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-music text-blue-500"></i> Song Library
+                </h3>
+            </div>
+            
+            <ul class="menu p-0 m-0 list-none">
             @forelse($lessons as $ls)
-                <li class="lesson-block">
-                    <a href="{{ route('song.tutorial.show', $ls->id) }}" class="lesson-header">
-                        <div class="lesson-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4m6 0h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4m-6-4h12"/><circle cx="12" cy="12" r="2"/></svg>
+                <li class="lesson-block border-b border-zinc-800/50 last:border-b-0">
+                    <a href="{{ route('song.tutorial.show', $ls->id) }}" class="lesson-header flex items-center justify-between p-4 cursor-pointer text-gray-300 hover:bg-zinc-800/50 transition">
+                        <div class="lesson-left flex items-center gap-3 font-semibold text-sm">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+                                <i class="fa-solid fa-music text-xs"></i>
+                            </div>
                             {{ $ls->title }}
                         </div>
-                        <span class="lesson-arrow">▸</span>
+                        <span class="lesson-arrow text-gray-500 text-lg transition-transform duration-200">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </span>
                     </a>
                     @php $topics = $ls->topics ?? collect(); @endphp
-                    <ul class="topic-list">
+                    <ul class="topic-list bg-black/40">
                         @forelse($topics as $topic)
-                            <li class="topic-item"
+                            <li class="topic-item" 
                                 data-bunny-guid="{{ $topic->bunny_guid }}"
                                 data-description="{{ $topic->description }}"
                                 data-topic-id="{{ $topic->id }}">
-                                <div class="topic-box">
-                                    <span>{{ $topic->title }}</span>
+                                <div class="topic-box flex items-center gap-3 py-3 pr-4 pl-12 text-sm text-gray-400 cursor-pointer border-l-2 border-transparent transition hover:bg-zinc-800/30">
+                                    <span class="truncate">{{ $topic->title }}</span>
                                 </div>
                             </li>
                         @empty
@@ -316,9 +135,10 @@
         </ul>
     </aside>
 
-    <div class="main-wrapper" style="flex:1;">
-        <main class="content">
-            @php $firstLesson = $lessons->first(); @endphp
+    <!-- Main Content Area -->
+    <div class="main-wrapper flex-1 relative overflow-y-auto w-full">
+        <main class="content p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col items-center">
+            @php $firstLesson = $lesson; @endphp
             @include('kelas._lesson_content', ['lesson' => $firstLesson])
         </main>
     </div>
@@ -429,12 +249,22 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
     if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
     v = document.createElement('video');
     v.id = 'html5-player'; v.controls = true; v.setAttribute('playsinline','');
-    v.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;';
+    v.style.position = 'absolute'; v.style.top = '0'; v.style.left = '0'; v.style.width = '100%'; v.style.height = '100%'; v.style.zIndex = '50'; v.style.backgroundColor = '#000';
     container.appendChild(v);
-    try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){}
+    
+    // hide the placeholder so the video element is visible
+    try{ const ph = document.getElementById('video-placeholder'); if(ph) { ph.style.setProperty('display', 'none', 'important'); ph.style.opacity = '0'; } }catch(e){}
     const attachAndPlay = () => {
-        if(window.Hls && Hls.isSupported()){ const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v); }
-        else { v.src = streamUrl; }
+        if(window.Hls && Hls.isSupported()){ 
+            const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v); 
+            hls.on(Hls.Events.MANIFEST_PARSED, function(){
+                v.play().catch(e => console.warn('Autoplay prevented:', e));
+            });
+        }
+        else { 
+            v.src = streamUrl; 
+            v.play().catch(e => console.warn('Autoplay prevented:', e));
+        }
     };
     if(!window.Hls){ const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest'; s.async = true; s.onload = () => { try{ attachAndPlay(); }catch(e){} }; s.onerror = () => { attachAndPlay(); }; document.head.appendChild(s); } else { attachAndPlay(); }
     v.addEventListener('play', function(){ if(progressTimer) clearInterval(progressTimer); progressTimer = setInterval(function(){ reportProgress(false); }, 15000); });
@@ -500,8 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initSidebar(){
-        const open = getOpenLessons();
-        const openLessonId = Array.isArray(open) && open.length ? open[0] : null;
+        let openLessonId = "{{ isset($lesson) ? (string)$lesson->id : '' }}";
+        if (openLessonId) setOpenLessons([openLessonId]);
+        
         const lessonBlocks = document.querySelectorAll('.lesson-block');
 
         function closeOtherLessons(activeBlock){
@@ -522,15 +353,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const href = a.getAttribute('href');
             const lessonId = href ? href.split('/').filter(Boolean).pop() : null;
 
-            if(lessonId && lessonId === openLessonId){ if(topics) topics.style.display = 'block'; block.classList.add('active'); if(arrow) arrow.textContent = '▾'; }
-            else { if(topics) topics.style.display = 'none'; block.classList.remove('active'); if(arrow) arrow.textContent = '▸'; }
+            if(lessonId && lessonId === openLessonId){ if(topics) topics.style.display = 'block'; block.classList.add('active'); }
+            else { if(topics) topics.style.display = 'none'; block.classList.remove('active'); }
 
             if(arrow){
                 arrow.addEventListener('click', (ev) => {
                     ev.preventDefault(); ev.stopPropagation();
                     const isHidden = window.getComputedStyle(topics).display === 'none';
-                    if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active'); arrow.textContent = '▾'; setOpenLessons(lessonId ? [lessonId] : []); }
-                    else { topics.style.display = 'none'; block.classList.remove('active'); arrow.textContent = '▸'; setOpenLessons([]); }
+                    if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active');  setOpenLessons(lessonId ? [lessonId] : []); }
+                    else { topics.style.display = 'none'; block.classList.remove('active');  setOpenLessons([]); }
                 });
             }
 
@@ -538,8 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(ev.target.closest('.lesson-arrow')){ return; }
                 ev.preventDefault();
                 const isHidden = window.getComputedStyle(topics).display === 'none';
-                if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active'); if(arrow) arrow.textContent = '▾'; setOpenLessons(lessonId ? [lessonId] : []); }
-                else { topics.style.display = 'none'; block.classList.remove('active'); if(arrow) arrow.textContent = '▸'; setOpenLessons([]); }
+                if(isHidden){ closeOtherLessons(block); topics.style.display = 'block'; block.classList.add('active'); if(arrow)  setOpenLessons(lessonId ? [lessonId] : []); }
+                else { topics.style.display = 'none'; block.classList.remove('active'); if(arrow)  setOpenLessons([]); }
             });
 
             a.addEventListener('mouseenter', function(){
@@ -582,7 +413,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(streamUrlAttr){ destroyHtml5Player(); createHtml5PlayerAndPlay(streamUrlAttr, topicId); return; }
                 if(topicId){
                     fetch(`/topics/${topicId}/stream`).then(async r=>{ try { return await r.json(); } catch(e){ return { url: null }; } }).then(data=>{
-                        if(data && data.url){ placeholder.setAttribute('data-stream-url', data.url); destroyHtml5Player(); createHtml5PlayerAndPlay(data.url, topicId); return; }
+                        if(data && data.url){ 
+                            if(data.url.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)){
+                                const newYtId = data.url.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)[2];
+                                try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){}
+                                if(!player || typeof player.loadVideoById !== 'function'){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: newYtId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange,'onReady':function(e){ player.playVideo(); }} }); } else { player.loadVideoById(newYtId); player.playVideo(); }
+                                return;
+                            }
+                            placeholder.setAttribute('data-stream-url', data.url); 
+                            destroyHtml5Player(); 
+                            createHtml5PlayerAndPlay(data.url, topicId); 
+                            return; 
+                        }
                         if(ytId){ try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){} if(!player || typeof player.loadVideoById !== 'function'){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange,'onReady':function(e){ player.playVideo(); }} }); } else { player.loadVideoById(ytId); player.playVideo(); } }
                     }).catch(err => { if(ytId){ try{ const ph = document.getElementById('video-placeholder'); if(ph) ph.style.display = 'none'; }catch(e){} if(!player){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} }); } else { player.loadVideoById(ytId); } } });
                 } else if(ytId){ if(!player || typeof player.loadVideoById !== 'function'){ player = new YT.Player('player', { height:'100%', width:'100%', videoId: ytId, playerVars:{rel:0,modestbranding:1}, events:{'onStateChange':onPlayerStateChange} }); } else { player.loadVideoById(ytId); } }

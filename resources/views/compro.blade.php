@@ -1,38 +1,30 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nde Guitar Class - Premium Masterclass</title>
-    <meta name="description" content="Kuasai gitar dengan metode terstruktur lewat video HD, coaching 1-on-1, dan sistem belajar premium.">
-    <meta name="theme-color" content="#050505">
+    <title>Nde Guitar Class — Premium Guitar Coaching</title>
+    <meta name="description" content="Learn guitar the right way. Lifetime access to HD videos, direct 1-on-1 coaching with the instructor.">
 
     <script>
-        (function () {
-            var match = document.cookie.match(/(?:^|; )theme=([^;]+)/);
-            var theme = match ? decodeURIComponent(match[1]) : 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
+        (function(){
+            var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);
+            document.documentElement.setAttribute('data-theme', m ? decodeURIComponent(m[1]) : 'dark');
         })();
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
+                    fontFamily: { sans: ['Inter','sans-serif'], display: ['Anton','sans-serif'] },
                     colors: {
-                        background: 'var(--bg)',
-                        surface: 'var(--surface)',
-                        surfaceHover: 'var(--surface-hover)',
-                        textDim: 'var(--text-dim)',
+                        accent: '#ffffff',
                     }
                 }
             }
@@ -40,762 +32,1133 @@
     </script>
 
     <style>
-        .nav-logo-dark { display: block; }
-        .nav-logo-light { display: none; }
-        :root[data-theme="light"] .nav-logo-dark { display: none; }
-        :root[data-theme="light"] .nav-logo-light { display: block; }
-
+        /* ── THEME TOKENS ─────────────────────────────── */
         :root {
-            color-scheme: light dark;
-            --bg: #050505;
-            --surface: #0a0a0a;
-            --surface-hover: #141414;
-            --text-dim: #888888;
-            --text: #e6e6e6;
-            --heading: #ffffff;
-            --border: rgba(255, 255, 255, 0.10);
-            --nav-bg: rgba(5, 5, 5, 0.8);
+            --bg:        #0A0A0A;
+            --surface:   #141414;
+            --border:    #282828;
+            --text:      #FAFAFA;
+            --dim:       #A1A1A1;
+            --heading:   #FFFFFF;
+            --primary:   #5CA8F5;
+            --primary-hover: #7CB9F8;
+            --success:   #A8D63A;
+            --warning:   #FFC107;
+            --danger:    #E05252;
+            --nav-bg:    rgba(10,10,10,0.80);
+        }
+        :root[data-theme="light"] {
+            --bg:        #FAFAFA;
+            --surface:   #FFFFFF;
+            --bg-alt:    #F4F7FB;
+            --bg-alt2:   #F7F7F7;
+            --border:    #E5E5E5;
+            --text:      #121212;
+            --dim:       #737373;
+            --heading:   #090909;
+            --primary:   #4DA6FF;
+            --primary-hover: #2F8BFF;
+            --success:   #9BC636;
+            --warning:   #FFB300;
+            --danger:    #D84545;
+            --nav-bg:    rgba(255,255,255,0.88);
         }
 
-        :root[data-theme="light"] {
-            color-scheme: light;
-            --bg: #f5f5f7;
-            --surface: #ffffff;
-            --surface-hover: #f1f5f9;
-            --text-dim: #64748b;
-            --text: #0f172a;
-            --heading: #0f172a;
-            --border: rgba(15, 23, 42, 0.08);
-            --nav-bg: rgba(245, 245, 247, 0.92);
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; font-size: 17px; }
 
         body {
-            background-color: var(--bg);
+            margin: 0;
+            background: var(--bg);
             color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Light mode Tailwind overrides */
-        :root[data-theme="light"] .text-white { color: var(--heading) !important; }
-        :root[data-theme="light"] .text-gray-400 { color: #64748b !important; }
-        :root[data-theme="light"] .text-gray-300 { color: #475569 !important; }
-        :root[data-theme="light"] .text-gray-200 { color: #334155 !important; }
-        :root[data-theme="light"] .bg-black { background-color: var(--bg) !important; }
-        :root[data-theme="light"] .bg-surface\/50 { background-color: rgba(255,255,255,0.85) !important; }
-        :root[data-theme="light"] .bg-background\/80 { background-color: var(--nav-bg) !important; }
-        :root[data-theme="light"] .border-white\/5,
-        :root[data-theme="light"] .border-white\/10,
-        :root[data-theme="light"] .border-white\/20 { border-color: rgba(15,23,42,0.08) !important; }
-        :root[data-theme="light"] .border-y { border-color: rgba(15,23,42,0.08) !important; }
-        :root[data-theme="light"] .border-t { border-color: rgba(15,23,42,0.08) !important; }
+        /* ── SCROLLBAR ────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
-        /* Nav links */
-        :root[data-theme="light"] .nav-links-item { color: #475569 !important; }
-        :root[data-theme="light"] .nav-links-item:hover { color: #0f172a !important; }
+        /* ── SELECTION ────────────────────────────────── */
+        ::selection { background: var(--primary); color: #000000; }
 
-        /* Register CTA button */
-        :root[data-theme="light"] .register-cta {
-            background-color: #0f172a !important;
-            color: #ffffff !important;
+        /* ── NAVBAR ───────────────────────────────────── */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            background: transparent;
+            transition: padding .4s, background .4s, box-shadow .4s, backdrop-filter .4s;
         }
-        :root[data-theme="light"] .register-cta:hover {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
+        .navbar.scrolled {
+            padding: .85rem 2rem;
+            background: rgba(10,10,10,.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(255,255,255,.06);
         }
+        :root[data-theme="light"] .navbar.scrolled {
+            background: rgba(255,255,255,.78);
+            box-shadow: 0 1px 0 rgba(0,0,0,.06);
+        }
+        .nav-logo-dark { display: block; }
+        .nav-logo-light { display: none; }
+        :root[data-theme="light"] .navbar.scrolled .nav-logo-dark { display: none; }
+        :root[data-theme="light"] .navbar.scrolled .nav-logo-light { display: block; }
 
-        /* Hero section */
-        :root[data-theme="light"] .hero-heading { color: #0f172a !important; }
-        :root[data-theme="light"] .hero-italic { color: #64748b !important; }
-        :root[data-theme="light"] .hero-body { color: #475569 !important; }
-        :root[data-theme="light"] .hero-strong { color: #0f172a !important; }
-
-        /* Hero buttons */
-        :root[data-theme="light"] .hero-btn-primary {
-            background-color: #0f172a !important;
-            color: #ffffff !important;
+        .nav-link {
+            font-size: .75rem; font-weight: 600; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--dim);
+            text-decoration: none; transition: color .25s, transform .25s;
+            position: relative;
         }
-        :root[data-theme="light"] .hero-btn-secondary {
-            border-color: rgba(15,23,42,0.2) !important;
-            color: #0f172a !important;
+        .nav-link:hover { 
+            color: var(--heading); 
+            transform: translateY(-2px);
         }
-        :root[data-theme="light"] .hero-btn-secondary:hover {
-            background-color: rgba(15,23,42,0.05) !important;
+        .nav-link.active {
+            color: var(--heading);
         }
-
-        /* Tech logos section */
-        :root[data-theme="light"] .tech-section {
-            border-color: rgba(15,23,42,0.08) !important;
+        .nav-link::after {
+            content: ''; position: absolute; left: 0; bottom: -4px;
+            width: 100%; height: 1px; background: var(--heading);
+            transform: scaleX(0); transform-origin: right; transition: transform .3s ease;
         }
-        :root[data-theme="light"] .tech-label { color: #94a3b8 !important; }
-        :root[data-theme="light"] .tech-logo { color: #334155 !important; }
-
-        /* Features section */
-        :root[data-theme="light"] .features-section {
-            background-color: #ffffff !important;
-            border-color: rgba(15,23,42,0.08) !important;
-        }
-        :root[data-theme="light"] .feature-icon-wrap {
-            background-color: rgba(15,23,42,0.04) !important;
-            border-color: rgba(15,23,42,0.08) !important;
-        }
-        :root[data-theme="light"] .feature-icon-wrap:hover {
-            background-color: #0f172a !important;
-            color: #ffffff !important;
-        }
-        :root[data-theme="light"] .feature-title { color: #0f172a !important; }
-        :root[data-theme="light"] .feature-body { color: #475569 !important; }
-        :root[data-theme="light"] .feature-highlight { color: #334155 !important; }
-
-        /* Pricing section */
-        :root[data-theme="light"] .pricing-section { background-color: #f5f5f7 !important; }
-        :root[data-theme="light"] .pricing-heading { color: #0f172a !important; }
-        :root[data-theme="light"] .pricing-sub { color: #64748b !important; }
-
-        /* Regular cards in light mode */
-        :root[data-theme="light"] .pkg-regular {
-            background: #ffffff !important;
-            border-color: rgba(15,23,42,0.1) !important;
-            box-shadow: 0 4px 20px rgba(15,23,42,0.06) !important;
-        }
-        :root[data-theme="light"] .pkg-regular:hover {
-            border-color: rgba(15,23,42,0.2) !important;
-        }
-        :root[data-theme="light"] .pkg-regular .pkg-name { color: #0f172a !important; }
-        :root[data-theme="light"] .pkg-regular .pkg-price { color: #0f172a !important; }
-        :root[data-theme="light"] .pkg-regular .pkg-kicker { color: #64748b !important; }
-        :root[data-theme="light"] .pkg-regular .pkg-benefit { color: #475569 !important; }
-        :root[data-theme="light"] .pkg-regular .pkg-btn {
-            background: rgba(15,23,42,0.06) !important;
-            color: #0f172a !important;
-            border-color: rgba(15,23,42,0.12) !important;
-        }
-        :root[data-theme="light"] .pkg-regular .pkg-btn:hover {
-            background: #0f172a !important;
-            color: #ffffff !important;
+        .nav-link:hover::after, .nav-link.active::after {
+            transform: scaleX(1); transform-origin: left;
         }
 
-        /* Footer */
-        :root[data-theme="light"] .site-footer {
-            background-color: #f1f5f9 !important;
-            border-color: rgba(15,23,42,0.08) !important;
+        /* Force dark theme style on transparent navbar (over dark hero) in light mode */
+        :root[data-theme="light"] .navbar:not(.scrolled) .nav-link { color: rgba(255,255,255,0.7); }
+        :root[data-theme="light"] .navbar:not(.scrolled) .nav-link:hover { color: #FFFFFF; }
+        :root[data-theme="light"] .navbar:not(.scrolled) .nav-link.active { color: #FFFFFF; }
+        :root[data-theme="light"] .navbar:not(.scrolled) .nav-link::after { background: #FFFFFF; }
+        :root[data-theme="light"] .navbar:not(.scrolled) #theme-toggle { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
+        :root[data-theme="light"] .navbar:not(.scrolled) #theme-toggle:hover { color: #FFFFFF; border-color: rgba(255,255,255,0.5); }
+        :root[data-theme="light"] .navbar:not(.scrolled) #burger { color: #FFFFFF; }
+        :root[data-theme="light"] .navbar:not(.scrolled) span[style*="color:var(--dim)"] { color: rgba(255,255,255,0.7) !important; }
+
+        /* ── BUTTONS ──────────────────────────────────── */
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px;
+            background: #FFFFFF; color: #0A0A0A;
+            font-family: 'Anton', sans-serif; font-size: 1rem; letter-spacing: .06em;
+            text-transform: uppercase; text-decoration: none;
+            padding: 1rem 2.5rem; border-radius: 9999px;
+            border: none; cursor: pointer;
+            transition: transform .25s, box-shadow .25s, background .25s, color .25s;
         }
-        :root[data-theme="light"] .footer-logo-text { color: #475569 !important; }
-        :root[data-theme="light"] .footer-link { color: #334155 !important; }
-        :root[data-theme="light"] .footer-link:hover { color: #0f172a !important; }
-        :root[data-theme="light"] .footer-divider { background: linear-gradient(to right, rgba(15,23,42,0.1), rgba(15,23,42,0.15), rgba(15,23,42,0.1)) !important; }
-        :root[data-theme="light"] .footer-copy { color: #475569 !important; }
-        :root[data-theme="light"] .footer-social {
-            border-color: rgba(15,23,42,0.15) !important;
-            color: #334155 !important;
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            background: var(--primary); color: #FFFFFF;
+            box-shadow: 0 12px 40px rgba(92,168,245,.25);
         }
-        :root[data-theme="light"] .footer-social:hover {
-            border-color: rgba(15,23,42,0.3) !important;
-            color: #0f172a !important;
-            background-color: rgba(15,23,42,0.04) !important;
+        :root[data-theme="light"] .btn-primary {
+            background: #090909; color: #FFFFFF;
+        }
+        :root[data-theme="light"] .btn-primary:hover {
+            background: var(--primary);
+            box-shadow: 0 12px 40px rgba(92,168,245,.3);
         }
 
-        /* Theme toggle button */
-        :root[data-theme="light"] #theme-toggle,
-        :root[data-theme="light"] #theme-toggle-mobile {
-            color: #334155 !important;
-            border-color: rgba(15,23,42,0.15) !important;
-            background: rgba(15,23,42,0.04) !important;
+        .btn-outline {
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px;
+            background: transparent; color: var(--text);
+            font-family: 'Inter', sans-serif; font-size: .85rem; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+            padding: .9rem 2rem; border-radius: 9999px;
+            border: 1px solid var(--border);
+            cursor: pointer; transition: border-color .25s, background .25s;
+        }
+        .btn-outline:hover {
+            border-color: var(--primary); background: rgba(92,168,245,.08);
+        }
+        :root[data-theme="light"] .btn-outline {
+            border-color: var(--border);
+        }
+        :root[data-theme="light"] .btn-outline:hover {
+            border-color: var(--primary); background: rgba(92,168,245,.08);
         }
 
-        .hero-glow {
-            position: absolute;
-            width: 80vw;
-            max-width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, rgba(5,5,5,0) 70%);
-            top: -200px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: -1;
+        /* ── SECTION TAGS ─────────────────────────────── */
+        .sec-tag {
+            display: inline-block;
+            font-size: .7rem; font-weight: 700; letter-spacing: .18em;
+            text-transform: uppercase; color: var(--dim);
+            padding: .35rem .9rem; border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            margin-bottom: 1.25rem;
+        }
+        :root[data-theme="light"] .sec-tag {
+            background: rgba(0,0,0,.04);
+            color: var(--heading);
+        }
+
+        /* ── HEADINGS ─────────────────────────────────── */
+        .heading-xl {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(3.5rem, 9vw, 8.5rem);
+            line-height: .9; letter-spacing: .01em;
+            text-transform: uppercase; color: var(--heading);
+        }
+        .heading-lg {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            line-height: .92; letter-spacing: .01em;
+            text-transform: uppercase; color: var(--heading);
+        }
+        .heading-md {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            line-height: 1; letter-spacing: .03em;
+            text-transform: uppercase; color: var(--heading);
+        }
+        .stroke-text {
+            -webkit-text-stroke: 2px var(--heading);
+            color: transparent;
+        }
+        :root[data-theme="light"] .stroke-text {
+            -webkit-text-stroke: 2px var(--heading);
+        }
+
+        /* ── HERO ─────────────────────────────────────── */
+        #hero {
+            position: relative; min-height: 100vh; height: auto;
+            display: flex; align-items: flex-end;
+            overflow: hidden;
+            padding-top: 120px; box-sizing: border-box;
+        }
+        .hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background-image: url("{{ asset('compro/img/ndehero.webp') }}");
+            background-size: cover; background-position: center top;
+            will-change: transform;
+        }
+        .hero-overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: 
+                radial-gradient(circle at 75% 20%, rgba(92,168,245,0.2) 0%, transparent 35%),
+                radial-gradient(circle at 15% 40%, rgba(255,255,255,0.08) 0%, transparent 25%),
+                linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.7) 60%, var(--bg) 100%);
+        }
+        .hero-content {
+            position: relative; z-index: 2;
+            width: 100%; max-width: 1280px; margin: 0 auto;
+            padding: 0 2rem 6.5rem; /* Reduced bottom padding slightly for better small screen fit */
+        }
+        
+        /* Force dark theme aesthetics on hero content regardless of theme */
+        :root[data-theme="light"] .hero-content .heading-xl { color: #FFFFFF; }
+        :root[data-theme="light"] .hero-content .stroke-text { -webkit-text-stroke: 2px #FFFFFF; color: transparent; }
+        :root[data-theme="light"] .hero-content p { color: rgba(255,255,255,0.85) !important; }
+        :root[data-theme="light"] .hero-content .sec-tag { color: #FFFFFF; background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); }
+        :root[data-theme="light"] .hero-content .btn-outline { color: #FFFFFF; border-color: rgba(255,255,255,.4); }
+        :root[data-theme="light"] .hero-content .btn-outline:hover { border-color: var(--primary); background: rgba(92,168,245,.08); }
+        :root[data-theme="light"] .hero-content span { color: #FFFFFF !important; }
+        :root[data-theme="light"] .hero-content span[style*="color:var(--dim)"] { color: rgba(255,255,255,0.7) !important; }
+
+        /* ── MARQUEE ──────────────────────────────────── */
+        .marquee-wrap {
+            width: 100%; overflow: hidden;
+            background: var(--primary); padding: .85rem 0;
+            transform: rotate(-1.2deg) scaleX(1.04);
+            box-shadow: 0 8px 32px rgba(92,168,245,.25);
+        }
+        .marquee-track {
+            display: inline-flex; gap: 0;
+            animation: marquee 25s linear infinite;
+            white-space: nowrap;
+        }
+        .marquee-track span {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.1rem; letter-spacing: .08em;
+            text-transform: uppercase; color: #0A0906;
+            padding: 0 2rem;
+        }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        /* ── STATS ────────────────────────────────────── */
+        .stat-num {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            letter-spacing: .02em; color: var(--heading); line-height: 1;
+        }
+
+        /* ── METHOD / PARALLAX SECTIONS ──────────────── */
+        .parallax-section {
+            position: relative; overflow: hidden;
+            min-height: 80vh;
+        }
+        .parallax-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background-size: cover; background-position: center;
+            will-change: transform;
+        }
+        .parallax-overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(135deg, rgba(10,10,10,.94) 0%, rgba(10,10,10,.82) 100%);
+        }
+        :root[data-theme="light"] .parallax-overlay {
+            background: rgba(255,255,255,.85);
+        }
+
+        /* ── METHOD STEPS ─────────────────────────────── */
+        .step-num {
+            font-family: 'Anton', sans-serif;
+            font-size: 6rem; line-height: 1; opacity: .12;
+            color: var(--primary); letter-spacing: -.02em;
+            position: absolute; top: -1.5rem; left: -1rem;
+        }
+        :root[data-theme="light"] .step-num {
+            opacity: .25;
+        }
+
+        /* ── FEATURE NUMBERS ──────────────────────────── */
+        .feature-num {
+            position: absolute; top: 1.5rem; right: 1.5rem;
+            font-family: 'Anton', sans-serif; font-size: 4rem;
+            color: var(--primary); opacity: 0.05; line-height: 1;
+        }
+        :root[data-theme="light"] .feature-num {
+            opacity: 0.15;
+        }
+
+        /* ── GLASS CARDS ──────────────────────────────── */
+        .glass-card {
+            background: rgba(255,255,255,.02);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 1.75rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255,255,255,.25);
+            box-shadow: 0 20px 40px rgba(0,0,0,.35);
+        }
+        :root[data-theme="light"] .glass-card {
+            background: rgba(255,255,255,.9);
+            border-color: rgba(15,23,42,.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,.05);
+        }
+        :root[data-theme="light"] .glass-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(15,23,42,.12);
+            border-color: rgba(15,23,42,.2);
+        }
+
+        /* ── PRICING CARDS ────────────────────────────── */
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: start;
+        }
+        @media (max-width: 768px) {
+            .pricing-grid {
+                display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 2rem; -webkit-overflow-scrolling: touch;
+                margin-inline: -2rem; padding-inline: 2rem;
+            }
+            .pricing-grid::-webkit-scrollbar { display: none; }
+            .pricing-grid { -ms-overflow-style: none; scrollbar-width: none; }
+            .pricing-grid > .pricing-card { min-width: 85vw; scroll-snap-align: center; flex-shrink: 0; }
+        }
+
+        .pricing-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 1.75rem; position: relative;
+            display: flex; flex-direction: column;
+            transition: transform .35s, box-shadow .35s, border-color .35s;
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 24px 60px rgba(0,0,0,.5);
+            border-color: rgba(255,255,255,.2);
+        }
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 60px rgba(77,166,255,.1);
+        }
+        .pricing-card.featured:hover {
+            box-shadow: 0 24px 60px rgba(77,166,255,.15);
+        }
+        :root[data-theme="light"] .pricing-card {
+            border-color: rgba(15,23,42,.1);
+            box-shadow: 0 4px 20px rgba(15,23,42,.06);
+        }
+        :root[data-theme="light"] .pricing-card.featured {
+            border-color: var(--primary);
+        }
+        
+        /* ── MEET NDE ─────────────────────────────────── */
+        .meet-nde-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 85vh; background: var(--surface); }
+        .meet-nde-img { position: relative; min-height: 400px; }
+        .meet-nde-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); opacity: .85; }
+        .meet-nde-content { display: flex; flex-direction: column; justify-content: center; padding: 6rem 5rem; }
+        @media (max-width: 992px) {
+            .meet-nde-grid { grid-template-columns: 1fr; }
+            .meet-nde-content { padding: 5rem 2rem; }
+        }
+
+        .ticket-title {
+            font-family: 'Anton', sans-serif; font-size: 1.5rem;
+            letter-spacing: .08em; color: var(--heading); text-transform: uppercase;
+        }
+        .ticket-price-wrap { display: flex; align-items: flex-start; margin-top: .75rem; margin-bottom: 2.5rem; }
+        .ticket-price {
+            font-family: 'Anton', sans-serif; font-size: 4rem;
+            line-height: .9; letter-spacing: -.02em; color: var(--heading);
+        }
+        .ticket-price-currency {
+            font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700;
+            margin-right: .25rem; margin-top: .5rem; color: var(--dim);
+        }
+        .ticket-price-zeros {
+            font-family: 'Anton', sans-serif; font-size: 1.75rem; line-height: 1;
+            color: var(--dim); margin-top: .25rem; letter-spacing: .02em;
+        }
+
+        /* ── REVEAL ANIMATIONS ────────────────────────── */
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity .7s ease, transform .7s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: .1s; }
+        .reveal-delay-2 { transition-delay: .2s; }
+        .reveal-delay-3 { transition-delay: .3s; }
+        .reveal-delay-4 { transition-delay: .45s; }
+
+        /* ── VIDEO SECTION ────────────────────────────── */
+        .video-section {
+            position: relative; overflow: hidden;
+            background-image: url('https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            background-attachment: fixed;
+        }
+        @media (max-width: 768px) {
+            .video-section { padding: 4rem 1rem !important; }
+        }
+        .video-section::before {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(10,9,6,.82);
+        }
+        :root[data-theme="light"] .video-section::before {
+            background: rgba(255,255,255,.85);
+        }
+
+        /* ── CTA SECTION ──────────────────────────────── */
+        .cta-section {
+            position: relative; overflow: hidden;
+            background: var(--surface);
+        }
+        .cta-glow {
+            position: absolute; width: 60vw; height: 60vw;
+            background: var(--primary); border-radius: 50%;
+            filter: blur(120px); opacity: .15;
+            top: 50%; left: 50%; transform: translate(-50%,-50%);
             pointer-events: none;
         }
 
-        :root[data-theme="light"] .hero-glow {
-            background: radial-gradient(circle, rgba(15,23,42,0.03) 0%, rgba(245,245,247,0) 70%);
+        /* ── DIVIDER ──────────────────────────────────── */
+        .section-divider {
+            height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+            border: none; margin: 0;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-        :root[data-theme="light"] ::-webkit-scrollbar-track { background: #e2e8f0; }
-        :root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #94a3b8; }
-        :root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        .faq-top {
-            padding: 48px 24px 40px;
-            position: relative;
-            z-index: 1;
+        /* ── MOBILE MENU ──────────────────────────────── */
+        #mobile-menu {
+            position: fixed; inset: 0; z-index: 90;
+            background: var(--bg); display: none;
+            flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem;
+            backdrop-filter: blur(20px);
         }
+        #mobile-menu.open { display: flex; }
 
-        .faq-shell {
-            max-width: 860px;
-            margin: 0 auto;
-        }
+        /* ── LIGHT MODE TEXT OVERRIDES ────────────────── */
+        :root[data-theme="light"] .text-cream   { color: var(--heading) !important; }
+        :root[data-theme="light"] .text-dim     { color: var(--dim) !important; }
 
-        .faq-kicker {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            color: var(--text-dim);
-            font-weight: 600;
-        }
+        /* ── FAQ ──────────────────────────────────────── */
+        .faq-item { transition: background .3s, border-color .3s; }
+        :root[data-theme="light"] .faq-item:hover { background: #F5F8FF; border-color: var(--primary); }
+        .faq-body { max-height: 0; overflow: hidden; transition: max-height .35s ease, opacity .35s, margin-top .35s; opacity: 0; }
+        .faq-item.open .faq-body { max-height: 300px; opacity: 1; margin-top: 1rem; }
+        .faq-icon-plus { transition: transform .3s; }
+        .faq-item.open .faq-icon-plus { transform: rotate(45deg); }
 
-        .faq-title {
-            font-size: clamp(28px, 4vw, 42px);
-            font-weight: 700;
-            color: var(--heading);
-            margin-top: 12px;
+        /* ── ANIMATIONS ───────────────────────────────── */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(92,168,245,0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(92,168,245,0); }
+            100% { box-shadow: 0 0 0 0 rgba(92,168,245,0); }
         }
+        .play-btn-pulse { animation: pulse 2s infinite; }
 
-        .faq-subtitle {
-            color: var(--text-dim);
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
-        .faq-list {
-            margin-top: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .faq-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 18px 22px;
-            transition: border-color 0.25s ease, transform 0.25s ease;
-        }
-
-        .faq-item:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        :root[data-theme="light"] .faq-item:hover {
-            border-color: rgba(15, 23, 42, 0.2);
-        }
-
-        .faq-question {
-            width: 100%;
-            background: transparent;
-            border: none;
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            color: var(--heading);
-            font-weight: 600;
-            text-align: left;
-            cursor: pointer;
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s ease;
-        }
-
-        .faq-answer p {
-            margin-top: 14px;
-            color: var(--text-dim);
-            line-height: 1.7;
-        }
-
-        .faq-item.is-open .faq-answer {
-            max-height: 260px;
-        }
-
-        .faq-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-
-        .faq-icon::before,
-        .faq-icon::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 2px;
-            background: var(--heading);
-            transition: transform 0.3s ease;
-        }
-
-        .faq-icon::after {
-            transform: rotate(90deg);
-        }
-
-        .faq-item.is-open .faq-icon {
-            transform: rotate(45deg);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        :root[data-theme="light"] .faq-icon::before,
-        :root[data-theme="light"] .faq-icon::after {
-            background: #0f172a;
-        }
     </style>
 </head>
-<body class="font-sans text-gray-200 antialiased selection:bg-white/20 selection:text-white">
-    @php
-        $currentUser = auth()->user();
-        $isLoggedIn = (bool) $currentUser;
-        $hasCheckoutAccess = false;
-        if ($currentUser) {
-            $hasCheckoutAccess = $currentUser->hasLmsAccess();
-        }
-        $lmsUrl = route('lms.entry');
-        $lessonId = $firstLesson?->id ?? 1;
-    @endphp
+<body>
 
-    <nav class="fixed w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12">
-            <div class="flex items-center justify-between h-24 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-6">
-                <a href="#" class="flex items-center md:justify-self-start" aria-label="Nde Guitar Class Home">
-                    <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="h-14 w-auto object-contain nav-logo-dark">
-                    <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE logo" class="h-14 w-auto object-contain nav-logo-light">
-                </a>
+@php
+    $currentUser    = auth()->user();
+    $isLoggedIn     = (bool) $currentUser;
+    $lmsUrl         = route('lms.entry');
+    $lessonId       = $firstLesson?->id ?? 1;
+@endphp
 
-                <div class="hidden md:flex items-center space-x-10 md:justify-self-center">
-                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">About the Class</a>
-                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Learning System</a>
-                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Pricing</a>
-                </div>
-
-                <div class="hidden md:flex items-center gap-4 md:justify-self-end">
-                    <button id="theme-toggle" type="button" class="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 transition-all" aria-label="Toggle theme">
-                        <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-                        <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-                    </button>
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Enter LMS</a>
-                    @if (! $isLoggedIn)
-                        <a href="{{ url('/registerclass') }}" class="register-cta bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all transform hover:scale-105">
-                            Register Now
-                        </a>
-                    @endif
-                </div>
-
-                <button id="mobile-menu-button" class="text-white md:hidden" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-            </div>
-
-            <div id="mobile-menu" class="md:hidden hidden pb-6 border-t border-white/10">
-                <div class="flex flex-col gap-4 pt-5">
-                    <a href="#tentang" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">About the Class</a>
-                    <a href="#fitur" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Learning System</a>
-                    <a href="#harga" class="nav-links-item text-sm font-medium text-textDim hover:text-white transition-colors">Pricing</a>
-                    <button id="theme-toggle-mobile" type="button" class="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 transition-all" aria-label="Toggle theme">
-                        <svg id="theme-icon-moon-mobile" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-                        <svg id="theme-icon-sun-mobile" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-                    </button>
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="nav-links-item text-sm font-medium text-white hover:text-gray-300 transition-colors">Enter LMS</a>
-                    @if (! $isLoggedIn)
-                        <a href="{{ url('/registerclass') }}" class="register-cta inline-flex justify-center bg-white text-black text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-gray-200 transition-all">
-                            Register Now
-                        </a>
-                    @endif
-                </div>
-            </div>
+<!-- ══════════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+    <a href="#" aria-label="Home" style="display:flex; align-items:flex-end; gap: .75rem; text-decoration:none; flex: 1;">
+        <div style="position:relative; transition: transform .4s;" id="nav-logo-wrap">
+            <img src="{{ asset('compro/img/ndelogo.png') }}"    alt="NDE" class="h-12 nav-logo-dark">
+            <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE" class="h-12 nav-logo-light">
         </div>
-    </nav>
+        <span style="font-family:'Inter',sans-serif; font-size:.65rem; font-weight:600; letter-spacing:.1em; color:var(--dim); padding-bottom:.4rem; text-transform:uppercase; white-space:nowrap; display:none; @media(min-width: 1024px) { display:block; }">GuitarClassByNde</span>
+    </a>
 
-    <section id="tentang" class="relative pt-40 pb-20 lg:pt-56 lg:pb-32 overflow-hidden px-6">
-        <div class="hero-glow"></div>
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-        
+    <div class="hidden md:flex items-center justify-center gap-[3.25rem]">
+        <a href="#method"  class="nav-link">Method</a>
+        <a href="#preview" class="nav-link">Preview</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+    </div>
 
-            <h1 class="hero-heading font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-tight mb-8">
-                Master Guitar with a<br>
-                <span class="hero-italic italic text-gray-400">Structured Method.</span>
+    <div class="hidden md:flex items-center justify-end gap-[1.75rem]" style="flex: 1;">
+        <button id="theme-toggle" class="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-gray-500 transition-all" aria-label="Toggle theme">
+            <svg id="icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            <svg id="icon-sun"  class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+        </button>
+        <a href="{{ $isLoggedIn ? $lmsUrl : route('login') }}" class="nav-link">Login</a>
+        @if(!$isLoggedIn)
+            <a href="{{ url('/registerclass') }}" class="btn-primary" style="padding: 0 1.25rem; min-height: 44px; font-size: .85rem; border-radius: 18px;">Start Learning</a>
+        @endif
+    </div>
+
+    <button id="burger" class="md:hidden text-cream" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu">
+    <a href="#method"  class="heading-md" onclick="closeMobile()">Method</a>
+    <a href="#preview" class="heading-md" onclick="closeMobile()">Preview</a>
+    <a href="#pricing" class="heading-md" onclick="closeMobile()">Pricing</a>
+    <a href="{{ $isLoggedIn ? $lmsUrl : route('login') }}" class="heading-md" onclick="closeMobile()">Login</a>
+    @if(!$isLoggedIn)
+        <a href="{{ url('/registerclass') }}" class="btn-primary text-xl px-10 py-4" onclick="closeMobile()">Join Now</a>
+    @endif
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     HERO — PARALLAX
+══════════════════════════════════════════════════════ -->
+<section id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="reveal" style="max-width:900px;">
+            <span class="sec-tag reveal">Why Nde Guitar Class</span>
+            <h1 class="heading-xl mt-3" style="line-height:.88;">
+                Learn Guitar.<br>
+                <span class="stroke-text">The Real Way.</span>
             </h1>
-
-            <p class="hero-body text-lg md:text-xl text-textDim max-w-2xl mx-auto leading-relaxed mb-12 font-light">
-                Get lifetime access to high-quality video lessons, enhanced with <strong class="hero-strong text-white font-medium">1-on-1 Coaching</strong> to keep your learning progress moving forward.
+            <p style="color:var(--dim); font-size:1.2rem; max-width:520px; margin:1.75rem 0 2.5rem; line-height:1.65; font-weight:400;">
+                Lifetime access to HD videos plus direct 1-on-1 coaching with the instructor. Not just tutorials, but a proper learning system.
             </p>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="hero-btn-primary w-full sm:w-auto bg-white text-black font-semibold px-8 py-4 rounded-full text-base transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
-                    {{ $isLoggedIn ? 'Enter LMS' : 'Start Your Journey' }}
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="btn-primary">
+                    {{ $isLoggedIn ? 'Enter LMS' : 'Get Started' }}
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
-                <a href="#video-preview" class="hero-btn-secondary w-full sm:w-auto bg-transparent border border-white/20 text-white font-medium px-8 py-4 rounded-full text-base hover:bg-white/5 transition flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    Watch Preview
-                </a>
+                <a href="#preview" class="btn-outline">Watch Preview</a>
             </div>
-        </div>
-
-    <section id="video-preview" class="py-20 px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-6">
-                <h3 class="hero-heading font-serif text-2xl md:text-3xl text-white">{{ $promo_title ?: 'Preview Video Kelas' }}</h3>
-            </div>
-            <div id="promo-preview" class="relative w-full aspect-video bg-surface rounded-2xl overflow-hidden border border-white/10 shadow-2xl group cursor-pointer">
-                <img id="promo-preview-fallback" src="{{ $promo_thumbnail_url ?: 'https://images.unsplash.com/photo-1549298240-0d8e60513026?q=80&w=2000&auto=format&fit=crop' }}" alt="Preview Video" class="w-full h-full object-cover opacity-100 transition duration-500">
-                <div id="promo-preview-loading" class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300 shadow-xl">
-                        <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            
+            <!-- Social Proof -->
+            <div class="reveal reveal-delay-2" style="margin-top: 3.5rem; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: .75rem;">
+                    <div style="display: flex; margin-right: -8px;">
+                        <img src="https://i.pravatar.cc/100?img=12" alt="Student" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--bg); margin-left:-12px;" />
+                        <img src="https://i.pravatar.cc/100?img=33" alt="Student" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--bg); margin-left:-12px;" />
+                        <img src="https://i.pravatar.cc/100?img=47" alt="Student" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--bg); margin-left:-12px;" />
                     </div>
+                    <span style="font-size: .85rem; font-weight: 600; color: var(--text);">1,200+ <span style="color:var(--dim); font-weight:400;">active students</span></span>
                 </div>
-                <video id="promo-preview-video" class="absolute inset-0 w-full h-full object-cover hidden" playsinline muted loop controls></video>
-            </div>
-            <p class="text-center text-textDim text-sm mt-6 font-light">Class material preview. Streaming quality is powered by Bunny.net.</p>
-        </div>
-    </section>
-
-    <section id="fitur" class="features-section py-24 px-6 bg-surface/50 border-y border-white/5">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="feature-title font-serif text-3xl md:text-4xl text-white mb-4">Premium <span class="hero-italic italic text-gray-400">Learning System.</span></h2>
-                <p class="feature-body text-textDim max-w-2xl mx-auto">This platform is built with modern technology to deliver an interactive and seamless learning experience.</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-12 md:gap-8">
-                <div class="space-y-6 group">
-                    <div class="feature-icon-wrap w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h3 class="feature-title font-serif text-2xl text-white">Unlimited HD Video</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Video lessons are hosted privately with <span class="feature-highlight text-gray-300 font-medium">Bunny CDN</span>. Rewatch them anytime for life with smooth streaming.</p>
+                <div style="width: 1px; height: 24px; background: var(--border); display: none; @media(min-width: 768px) { display: block; }"></div>
+                <div style="display: flex; align-items: center; gap: .5rem;">
+                    <span style="color: var(--warning) !important; font-size:1.1rem; letter-spacing: 2px;">★★★★★</span>
+                    <span style="font-size: .85rem; font-weight: 600; color: var(--text);">4.9/5 <span style="color:var(--dim); font-weight:400;">rating</span></span>
                 </div>
-
-                <div class="space-y-6 group">
-                    <div class="feature-icon-wrap w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
-                    </div>
-                    <h3 class="feature-title font-serif text-2xl text-white">Live Coaching 1-on-1</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Need help with technique? Book a live <span> video call</span> directly with the instructor on the website. Powered by clear and reliable <span class="feature-highlight text-gray-300 font-medium">Twilio WebRTC</span>.</p>
-                </div>
-
-                <div class="space-y-6 group">
-                    <div class="feature-icon-wrap w-14 h-14 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    </div>
-                    <h3 class="feature-title font-serif text-2xl text-white">Automated Course Enrollment</h3>
-                    <p class="feature-body text-textDim leading-relaxed font-light">Fully integrated checkout with <span class="feature-highlight text-gray-300 font-medium">Midtrans </span>Pay with QRIS, Gopay, or Virtual Account, and your class will be opened automatically immediately.</p>
+                <div style="width: 1px; height: 24px; background: var(--border); display: none; @media(min-width: 768px) { display: block; }"></div>
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: .85rem; font-weight: 600; color: var(--text);">100+ <span style="color:var(--dim); font-weight:400;">video lessons</span></span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="harga" class="pricing-section py-32 px-6 relative bg-black">
-        <div class="max-w-4xl mx-auto text-center mb-16">
-            <h2 class="pricing-heading font-serif text-4xl md:text-5xl text-white mb-6">Choose Your <span class="hero-italic italic text-gray-400">Learning Level.</span></h2>
-            <p class="pricing-sub text-gray-400 text-lg font-light">A one-time investment for a lifetime skill. No monthly subscription.</p>
+<!-- ══════════════════════════════════════════════════════
+     MARQUEE
+══════════════════════════════════════════════════════ -->
+<div style="margin: 3rem 0; position:relative; z-index:10;">
+    <div class="marquee-wrap">
+        <div class="marquee-track" aria-hidden="true">
+            <span>Lifetime Access</span><span>✦</span>
+            <span>Private HD Videos</span><span>✦</span>
+            <span>Coaching 1-on-1</span><span>✦</span>
+            <span>Auto Enrollment</span><span>✦</span>
+            <span>Lifetime Access</span><span>✦</span>
+            <span>Private HD Videos</span><span>✦</span>
+            <span>Coaching 1-on-1</span><span>✦</span>
+            <span>Auto Enrollment</span><span>✦</span>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════════ -->
+<section style="padding: 5rem 2rem; max-width:1100px; margin:0 auto;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:3rem;">
+        <div class="reveal text-center" style="display:flex; flex-direction:column; align-items:center;">
+            <div class="stat-num" style="font-size: 5.5rem;">3+</div>
+            <div style="color:var(--dim); font-size:.85rem; letter-spacing:.15em; text-transform:uppercase; font-weight:700; margin-top:1rem;">PACKAGES</div>
+            <div style="width:40px; height:2px; background:var(--primary); margin-top:1.25rem;"></div>
+        </div>
+        <div class="reveal reveal-delay-1 text-center" style="display:flex; flex-direction:column; align-items:center;">
+            <div class="stat-num" style="font-size: 5.5rem;">HD</div>
+            <div style="color:var(--dim); font-size:.85rem; letter-spacing:.15em; text-transform:uppercase; font-weight:700; margin-top:1rem;">VIDEOS</div>
+            <div style="width:40px; height:2px; background:var(--primary); margin-top:1.25rem;"></div>
+        </div>
+        <div class="reveal reveal-delay-2 text-center" style="display:flex; flex-direction:column; align-items:center;">
+            <div class="stat-num" style="font-size: 5.5rem;">1:1</div>
+            <div style="color:var(--dim); font-size:.85rem; letter-spacing:.15em; text-transform:uppercase; font-weight:700; margin-top:1rem;">COACHING</div>
+            <div style="width:40px; height:2px; background:var(--primary); margin-top:1.25rem;"></div>
+        </div>
+        <div class="reveal reveal-delay-3 text-center" style="display:flex; flex-direction:column; align-items:center;">
+            <div class="stat-num" style="font-size: 5.5rem;">∞</div>
+            <div style="color:var(--dim); font-size:.85rem; letter-spacing:.15em; text-transform:uppercase; font-weight:700; margin-top:1rem;">LIFETIME</div>
+            <div style="width:40px; height:2px; background:var(--primary); margin-top:1.25rem;"></div>
+        </div>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     METHOD — PARALLAX SECTION
+══════════════════════════════════════════════════════ -->
+<section id="method" class="parallax-section" style="min-height:auto;">
+    <div class="parallax-bg" id="method-bg"
+         style="background-image: url('https://images.unsplash.com/photo-1601342630314-8427c38bf5e6?q=80&w=2000&auto=format&fit=crop'); background-attachment:fixed;">
+    </div>
+    <div class="parallax-overlay"></div>
+
+    <div style="position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:7rem 2rem;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start;" class="method-grid">
+            <!-- Left: Text -->
+            <div>
+                <span class="sec-tag reveal">Why Nde Guitar Class</span>
+                <h2 class="heading-lg reveal reveal-delay-1" style="margin-top:.5rem; color:var(--heading);">
+                    A Different <br><span class="stroke-text">System.</span>
+                </h2>
+                <p class="reveal reveal-delay-2" style="color:var(--dim); font-size:1.05rem; line-height:1.7; margin-top:1.5rem; max-width:440px;">
+                    Not just watching videos and getting assignments. Here you can directly book coaching calls, discuss techniques, and get real-time feedback from the instructor.
+                </p>
+            </div>
+
+            <!-- Right: Steps -->
+            <div style="display:flex; flex-direction:column; gap:2.5rem;">
+                <div class="reveal reveal-delay-1" style="position:relative; padding-left:1.5rem; border-left:2px solid rgba(92,168,245,.3);">
+                    <div class="step-num">01</div>
+                    <h3 class="heading-md" style="font-size:1.6rem; position:relative;">Choose Package</h3>
+                    <p style="color:var(--dim); font-size:.95rem; line-height:1.65; margin-top:.5rem; position:relative;">Choose the package that fits you — from Beginner to those that include a Coaching Ticket for a 1-on-1 session.</p>
+                </div>
+                <div class="reveal reveal-delay-2" style="position:relative; padding-left:1.5rem; border-left:2px solid rgba(92,168,245,.3);">
+                    <div class="step-num">02</div>
+                    <h3 class="heading-md" style="font-size:1.6rem; position:relative;">Access HD Videos</h3>
+                    <p style="color:var(--dim); font-size:.95rem; line-height:1.65; margin-top:.5rem; position:relative;">All videos are streamed via Bunny CDN — private, fast, and can be rewatched forever from anywhere.</p>
+                </div>
+                <div class="reveal reveal-delay-3" style="position:relative; padding-left:1.5rem; border-left:2px solid rgba(92,168,245,.3);">
+                    <div class="step-num">03</div>
+                    <h3 class="heading-md" style="font-size:1.6rem; position:relative;">Book Coaching Call</h3>
+                    <p style="color:var(--dim); font-size:.95rem; line-height:1.65; margin-top:.5rem; position:relative;">Use your Coaching Ticket to book a direct video call session with the instructor, powered by Twilio WebRTC.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     VIDEO PREVIEW — PARALLAX BG
+══════════════════════════════════════════════════════ -->
+<section id="preview" class="video-section" style="padding:7rem 2rem;">
+    <div style="position:relative; z-index:1; max-width:900px; margin:0 auto; text-align:center;">
+        <span class="sec-tag reveal">Watch First</span>
+        <h2 class="heading-lg reveal reveal-delay-1" style="margin-top:.5rem;">Course <span class="stroke-text">Preview.</span></h2>
+        <p class="reveal reveal-delay-2" style="color:var(--dim); font-size:1.05rem; margin:1.25rem 0 3rem; line-height:1.65;">Click to play an exclusive preview of the course content.</p>
+
+        <!-- Video Card -->
+        <div class="reveal reveal-delay-3" style="position:relative; border-radius:1.75rem; overflow:hidden; aspect-ratio:16/9; cursor:pointer; border:1px solid var(--border);" id="promo-preview">
+            <img id="promo-preview-fallback"
+                 src="{{ $promo_thumbnail_url ?: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1600&auto=format&fit=crop' }}"
+                 alt="Preview" style="width:100%;height:100%;object-fit:cover;">
+            <!-- Play overlay -->
+            <div id="promo-preview-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,10,.65);">
+                <div class="play-btn-pulse" style="width:80px;height:80px;border-radius:50%;background:rgba(92,168,245,.9);display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;"
+                     onmouseover="this.style.transform='scale(1.1)';this.classList.remove('play-btn-pulse');this.style.boxShadow='0 0 40px rgba(92,168,245,.6)'"
+                     onmouseout="this.style.transform='scale(1)';this.classList.add('play-btn-pulse');this.style.boxShadow='none'">
+                    <svg width="28" height="28" fill="white" viewBox="0 0 24 24" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+            </div>
+            <video id="promo-preview-video" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;" playsinline muted loop controls></video>
+        </div>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     MEET NDE (PATTERN BREAKER)
+══════════════════════════════════════════════════════ -->
+<section id="meet" class="meet-nde-grid">
+    <div class="meet-nde-img">
+        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=2000&auto=format&fit=crop" alt="Instructor">
+    </div>
+    <div class="meet-nde-content">
+        <span class="sec-tag reveal" style="align-self:flex-start;">Meet The Instructor</span>
+        <h2 class="heading-lg reveal reveal-delay-1" style="margin-top:1rem; font-size:clamp(2.5rem, 5vw, 4.5rem); letter-spacing:-0.02em; line-height:.95;">
+            Learn from someone who <br><span class="stroke-text">actually plays.</span>
+        </h2>
+        <div style="width:60px; height:2px; background:var(--primary); margin:2rem 0;" class="reveal reveal-delay-2"></div>
+        <p class="reveal reveal-delay-2" style="color:var(--dim); font-size:1.15rem; line-height:1.75; max-width:500px; margin-bottom:1.5rem;">
+            Hi, I'm Nde. I've been playing and teaching guitar for over a decade. I created this system because I was tired of seeing students get stuck with generic tutorials that teach songs, but never teach <em>how</em> to actually play the guitar.
+        </p>
+        <p class="reveal reveal-delay-3" style="color:var(--text); font-size:1.15rem; line-height:1.75; max-width:500px; font-weight:600;">
+            My goal is simple: to make you a self-sufficient guitarist who understands the fretboard, rhythm, and theory, all while having fun.
+        </p>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     FEATURES
+══════════════════════════════════════════════════════ -->
+<section id="fitur" style="padding:7rem 2rem;">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div style="text-align:center; margin-bottom:4rem;">
+            <span class="sec-tag reveal">What You Get</span>
+            <h2 class="heading-lg reveal reveal-delay-1">Inside <span class="stroke-text">the Class.</span></h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem;">
+            <!-- F1 -->
+            <div class="glass-card reveal p-8" style="position:relative; overflow:hidden;">
+                <div class="feature-num">01</div>
+                <div style="width:3.5rem;height:3.5rem;border-radius:1rem;background:rgba(92,168,245,.12);border:1px solid rgba(92,168,245,.25);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem; position:relative; z-index:2;">
+                    <svg width="22" height="22" fill="none" stroke="var(--primary)" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </div>
+                <h3 style="font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--heading);letter-spacing:.04em;margin-bottom:.75rem; position:relative; z-index:2;">Unlimited HD Video</h3>
+                <p style="color:var(--dim);line-height:1.65;font-size:.9rem; position:relative; z-index:2;">Video lessons are streamed via <strong style="color:var(--text);">Bunny CDN</strong>. Private, fast, and can be accessed for a lifetime without limits.</p>
+            </div>
+            <!-- F2 -->
+            <div class="glass-card reveal reveal-delay-1 p-8" style="position:relative; overflow:hidden;">
+                <div class="feature-num">02</div>
+                <div style="width:3.5rem;height:3.5rem;border-radius:1rem;background:rgba(92,168,245,.12);border:1px solid rgba(92,168,245,.25);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem; position:relative; z-index:2;">
+                    <svg width="22" height="22" fill="none" stroke="var(--primary)" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                </div>
+                <h3 style="font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--heading);letter-spacing:.04em;margin-bottom:.75rem; position:relative; z-index:2;">Live 1-on-1 Coaching</h3>
+                <p style="color:var(--dim);line-height:1.65;font-size:.9rem; position:relative; z-index:2;">Book a direct video call session with the instructor. Ask about techniques, ask for feedback, or discuss progress — in real-time via <strong style="color:var(--text);">Twilio WebRTC</strong>.</p>
+            </div>
+            <!-- F3 -->
+            <div class="glass-card reveal reveal-delay-2 p-8" style="position:relative; overflow:hidden;">
+                <div class="feature-num">03</div>
+                <div style="width:3.5rem;height:3.5rem;border-radius:1rem;background:rgba(92,168,245,.12);border:1px solid rgba(92,168,245,.25);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem; position:relative; z-index:2;">
+                    <svg width="22" height="22" fill="none" stroke="var(--primary)" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h3 style="font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--heading);letter-spacing:.04em;margin-bottom:.75rem; position:relative; z-index:2;">Auto Enrollment</h3>
+                <p style="color:var(--dim);line-height:1.65;font-size:.9rem; position:relative; z-index:2;">Checkout integrated with <strong style="color:var(--text);">Midtrans</strong>. Pay with QRIS, Gopay, or VA — class access opens automatically.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     PRICING
+══════════════════════════════════════════════════════ -->
+<section id="pricing" style="padding:7rem 2rem; background: var(--bg-alt, var(--bg));">
+    <div style="max-width:1050px; margin:0 auto;">
+        <div style="text-align:center; margin-bottom:4.5rem;">
+            <span class="sec-tag reveal">Once in a Lifetime Investment</span>
+            <h2 class="heading-lg reveal reveal-delay-1">Choose <span class="stroke-text">Package.</span></h2>
         </div>
 
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <div class="pricing-grid">
             @php
                 $orderMap = [
-                    config('coaching.coaching_package_slug', 'coaching-ticket') => 0,
+                    config('coaching.coaching_package_slug','coaching-ticket') => 0,
                     'intermediate' => 1,
-                    'beginner' => 2,
+                    'beginner'     => 2,
                 ];
-                $orderedPackages = $packages->sortBy(function ($pkg) use ($orderMap) {
-                    return $orderMap[$pkg->slug] ?? 99;
-                })->values();
+                $orderedPackages = $packages->sortBy(fn($p) => $orderMap[$p->slug] ?? 99)->values();
             @endphp
-            @foreach($orderedPackages as $i => $pkg)
+
+            @foreach($orderedPackages as $pkg)
                 @php
                     $isFeatured = ($pkg->slug ?? null) === 'intermediate';
-                    $benefits = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
-                    $price = number_format($pkg->price, 0, ',', '.');
-                    $imgSrc = $pkg->image
-                        ? asset('storage/' . $pkg->image)
-                        : asset('pictures/' . $pkg->slug . '.jpg');
+                    $benefits   = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
+                    $imgSrc     = $pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg');
+                    
+                    $priceRaw = $pkg->price;
+                    $priceFormatted = number_format($priceRaw, 0, '', '.');
+                    $priceParts = explode('.', $priceFormatted, 2);
+                    $priceMain = $priceParts[0];
+                    $priceDecimals = isset($priceParts[1]) ? '.' . $priceParts[1] : '';
                 @endphp
 
-                @if($isFeatured)
-                <div class="flex-1 bg-white rounded-[2.5rem] text-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] flex flex-col justify-between transform lg:scale-105 z-10 border-4 border-white">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-1 bg-black text-white text-[10px] font-bold tracking-widest uppercase rounded-b-xl z-10">Best Value</div>
-                    <div class="w-full h-52 overflow-hidden">
-                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
+                <div class="pricing-card reveal {{ $isFeatured ? 'featured reveal-delay-1' : ($loop->last ? 'reveal-delay-2' : '') }}"
+                     style="{{ $isFeatured ? 'transform:scale(1.03);' : '' }}">
+
+                    @if($isFeatured)
+                        <div style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);background:var(--primary);color:#0A0A0A;font-size:.65rem;font-weight:800;letter-spacing:.15em;padding:.4rem 1.25rem;border-radius:999px;text-transform:uppercase;z-index:10;box-shadow:0 4px 12px rgba(92,168,245,.3);">BEST VALUE</div>
+                    @endif
+                    <div style="height:160px; position:relative; overflow:hidden; border-top-left-radius:1.75rem; border-top-right-radius:1.75rem;">
+                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" style="width:100%; height:100%; object-fit:cover; filter:brightness(0.85);">
+                        <div style="position:absolute;inset:0;background:linear-gradient(to bottom, transparent 40%, var(--surface) 100%);"></div>
                     </div>
-                    <div class="p-10">
-                        <span class="text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4 block">Recommended</span>
-                        <h3 class="text-4xl font-serif text-black mb-2">{{ $pkg->name }}</h3>
-                        <div class="flex justify-center items-end gap-1 my-8">
-                            <span class="text-5xl font-bold text-black tracking-tighter">Rp {{ $price }}</span>
+
+                    <div style="padding: 1.25rem 1.75rem 1.5rem; text-align:left; display:flex; flex-direction:column; flex:1;">
+                        @if($isFeatured)
+                            <div style="color:var(--primary); font-size:.7rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem;">RECOMMENDED</div>
+                        @endif
+                        <div style="font-family:'Anton',sans-serif; font-size:1.5rem; letter-spacing:.08em; color:var(--heading); text-transform:uppercase;">
+                            {{ $pkg->name }}
                         </div>
-                        <div class="space-y-4 mb-10 text-left">
-                            @foreach($benefits as $benefit)
-                            <div class="flex items-start gap-3 text-sm text-gray-700">
-                                <svg class="w-5 h-5 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span>{{ $benefit }}</span>
+                        
+                        <div style="font-family:'Inter',sans-serif; font-size:2.25rem; font-weight:800; color:var(--heading); letter-spacing:-.03em; margin:.25rem 0 1.25rem;">
+                            Rp {{ $priceFormatted }}
+                        </div>
+
+                        <div style="display:flex;flex-direction:column;gap:0.6rem;flex:1;margin-bottom:1.5rem; text-align:left;">
+                            @foreach($benefits as $b)
+                            <div style="display:flex;align-items:flex-start;gap:.6rem;font-size:.85rem;color:var(--dim);font-weight:500;">
+                                <svg width="15" height="15" fill="none" stroke="{{ $isFeatured ? 'var(--primary)' : '#ef4444' }}" viewBox="0 0 24 24" stroke-width="2.5" style="flex-shrink:0;margin-top:2px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                <span style="line-height:1.4;">{{ $b }}</span>
                             </div>
                             @endforeach
                         </div>
-                        @if($isLoggedIn)
-                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Get Access Now</a>
-                        @else
-                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="w-full bg-black text-white font-bold px-6 py-5 rounded-2xl hover:opacity-90 transition-all shadow-xl block text-center">Get Access Now</a>
-                        @endif
+
+                        <a href="{{ $isLoggedIn ? route('kelas.buy',$lessonId).'?package_id='.$pkg->id.'&package_qty=1' : route('register').'?package_id='.$pkg->id.'&package_qty=1' }}"
+                           class="{{ $isFeatured ? 'btn-primary' : 'btn-outline' }}" style="width:100%; border-radius:18px; justify-content:center; text-transform:uppercase; font-size:.85rem; font-weight:800; letter-spacing:.1em; min-height:48px; {{ !$isFeatured ? 'border-color:var(--border); color:var(--heading);' : '' }}">
+                            {{ $isFeatured ? 'Get Access Now' : 'Select Package' }}
+                        </a>
                     </div>
                 </div>
-                @else
-                <div class="pkg-regular flex-1 bg-surface border border-white/10 rounded-[2.5rem] text-center relative overflow-hidden shadow-2xl flex flex-col justify-between group transition-all hover:border-white/30">
-                    <div class="w-full h-52 overflow-hidden">
-                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-300">
-                    </div>
-                    <div class="p-8 flex flex-col flex-1 justify-between">
-                        <div>
-                            <span class="pkg-kicker text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4 block">{{ $pkg->description ?? '' }}</span>
-                            <h3 class="pkg-name text-3xl font-serif text-white mb-2">{{ $pkg->name }}</h3>
-                            <div class="flex justify-center items-end gap-1 my-8">
-                                <span class="pkg-price text-4xl font-bold text-white tracking-tighter">Rp {{ $price }}</span>
-                            </div>
-                            <div class="space-y-4 mb-10 text-left">
-                                @foreach($benefits as $benefit)
-                                <div class="flex items-start gap-3 text-sm text-gray-300">
-                                    <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span class="pkg-benefit">{{ $benefit }}</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @if($isLoggedIn)
-                            <a href="{{ route('kelas.buy', $lessonId) }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Choose Package</a>
-                        @else
-                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" class="pkg-btn w-full bg-white/10 text-white border border-white/20 font-semibold px-6 py-4 rounded-2xl hover:bg-white hover:text-black transition-all block text-center">Choose Package</a>
-                        @endif
-                    </div>
-                </div>
-                @endif
             @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="faq-top">
-        <div class="faq-shell">
-            <span class="faq-kicker">FAQ</span>
-            <h2 class="faq-title">Frequently Asked Questions</h2>
-            <p class="faq-subtitle">Find quick answers about NDE services, programs, and coaching tickets.</p>
+<hr class="section-divider">
 
-            <div class="faq-list">
-                @forelse(($faq_items ?? []) as $faq)
-                    <div class="faq-item {{ $loop->first ? 'is-open' : '' }}">
-                        <button class="faq-question" type="button">
-                            <span>{{ $faq->question }}</span>
-                            <span class="faq-icon" aria-hidden="true"></span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>{{ $faq->answer }}</p>
-                        </div>
+<!-- ══════════════════════════════════════════════════════
+     STUDENT PROGRESS
+══════════════════════════════════════════════════════ -->
+<section style="padding:7rem 2rem; background: var(--surface); position:relative; overflow:hidden;">
+    <div style="max-width:1000px; margin:0 auto;">
+        <div style="text-align:center; margin-bottom:4rem;">
+            <span class="sec-tag reveal">Real Progress</span>
+            <h2 class="heading-lg reveal reveal-delay-1">From Zero to <span class="stroke-text">Hero.</span></h2>
+        </div>
+
+        <div class="glass-card reveal reveal-delay-2" style="display:flex; flex-wrap:wrap; overflow:hidden; border-radius:1.75rem; padding: 0;">
+            <div style="flex:1 1 300px; padding:3.5rem; border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center;">
+                <div style="display:flex; align-items:center; gap:.25rem; margin-bottom:2rem;">
+                    <svg width="20" height="20" fill="#F3C969" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg width="20" height="20" fill="#F3C969" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg width="20" height="20" fill="#F3C969" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg width="20" height="20" fill="#F3C969" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg width="20" height="20" fill="#F3C969" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <p style="font-size:1.25rem; line-height:1.6; color:var(--heading); margin-bottom:2.5rem; font-style:italic;">
+                    "I've only been learning basic mechanics for 2 weeks and getting evaluations from the instructor, and I can already play a full song without any mistakes. It's truly different from learning by myself."
+                </p>
+                <div style="display:flex; align-items:center; gap:1.25rem;">
+                    <img src="https://i.pravatar.cc/100?img=11" alt="Aldi" style="width:64px; height:64px; border-radius:50%; border: 3px solid var(--border);">
+                    <div>
+                        <div style="font-weight:700; font-size:1.1rem; color:var(--heading);">Aldi, 20 years old</div>
+                        <div style="font-size:.9rem; color:var(--dim);">College Student</div>
                     </div>
-                @empty
-                    <div class="faq-item is-open">
-                        <button class="faq-question" type="button">
-                            <span>No FAQ items are available yet.</span>
-                            <span class="faq-icon" aria-hidden="true"></span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Admins can add FAQ items from the dashboard.</p>
-                        </div>
+                </div>
+            </div>
+            
+            <div style="flex:1 1 300px; background:rgba(0,0,0,0.2); padding:3.5rem; display:flex; flex-direction:column; justify-content:center;">
+                <div style="display:flex; flex-direction:column; gap:2.5rem;">
+                    <div style="position:relative; padding-left: 2rem;">
+                        <div style="position:absolute; left:0; top:0.25rem; width:10px; height:10px; border-radius:50%; background:var(--dim);"></div>
+                        <div style="position:absolute; left:4px; top:1rem; bottom:-2.5rem; width:2px; background:var(--border);"></div>
+                        <div style="font-family:'Anton',sans-serif; color:var(--dim); letter-spacing:.08em; font-size:.85rem; margin-bottom:.35rem; text-transform:uppercase;">Week 1</div>
+                        <h4 style="font-size:1.05rem; font-weight:700; color:var(--heading); margin:0 0 .35rem;">Couldn't switch chords</h4>
+                        <p style="font-size:.9rem; color:var(--dim); margin:0; line-height:1.5;">Fingers hurt often, slow transitions, and messy rhythm.</p>
                     </div>
-                @endforelse
+                    
+                    <div style="position:relative; padding-left: 2rem;">
+                        <div style="position:absolute; left:-1px; top:0.25rem; width:12px; height:12px; border-radius:50%; background:var(--success); box-shadow: 0 0 12px rgba(168,214,58,0.6);"></div>
+                        <div style="font-family:'Anton',sans-serif; color:var(--success); letter-spacing:.08em; font-size:.85rem; margin-bottom:.35rem; text-transform:uppercase;">Week 6</div>
+                        <h4 style="font-size:1.05rem; font-weight:700; color:var(--heading); margin:0 0 .35rem;">Can play full songs</h4>
+                        <p style="font-size:.9rem; color:var(--dim); margin:0; line-height:1.5;">Reflexive chord transitions, on-tempo strumming, solid basic techniques.</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <footer class="site-footer bg-[#07090d] border-t border-white/5 pt-16 pb-10 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-[1.35fr_repeat(4,minmax(0,1fr))] gap-8 items-start">
-                <div>
-                    <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE logo" class="h-16 w-auto object-contain nav-logo-dark">
-                    <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE logo" class="h-16 w-auto object-contain nav-logo-light">
-                    <p class="footer-logo-text mt-3 text-[13px] text-white/70 font-semibold tracking-[0.12em]">NDE GUITAR CLASS</p>
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════════════════ -->
+<section style="padding:7rem 2rem; background: var(--bg-alt2, var(--bg));">
+    <div style="max-width:720px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:3.5rem;">
+            <span class="sec-tag reveal">FAQ</span>
+            <h2 class="heading-lg reveal reveal-delay-1">Have <span class="stroke-text">Questions?</span></h2>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+            @forelse($faq_items ?? [] as $faq)
+            <div class="glass-card faq-item reveal" style="padding:1.5rem;cursor:pointer;" onclick="this.classList.toggle('open')">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+                    <h4 style="font-size:1rem;font-weight:600;color:var(--heading);margin:0;font-family:'Inter',sans-serif;text-transform:none;letter-spacing:0;">{{ $faq->question }}</h4>
+                    <div class="faq-icon-plus" style="width:2rem;height:2rem;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--primary);font-size:1.4rem;line-height:1;">+</div>
                 </div>
-
-                <nav class="flex flex-col gap-2">
-                    <a href="#tentang" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">ABOUT THE CLASS</a>
-                    <a href="#fitur" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">LEARNING SYSTEM</a>
-                    <a href="#video-preview" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">VIDEO PREVIEW</a>
-                </nav>
-
-                <nav class="flex flex-col gap-2">
-                    <a href="#harga" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">PACKAGE PRICING</a>
-                    @foreach($packages as $pkg)
-                    <a href="#harga" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">{{ strtoupper($pkg->name) }}</a>
-                    @endforeach
-                </nav>
-
-                <nav class="flex flex-col gap-2">
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">ENTER LMS</a>
-                    <a href="{{ url('/registerclass') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">REGISTER NOW</a>
-                    <a href="{{ route('coaching.index') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">BOOK COACHING</a>
-                </nav>
-
-                <nav class="flex flex-col gap-2">
-                    <a href="mailto:support@guitarclassbynde.id?subject=Support%20NDE%20Guitar%20Class" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">EMAIL SUPPORT</a>
-                    <a href="https://wa.me/+6281273796646" target="_blank" rel="noopener" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">WHATSAPP ADMIN</a>
-                    <a href="{{ route('coaching.index') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">COACHING HELP</a>
-                    <a href="{{ url('/ndeofficial') }}" class="footer-link text-xs font-bold tracking-[0.12em] text-white/85 hover:text-white transition-colors">HOME PAGE</a>
-                </nav>
+                <div class="faq-body">
+                    <p style="color:var(--dim);margin:0;font-size:.92rem;line-height:1.7;">{{ $faq->answer }}</p>
+                </div>
             </div>
+            @empty
+            <p style="color:var(--dim);text-align:center;">No FAQs available yet.</p>
+            @endforelse
+        </div>
+    </div>
+</section>
 
-            <div class="footer-divider h-px mt-10 mb-14 bg-gradient-to-r from-white/15 via-white/20 to-white/15"></div>
+<!-- ══════════════════════════════════════════════════════
+     CTA FINAL SECTION
+══════════════════════════════════════════════════════ -->
+<section class="cta-section" style="padding:7rem 2rem;">
+    <div class="cta-glow"></div>
+    <div style="position:relative;z-index:1;max-width:900px;margin:0 auto;text-align:center;">
+        <span class="sec-tag reveal">Get Started</span>
+        <h2 class="heading-xl reveal reveal-delay-1" style="font-size:clamp(3rem,8vw,7rem);margin:.5rem 0 1.5rem;">
+            Your Guitar <br><span class="stroke-text">Awaits.</span>
+        </h2>
+        <p class="reveal reveal-delay-2" style="color:var(--dim);font-size:1.1rem;line-height:1.65;max-width:520px;margin:0 auto 2.5rem;">
+            Sign up now and start your journey of learning guitar the right way — structured, personal, and for a lifetime.
+        </p>
 
-            <div class="flex flex-col items-center justify-center gap-4">
-                <div class="flex items-center gap-3">
-                    <a href="{{ url('/ndeofficial') }}" class="footer-social w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M13.5 8H16V5h-2.5c-2.8 0-4.5 1.8-4.5 4.6V12H7v3h2v4h3v-4h2.6l.4-3H12V9.8c0-1.2.3-1.8 1.5-1.8z"/></svg>
-                    </a>
-                    <a href="{{ route('coaching.index') }}" class="footer-social w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M22 5.8c-.7.3-1.5.5-2.3.6.8-.5 1.4-1.2 1.7-2.2-.8.5-1.6.8-2.5 1-1.4-1.5-3.9-1.6-5.4-.1-.9.9-1.3 2.1-1.1 3.3-3.2-.2-6-1.7-7.9-4-.4.7-.6 1.5-.6 2.3 0 1.6.8 3 2 3.8-.6 0-1.2-.2-1.8-.5 0 2.2 1.5 4.1 3.7 4.5-.6.2-1.3.2-1.9.1.5 1.8 2.2 3 4 3.1-1.5 1.2-3.3 1.8-5.2 1.8H4c1.9 1.2 4.2 1.9 6.5 1.9 7.8 0 12-6.5 12-12.1v-.6c.8-.5 1.5-1.2 2-2z"/></svg>
-                    </a>
-                    <a href="{{ auth()->check() ? $lmsUrl : route('login') }}" class="footer-social w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M6 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4-7v3c3.9 0 7 3.1 7 7h3c0-5.5-4.5-10-10-10zm0-6v3c7.2 0 13 5.8 13 13h3C18 11.2 10.8 4 2 4z"/></svg>
-                    </a>
-                    <a href="{{ url('/registerclass') }}" class="footer-social w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M12 10.2v3.3h4.7c-.2 1.2-1.4 3.4-4.7 3.4-2.8 0-5.1-2.3-5.1-5.1S9.2 6.7 12 6.7c1.6 0 2.7.7 3.3 1.2l2.3-2.2C16.2 4.4 14.3 3.6 12 3.6 7.5 3.6 3.8 7.3 3.8 11.8S7.5 20 12 20c6.9 0 8.5-4.8 8.5-7.2 0-.5-.1-.9-.1-1.3H12z"/></svg>
-                    </a>
-                    <a href="mailto:support@guitarclassbynde.id?subject=Support%20NDE%20Guitar%20Class" class="footer-social w-10 h-10 rounded-full border border-white/40 text-white/90 hover:text-white hover:border-white/70 hover:bg-white/10 transition-all inline-flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M6 10.5A1.5 1.5 0 1 1 6 13.5 1.5 1.5 0 0 1 6 10.5zm6 0A1.5 1.5 0 1 1 12 13.5 1.5 1.5 0 0 1 12 10.5zm6 0A1.5 1.5 0 1 1 18 13.5 1.5 1.5 0 0 1 18 10.5z"/></svg>
-                    </a>
-                </div>
-                <p class="footer-copy text-sm md:text-base text-white/80 font-semibold">&copy; {{ now()->year }} Nde Official. All rights reserved.</p>
+        <!-- Social Proof above CTA -->
+        <div class="reveal reveal-delay-3" style="display:flex; justify-content:center; gap:3rem; margin-bottom: 3.5rem;">
+            <div style="text-align:center;">
+                <div style="font-family:'Anton',sans-serif; font-size:2.5rem; color:var(--heading); line-height:1;">1,200+</div>
+                <div style="font-size:.75rem; font-weight:700; color:var(--dim); letter-spacing:.1em; text-transform:uppercase; margin-top:.5rem;">Students</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-family:'Anton',sans-serif; font-size:2.5rem; color:var(--heading); line-height:1;">4.9</div>
+                <div style="font-size:.75rem; font-weight:700; color:var(--dim); letter-spacing:.1em; text-transform:uppercase; margin-top:.5rem;">Rating</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-family:'Anton',sans-serif; font-size:2.5rem; color:var(--heading); line-height:1;">100+</div>
+                <div style="font-size:.75rem; font-weight:700; color:var(--dim); letter-spacing:.1em; text-transform:uppercase; margin-top:.5rem;">Lessons</div>
             </div>
         </div>
-    </footer>
 
-    <script>
-        (function () {
-            var promoStreamUrl = null;
-            var previewVideo = document.getElementById('promo-preview-video');
-            var fallbackImage = document.getElementById('promo-preview-fallback');
-            var loadingOverlay = document.getElementById('promo-preview-loading');
-            var previewCard = document.getElementById('promo-preview');
+        <div class="reveal reveal-delay-4" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="btn-primary" style="font-size:1.1rem;padding:1.1rem 3rem;">
+                {{ $isLoggedIn ? 'Enter LMS' : 'Join Class' }}
+            </a>
+            <a href="https://wa.me/+6281273796646" class="btn-outline" style="font-size:1rem;">
+                Ask via WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
 
-            function showFallback() {
-                if (previewVideo) { previewVideo.classList.add('hidden'); previewVideo.removeAttribute('src'); try { previewVideo.pause(); } catch (e) {} }
-                if (fallbackImage) fallbackImage.classList.remove('hidden');
-                if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════ -->
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:3.5rem 2rem 2rem;">
+    <div style="max-width:1200px;margin:0 auto;">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border);">
+            <div>
+                <img src="{{ asset('compro/img/ndelogo.png') }}" alt="NDE" class="h-12 nav-logo-dark" style="margin-bottom:.75rem;">
+                <img src="{{ asset('compro/img/nde_logo_light.png') }}" alt="NDE" class="h-12 nav-logo-light" style="margin-bottom:.75rem;">
+                <p style="color:var(--dim);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;">Zero Bullshit Guitar Lessons.</p>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+                <a href="#" class="btn-outline" style="padding:.65rem 1.25rem;font-size:.75rem;">Instagram</a>
+                <a href="#" class="btn-outline" style="padding:.65rem 1.25rem;font-size:.75rem;">YouTube</a>
+                <a href="#" class="btn-outline" style="padding:.65rem 1.25rem;font-size:.75rem;">TikTok</a>
+                <a href="#" class="btn-outline" style="padding:.65rem 1.25rem;font-size:.75rem;">Spotify Playlist</a>
+                <a href="https://wa.me/+6281273796646" class="btn-outline" style="padding:.65rem 1.25rem;font-size:.75rem;">WhatsApp</a>
+            </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding-top:1.5rem;">
+            <p style="color:var(--dim);font-size:.8rem;">&copy; {{ now()->year }} Nde Official. All rights reserved.</p>
+            <div style="display:flex;gap:1.5rem;">
+                <a href="#" style="color:var(--dim);font-size:.8rem;text-decoration:none;hover:color:var(--heading)">Terms</a>
+                <a href="#" style="color:var(--dim);font-size:.8rem;text-decoration:none;">Privacy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════ -->
+<script>
+    /* ── NAVBAR SCROLL & ACTIVE STATE ──────── */
+    const navbar = document.getElementById('navbar');
+    const logoWrap = document.getElementById('nav-logo-wrap');
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY > 60;
+        navbar.classList.toggle('scrolled', scrolled);
+        if (logoWrap) logoWrap.style.transform = scrolled ? 'scale(0.85)' : 'scale(1)';
+
+        let current = '';
+        sections.forEach(sec => {
+            const secTop = sec.offsetTop;
+            if (window.scrollY >= secTop - 200) current = sec.getAttribute('id');
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
             }
+        });
+    }, { passive: true });
 
-            function playStream(url) {
-                if (!previewVideo || !url) { showFallback(); return; }
-                if (fallbackImage) fallbackImage.classList.add('hidden');
-                if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-                previewVideo.classList.remove('hidden');
-                var useNativeHls = previewVideo.canPlayType('application/vnd.apple.mpegurl');
-                function startPlayback() { previewVideo.src = url; previewVideo.load(); previewVideo.play().catch(function () {}); if (loadingOverlay) loadingOverlay.classList.add('hidden'); }
-                if (useNativeHls) { startPlayback(); return; }
-                if (window.Hls) {
-                    try {
-                        if (window._promoHls) { try { window._promoHls.destroy(); } catch (e) {} window._promoHls = null; }
-                        var hls = new Hls(); window._promoHls = hls;
-                        hls.loadSource(url); hls.attachMedia(previewVideo);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function () { previewVideo.play().catch(function () {}); if (loadingOverlay) loadingOverlay.classList.add('hidden'); });
-                        hls.on(Hls.Events.ERROR, function (_, data) { if (data && data.fatal) showFallback(); });
-                    } catch (e) { showFallback(); }
-                    return;
-                }
-                var s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest'; s.async = true;
-                s.onload = function () { if (window.Hls) playStream(url); else showFallback(); };
-                s.onerror = showFallback; document.head.appendChild(s);
+    /* ── MOBILE MENU ───────────────────────── */
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    function closeMobile() { mobileMenu.classList.remove('open'); }
+
+    /* ── THEME TOGGLE ──────────────────────── */
+    (function(){
+        const toggle = document.getElementById('theme-toggle');
+        const moon = document.getElementById('icon-moon');
+        const sun  = document.getElementById('icon-sun');
+        function getTheme() {
+            const m = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+            return m ? decodeURIComponent(m[1]) : 'dark';
+        }
+        function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            document.cookie = 'theme='+encodeURIComponent(t)+'; path=/; max-age=31536000; SameSite=Lax';
+            const isLight = t === 'light';
+            moon.classList.toggle('hidden', isLight);
+            sun.classList.toggle('hidden', !isLight);
+        }
+        setTheme(getTheme());
+        toggle.addEventListener('click', () => setTheme(getTheme() === 'dark' ? 'light' : 'dark'));
+    })();
+
+    /* ── PARALLAX HERO ─────────────────────── */
+    const heroBg = document.getElementById('hero-bg');
+    function onScroll() {
+        if (!heroBg) return;
+        const sy = window.scrollY;
+        heroBg.style.transform = 'translateY(' + (sy * 0.45) + 'px)';
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    /* ── SCROLL REVEAL ─────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    /* ── METHOD GRID RESPONSIVE ────────────── */
+    function checkMethodGrid() {
+        const grid = document.querySelector('.method-grid');
+        if (!grid) return;
+        if (window.innerWidth < 768) {
+            grid.style.gridTemplateColumns = '1fr';
+            grid.style.gap = '2.5rem';
+        } else {
+            grid.style.gridTemplateColumns = '1fr 1fr';
+            grid.style.gap = '5rem';
+        }
+    }
+    checkMethodGrid();
+    window.addEventListener('resize', checkMethodGrid);
+
+    /* ── PROMO VIDEO ───────────────────────── */
+    (function(){
+        var promoUrl = null;
+        var vid = document.getElementById('promo-preview-video');
+        var thumb = document.getElementById('promo-preview-fallback');
+        var overlay = document.getElementById('promo-preview-loading');
+        var card = document.getElementById('promo-preview');
+
+        function showFallback() {
+            if (vid) { vid.style.display='none'; vid.removeAttribute('src'); try{vid.pause();}catch(e){} }
+            if (thumb) thumb.style.display='block';
+            if (overlay) overlay.style.display='flex';
+        }
+
+        function playStream(url) {
+            if (!vid || !url) { showFallback(); return; }
+            if (thumb) thumb.style.display='none';
+            if (overlay) overlay.style.display='none';
+            vid.style.display='block';
+            var native = vid.canPlayType('application/vnd.apple.mpegurl');
+            function start() { vid.src=url; vid.load(); vid.play().catch(function(){}); }
+            if (native) { start(); return; }
+            if (window.Hls) {
+                try {
+                    if (window._ph) { try{window._ph.destroy();}catch(e){} }
+                    var h=new Hls(); window._ph=h;
+                    h.loadSource(url); h.attachMedia(vid);
+                    h.on(Hls.Events.MANIFEST_PARSED, function(){ vid.play().catch(function(){}); });
+                    h.on(Hls.Events.ERROR, function(_,d){ if(d&&d.fatal) showFallback(); });
+                } catch(e){ showFallback(); }
+                return;
             }
+            var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/hls.js@latest'; s.async=true;
+            s.onload=function(){ if(window.Hls) playStream(url); else showFallback(); };
+            s.onerror=showFallback; document.head.appendChild(s);
+        }
 
-            fetch('{{ url('/promo-stream') }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(function (r) { return r.ok ? r.json() : null; })
-                .then(function (d) { if (d && d.url) promoStreamUrl = d.url; showFallback(); })
-                .catch(showFallback);
+        fetch('{{ url("/promo-stream") }}', { headers: {'X-Requested-With':'XMLHttpRequest'} })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if(d&&d.url) promoUrl=d.url; showFallback(); })
+            .catch(showFallback);
 
-            if (previewCard) {
-                previewCard.addEventListener('click', function () {
-                    if (promoStreamUrl && previewVideo && previewVideo.classList.contains('hidden')) { playStream(promoStreamUrl); return; }
-                    if (previewVideo && previewVideo.paused) previewVideo.play().catch(function () {});
-                });
-            }
-        })();
-
-        (function () {
-            var button = document.getElementById('mobile-menu-button');
-            var menu = document.getElementById('mobile-menu');
-            if (button && menu) {
-                button.addEventListener('click', function () {
-                    var isHidden = menu.classList.contains('hidden');
-                    menu.classList.toggle('hidden');
-                    button.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-                });
-                menu.querySelectorAll('a[href^="#"]').forEach(function (link) {
-                    link.addEventListener('click', function () { menu.classList.add('hidden'); button.setAttribute('aria-expanded', 'false'); });
-                });
-            }
-        })();
-
-        (function () {
-            var toggles = [
-                document.getElementById('theme-toggle'),
-                document.getElementById('theme-toggle-mobile'),
-            ].filter(Boolean);
-            if (!toggles.length) return;
-
-            function getTheme() {
-                var match = document.cookie.match(/(?:^|; )theme=([^;]+)/);
-                return match ? decodeURIComponent(match[1]) : 'dark';
-            }
-
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                document.cookie = 'theme=' + encodeURIComponent(theme) + '; path=/; max-age=31536000; SameSite=Lax';
-                var moonD = document.getElementById('theme-icon-moon');
-                var sunD = document.getElementById('theme-icon-sun');
-                var moonM = document.getElementById('theme-icon-moon-mobile');
-                var sunM = document.getElementById('theme-icon-sun-mobile');
-                if (theme === 'light') {
-                    if (moonD) moonD.classList.remove('hidden');
-                    if (sunD) sunD.classList.add('hidden');
-                    if (moonM) moonM.classList.remove('hidden');
-                    if (sunM) sunM.classList.add('hidden');
-                } else {
-                    if (moonD) moonD.classList.add('hidden');
-                    if (sunD) sunD.classList.remove('hidden');
-                    if (moonM) moonM.classList.add('hidden');
-                    if (sunM) sunM.classList.remove('hidden');
-                }
-            }
-
-            setTheme(getTheme());
-            toggles.forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                    setTheme(next);
-                });
+        if (card) {
+            card.addEventListener('click', function(){
+                if (promoUrl && vid && vid.style.display==='none') { playStream(promoUrl); return; }
+                if (vid && vid.paused) vid.play().catch(function(){});
             });
-        })();
-
-        (function () {
-            var items = document.querySelectorAll('.faq-item');
-            if (!items.length) return;
-
-            items.forEach(function (item) {
-                var button = item.querySelector('.faq-question');
-                if (!button) return;
-
-                button.addEventListener('click', function () {
-                    var isOpen = item.classList.contains('is-open');
-                    items.forEach(function (other) {
-                        other.classList.remove('is-open');
-                    });
-                    if (!isOpen) item.classList.add('is-open');
-                });
-            });
-        })();
-    </script>
+        }
+    })();
+</script>
 </body>
 </html>

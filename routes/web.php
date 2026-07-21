@@ -14,6 +14,7 @@ use App\Http\Controllers\MediaStreamController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentRedirectController;
+use App\Http\Controllers\PracticeToolController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SongTutorialController;
 use App\Http\Controllers\SitemapController;
@@ -170,6 +171,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Checkout class/paket yang butuh akun aktif sebelum transaksi lanjut.
     Route::post('/registerclass/{lesson}/buy', [KelasController::class, 'purchase'])->name('kelas.purchase');
     Route::get('/registerclass/{lesson}/thankyou', [KelasController::class, 'thankyou'])->name('kelas.thankyou');
+
+    // Practice Tools
+    Route::prefix('practice-tools')->name('practice.')->group(function () {
+        Route::get('/', [PracticeToolController::class, 'index'])->name('index');
+        Route::get('/tuner', [PracticeToolController::class, 'tuner'])->name('tuner');
+        Route::get('/metronome', [PracticeToolController::class, 'metronome'])->name('metronome');
+        Route::get('/chords', [PracticeToolController::class, 'chords'])->name('chords');
+    });
 });
 
 // Detail pembelian class tetap terbuka sebagai landing bagi user yang datang dari link lama.

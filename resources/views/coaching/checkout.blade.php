@@ -1,146 +1,203 @@
 @extends('layouts.app')
 
-@push('styles')
-<style>
-/* Page shell */
-.coaching-checkout { max-width: 980px; margin: 28px auto; padding: 0 16px; }
+@push('head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-.coaching-checkout {
-  --cc-text: #ffffff;
-  --cc-muted: rgba(255,255,255,0.75);
-  --cc-subtle: rgba(255,255,255,0.62);
-  --cc-card-bg: rgba(255,255,255,0.02);
-  --cc-card-border: rgba(255,255,255,0.08);
-  --cc-block-bg: rgba(255,255,255,0.03);
-  --cc-block-border: rgba(255,255,255,0.07);
-  --cc-step-bg: #ffffff;
-  --cc-step-text: #111111;
-  --cc-step-muted-bg: rgba(255,255,255,0.9);
-  --cc-line: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
-  --cc-primary-bg: #ffffff;
-  --cc-primary-text: #09090b;
-}
-
-:root[data-theme="light"] .coaching-checkout {
-  --cc-text: #0f172a;
-  --cc-muted: #64748b;
-  --cc-subtle: #7c8594;
-  --cc-card-bg: #ffffff;
-  --cc-card-border: rgba(15,23,42,0.08);
-  --cc-block-bg: #f8fafc;
-  --cc-block-border: rgba(15,23,42,0.08);
-  --cc-step-bg: #ffffff;
-  --cc-step-text: #0f172a;
-  --cc-step-muted-bg: #ffffff;
-  --cc-line: linear-gradient(90deg, rgba(15,23,42,0.18), rgba(15,23,42,0.05));
-  --cc-primary-bg: #0f172a;
-  --cc-primary-text: #ffffff;
-}
-
-/* Steps */
-.steps { display:flex; align-items:center; justify-content:center; gap:10px; margin: 0 0 18px 0; }
-.steps .step { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--cc-step-text); background:var(--cc-step-bg); box-shadow: 0 6px 18px rgba(0,0,0,0.35); position:relative; }
-.steps .step i { font-size:18px; }
-.steps .step:not(.active) { opacity:.72; background: var(--cc-step-muted-bg); }
-.steps .line { flex:0 0 54px; height:2px; background: var(--cc-line); border-radius:2px; }
-.steps .step.active { outline: 2px solid rgba(255,255,255,0.85); box-shadow: 0 0 0 4px rgba(255,255,255,0.08), 0 12px 28px rgba(0,0,0,0.55); }
-:root[data-theme="light"] .steps .step { box-shadow: 0 10px 24px rgba(15,23,42,0.12); }
-:root[data-theme="light"] .steps .step.active { outline-color: rgba(15,23,42,0.10); box-shadow: 0 0 0 4px rgba(15,23,42,0.04), 0 16px 30px rgba(15,23,42,0.16); }
-
-/* Cards */
-.cc-card { background: var(--cc-card-bg); border: 1px solid var(--cc-card-border); border-radius: 14px; box-shadow: 0 16px 36px rgba(0,0,0,0.16); }
-.cc-body { padding: 20px; color:var(--cc-text); }
-.cc-title { margin: 0 0 10px 0; font-weight: 800; font-size: 18px; color:var(--cc-text); }
-.muted { color: var(--cc-muted); }
-:root[data-theme="light"] .cc-card { box-shadow: 0 18px 42px rgba(15,23,42,0.08); }
-
-/* Grid */
-.summary-grid { display:flex; gap:20px; align-items:flex-start; }
-.summary-grid .col { flex:1 1 0; }
-.summary-grid .side { width:340px; flex:0 0 340px; }
-
-/* Info blocks */
-.info-block { border-radius: 10px; padding: 14px; background: var(--cc-block-bg); border:1px solid var(--cc-block-border); }
-.info-block .h { font-weight: 800; font-size: 14px; color:var(--cc-text); }
-.info-block .v { margin-top: 6px; }
-.price { margin-top:8px; font-size: 20px; font-weight: 900; }
-
-/* Payment card */
-.payment-card .cc-title { display:flex; align-items:center; gap:10px; }
-.pay-icon { width:36px; height:36px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; color:var(--cc-step-text); background:var(--cc-step-bg); box-shadow:0 0 0 3px rgba(255,255,255,0.2), 0 12px 24px rgba(0,0,0,0.45); position:relative; }
-.pay-icon::after { content:""; position:absolute; inset:-6px; border-radius:14px; background: radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,0.25), rgba(255,255,255,0)); pointer-events:none; }
-:root[data-theme="light"] .pay-icon { box-shadow:0 0 0 3px rgba(15,23,42,0.05), 0 12px 24px rgba(15,23,42,0.14); }
-:root[data-theme="light"] .pay-icon::after { background: radial-gradient(60% 60% at 50% 50%, rgba(15,23,42,0.08), rgba(15,23,42,0)); }
-
-.total-line { margin-top:8px; font-size:13px; color:var(--cc-subtle); }
-.total-amount { font-weight:900; font-size:22px; margin-top:6px; }
-
-.btn-primary.wide { width:100%; padding: 12px 16px; border-radius: 12px; font-weight:800; background: var(--cc-primary-bg); color: var(--cc-primary-text); border-color: transparent; }
-
-/* Responsive */
-@media (max-width: 860px) {
-  .summary-grid { flex-direction: column; }
-  .summary-grid .side { width:100%; flex:1 1 auto; }
-}
-</style>
+    <script>
+        tailwind.config = {
+            important: true,
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#08080a',
+                            card: 'rgba(18, 18, 24, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            accent: '#0066ff',
+                            amber: '#f59e0b',
+                            crimson: '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .tw-dash .font-display {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+        }
+        .glass-panel {
+            background: rgba(18, 18, 26, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
+        body > nav { display: none !important; }
+        .tw-dash ::-webkit-scrollbar { width: 6px; }
+        .tw-dash ::-webkit-scrollbar-track { background: #08080a; }
+        .tw-dash ::-webkit-scrollbar-thumb { background: #222232; border-radius: 3px; }
+        .tw-dash a { text-decoration: none; }
+        .tw-dash *:focus { outline: none !important; }
+    </style>
 @endpush
 
 @section('content')
-<div class="container coaching-checkout">
-        <div class="steps">
-            <div class="step"><i class="icon-info" aria-hidden="true"></i></div>
-            <div class="line"></div>
-            <div class="step active" title="Payment"><i class="icon-credit-card" aria-hidden="true"></i></div>
-            <div class="line"></div>
-            <div class="step"><i class="icon-check" aria-hidden="true"></i></div>
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" x-data="{ mobileMenuOpen: false }">
+
+    {{-- Ambient Mesh Background Glow --}}
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-32 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    {{-- ─── TOP NAVIGATION BAR ──────────────────────────────────────────── --}}
+    @include('layouts.lms_header')
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-4 lg:px-8 py-10 space-y-8 relative z-10">
+        
+        <!-- STEP INDICATOR BAR -->
+        <div class="flex items-center justify-center gap-3 sm:gap-6 mb-8">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-400 font-bold flex items-center justify-center text-sm shadow-md">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <span class="text-xs font-bold text-gray-400 hidden sm:inline">Info</span>
+            </div>
+
+            <div class="w-12 sm:w-20 h-0.5 bg-gradient-to-r from-blue-500/40 to-indigo-500/60 rounded-full"></div>
+
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-lg shadow-blue-600/30 ring-4 ring-blue-500/20">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <span class="text-xs font-bold text-white hidden sm:inline">Payment</span>
+            </div>
+
+            <div class="w-12 sm:w-20 h-0.5 bg-zinc-800 rounded-full"></div>
+
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 text-gray-500 font-bold flex items-center justify-center text-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <span class="text-xs font-bold text-gray-500 hidden sm:inline">Confirmation</span>
+            </div>
         </div>
 
-        <div class="cc-card">
-            <div class="cc-body">
-                <div class="cc-title">Order Summary</div>
-                <p class="muted">
-                    @if($isCoachingMember ?? false)
-                        You are detected as an active member (Beginner/Intermediate). Your coaching ticket uses the special member price.
-                    @else
-                        You do not currently have an active Beginner/Intermediate package. Your coaching ticket uses the regular non-member price.
-                    @endif
-                </p>
+        <!-- MAIN CHECKOUT GLASS CARD -->
+        <div class="glass-panel p-6 sm:p-8 relative overflow-hidden">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-white/5">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping text-blue-400"></i> Order Summary
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1">
+                        @if($isCoachingMember ?? false)
+                            You are detected as an active member. Your coaching ticket uses the special member price.
+                        @else
+                            You do not currently have an active Beginner/Intermediate package. Your ticket uses regular pricing.
+                        @endif
+                    </p>
+                </div>
+            </div>
 
-                <div class="summary-grid">
-                    <div class="col">
-                        <div class="info-block">
-                            <div class="h">Package</div>
-                            <div id="pkgName" class="v">{{ $package ? $package->name : 'Not configured' }}</div>
-                            <div id="pkgPrice" class="price">Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</div>
-                            <div class="muted" style="margin-top:6px;font-size:12px;">
-                                {{ ($isCoachingMember ?? false) ? 'Member Price' : 'Non-Member Price' }}
-                            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left Column: Details (7 Cols) -->
+                <div class="lg:col-span-7 space-y-4">
+                    
+                    <!-- Package Info -->
+                    <div class="bg-zinc-950/60 rounded-2xl p-5 border border-white/5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">Package</span>
+                            <span class="text-xs font-semibold text-gray-400">
+                                {{ ($isCoachingMember ?? false) ? 'Member Special' : 'Standard Rate' }}
+                            </span>
                         </div>
-
-                        <div class="info-block" style="margin-top:12px;">
-                            <div class="h">Schedule</div>
-                            <div id="scheduleDisplay" class="v">{{ $scheduleDisplay ?? 'No date/time selected yet' }}</div>
+                        
+                        <h3 id="pkgName" class="text-xl font-bold text-white">
+                            {{ $package ? $package->name : 'Coaching Ticket Pass' }}
+                        </h3>
+                        
+                        <div id="pkgPrice" class="font-display text-4xl text-blue-400">
+                            Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}
                         </div>
                     </div>
 
-                    <div class="side">
-                        <div class="info-block payment-card">
-                            <div class="cc-title"><span class="pay-icon" aria-hidden="true"><i class="icon-credit-card"></i></span> Payment</div>
-                            <div class="total-line">Total</div>
-                            <div id="totalAmount" class="total-amount">Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</div>
+                    <!-- Schedule Info -->
+                    <div class="bg-zinc-950/60 rounded-2xl p-5 border border-white/5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Schedule Selection</span>
+                        <div id="scheduleDisplay" class="text-sm font-semibold text-gray-200 flex items-center gap-2">
+                            <i class="fa-regular fa-calendar-check text-blue-400"></i>
+                            <span>{{ $scheduleDisplay ?? 'No specific date selected (Flexible Booking)' }}</span>
+                        </div>
+                    </div>
 
-                            <div style="margin-top:12px">
-                                <button id="payBtn" class="btn btn-primary wide">Pay with Midtrans</button>
+                </div>
+
+                <!-- Right Column: Payment Box (5 Cols) -->
+                <div class="lg:col-span-5">
+                    <div class="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 rounded-2xl p-6 border border-blue-500/30 shadow-xl space-y-6">
+                        
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg shadow-md">
+                                <i class="fa-solid fa-credit-card"></i>
                             </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Payment Method</h4>
+                                <div class="text-xs text-gray-400">Instant via Midtrans</div>
+                            </div>
+                        </div>
 
-                            <div class="muted" style="margin-top:8px;font-size:12px;"> </div>
+                        <div class="pt-3 border-t border-white/10 space-y-2">
+                            <div class="flex items-center justify-between text-xs text-gray-400">
+                                <span>Subtotal</span>
+                                <span>Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-gray-400">
+                                <span>Platform Fee</span>
+                                <span class="text-emerald-400 font-semibold">FREE</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-3 border-t border-white/10">
+                                <span class="text-sm font-bold text-white">Total Payment</span>
+                                <span id="totalAmount" class="font-display text-3xl text-white">
+                                    Rp {{ number_format((int) ($displayPrice ?? 0),0,',','.') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <button id="payBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-lock text-xs"></i>
+                            <span>PAY WITH MIDTRANS</span>
+                        </button>
+
+                        <div class="flex items-center justify-center gap-2 text-[11px] text-gray-400">
+                            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                            <span>256-bit Encrypted Secure Checkout</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-</div>
 
+            </div>
+
+        </div>
+
+    </main>
+</div>
 @endsection
 
 @push('scripts')
@@ -171,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function(){
     payBtn && payBtn.addEventListener('click', async function(){
         payBtn.disabled = true;
         payBtn.textContent = 'Preparing...';
-        // create order on server
+        
         const packageId = {{ $package ? $package->id : 'null' }};
         try {
             if (!packageId) {
@@ -203,10 +260,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
             if (! res.ok) {
                 alert(resolveErrorMessage(json, 'Failed to create order'));
-                payBtn.disabled = false; return;
+                payBtn.disabled = false;
+                payBtn.textContent = 'PAY WITH MIDTRANS';
+                return;
             }
 
-            // Request snap token from existing midtrans endpoint
             const snapRes = await fetch('/api/midtrans/create', {
                 method: 'POST',
                 headers: {
@@ -226,16 +284,24 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             if (! snapRes.ok) {
-                alert(resolveErrorMessage(snapJson, 'Midtrans create failed')); payBtn.disabled = false; payBtn.textContent = 'Pay with Midtrans'; return;
+                alert(resolveErrorMessage(snapJson, 'Midtrans create failed')); 
+                payBtn.disabled = false; 
+                payBtn.textContent = 'PAY WITH MIDTRANS'; 
+                return;
             }
 
             const token = snapJson.snap_token || snapJson.raw?.token;
-            if (! token) { alert('Midtrans token not returned'); payBtn.disabled = false; payBtn.textContent = 'Pay with Midtrans'; return; }
+            if (! token) { 
+                alert('Midtrans token not returned'); 
+                payBtn.disabled = false; 
+                payBtn.textContent = 'PAY WITH MIDTRANS'; 
+                return; 
+            }
 
             if (!window.snap || typeof window.snap.pay !== 'function') {
                 alert('Midtrans popup gagal dimuat. Coba nonaktifkan ad-blocker/shield browser lalu refresh halaman.');
                 payBtn.disabled = false;
-                payBtn.textContent = 'Pay with Midtrans';
+                payBtn.textContent = 'PAY WITH MIDTRANS';
                 return;
             }
 
@@ -256,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function(){
                         })
                     });
                 } catch (e) {
-                    // Non-fatal: webhook may still grant later.
                     console.warn('Finalize checkout failed', e);
                 }
             }
@@ -274,11 +339,11 @@ document.addEventListener('DOMContentLoaded', function(){
                     const msg = (err && (err.status_message || err.message)) ? (err.status_message || err.message) : 'Payment failed';
                     alert(msg);
                     payBtn.disabled = false;
-                    payBtn.textContent = 'Pay with Midtrans';
+                    payBtn.textContent = 'PAY WITH MIDTRANS';
                 },
                 onClose: function(){
                     payBtn.disabled = false;
-                    payBtn.textContent = 'Pay with Midtrans';
+                    payBtn.textContent = 'PAY WITH MIDTRANS';
                 }
             });
 
@@ -286,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function(){
             console.error(e);
             alert((e && e.message) ? e.message : 'Unexpected error');
             payBtn.disabled = false;
-            payBtn.textContent = 'Pay with Midtrans';
+            payBtn.textContent = 'PAY WITH MIDTRANS';
         }
     });
 });

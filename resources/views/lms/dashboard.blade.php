@@ -1,180 +1,348 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard LMS')
+@section('title', 'Student Dashboard')
+
+@push('head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            important: true,
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#08080a',
+                            card: 'rgba(18, 18, 24, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.07)',
+                            accent: '#0066ff',
+                            amber: '#f59e0b',
+                            crimson: '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .tw-dash .font-display {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+        }
+        .glass-panel {
+            background: rgba(18, 18, 26, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+        }
+        .glass-panel-glow:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+        }
+        body > nav { display: none !important; }
+        .tw-dash { min-height: 100vh; }
+        .tw-dash ::-webkit-scrollbar { width: 6px; }
+        .tw-dash ::-webkit-scrollbar-track { background: #08080a; }
+        .tw-dash ::-webkit-scrollbar-thumb { background: #222232; border-radius: 3px; }
+        .tw-dash a { text-decoration: none; }
+        .tw-dash *:focus { outline: none !important; }
+    </style>
+@endpush
 
 @section('content')
-<style>
-    .lms-dashboard-shell {
-        min-height: calc(100vh - 120px);
-        background: var(--lms-hero);
-        padding: 40px 16px 54px;
-        color: var(--lms-text);
-    }
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden"
+     x-data="lmsApp()"
+     x-init="initAudio()">
 
-    .lms-progress-card {
-        border: 1px solid var(--lms-border);
-        border-radius: 20px;
-        background: var(--lms-card);
-        backdrop-filter: blur(10px);
-        padding: 28px;
-        margin-bottom: 28px;
-        box-shadow: var(--lms-shadow);
-    }
+    {{-- Ambient Mesh Glow Background Elements --}}
+    <div class="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-1/3 -right-32 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute -bottom-32 left-10 w-[450px] h-[450px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-    .lms-progress-track {
-        height: 10px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.05);
-        overflow: hidden;
-        margin-bottom: 12px;
-    }
+    {{-- ─── TOP NAVIGATION BAR ──────────────────────────────────────────── --}}
+    @include('layouts.lms_header')
 
-    .lms-progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #00d4ff 0%, #0099ff 100%);
-        border-radius: 999px;
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    :root[data-theme="light"] .lms-dashboard-shell {
-        background: #f6f7fb;
-        color: #0f172a;
-    }
-
-    :root[data-theme="light"] .lms-progress-card {
-        background: #ffffff;
-        border-color: rgba(15, 23, 42, 0.10);
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-    }
-
-    :root[data-theme="light"] .lms-progress-track {
-        background: rgba(15, 23, 42, 0.10);
-    }
-
-    :root[data-theme="light"] .lms-progress-title,
-    :root[data-theme="light"] .lms-progress-subtitle,
-    :root[data-theme="light"] .lms-progress-remaining {
-        color: #475569 !important;
-    }
-
-    :root[data-theme="light"] .lms-progress-percent {
-        background: linear-gradient(135deg, #007cf0 0%, #00d4ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    :root[data-theme="dark"] .lms-dashboard-shell {
-        background: linear-gradient(180deg, #0b0b0b 0%, #050505 100%);
-    }
-</style>
-<div class="lms-dashboard-shell">
-    <div style="max-width:1200px; margin:0 auto;">
-        <!-- Header Section -->
-        <div style="margin-bottom:32px;">
-            <h1 style="margin:0 0 8px; font-size:42px; line-height:1.1; letter-spacing:-0.03em; font-weight:900; background:var(--lms-heading-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Welcome back!</h1>
-            <p style="margin:0; color:var(--lms-muted); font-size:15px;">Continue your music learning journey today</p>
-        </div>
-
-        <!-- Progress Card -->
-        <div class="lms-progress-card">
-            <div style="display:flex; align-items:start; justify-content:space-between; margin-bottom:20px;">
-                <div>
-                    <h2 class="lms-progress-title" style="margin:0 0 6px; font-size:16px; font-weight:700; color:var(--lms-muted); text-transform:uppercase; letter-spacing:1px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:6px; vertical-align:text-bottom;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Your Progress</h2>
-                    <p class="lms-progress-subtitle" style="margin:0; color:var(--lms-subtle); font-size:13px;">Topics you have already completed</p>
+    <!-- DASHBOARD CONTAINER -->
+    <div class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        <!-- TOP HEADER GREETING (Seamless, No heavy box) -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-bolt text-amber-400"></i> Keep Up The Momentum
                 </div>
-                <div style="text-align:right;">
-                    <div class="lms-progress-percent" style="font-size:44px; font-weight:900; background:linear-gradient(135deg, #00d4ff 0%, #0099ff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1;">{{ $progressPercent }}%</div>
-                    <p class="lms-progress-remaining" style="margin:6px 0 0; color:var(--lms-subtle); font-size:12px;">{{ $completedTopics }}/{{ $totalTopics }} completed</p>
+                <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white tracking-wide uppercase leading-none">
+                    @php $firstName = explode(' ', auth()->user()->name ?? 'STUDENT')[0]; @endphp
+                    WELCOME BACK, <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-white">{{ $firstName }}</span>!
+                </h1>
+                <p class="text-gray-400 text-sm mt-2 max-w-xl">
+                    You're on track to master the guitar. Practice for 15 minutes today to keep your streak alive!
+                </p>
+            </div>
+
+            <!-- Quick Resume Button Pill -->
+            <a href="{{ route('kelas') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-blue-500/40 transition group max-w-xs self-start md:self-auto">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
+                    <i class="fa-solid fa-play ml-0.5"></i>
                 </div>
-            </div>
-            <div class="lms-progress-track">
-                <div class="lms-progress-fill" style="width: {{ max(0, min(100, (int) $progressPercent)) }}%;"></div>
-            </div>
-            <div style="display:flex; gap:12px; font-size:12px; color:var(--lms-subtle);">
-                <span>{{ max(0, $totalTopics - $completedTopics) }} topics remaining</span>
-            </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px;">
-            <!-- Coaching Stats -->
-            <div style="border:1px solid var(--lms-border); border-radius:16px; background:var(--lms-card); backdrop-filter:blur(10px); padding:20px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-                <div style="font-size:24px; margin-bottom:8px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20m9-9H3"/></svg></div>
-                <div style="font-size:13px; color:var(--lms-muted); margin-bottom:6px;">Coaching Sessions</div>
-                <div style="font-size:32px; font-weight:900; color:#ff6b6b; margin-bottom:4px;">{{ $upcomingCoachingCount }}</div>
-                <p style="margin:0; font-size:12px; color:var(--lms-subtle);">Upcoming session</p>
-            </div>
-
-            <!-- Tickets Stats -->
-            <div style="border:1px solid var(--lms-border); border-radius:16px; background:var(--lms-card); backdrop-filter:blur(10px); padding:20px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-                <div style="font-size:24px; margin-bottom:8px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h12M6 9a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3M6 9v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9M9 5a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1M15 5a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1"/></svg></div>
-                <div style="font-size:13px; color:var(--lms-muted); margin-bottom:6px;">Available Tickets</div>
-                <div style="font-size:32px; font-weight:900; color:#ffd700; margin-bottom:4px;">{{ $availableTicketCount }}</div>
-                <p style="margin:0; font-size:12px; color:var(--lms-subtle);">Coaching tickets</p>
-            </div>
-
-            <!-- Topics Stats -->
-            <div style="border:1px solid var(--lms-border); border-radius:16px; background:var(--lms-card); backdrop-filter:blur(10px); padding:20px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-                <div style="font-size:24px; margin-bottom:8px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-                <div style="font-size:13px; color:var(--lms-muted); margin-bottom:6px;">Learning Progress</div>
-                <div style="font-size:32px; font-weight:900; color:#00d4ff; margin-bottom:4px;">{{ $completedTopics }}</div>
-                <p style="margin:0; font-size:12px; color:var(--lms-subtle);">Topics completed</p>
-            </div>
-        </div>
-
-        <!-- Action Cards -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-            <!-- Lessons Card -->
-            <a href="{{ $coursesUrl }}" style="text-decoration:none; color:var(--lms-text); border:1px solid var(--lms-border); border-radius:18px; background:linear-gradient(180deg, rgba(0,212,255,0.08) 0%, rgba(0,153,255,0.04) 100%); padding:24px; display:flex; flex-direction:column; justify-content:space-between; min-height:200px; transition:all 0.3s ease; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(0,212,255,0.1);">
-                <div style="position:absolute; right:-30px; top:-30px; width:100px; height:100px; background:rgba(0,212,255,0.05); border-radius:50%; pointer-events:none;"></div>
-                <div>
-                    <div style="font-size:28px; margin-bottom:12px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-                    <div style="font-size:20px; font-weight:800; margin-bottom:8px;">Lessons</div>
-                    <div style="font-size:13px; color:var(--lms-muted); line-height:1.5;">Continue your lessons based on your latest progress</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#00d4ff; font-weight:600;">
-                    <span>Start learning</span>
-                    <span style="font-size:16px;">→</span>
+                <div class="min-w-0">
+                    <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Resume Lesson</div>
+                    <div class="text-sm font-bold text-white truncate">Continue Learning</div>
+                    <div class="text-xs text-gray-400">Pick up where you left off</div>
                 </div>
             </a>
-
-            <!-- Coaching Card -->
-            <a href="{{ route('coaching.upcoming') }}" style="text-decoration:none; color:var(--lms-text); border:1px solid var(--lms-border); border-radius:18px; background:linear-gradient(180deg, rgba(255,107,107,0.08) 0%, rgba(255,153,0,0.04) 100%); padding:24px; display:flex; flex-direction:column; justify-content:space-between; min-height:200px; transition:all 0.3s ease; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(255,107,107,0.1);">
-                <div style="position:absolute; right:-30px; top:-30px; width:100px; height:100px; background:rgba(255,107,107,0.05); border-radius:50%; pointer-events:none;"></div>
-                <div>
-                    <div style="font-size:28px; margin-bottom:12px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                    <div style="font-size:20px; font-weight:800; margin-bottom:8px;">1-on-1 Coaching</div>
-                    <div style="font-size:13px; color:var(--lms-muted); line-height:1.5;">Get personal guidance from experienced mentors</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ff6b6b; font-weight:600;">
-                    <span>View schedule</span>
-                    <span style="font-size:16px;">→</span>
-                </div>
-            </a>
-
-            @if(auth()->user()->hasIntermediateAccess())
-            <a href="{{ route('song.tutorial.index') }}" style="text-decoration:none; color:var(--lms-text); border:1px solid var(--lms-border); border-radius:18px; background:linear-gradient(180deg, rgba(255,215,0,0.08) 0%, rgba(255,165,0,0.04) 100%); padding:24px; display:flex; flex-direction:column; justify-content:space-between; min-height:200px; transition:all 0.3s ease; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(255,215,0,0.1);">
-                <div style="position:absolute; right:-30px; top:-30px; width:100px; height:100px; background:rgba(255,215,0,0.05); border-radius:50%; pointer-events:none;"></div>
-                <div>
-                    <div style="font-size:28px; margin-bottom:12px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4m6 0h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4m-6-4h12"/><circle cx="12" cy="12" r="2"/></svg></div>
-                    <div style="font-size:20px; font-weight:800; margin-bottom:8px;">Song Tutorial</div>
-                    <div style="font-size:13px; color:var(--lms-muted); line-height:1.5;">Explore the song library and playing technique breakdowns</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ffd700; font-weight:600;">
-                    <span>Explore</span>
-                    <span style="font-size:16px;">→</span>
-                </div>
-            </a>
-            @endif
         </div>
+
+        <!-- MAIN 2-COLUMN LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: PROGRESS & MENTOR REVIEW (8 Cols) -->
+            <div class="lg:col-span-7 xl:col-span-8 space-y-8">
+                
+                <!-- ROADMAP & PROGRESS CARD -->
+                <div class="glass-panel p-6 sm:p-8 relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <div class="text-xs uppercase font-bold text-blue-400 tracking-wider flex items-center gap-2 mb-1">
+                                <i class="fa-solid fa-graduation-cap"></i> Curriculum Progress
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Guitar Mastery Roadmap</h3>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-display text-5xl text-blue-400">{{ $progressPercent ?? 0 }}%</span>
+                            <span class="text-xs text-gray-400 font-semibold">({{ $completedTopics ?? 0 }}/{{ $totalTopics ?? 0 }} Completed)</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom Glowing Progress Bar -->
+                    <div class="w-full bg-zinc-950/80 rounded-full h-3.5 p-0.5 overflow-hidden border border-white/5">
+                        <div class="bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 h-full rounded-full transition-all duration-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]" style="width: {{ max(0, min(100, (int) ($progressPercent ?? 0))) }}%"></div>
+                    </div>
+
+                    <!-- Stats Strip inside Roadmap -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/5">
+                        <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5">
+                            <span class="text-xs text-gray-400 block mb-1">Completed Topics</span>
+                            <span class="font-bold text-white text-lg">{{ $completedTopics ?? 0 }}</span>
+                        </div>
+                        <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5">
+                            <span class="text-xs text-gray-400 block mb-1">Remaining</span>
+                            <span class="font-bold text-gray-300 text-lg">{{ max(0, ($totalTopics ?? 0) - ($completedTopics ?? 0)) }}</span>
+                        </div>
+                        <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5 col-span-2 sm:col-span-1">
+                            <span class="text-xs text-gray-400 block mb-1">Next Step</span>
+                            <a href="{{ route('kelas') }}" class="font-bold text-blue-400 text-sm hover:underline flex items-center gap-1 mt-0.5">
+                                Go to Lessons <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LATEST MENTOR FEEDBACK -->
+                <div class="glass-panel p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-5">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-comment-dots text-blue-400"></i> Latest Mentor Video Review
+                        </h4>
+                        <span class="text-xs font-semibold text-gray-400 bg-white/5 px-3 py-1 rounded-full">Personalized</span>
+                    </div>
+
+                    <div class="bg-zinc-950/60 border border-white/5 rounded-2xl p-5 flex flex-col sm:flex-row gap-5 items-center">
+                        <div class="w-full sm:w-44 h-32 bg-zinc-900 rounded-xl relative overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/5 group cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" alt="Video Review">
+                            <div class="absolute inset-0 bg-blue-950/30 flex items-center justify-center">
+                                <div class="w-11 h-11 rounded-full bg-blue-600/90 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 flex-1 text-center sm:text-left">
+                            <div class="flex items-center justify-center sm:justify-between gap-2">
+                                <span class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">INFO</span>
+                                <span class="text-xs text-gray-400">Mentor: <strong class="text-white">Nde</strong></span>
+                            </div>
+                            <h5 class="text-base font-bold text-white">How Video Review Works</h5>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Submit your practice video or join 1-on-1 coaching for personalized picking technique and speed feedback directly from Mentor Nde.
+                            </p>
+                            <div class="pt-2">
+                                <a href="{{ route('coaching.upcoming') }}" class="text-xs text-blue-400 hover:text-blue-300 font-bold transition inline-flex items-center gap-1.5">
+                                    <span>Book a session now</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: COMPACT FLOATING HUB DOCK (4 Cols) -->
+            <div class="lg:col-span-5 xl:col-span-4 space-y-6">
+                
+                <div class="text-xs uppercase font-bold text-gray-400 tracking-wider flex items-center gap-2 px-1">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> Quick Hub & Tools
+                </div>
+
+                <!-- FLOATING HUB ITEM 1: 1-ON-1 COACHING & TICKETS -->
+                <div class="glass-panel p-5 glass-panel-glow transition duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-base">
+                                <i class="fa-solid fa-ticket"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">1-on-1 Coaching</h4>
+                                <div class="text-xs text-gray-400">Personal Video Session</div>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+                            {{ $availableTicketCount ?? 0 }} Tickets
+                        </span>
+                    </div>
+
+                    <div class="bg-zinc-950/50 rounded-xl p-3 my-3 border border-white/5 flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Scheduled Session:</span>
+                        <span class="font-semibold {{ ($upcomingCoachingCount ?? 0) > 0 ? 'text-emerald-400' : 'text-gray-400' }}">
+                            {{ ($upcomingCoachingCount ?? 0) > 0 ? ($upcomingCoachingCount.' Upcoming') : 'None Booked' }}
+                        </span>
+                    </div>
+
+                    <a href="{{ route('coaching.upcoming') }}" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 border border-amber-500/30 text-amber-300 text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calendar-plus text-[10px]"></i>
+                        <span>Book Session / View Details</span>
+                    </a>
+                </div>
+
+                <!-- FLOATING HUB ITEM 2: SONG TUTORIALS VAULT -->
+                <div class="glass-panel p-5 glass-panel-glow transition duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-base">
+                                <i class="fa-solid fa-compact-disc"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Song Vault</h4>
+                                <div class="text-xs text-gray-400">Interactive TABS & Tracks</div>
+                            </div>
+                        </div>
+                        @if(auth()->check() && auth()->user()->hasIntermediateAccess())
+                            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Unlocked</span>
+                        @else
+                            <span class="text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full">Locked</span>
+                        @endif
+                    </div>
+
+                    @if(auth()->check() && auth()->user()->hasIntermediateAccess())
+                        <a href="{{ route('song.tutorial.index') }}" class="w-full py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-bold transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-guitar text-[10px]"></i>
+                            <span>Explore Song Tutorials</span>
+                        </a>
+                    @else
+                        <a href="{{ route('registerclass') }}" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-gray-300 text-xs font-bold transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-lock text-[10px]"></i>
+                            <span>Upgrade Package to Unlock</span>
+                        </a>
+                    @endif
+                </div>
+
+                <!-- FLOATING HUB ITEM 3: PRACTICE TOOLS SUITE -->
+                <div class="glass-panel p-5 glass-panel-glow transition duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
+                                <i class="fa-solid fa-toolbox"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Practice Suite</h4>
+                                <div class="text-xs text-gray-400">Tuner, Metronome & Chords</div>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                            3 Tools
+                        </span>
+                    </div>
+
+                    <a href="{{ route('practice.index') }}" class="w-full py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sliders text-[10px]"></i>
+                        <span>Open Practice Tools Hub</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 </div>
 
-<style>
-    a:hover {
-        transition: all 0.3s ease;
+<script>
+function lmsApp() {
+    return {
+        bpm: 120,
+        metronomeRunning: false,
+        timerId: null,
+        audioCtx: null,
+
+        initAudio() { },
+
+        toggleMetronome() {
+            this.metronomeRunning = !this.metronomeRunning;
+            if (this.metronomeRunning) {
+                this.startAudioMetronome();
+            } else {
+                clearInterval(this.timerId);
+            }
+        },
+
+        restartIfRunning() {
+            if (this.metronomeRunning) {
+                clearInterval(this.timerId);
+                this.startAudioMetronome();
+            }
+        },
+
+        startAudioMetronome() {
+            if (!this.audioCtx) {
+                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+
+            const interval = 60000 / this.bpm;
+
+            const playClick = () => {
+                const osc  = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                osc.frequency.value = 800;
+                gain.gain.setValueAtTime(1, this.audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.1);
+                osc.start(this.audioCtx.currentTime);
+                osc.stop(this.audioCtx.currentTime + 0.1);
+            };
+
+            playClick();
+            this.timerId = setInterval(playClick, interval);
+        }
     }
-    [style*="linear-gradient"] { /* cards hover effect */ }
-</style>
+}
+</script>
 @endsection

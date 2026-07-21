@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Test</title>
+</head>
+<body style="background: #222; color: #fff;">
+    <div id="player" style="position:relative; width:800px; height:450px; background:#000;">
+        <video id="html5-player" controls playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:2;"></video>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const v = document.getElementById('html5-player');
+        const streamUrl = 'https://vz-ada5e12d-62b.b-cdn.net/f1be61cc-7c67-48a8-89d4-37c7da838445/playlist.m3u8';
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(streamUrl);
+            hls.attachMedia(v);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                v.play().catch(e => console.error(e));
+            });
+        }
+    </script>
+</body>
+</html>
