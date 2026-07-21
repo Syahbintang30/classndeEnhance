@@ -325,7 +325,7 @@ class KelasController extends Controller
 
             $isCoachingTicket = $package && ($package->slug === $coachingSlug);
             if ($user->hasLmsAccess() && !$isCoachingTicket) {
-                return redirect()->route('lms.dashboard')->with('status', 'Anda sudah memiliki akses kelas! Selamat belajar.');
+                return redirect()->route('lms.dashboard')->with('status', 'You already have full access to this course! Enjoy learning.');
             }
         }
 
@@ -400,7 +400,7 @@ class KelasController extends Controller
             $packageCheck = $packageId ? Package::find($packageId) : null;
             $isCoachingTicket = $packageCheck && ($packageCheck->slug === $coachingSlug);
             if ($user->hasLmsAccess() && !$isCoachingTicket) {
-                return redirect()->route('lms.dashboard')->with('status', 'Anda sudah memiliki akses kelas! Selamat belajar.');
+                return redirect()->route('lms.dashboard')->with('status', 'You already have full access to this course! Enjoy learning.');
             }
         }
         $packages = Package::orderBy('price')->get();

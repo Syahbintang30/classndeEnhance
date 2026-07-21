@@ -481,7 +481,7 @@
                         @if($userHasLmsAccess && !$isCoachingPkg)
                             <a href="{{ route('lms.dashboard') }}"
                                class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30">
-                                <span>Akses Kelas Anda</span>
+                                <span>Access Your Course</span>
                                 <i class="fa-solid fa-graduation-cap text-[10px]"></i>
                             </a>
                         @else
