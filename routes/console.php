@@ -47,3 +47,38 @@ Artisan::command('send-mail {--to=syahbintang30@gmail.com}', function () {
         return 1;
     }
 })->purpose('Send test email with Mailtrap Real Sending API');
+
+Artisan::command('send-invoice {--to=syahbintang30@gmail.com}', function () {
+    $toEmail = $this->option('to');
+    $user = \App\Models\User::where('email', $toEmail)->first() ?: new \App\Models\User([
+        'name' => 'Syah Bintang',
+        'email' => $toEmail,
+    ]);
+
+    $package = \App\Models\Package::first() ?: new \App\Models\Package([
+        'name' => 'Mastering Acoustic & Electric Guitar',
+        'description' => 'Complete step-by-step video lessons and 1-on-1 coaching session access.',
+    ]);
+
+    $txn = new \App\Models\Transaction([
+        'order_id' => 'nde-' . strtoupper(\Illuminate\Support\Str::random(8)),
+        'user_id' => $user->id ?? 1,
+        'package_id' => $package->id ?? 1,
+        'method' => 'Midtrans (QRIS / Bank Transfer)',
+        'amount' => 499000,
+        'original_amount' => 549000,
+        'status' => 'settlement',
+    ]);
+    $txn->setRelation('package', $package);
+
+    $this->info("Sending sample invoice email to {$toEmail}...");
+
+    try {
+        $user->notify(new \App\Notifications\SendPaymentInvoiceNotification($txn));
+        $this->info('Invoice email sent successfully!');
+        return 0;
+    } catch (\Throwable $e) {
+        $this->error('Failed to send invoice email: ' . $e->getMessage());
+        return 1;
+    }
+})->purpose('Send sample payment invoice email');

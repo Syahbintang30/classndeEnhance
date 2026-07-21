@@ -337,7 +337,19 @@ class PaymentController extends Controller
                                     ]);
                                 }
                             }
-                        } catch (\Throwable $e) {}
+                        // Send invoice email idempotently when payment is settled
+                        try {
+                            $invoiceSentKey = 'invoice_sent:' . $txn->order_id;
+                            if (! Cache::has($invoiceSentKey)) {
+                                Cache::put($invoiceSentKey, true, now()->addDays(7));
+                                $buyer = User::find($txn->user_id);
+                                if ($buyer && $buyer->email) {
+                                    $buyer->notify(new \App\Notifications\SendPaymentInvoiceNotification($txn));
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                            Log::error('Midtrans webhook: failed sending invoice email', ['err' => $e->getMessage(), 'order_id' => $txn->order_id]);
+                        }
                     } catch (\Throwable $e) {}
                 } else {
                     Log::warning('Midtrans webhook: upgrade-intermediate purchase not eligible, skipping grant', ['order_id' => $orderId, 'user_id' => $txn->user_id]);
