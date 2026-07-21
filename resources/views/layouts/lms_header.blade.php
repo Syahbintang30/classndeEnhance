@@ -89,7 +89,7 @@
                  x-transition:leave="transition ease-in duration-100"
                  x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
                  x-transition:leave-end="transform opacity-0 scale-95 -translate-y-2"
-                 class="absolute right-0 top-13 w-52 bg-zinc-950/90 border border-white/10 rounded-2xl shadow-2xl p-2 z-50 backdrop-blur-xl"
+                 class="absolute right-0 top-full mt-2.5 w-52 bg-[#0c0c12] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 shadow-black/80"
                  style="display: none;">
                 
                 @if(auth()->check() && (auth()->user()->is_admin || auth()->user()->is_superadmin))
