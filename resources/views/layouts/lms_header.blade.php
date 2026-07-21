@@ -5,6 +5,7 @@
     $isCoaching = str_contains($routeName, 'coaching');
     $isSongLib = str_contains($routeName, 'song.tutorial');
     $isPractice = str_contains($routeName, 'practice.');
+    $isPublicPage = request()->routeIs('compro', 'login', 'register', 'password.*');
 @endphp
 
 <header class="sticky top-0 z-40 bg-[#08080a]/85 backdrop-blur-xl border-b border-white/5 px-4 lg:px-8 py-3 flex items-center justify-between relative shadow-2xl">
@@ -19,7 +20,7 @@
     <!-- Center: Floating Glass Pill Navigation (100% Dead-Centered) -->
     <div class="hidden md:flex items-center justify-center flex-1">
         <nav class="flex items-center gap-1 bg-zinc-950/70 border border-white/10 backdrop-blur-xl rounded-full p-1.5 shadow-2xl">
-            @if(!auth()->check() || request()->routeIs('compro', 'login', 'register', 'password.*'))
+            @if(!auth()->check() || $isPublicPage)
                 <a href="{{ route('compro') }}#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
                 <a href="{{ route('compro') }}#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
                 <a href="{{ route('compro') }}#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
@@ -64,11 +65,13 @@
         @auth
             <!-- User Actions & Avatar Pill for Logged In User -->
             <div class="hidden md:flex items-center gap-3">
-                <!-- Direct Enter LMS Button -->
+                @if($isPublicPage)
+                <!-- Direct Enter LMS Button (Shown only on public/landing pages) -->
                 <a href="{{ route('lms.dashboard') }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-full text-xs shadow-lg shadow-blue-600/25 transition-all hover:scale-105 flex items-center gap-2">
                     <i class="fa-solid fa-graduation-cap text-xs"></i>
                     <span>Enter LMS</span>
                 </a>
+                @endif
 
                 <!-- User Dropdown -->
                 <div class="relative" x-data="{ open: false }">
@@ -99,10 +102,12 @@
                          class="absolute right-0 top-full mt-2.5 w-52 bg-[#0c0c12] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 shadow-black/80"
                          style="display: none;">
                         
+                        @if($isPublicPage)
                         <a href="{{ route('lms.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-white hover:bg-blue-500/10 hover:text-blue-400 rounded-xl transition font-bold mb-1">
                             <i class="fa-solid fa-graduation-cap text-xs text-blue-400"></i> Enter LMS
                         </a>
                         <div class="border-t border-white/5 my-1"></div>
+                        @endif
 
                         @if(auth()->user()->is_admin || auth()->user()->is_superadmin)
                         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl transition font-semibold mb-1">
