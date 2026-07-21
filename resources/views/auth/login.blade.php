@@ -47,7 +47,7 @@
             <div class="lg:col-span-7 relative hidden lg:block">
                 <div class="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[4/3] bg-zinc-950 group">
                     <!-- Background image -->
-                    <img src="{{ asset('compro/img/ndehero.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80">
+                    <img src="{{ asset('compro/img/nde2.webp') }}" alt="Nde Guitar Session" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80">
                     
                     <!-- Ambient Gradient Overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
