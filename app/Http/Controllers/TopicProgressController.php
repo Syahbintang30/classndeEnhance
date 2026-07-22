@@ -53,9 +53,9 @@ class TopicProgressController extends Controller
         $durationSeconds = (int) ($data['duration_seconds'] ?? 0);
         $incomingCompleted = (bool) ($data['completed'] ?? false);
 
-        // Topic is auto-completed ONLY if valid duration exists (>= 10s) AND watched seconds >= 95% of duration (and >= 10s), or if explicitly marked completed by video end event.
-        if (! $incomingCompleted && $durationSeconds >= 10 && $incomingSeconds >= 10) {
-            $incomingCompleted = $incomingSeconds >= (int) floor($durationSeconds * 0.95);
+        // Topic is auto-completed if valid duration exists (>= 3s) AND watched seconds >= 80% of duration (or within 10s of end), or if explicitly marked completed.
+        if (! $incomingCompleted && $durationSeconds >= 3 && $incomingSeconds >= 3) {
+            $incomingCompleted = ($incomingSeconds >= (int) floor($durationSeconds * 0.80)) || (($durationSeconds - $incomingSeconds) <= 10);
         }
 
 

@@ -206,7 +206,7 @@
                                          data-bunny-guid="{{ $topic->bunny_guid }}"
                                          data-description="{{ $topic->description }}"
                                          data-topic-id="{{ $topic->id }}">
-                                        <input type="checkbox" class="topic-check" disabled>
+                                        <input type="checkbox" class="topic-check cursor-pointer" style="cursor: pointer;">
                                         <span class="truncate">{{ $topic->title }}</span>
                                     </div>
                                 @empty
@@ -326,20 +326,21 @@ function setTopicCompletedUI(topicId, completed){
     const checkbox = el.querySelector('.topic-check');
     if(checkbox) checkbox.checked = !!completed;
     if(completed) completionPostedTopics.add(String(topicId));
+    else completionPostedTopics.delete(String(topicId));
 }
 
-function reportProgress(markComplete = false){
-    if(!currentTopicId) return;
+function reportProgress(markComplete = false, targetTopicId = null){
+    const topicIdToReport = String(targetTopicId || currentTopicId || '');
+    if(!topicIdToReport) return;
 
-    const topicKey = String(currentTopicId);
-    if(markComplete && completionPostedTopics.has(topicKey)) return;
+    if(markComplete && completionPostedTopics.has(topicIdToReport)) return;
 
     const now = Date.now();
     if(!markComplete && now - lastProgressSentAt < 5000) return;
     if(!markComplete) lastProgressSentAt = now;
 
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-    fetch('/api/topics/' + currentTopicId + '/progress', {
+    fetch('/api/topics/' + topicIdToReport + '/progress', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -354,19 +355,20 @@ function reportProgress(markComplete = false){
     }).then(async (res) => {
         if(!res.ok) return;
         const data = await res.json();
-        setTopicCompletedUI(currentTopicId, !!data.completed);
+        setTopicCompletedUI(topicIdToReport, !!data.completed);
     }).catch(() => {});
 }
 
-function maybeCompleteByThreshold(videoEl){
-    if(!videoEl || !currentTopicId) return;
+function maybeCompleteByThreshold(videoEl, targetTopicId = null){
+    const topicIdToReport = targetTopicId || currentTopicId;
+    if(!videoEl || !topicIdToReport) return;
     const duration = Number(videoEl.duration || 0);
     const current = Number(videoEl.currentTime || 0);
-    if(!Number.isFinite(duration) || duration < 10 || current < 10) return;
+    if(!Number.isFinite(duration) || duration < 3 || current < 3) return;
 
-    const threshold = duration * 0.95;
-    if(current >= threshold){
-        reportProgress(true);
+    const threshold = duration * 0.80;
+    if(current >= threshold || (duration - current) <= 5){
+        reportProgress(true, topicIdToReport);
     }
 }
 
@@ -384,15 +386,27 @@ function fetchTopicProgress(topicId){
 
 function onPlayerStateChange(event){
     if(!window.YT || !event) return;
+    const topicIdForPlayer = currentTopicId;
     if(event.data === YT.PlayerState.PLAYING){
         if(progressTimer) clearInterval(progressTimer);
-        progressTimer = setInterval(function(){ reportProgress(false); }, 15000);
+        progressTimer = setInterval(function(){
+            reportProgress(false, topicIdForPlayer);
+            try {
+                if (player && typeof player.getCurrentTime === 'function' && typeof player.getDuration === 'function') {
+                    const dur = player.getDuration();
+                    const cur = player.getCurrentTime();
+                    if (dur > 3 && (cur / dur >= 0.80 || (dur - cur) <= 5)) {
+                        reportProgress(true, topicIdForPlayer);
+                    }
+                }
+            } catch(e){}
+        }, 3000);
     } else if(event.data === YT.PlayerState.PAUSED){
         if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(false);
+        reportProgress(false, topicIdForPlayer);
     } else if(event.data === YT.PlayerState.ENDED){
         if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
-        reportProgress(true);
+        reportProgress(true, topicIdForPlayer);
     }
 }
 
@@ -569,9 +583,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // force stop player/timers
     function forceStopAll(){
         try{
+            const prevTopicId = currentTopicId;
             const html5 = document.getElementById('html5-player');
-            if(html5) maybeCompleteByThreshold(html5);
-            reportProgress(false);
+            if(html5 && prevTopicId) maybeCompleteByThreshold(html5, prevTopicId);
+            if(prevTopicId) reportProgress(false, prevTopicId);
             if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
             if(player && typeof player.stopVideo === 'function'){ try{ player.stopVideo(); }catch(e){} }
             if(player && typeof player.destroy === 'function'){ try{ player.destroy(); }catch(e){} }
@@ -695,6 +710,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 // selection highlight
                 document.querySelectorAll('.topic-item.selected').forEach(s => s.classList.remove('selected'));
                 item.classList.add('selected');
+            });
+        });
+
+        // Allow clicking checkbox directly to toggle completion manually
+        document.querySelectorAll('.topic-check').forEach(chk => {
+            chk.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const item = chk.closest('.topic-item');
+                if(!item) return;
+                const topicId = item.getAttribute('data-topic-id');
+                const isChecked = chk.checked;
+                setTopicCompletedUI(topicId, isChecked);
+                
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                fetch('/api/topics/' + topicId + '/progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrf,
+                    },
+                    body: JSON.stringify({
+                        completed: isChecked,
+                    })
+                }).catch(() => {});
             });
         });
 
