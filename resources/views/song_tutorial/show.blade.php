@@ -90,22 +90,26 @@
     @include('layouts.lms_header')
 
     <!-- MAIN LESSONS CONTAINER -->
-    <div class="flex-1 flex flex-col md:flex-row w-full max-w-screen-2xl mx-auto overflow-hidden bg-[#08080a] relative">
+    <!-- MAIN LESSONS CONTAINER -->
+    <div class="flex-1 flex flex-col md:flex-row w-full max-w-screen-2xl mx-auto overflow-y-auto bg-[#08080a] relative">
         
-        <!-- Sidebar Navigation for Song Library -->
-        <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-950/90 border-r border-white/10 overflow-y-auto absolute md:relative z-40 inset-y-0 transform -translate-x-full md:translate-x-0 backdrop-blur-xl h-full">
-            <!-- Mobile Close Button -->
-            <button onclick="closeSidebar()" class="md:hidden absolute top-4 right-4 text-gray-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            
-            <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <!-- Main Content Area (Video First on Mobile) -->
+        <div class="main-wrapper flex-1 relative w-full p-4 md:p-8 order-1 md:order-2">
+            <main class="content max-w-4xl mx-auto w-full flex flex-col items-center">
+                @php $firstLesson = $lesson; @endphp
+                @include('kelas._lesson_content', ['lesson' => $firstLesson])
+            </main>
+        </div>
+
+        <!-- Sidebar Navigation for Song Library (Below Video on Mobile, Left Sidebar on Desktop) -->
+        <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-950/90 border-t md:border-t-0 md:border-r border-white/10 order-2 md:order-1 relative p-4 md:p-0 backdrop-blur-xl">
+            <div class="p-4 md:p-5 border-b border-white/10 flex items-center justify-between">
                 <h3 class="font-display text-2xl text-white tracking-wider flex items-center gap-2">
                     <i class="fa-solid fa-music text-blue-500"></i> Song Library
                 </h3>
             </div>
             
-            <div class="p-4">
+            <div class="p-0 md:p-4 mt-4 md:mt-0">
                 <!-- SINGLE UNIFIED CONTAINER CARD (EXCLUSIVE ACCORDION) -->
                 <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl"
                      x-data="{ activeSection: 0 }">
@@ -149,20 +153,8 @@
                 </div>
             </div>
         </aside>
-
-        <!-- Main Content Area -->
-        <div class="main-wrapper flex-1 relative overflow-y-auto w-full p-4 md:p-8">
-            <!-- Mobile Sidebar Trigger Button -->
-            <button onclick="toggleSidebar()" class="md:hidden mb-4 inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 rounded-xl text-xs font-bold text-gray-300">
-                <i class="fa-solid fa-list-ul text-blue-400"></i> Browse Songs
-            </button>
-
-            <main class="content max-w-4xl mx-auto w-full flex flex-col items-center">
-                @php $firstLesson = $lesson; @endphp
-                @include('kelas._lesson_content', ['lesson' => $firstLesson])
-            </main>
-        </div>
     </div>
+
 </div>
 
 <script>

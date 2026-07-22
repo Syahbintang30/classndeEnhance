@@ -157,22 +157,26 @@
     @include('layouts.lms_header')
 
     <!-- MAIN LESSONS CONTAINER -->
-    <div class="flex-1 flex flex-col md:flex-row w-full max-w-screen-2xl mx-auto overflow-hidden relative z-10">
+    <!-- MAIN LESSONS CONTAINER -->
+    <div class="flex-1 flex flex-col md:flex-row w-full max-w-screen-2xl mx-auto overflow-y-auto relative z-10">
         
-        <!-- Sidebar Navigation for Modules/Topics -->
-        <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-950/60 backdrop-blur-md border-r border-white/5 overflow-y-auto absolute md:relative z-20 inset-y-0 transform -translate-x-full md:translate-x-0">
-            <!-- Mobile Close Button -->
-            <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-gray-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            
-            <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <!-- Main Content Area (Video First on Mobile) -->
+        <div class="main-wrapper flex-1 relative w-full order-1 md:order-2">
+            <main class="content p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col items-center">
+                @php $firstLesson = $lessons->first(); @endphp
+                @include('kelas._lesson_content', ['lesson' => $firstLesson])
+            </main>
+        </div>
+
+        <!-- Sidebar Navigation for Modules/Topics (Below Video on Mobile, Left Sidebar on Desktop) -->
+        <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-950/80 backdrop-blur-md border-t md:border-t-0 md:border-r border-white/10 order-2 md:order-1 relative p-4 md:p-0">
+            <div class="p-4 md:p-5 border-b border-white/10 flex items-center justify-between">
                 <h3 class="font-display text-2xl text-white tracking-wider flex items-center gap-2">
                     <i class="fa-solid fa-list-ul text-blue-500"></i> Course Syllabus
                 </h3>
             </div>
             
-            <div class="p-4">
+            <div class="p-0 md:p-4 mt-4 md:mt-0">
                 <!-- SINGLE UNIFIED SYLLABUS CONTAINER (EXCLUSIVE ACCORDION) -->
                 <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl"
                      x-data="{ activeSection: 0 }">
@@ -216,15 +220,8 @@
                 </div>
             </div>
         </aside>
-
-    <!-- Main Content Area -->
-    <div class="main-wrapper flex-1 relative overflow-y-auto w-full">
-        <main class="content p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col items-center">
-            @php $firstLesson = $lessons->first(); @endphp
-            @include('kelas._lesson_content', ['lesson' => $firstLesson])
-        </main>
     </div>
-</div>
+
 
 <script>
 function toggleSidebar() {
