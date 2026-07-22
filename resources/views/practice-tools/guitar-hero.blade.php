@@ -195,113 +195,28 @@
         artist: item.artist,
         bpm: item.bpm,
         trackName: item.track_name,
-        measures: item.tab_data || []
+        audioUrl: item.audio_url,
+        measures: (typeof item.tab_data === 'string' ? JSON.parse(item.tab_data) : item.tab_data) || [
+            [
+                { string: 3, fret: "12", note: "D", freq: 146.83, beat: 0 },
+                { string: 1, fret: "15", note: "D", freq: 293.66, beat: 1 },
+                { string: 2, fret: "14", note: "A", freq: 220.00, beat: 2 },
+                { string: 2, fret: "12", note: "G", freq: 196.00, beat: 3 }
+            ]
+        ]
     })) : [
         {
             title: "Black Label Society - In This River (Live Lead Solo)",
             artist: "Black Label Society",
             bpm: 72,
             trackName: "Electric Guitar Clean (Zakk Wylde Solo)",
+            audioUrl: null,
             measures: [
                 [
                     { string: 2, fret: "9", note: "E", freq: 164.81, beat: 0 },
                     { string: 2, fret: "11", note: "F#", freq: 185.00, beat: 1 },
                     { string: 1, fret: "9", note: "C#", freq: 277.18, beat: 2 },
                     { string: 1, fret: "12", note: "E", freq: 329.63, beat: 3 }
-                ]
-            ]
-        }
-    ];,
-                // Measure 2
-                [
-                    { string: 0, fret: "12", note: "E", freq: 329.63, beat: 0 },
-                    { string: 0, fret: "14", note: "F#", freq: 369.99, beat: 1 },
-                    { string: 0, fret: "16", note: "G#", freq: 415.30, beat: 2 },
-                    { string: 0, fret: "14", note: "F#", freq: 369.99, beat: 3 }
-                ],
-                // Measure 3
-                [
-                    { string: 1, fret: "12", note: "E", freq: 329.63, beat: 0 },
-                    { string: 2, fret: "11", note: "F#", freq: 185.00, beat: 1 },
-                    { string: 2, fret: "9", note: "E", freq: 164.81, beat: 2 },
-                    { string: 3, fret: "11", note: "C#", freq: 138.59, beat: 3 }
-                ],
-                // Measure 4
-                [
-                    { string: 2, fret: "9", note: "E", freq: 164.81, beat: 0 },
-                    { string: 2, fret: "11", note: "F#", freq: 185.00, beat: 1 },
-                    { string: 2, fret: "9", note: "E", freq: 164.81, beat: 2 },
-                    { string: 3, fret: "11", note: "C#", freq: 138.59, beat: 3 }
-                ]
-            ]
-        },
-        {
-            title: "Guns N' Roses - Sweet Child O' Mine (Authentic Intro Solo)",
-            artist: "Guns N' Roses",
-            bpm: 125,
-            trackName: "Electric Guitar Lead (Slash Intro Riff)",
-            measures: [
-                // Measure 1 - Pattern 1 (D string Fret 12)
-                [
-                    { string: 3, fret: "12", note: "D", freq: 146.83, beat: 0 },
-                    { string: 1, fret: "15", note: "D", freq: 293.66, beat: 0.5 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 1 },
-                    { string: 2, fret: "12", note: "G", freq: 196.00, beat: 1.5 },
-                    { string: 0, fret: "15", note: "G", freq: 392.00, beat: 2 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 2.5 },
-                    { string: 0, fret: "14", note: "F#", freq: 369.99, beat: 3 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 3.5 }
-                ],
-                // Measure 2 - Pattern 2 (D string Fret 14)
-                [
-                    { string: 3, fret: "14", note: "E", freq: 164.81, beat: 0 },
-                    { string: 1, fret: "15", note: "D", freq: 293.66, beat: 0.5 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 1 },
-                    { string: 2, fret: "12", note: "G", freq: 196.00, beat: 1.5 },
-                    { string: 0, fret: "15", note: "G", freq: 392.00, beat: 2 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 2.5 },
-                    { string: 0, fret: "14", note: "F#", freq: 369.99, beat: 3 },
-                    { string: 2, fret: "14", note: "A", freq: 220.00, beat: 3.5 }
-                ]
-            ]
-        },
-        {
-            title: "Sal Priadi - Ada Titik (Iconic Lead Solo)",
-            artist: "Sal Priadi",
-            bpm: 95,
-            trackName: "Electric Guitar Melodic Lead",
-            measures: [
-                [
-                    { string: 0, fret: "5", note: "A", freq: 440.00, beat: 0 },
-                    { string: 0, fret: "7", note: "B", freq: 493.88, beat: 1 },
-                    { string: 0, fret: "8", note: "C", freq: 523.25, beat: 2 },
-                    { string: 1, fret: "5", note: "E", freq: 329.63, beat: 3 }
-                ],
-                [
-                    { string: 1, fret: "8", note: "G", freq: 392.00, beat: 0 },
-                    { string: 0, fret: "7", note: "B", freq: 493.88, beat: 1 },
-                    { string: 0, fret: "5", note: "A", freq: 440.00, beat: 2 },
-                    { string: 1, fret: "5", note: "E", freq: 329.63, beat: 3 }
-                ]
-            ]
-        },
-        {
-            title: "Nde Signature Pentatonic Shred Solo",
-            artist: "Nde Guitar",
-            bpm: 130,
-            trackName: "Electric Guitar Shred Lead",
-            measures: [
-                [
-                    { string: 5, fret: "5", note: "A", freq: 110.00, beat: 0 },
-                    { string: 5, fret: "8", note: "C", freq: 130.81, beat: 1 },
-                    { string: 4, fret: "5", note: "D", freq: 146.83, beat: 2 },
-                    { string: 4, fret: "7", note: "E", freq: 164.81, beat: 3 }
-                ],
-                [
-                    { string: 3, fret: "5", note: "G", freq: 196.00, beat: 0 },
-                    { string: 3, fret: "7", note: "A", freq: 220.00, beat: 1 },
-                    { string: 2, fret: "5", note: "C", freq: 261.63, beat: 2 },
-                    { string: 2, fret: "8", note: "E", freq: 329.63, beat: 3 }
                 ]
             ]
         }
@@ -350,18 +265,34 @@
         document.getElementById('btnLoopRegion').className = isLoopOn ? 'songsterr-btn active px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5' : 'songsterr-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 flex items-center gap-1.5';
     }
 
+    let activeAudioElement = null;
+
     function toggleSongsterrPlay() {
         isPlaying = !isPlaying;
         const icon = document.getElementById('playIcon');
         const btn = document.getElementById('btnPlayPause');
+        const song = songsDatabase[currentSongIndex];
 
         if (isPlaying) {
             icon.className = 'fa-solid fa-pause ml-0';
             btn.className = 'w-12 h-12 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xl flex items-center justify-center transition shadow-lg shadow-amber-500/30 cursor-pointer';
+
+            if (song && song.audioUrl) {
+                if (!activeAudioElement || activeAudioElement.src !== song.audioUrl) {
+                    activeAudioElement = new Audio(song.audioUrl);
+                }
+                activeAudioElement.playbackRate = speedRate;
+                activeAudioElement.play().catch(e => console.log('Audio play error:', e));
+            }
+
             startPlaybackLoop();
         } else {
             icon.className = 'fa-solid fa-play ml-0.5';
             btn.className = 'w-12 h-12 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl flex items-center justify-center transition shadow-lg shadow-amber-500/20 cursor-pointer';
+            
+            if (activeAudioElement) {
+                activeAudioElement.pause();
+            }
             if (animationTimer) clearInterval(animationTimer);
         }
     }
