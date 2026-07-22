@@ -24,23 +24,21 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
     />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --adm-bg: #08080a;
-            --adm-surface: #0c0c12;
-            --adm-card: rgba(18, 18, 26, 0.75);
-            --adm-border: rgba(255, 255, 255, 0.1);
-            --adm-text: #f3f4f6;
-            --adm-muted: #94a3b8;
-            --adm-primary: #3b82f6;
-            --adm-primary-soft: rgba(59, 130, 246, 0.18);
-            --adm-ok: #10b981;
-            --adm-warn: #f59e0b;
-            --adm-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            --adm-bg: #f6f8fc;
+            --adm-surface: #ffffff;
+            --adm-card: #ffffff;
+            --adm-border: rgba(15, 23, 42, 0.10);
+            --adm-text: #162033;
+            --adm-muted: #6b7280;
+            --adm-primary: #1d4ed8;
+            --adm-primary-soft: rgba(29, 78, 216, 0.10);
+            --adm-ok: #22c55e;
+            --adm-warn: #f43f5e;
+            --adm-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
         }
 
         body.admin-shell,
@@ -53,7 +51,9 @@
 
         body.admin-shell {
             margin: 0;
-            background: #08080a !important;
+            background:
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.10) 0%, rgba(59, 130, 246, 0) 28%),
+                linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%) !important;
             color: var(--adm-text) !important;
         }
 
@@ -61,11 +61,10 @@
             min-height: 100vh;
             display: grid;
             grid-template-columns: 264px minmax(0, 1fr);
-            background: #08080a;
         }
 
         .admin-shell .admin-sidebar {
-            background: #0c0c12 !important;
+            background: var(--adm-surface) !important;
             border-right: 1px solid var(--adm-border) !important;
             padding: 1.2rem 1rem;
             position: sticky;
@@ -73,9 +72,6 @@
             height: 100vh;
             overflow-y: auto;
             z-index: 1021;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
 
         .admin-shell .brand {
@@ -83,29 +79,29 @@
             align-items: center;
             gap: .7rem;
             text-decoration: none;
-            color: #ffffff;
+            color: var(--adm-text);
             font-weight: 800;
             letter-spacing: -.02em;
             margin-bottom: 1.2rem;
         }
 
         .admin-shell .brand-badge {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            background: linear-gradient(145deg, #2563eb, #06b6d4);
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
         }
 
         .admin-shell .menu-label {
             font-size: .72rem;
             letter-spacing: .08em;
             text-transform: uppercase;
-            color: #64748b;
+            color: var(--adm-muted);
             margin: .95rem .65rem .45rem;
             font-weight: 700;
         }
@@ -115,27 +111,25 @@
             align-items: center;
             gap: .65rem;
             padding: .65rem .75rem;
-            border-radius: 12px;
+            border-radius: 10px;
             text-decoration: none;
-            color: #94a3b8;
+            color: #475569;
             font-size: .92rem;
             font-weight: 600;
             transition: background .16s ease, color .16s ease, transform .16s ease;
             margin-bottom: .2rem;
-            border: 1px solid transparent;
         }
 
         .admin-shell .side-link:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
+            background: rgba(37, 99, 235, 0.08);
+            color: #0f172a;
             transform: translateX(1px);
         }
 
         .admin-shell .side-link.active {
-            color: #60a5fa !important;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.15)) !important;
-            border-color: rgba(59, 130, 246, 0.35);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+            color: var(--adm-primary);
+            background: var(--adm-primary-soft);
+            box-shadow: inset 0 0 0 1px rgba(29, 78, 216, .10);
         }
 
         .admin-shell .side-link i {
@@ -146,17 +140,16 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
-            background: #08080a;
         }
 
         .admin-shell .admin-topbar {
             position: sticky;
             top: 0;
             z-index: 1010;
-            background: rgba(8, 8, 12, 0.9) !important;
+            background: rgba(248, 251, 255, .92) !important;
             border-bottom: 1px solid var(--adm-border) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .admin-shell .topbar-inner {
@@ -187,15 +180,11 @@
         .admin-shell .top-search input {
             width: 100%;
             border: 1px solid var(--adm-border);
-            background: rgba(18, 18, 26, 0.8) !important;
+            background: var(--adm-card);
             border-radius: 12px;
             height: 42px;
             padding: 0 .95rem 0 2.2rem;
-            color: #ffffff !important;
-        }
-
-        .admin-shell .top-search input::placeholder {
-            color: #64748b;
+            color: var(--adm-text);
         }
 
         .admin-shell .top-search i {
@@ -212,10 +201,10 @@
             top: calc(100% + 8px);
             left: 0;
             right: 0;
-            background: #0d0d14 !important;
-            border: 1px solid var(--adm-border) !important;
+            background: #ffffff;
+            border: 1px solid var(--adm-border);
             border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 16px 42px rgba(15, 23, 42, .12);
             overflow: hidden;
             z-index: 1050;
             display: none;
@@ -236,7 +225,7 @@
             text-align: left;
             border: 0;
             background: transparent;
-            color: #ffffff;
+            color: var(--adm-text);
             padding: .62rem .78rem;
             font-size: .9rem;
             cursor: pointer;
@@ -244,7 +233,7 @@
 
         .admin-shell .top-search-item:hover,
         .admin-shell .top-search-item.active {
-            background: rgba(59, 130, 246, 0.15);
+            background: rgba(37, 99, 235, 0.08);
         }
 
         .admin-shell .top-search-item small {
@@ -281,9 +270,9 @@
 
         .admin-shell .btn-lms {
             border-radius: 10px;
-            border: 1px solid rgba(59, 130, 246, 0.35) !important;
-            background: rgba(59, 130, 246, 0.15) !important;
-            color: #60a5fa !important;
+            border: 1px solid rgba(37, 99, 235, .22);
+            background: #eff6ff;
+            color: #1d4ed8;
             padding: .45rem .75rem;
             font-size: .85rem;
             font-weight: 700;
@@ -293,26 +282,22 @@
             gap: .4rem;
             line-height: 1;
             white-space: nowrap;
-            transition: all 0.2s ease;
         }
 
         .admin-shell .btn-lms,
         .admin-shell .btn-lms:visited,
         .admin-shell .btn-lms:hover,
         .admin-shell .btn-lms:focus {
-            color: #ffffff !important;
-            background: rgba(59, 130, 246, 0.3) !important;
-            border-color: rgba(59, 130, 246, 0.6) !important;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            color: #1d4ed8 !important;
             text-decoration: none;
         }
 
         .admin-shell .user-dropdown > a {
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid var(--adm-border);
             border-radius: 999px;
-            background: rgba(18, 18, 26, 0.8) !important;
-            color: #ffffff !important;
-            padding: .35rem .65rem;
+            background: var(--adm-card);
+            color: var(--adm-text);
+            padding: .35rem .6rem;
             font-size: .85rem;
             font-weight: 700;
             display: inline-flex;
@@ -324,14 +309,13 @@
             width: 28px;
             height: 28px;
             border-radius: 999px;
-            background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
-            color: #ffffff !important;
+            background: linear-gradient(140deg, #dbeafe, #bfdbfe);
+            color: #1d4ed8;
             font-size: .75rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
         }
 
         .admin-shell .admin-content {
@@ -402,119 +386,100 @@
     @endphp
     <div class="admin-app">
         <aside id="adminSidebar" class="admin-sidebar">
-            <div>
-                <a class="brand" href="{{ route('admin.dashboard') }}">
-                    <span class="brand-badge"><i class="fa-solid fa-guitar text-white"></i></span>
-                    <div class="d-flex flex-column">
-                        <span class="leading-tight">Guitarclassbynde</span>
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0" style="font-size: 0.65rem; width: max-content;">Admin Panel</span>
-                    </div>
-                </a>
+            <a class="brand" href="{{ route('admin.dashboard') }}">
+                <span class="brand-badge"><i class="ph ph-chart-pie-slice"></i></span>
+                <span>Guitarclassbynde Admin</span>
+            </a>
 
-                <div class="menu-label">Main Menu</div>
-                <a class="side-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                    <i class="fa-solid fa-grip-vertical"></i> <span>Dashboard</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/lessons*') ? 'active' : '' }}" href="{{ route('admin.lessons.index') }}">
-                    <i class="fa-solid fa-book-open"></i> <span>Lessons</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.packages') }}">
-                    <i class="fa-solid fa-users"></i> <span>Users</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/coaching/bookings*') ? 'active' : '' }}" href="{{ url('/admin/coaching/bookings') }}">
-                    <i class="fa-solid fa-calendar-check"></i> <span>Booking</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/coaching/slot-capacities*') ? 'active' : '' }}" href="{{ url('/admin/coaching/slot-capacities') }}">
-                    <i class="fa-solid fa-clock"></i> <span>Slot Capacity</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/packages*') ? 'active' : '' }}" href="{{ route('admin.packages.index') }}">
-                    <i class="fa-solid fa-box-open"></i> <span>Packages</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/transactions*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
-                    <i class="fa-solid fa-receipt"></i> <span>Transactions</span>
-                </a>
-                <a class="side-link {{ request()->is('admin/faq*') ? 'active' : '' }}" href="{{ route('admin.faq.index') }}">
-                    <i class="fa-solid fa-circle-question"></i> <span>FAQ</span>
-                </a>
+            <div class="menu-label">Main</div>
+            <a class="side-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                <i class="ph ph-squares-four"></i> Dashboard
+            </a>
+            <a class="side-link {{ request()->is('admin/lessons*') ? 'active' : '' }}" href="{{ route('admin.lessons.index') }}">
+                <i class="ph ph-book-open-text"></i> Lessons
+            </a>
+            <a class="side-link {{ request()->is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.packages') }}">
+                <i class="ph ph-users-three"></i> Users
+            </a>
+            <a class="side-link {{ request()->is('admin/coaching/bookings*') ? 'active' : '' }}" href="{{ url('/admin/coaching/bookings') }}">
+                <i class="ph ph-calendar-check"></i> Booking
+            </a>
+            <a class="side-link {{ request()->is('admin/coaching/slot-capacities*') ? 'active' : '' }}" href="{{ url('/admin/coaching/slot-capacities') }}">
+                <i class="ph ph-timer"></i> Slot Capacity
+            </a>
+            <a class="side-link {{ request()->is('admin/packages*') ? 'active' : '' }}" href="{{ route('admin.packages.index') }}">
+                <i class="ph ph-package"></i> Packages
+            </a>
+            <a class="side-link {{ request()->is('admin/transactions*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
+                <i class="ph ph-credit-card"></i> Transactions
+            </a>
+            <a class="side-link {{ request()->is('admin/faq*') ? 'active' : '' }}" href="{{ route('admin.faq.index') }}">
+                <i class="ph ph-question"></i> FAQ
+            </a>
 
-                @if($isSuper)
-                    <div class="menu-label">Super Admin</div>
-                    <a class="side-link {{ request()->is('admin/vouchers*') ? 'active' : '' }}" href="{{ route('admin.vouchers.index') }}">
-                        <i class="fa-solid fa-ticket"></i> <span>Vouchers</span>
-                    </a>
-                    <a class="side-link {{ request()->is('admin/referral*') ? 'active' : '' }}" href="{{ route('admin.referral.settings.form') }}">
-                        <i class="fa-solid fa-share-nodes"></i> <span>Referral</span>
-                    </a>
-                    <a class="side-link {{ request()->routeIs('admin.videopromo') ? 'active' : '' }}" href="{{ route('admin.videopromo') }}">
-                        <i class="fa-solid fa-video"></i> <span>Video Promo</span>
-                    </a>
-                    <a class="side-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
-                        <i class="fa-solid fa-gear"></i> <span>Settings</span>
-                    </a>
-                @endif
-            </div>
-
-            <!-- Sidebar Footer Status -->
-            <div class="pt-3 border-top border-secondary border-opacity-25 mt-3">
-                <div class="p-2.5 rounded-3 bg-dark bg-opacity-60 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="position-relative d-inline-flex" style="width: 8px; height: 8px;">
-                            <span class="position-absolute w-100 h-100 rounded-circle bg-emerald-400 opacity-75 animate-ping"></span>
-                            <span class="position-relative w-100 h-100 rounded-circle bg-success"></span>
-                        </span>
-                        <span class="small text-slate-300 font-medium" style="font-size: 0.75rem;">Live System Online</span>
-                    </div>
-                    <span class="badge bg-secondary bg-opacity-25 text-muted font-mono" style="font-size: 0.65rem;">v2.4</span>
-                </div>
-            </div>
+            @if($isSuper)
+                <div class="menu-label">Super Admin</div>
+                <a class="side-link {{ request()->is('admin/vouchers*') ? 'active' : '' }}" href="{{ route('admin.vouchers.index') }}">
+                    <i class="ph ph-ticket"></i> Vouchers
+                </a>
+                <!-- <a class="side-link {{ request()->is('admin/payment-methods*') ? 'active' : '' }}" href="{{ route('admin.payment-methods.index') }}">
+                    <i class="ph ph-wallet"></i> Payment Methods
+                </a> -->
+                <a class="side-link {{ request()->is('admin/referral*') ? 'active' : '' }}" href="{{ route('admin.referral.settings.form') }}">
+                    <i class="ph ph-share-network"></i> Referral
+                </a>
+                {{-- Menu ini mengarah ke pengaturan video promo yang dipakai landing page utama. --}}
+                  <a class="side-link {{ request()->routeIs('admin.videopromo') ? 'active' : '' }}" href="{{ route('admin.videopromo') }}">
+                    <i class="ph ph-video"></i> Video Promo
+                </a>
+                <a class="side-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
+                    <i class="ph ph-gear"></i> Settings
+                </a>
+            @endif
         </aside>
 
         <main class="admin-main">
             <header class="admin-topbar">
                 <div class="topbar-inner">
                     <button id="sidebarToggle" class="side-toggle" type="button" aria-label="Toggle sidebar">
-                        <i class="fa-solid fa-bars"></i>
+                        <i class="ph ph-list"></i>
                     </button>
-
-                    <div class="top-search">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input id="adminTopSearchInput" type="text" placeholder="Cari transaksi, user, lesson..." aria-label="Search admin menu" autocomplete="off">
-                        <div id="adminTopSearchResults" class="top-search-results" role="listbox" aria-label="Search menu results"></div>
-                    </div>
-
+                    @if ($showTopSearch)
+                        <div class="top-search">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input id="adminTopSearchInput" type="text" placeholder="Search menu cepat: lesson, users, booking..." aria-label="Search admin menu" autocomplete="off">
+                            <div id="adminTopSearchResults" class="top-search-results" role="listbox" aria-label="Search menu results"></div>
+                        </div>
+                    @endif
                     <div class="top-actions">
                         <a class="btn-lms" href="{{ route('lms.entry') }}" target="_blank" rel="noopener" aria-label="Buka LMS">
-                            <i class="fa-solid fa-graduation-cap"></i>
+                            <i class="ph ph-graduation-cap"></i>
                             <span>Open LMS</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-70"></i>
                         </a>
-                        <a class="icon-btn-lite" href="{{ route('admin.dashboard') }}" title="Refresh Live Data"><i class="fa-solid fa-rotate text-xs"></i></a>
+                        <a class="icon-btn-lite" href="{{ route('admin.dashboard') }}" title="Refresh dashboard"><i class="ph ph-arrow-clockwise"></i></a>
                         <div class="dropdown user-dropdown">
                             <a class="dropdown-toggle text-decoration-none" href="#" id="adminUserMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="avatar-dot">{{ $initials }}</span>
-                                <div class="d-none d-sm-flex flex-column text-start me-1">
-                                    <span class="leading-tight text-white" style="font-size: 0.8rem;">{{ $user->name ?? 'Admin' }}</span>
-                                    <span class="text-muted" style="font-size: 0.65rem;">Guitarclassbynde</span>
-                                </div>
+                                <span>{{ $user->name ?? 'Admin' }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminUserMenu">
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="dropdown-item p-0 m-0">
                                         @csrf
-                                        <button type="submit" class="w-100 text-start px-3 py-2 text-danger bg-transparent border-0"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</button>
+                                        <button type="submit">Logout</button>
                                     </form>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
+            </header>
+
             <div class="admin-content">
                 @yield('content')
             </div>
         </main>
     </div>
-
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

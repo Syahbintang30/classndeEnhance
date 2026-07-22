@@ -27,7 +27,7 @@
     gap: 18px;
 }
 
-/* Ensure admin content text readability on dark theme */
+/* Keep admin content readable on the global light theme */
 body.admin-shell,
 body.admin-shell .content-wrapper,
 body.admin-shell .card,
@@ -36,7 +36,7 @@ body.admin-shell .custom-table,
 body.admin-shell .custom-table th,
 body.admin-shell .custom-table td,
 body.admin-shell .modal_content {
-    color: #f3f4f6 !important;
+    color: #162033 !important;
 }
 
 /* Ensure links in content are visible */
@@ -44,9 +44,8 @@ body.admin-shell .content a,
 body.admin-shell a.btn-add,
 body.admin-shell .admin-nav .nav-links a,
 body.admin-shell .admin-nav .dropdown-item {
-    color: #60a5fa !important;
+    color: #162033 !important;
 }
-
 
 /* Brand */
 .admin-nav .navbar-brand {
