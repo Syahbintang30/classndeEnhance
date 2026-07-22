@@ -12,23 +12,23 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between align-items-center mb-4 header">
             <div>
-                <h2>Coaching Bookings</h2>
-                <p style="color:#666; font-size:14px">Manage and review user bookings, create video rooms, accept or reject requests.</p>
+                <h2>Jadwal Live Coaching</h2>
+                <p style="color:#888; font-size:14px">Kelola dan pantau seluruh jadwal sesi 1-on-1 live coaching murid, ruang video call, serta konfirmasi pendaftaran.</p>
             </div>
 
             <div style="min-width:320px;">
                 <form method="GET" class="d-flex flex-wrap justify-content-end gap-2">
-                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" style="width:260px;" placeholder="Search user, email, order id..." />
+                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" style="width:240px;" placeholder="Cari nama murid, email, order ID..." />
 
-                    <select name="status" class="form-select form-select-sm text-white" style="width:150px; background-color: #1a1a1a; border:1px solid #333;">
-                        <option value="">All status</option>
-                        <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="accepted" {{ request('status')=='accepted' ? 'selected' : '' }}>Approved</option>
-                        <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Rejected</option>
+                    <select name="status" class="form-select form-select-sm text-white" style="width:160px; background-color: #1a1a1a; border:1px solid #333;">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Menunggu Persetujuan</option>
+                        <option value="accepted" {{ request('status')=='accepted' ? 'selected' : '' }}>Disetujui / Terjadwal</option>
+                        <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
 
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="Start date" />
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:150px; background-color:#1a1a1a; border:1px solid #333;" title="End date" />
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:140px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal Mulai" />
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:140px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal Akhir" />
 
                     <button class="btn btn-sm btn-primary">Filter</button>
                     @if(request()->hasAny(['q', 'status', 'date_from', 'date_to']))
@@ -44,21 +44,26 @@
                     <table class="table table-hover light-custom-table coaching-bookings-table mb-0">
                         <thead>
                             <tr>
-                                <th>User</th>
-                                <th>Notes</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                                <th>Order / Payment</th>
-                                <th>Twilio</th>
-                                <th class="text-end">Actions</th>
+                                <th>Murid / Siswa</th>
+                                <th>Catatan Sesi</th>
+                                <th>Waktu Sesi</th>
+                                <th>Status Sesi</th>
+                                <th>Jenis Pembayaran / Tiket</th>
+                                <th>Ruang Video Call</th>
+                                <th class="text-end">Aksi Admin</th>
                             </tr>
                         </thead>
                         <tbody>
                         @forelse($bookings as $b)
                             <tr>
                                 <td class="cb-col-user">
-                                    <div style="font-weight:700">{{ optional($b->user)->name }}</div>
-                                    <div class="text-muted" style="font-size:13px">{{ optional($b->user)->email }} · {{ optional($b->user)->phone ?? '-' }}</div>
+                                    <div style="font-weight:700" class="text-white">{{ optional($b->user)->name ?? 'Guest User' }}</div>
+                                    <div class="text-muted" style="font-size:12px">
+                                        {{ optional($b->user)->email }}
+                                        @if(optional($b->user)->phone)
+                                            <span class="ms-1">• No. HP: {{ $b->user->phone }}</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="cb-col-notes">
                                     @php
@@ -91,9 +96,9 @@
                                         }
                                     @endphp
                                     @if($display !== '-')
-                                        <div>{{ $display }}</div>
+                                        <div class="text-slate-300 small">{{ $display }}</div>
                                     @else
-                                        -
+                                        <span class="text-muted small">—</span>
                                     @endif
                                 </td>
                                 <td class="cb-col-time">
@@ -109,23 +114,27 @@
                                         $isPastByTime = $sessionEnd->lt(now());
                                         $isLiveWindow = now()->gte($sessionStart) && now()->lte($sessionEnd);
                                     @endphp
-                                    <div>{{ $bt->translatedFormat('j F Y') }}</div>
-                                    <div class="text-muted" style="font-size:13px">{{ $bt->format('H:i') }} · Taken: {{ $taken }}</div>
-                                    <div style="margin-top:6px"><span class="countdown" data-time-ms="{{ \Carbon\Carbon::parse($b->booking_time)->getTimestamp() * 1000 }}">-</span></div>
+                                    <div class="fw-bold text-white"><i class="fa-regular fa-calendar-check text-primary me-1"></i> {{ $bt->translatedFormat('j F Y') }}</div>
+                                    <div class="text-muted small mt-0.5"><i class="fa-regular fa-clock text-info me-1"></i> {{ $bt->format('H:i') }} WIB <span class="badge bg-secondary bg-opacity-25 text-muted ms-1" style="font-size:0.68rem">Sesi #{{ $taken }}</span></div>
+                                    <div style="margin-top:4px">
+                                        <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-2 py-0.5" style="font-size:0.7rem;"><i class="fa-solid fa-hourglass-half me-1"></i> <span class="countdown" data-time-ms="{{ \Carbon\Carbon::parse($b->booking_time)->getTimestamp() * 1000 }}">-</span></span>
+                                    </div>
                                 </td>
                                 <td class="cb-col-status">
                                     @php $s = strtolower($b->status); @endphp
-                                    @if($s === 'accepted')
-                                        <span class="badge bg-success">Approved</span>
+                                    @if($s === 'accepted' || $s === 'approved')
+                                        <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Disetujui</span>
                                     @elseif($s === 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
+                                        <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-circle-xmark me-1"></i> Ditolak</span>
                                     @else
-                                        <span class="badge bg-warning">Pending</span>
+                                        <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-clock me-1"></i> Menunggu Persetujuan</span>
                                     @endif
                                 </td>
                                 <td class="cb-col-payment">
                                     @php
                                         $paymentInfo = null;
+                                        $rawSource = strtolower((string) (optional($b->ticket)->source ?? ''));
+
                                         if ($b->ticket && $b->ticket->source) {
                                             if (str_starts_with($b->ticket->source, 'midtrans:')) {
                                                 $order = substr($b->ticket->source, strlen('midtrans:'));
@@ -136,43 +145,51 @@
                                                     $paymentInfo = ['order' => $order];
                                                 }
                                             } else {
-                                                // non-midtrans source: use the raw source value as the order identifier
                                                 $order = $b->ticket->source;
                                                 $paymentInfo = ['order' => $order];
                                             }
                                         } else {
-                                            // be defensive: ticket may be null
                                             $paymentInfo = ['info' => $b->ticket->source ?? null];
                                         }
                                     @endphp
-                                    @if($paymentInfo)
+                                    @if($rawSource === 'warranty' || str_contains($rawSource, 'warranty'))
+                                        <div class="badge bg-purple-500-10 text-purple-400 border border-purple-500-20 px-2.5 py-1 fw-bold"><i class="fa-solid fa-shield-halved me-1"></i> Tiket Garansi Coaching</div>
+                                        <div class="text-muted small mt-1">Klaim Garansi Bebas Biaya</div>
+                                    @elseif($rawSource === 'free_on_register' || str_contains($rawSource, 'free'))
+                                        <div class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2.5 py-1 fw-bold"><i class="fa-solid fa-gift me-1"></i> Bonus Registrasi Gratis</div>
+                                        <div class="text-muted small mt-1">Sesi Gratis Pendaftaran</div>
+                                    @elseif($paymentInfo)
                                         @if(isset($paymentInfo['id']))
-                                            <div>{{ $paymentInfo['order'] }}</div>
-                                            <div class="text-muted" style="font-size:13px">Rp {{ number_format($paymentInfo['amount'] ?? 0,0,',','.') }}</div>
+                                            <div class="fw-bold text-white font-mono small"><i class="fa-solid fa-receipt me-1 text-primary"></i> Order #{{ $paymentInfo['order'] }}</div>
+                                            <div class="text-emerald-400 fw-bold small">Rp {{ number_format($paymentInfo['amount'] ?? 0,0,',','.') }}</div>
                                             <div class="mt-1">
-                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.transactions.index') }}?q={{ $paymentInfo['order'] }}">View Transaction</a>
+                                                <a class="btn btn-xs btn-outline-primary" href="{{ route('admin.transactions.index') }}?q={{ $paymentInfo['order'] }}"><i class="fa-solid fa-magnifying-glass me-1"></i> Lihat Transaksi</a>
                                             </div>
                                         @elseif(isset($paymentInfo['order']))
-                                            {{ $paymentInfo['order'] }}
+                                            <div class="fw-bold text-white font-mono small"><i class="fa-solid fa-receipt me-1 text-primary"></i> {{ $paymentInfo['order'] }}</div>
                                         @else
-                                            {{ $paymentInfo['info'] }}
+                                            <span class="text-muted small">—</span>
                                         @endif
                                     @else
-                                        -
+                                        <span class="text-muted small">—</span>
                                     @endif
                                 </td>
                             <td class="cb-col-twilio">
                                 @php $sessionUrl = url('/coaching/session/'.$b->id); $btLocal = \Carbon\Carbon::parse($b->booking_time)->format('Y-m-d H:i:s'); @endphp
                                 @if($b->twilio_room_sid)
-                                    <div style="display:flex;flex-direction:column;gap:6px;">
-                                        <div style="font-size:13px">{{ $b->twilio_room_sid }}</div>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="text-muted font-mono" style="font-size:0.7rem;" title="Room SID: {{ $b->twilio_room_sid }}">
+                                            <i class="fa-solid fa-video me-1 text-primary"></i> Room #{{ substr($b->twilio_room_sid, 0, 8) }}...
+                                        </div>
                                         <div>
-                                            <a class="btn btn-sm btn-outline-primary open-session-btn" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#">Open Session</a>
+                                            <a class="btn btn-sm btn-primary open-session-btn d-inline-flex align-items-center gap-1.5 shadow-sm" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#">
+                                                <i class="fa-solid fa-headset"></i> <span>Masuk Ruang Call</span>
+                                            </a>
                                         </div>
                                     </div>
                                 @else
                                     <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/create-room') }}" style="display:inline">@csrf
-                                        <button class="btn btn-sm btn-outline-secondary">Create Room</button>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-plus me-1"></i> Buat Room Call</button>
                                     </form>
                                 @endif
                             </td>
@@ -180,24 +197,25 @@
                                 @if(strtolower($b->status) === 'pending')
                                     <div class="d-flex justify-content-end align-items-center gap-2">
                                         <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/accept') }}" style="display:inline">@csrf
-                                            <button class="btn btn-sm btn-success" title="Accept" style="padding:4px 8px;">✓</button>
+                                            <button class="btn btn-sm btn-success px-2.5 py-1" title="Setujui Booking"><i class="fa-solid fa-check me-1"></i> Setujui</button>
                                         </form>
 
-                                        <button type="button" class="btn btn-sm btn-danger reject-open-btn" data-action="{{ url('/admin/coaching/bookings/'.$b->id.'/reject') }}" title="Reject" style="padding:4px 8px;">✕</button>
+                                        <button type="button" class="btn btn-sm btn-danger reject-open-btn px-2.5 py-1" data-action="{{ url('/admin/coaching/bookings/'.$b->id.'/reject') }}" title="Tolak Booking"><i class="fa-solid fa-xmark me-1"></i> Tolak</button>
                                     </div>
                                 @else
                                     @if($hasMeetingFinished || $isPastByTime)
-                                        <span class="badge bg-danger meeting-finished-badge">Meeting ended</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-muted"><i class="fa-solid fa-check-double me-1"></i> Sesi Telah Selesai</span>
                                     @elseif(strtolower($b->status) === 'accepted' && $isLiveWindow)
-                                        <span class="badge bg-warning text-dark meeting-finished-badge">On Going</span>
+                                        <span class="badge bg-warning text-dark fw-bold"><i class="fa-solid fa-tower-broadcast me-1"></i> Sesi Berlangsung</span>
                                     @elseif(strtolower($b->status) === 'accepted')
-                                        <span class="badge bg-secondary meeting-finished-badge">Scheduled</span>
+                                        <span class="badge bg-info bg-opacity-15 text-info border border-info border-opacity-25 fw-bold"><i class="fa-solid fa-calendar-days me-1"></i> Terjadwal</span>
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
                                 @endif
                             </td>
                         </tr>
+
                     @empty
                         <tr style="pointer-events: none; background: transparent;">
                             <td colspan="7" class="text-center pt-5">No bookings found.</td>
@@ -274,11 +292,11 @@
 
                     // update label: if session already started or within 10m window show plain Open Session (or with minutes if >0)
                     if (minutesUntilStart > 0) {
-                        // show minutes remaining
-                        btn.textContent = 'Open Session (' + minutesUntilStart + 'm)';
+                        btn.innerHTML = '<i class="fa-solid fa-headset me-1"></i> Masuk Ruang Call (' + minutesUntilStart + ' mnt)';
                     } else {
-                        btn.textContent = 'Open Session';
+                        btn.innerHTML = '<i class="fa-solid fa-headset me-1"></i> Masuk Ruang Call';
                     }
+
 
                     // enable only when within the open window
                     if (now >= startWindow && now <= endWindow) {
