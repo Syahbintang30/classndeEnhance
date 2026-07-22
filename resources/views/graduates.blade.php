@@ -11,119 +11,130 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            important: true,
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#08080a',
+                            card: 'rgba(18, 18, 24, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.05)',
+                            accent: '#0066ff',
+                            amber: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         /* Hide default legacy navbar */
         body > nav { display: none !important; }
 
-        .grad-wrapper {
-            background-color: #08080a;
-            color: #f3f4f6;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
-        .font-display {
+        .tw-dash .font-display {
             font-family: 'Bebas Neue', cursive;
             letter-spacing: 1.5px;
         }
         .grad-card {
-            background: rgba(18, 18, 24, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(18, 18, 24, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .grad-card:hover {
-            border-color: rgba(245, 158, 11, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px -5px rgba(245, 158, 11, 0.15);
-        }
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 50%, #D97706 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .gold-border-glow {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+            border-color: rgba(245, 158, 11, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -5px rgba(245, 158, 11, 0.12);
         }
     </style>
 @endpush
 
-<div class="grad-wrapper min-h-screen relative overflow-hidden flex flex-col">
-    {{-- Top Navigation Bar --}}
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden"
+     x-data="{ mobileMenuOpen: false }">
+
+    {{-- Ambient Mesh Glow Background --}}
+    <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-32 w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    {{-- TOP NAVIGATION BAR --}}
     @include('layouts.lms_header')
 
-    {{-- Background Ambient Lights --}}
-    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-amber-500/10 rounded-full blur-[160px] pointer-events-none"></div>
-    <div class="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
-
-    <div class="flex-1 max-w-6xl mx-auto w-full relative z-10 py-10 px-4 sm:px-6 lg:px-8 space-y-10">
+    <!-- MAIN HALL OF FAME CONTENT -->
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10 space-y-8 sm:space-y-10">
         
-        <!-- Header Title Section -->
-        <div class="text-center space-y-4">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider shadow-inner">
-                <i class="fa-solid fa-trophy text-amber-400"></i>
+        <!-- Header Section -->
+        <div class="text-center space-y-3">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-trophy text-amber-400 text-xs"></i>
                 <span>Official Hall of Fame</span>
             </div>
             
             <h1 class="font-display text-4xl sm:text-6xl text-white tracking-wider">
-                GUITARCLASSBYNDE <span class="gold-gradient-text">GRADUATES</span>
+                GUITARCLASSBYNDE <span class="text-amber-400">GRADUATES</span>
             </h1>
             
-            <p class="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base font-normal leading-relaxed">
-                Verified directory of students who have completed 100% of the Guitarclassbynde curriculum.
+            <p class="text-gray-400 max-w-xl mx-auto text-xs sm:text-sm font-normal leading-relaxed">
+                Verified directory of students who have completed 100% of the Guitarclassbynde course curriculum.
             </p>
-
-            <div class="pt-2">
-                <a href="{{ route('lms.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white hover:border-amber-500/40 transition">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span>Back to LMS Dashboard</span>
-                </a>
-            </div>
         </div>
 
-        <!-- Graduates Stats Bar -->
+        <!-- Graduates Stats Bar (Soft Borders) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">TOTAL GRADUATES</span>
+            <div class="bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 text-center shadow-lg">
+                <span class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">TOTAL GRADUATES</span>
                 <span class="block text-2xl font-extrabold text-white mt-1">{{ count($graduates) }} Students</span>
             </div>
-            <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">COMPLETED TOPICS</span>
+            <div class="bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 text-center shadow-lg">
+                <span class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">COMPLETED TOPICS</span>
                 <span class="block text-2xl font-extrabold text-amber-400 mt-1">{{ $totalCourseTopics }} Topics</span>
             </div>
-            <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">VERIFICATION STATUS</span>
+            <div class="bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 text-center shadow-lg">
+                <span class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">VERIFICATION STATUS</span>
                 <span class="block text-2xl font-extrabold text-emerald-400 mt-1">100% Authentic</span>
             </div>
         </div>
 
         <!-- Graduates Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @forelse($graduates as $grad)
-                <div class="grad-card rounded-2xl p-6 relative flex flex-col justify-between overflow-hidden">
+                <div class="grad-card rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden shadow-lg">
                     <div class="absolute -top-10 -right-10 w-28 h-28 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
 
                     <div>
                         <!-- Top Row: Badge & Cert Code -->
                         <div class="flex items-center justify-between gap-2 mb-4">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
-                                <i class="fa-solid fa-circle-check text-[10px]"></i>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                                <i class="fa-solid fa-circle-check text-[9px]"></i>
                                 <span>VERIFIED GRADUATE</span>
                             </span>
-                            <span class="font-mono text-[11px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                            <span class="font-mono text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
                                 {{ $grad->cert_code }}
                             </span>
                         </div>
 
                         <!-- Student Profile Row -->
-                        <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center gap-3.5 mb-4">
                             @if($grad->photo)
-                                <img src="{{ $grad->photo }}" alt="{{ $grad->name }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-amber-500/60 gold-border-glow flex-shrink-0" />
+                                <img src="{{ $grad->photo }}" alt="{{ $grad->name }}" class="w-12 h-12 rounded-xl object-cover border border-amber-500/50 flex-shrink-0" />
                             @else
-                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-white font-black text-xl flex items-center justify-center border-2 border-amber-400/60 gold-border-glow flex-shrink-0">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-white font-black text-lg flex items-center justify-center border border-amber-400/50 flex-shrink-0">
                                     {{ strtoupper(substr($grad->name, 0, 1)) }}
                                 </div>
                             @endif
                             <div class="min-w-0">
-                                <h3 class="font-bold text-lg text-white truncate mb-0.5">
+                                <h3 class="font-bold text-base text-white truncate mb-0.5">
                                     {{ $grad->name }}
                                 </h3>
                                 <span class="inline-block px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-semibold uppercase tracking-wider">
@@ -138,25 +149,27 @@
                     </div>
 
                     <!-- Card Footer & Verify Button -->
-                    <div class="pt-4 border-t border-white/5 flex items-center justify-between gap-2 mt-2">
+                    <div class="pt-3.5 border-t border-white/5 flex items-center justify-between gap-2 mt-2">
                         <span class="text-[11px] text-gray-400">
                             <i class="fa-regular fa-calendar me-1"></i> {{ $grad->completed_at }}
                         </span>
-                        <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold transition">
+                        <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-semibold transition">
                             <span>Certificate</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                     </div>
                 </div>
             @empty
-                <div class="col-span-full text-center py-16 bg-zinc-900/40 border border-white/5 rounded-2xl">
-                    <i class="fa-solid fa-award text-4xl text-gray-600 mb-3 block"></i>
-                    <h3 class="font-bold text-white text-lg">No Graduates Registered Yet</h3>
-                    <p class="text-xs text-gray-400 mt-1 max-w-md mx-auto">Complete all modules in the course to become the first graduate featured in the Hall of Fame!</p>
+                <div class="col-span-full text-center py-14 bg-zinc-900/40 border border-white/5 rounded-2xl shadow-lg">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl mx-auto mb-3">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-base">No Graduates Registered Yet</h3>
+                    <p class="text-xs text-gray-400 mt-1 max-w-md mx-auto">Complete all course modules to become the first graduate featured in the Hall of Fame!</p>
                 </div>
             @endforelse
         </div>
 
-    </div>
+    </main>
 </div>
 @endsection

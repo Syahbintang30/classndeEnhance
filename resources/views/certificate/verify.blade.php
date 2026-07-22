@@ -11,14 +11,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Reenie+Beanie&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            important: true,
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#08080a',
+                            card: 'rgba(18, 18, 24, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.05)',
+                            accent: '#0066ff',
+                            amber: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                        cinzel: ['"Cinzel"', 'serif'],
+                        signature: ['"Reenie Beanie"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         /* Hide default legacy navbar */
         body > nav { display: none !important; }
 
-        .cert-wrapper {
-            background-color: #08080a;
-            color: #f3f4f6;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        .tw-dash {
+            background-color: #08080a !important;
+            color: #f3f4f6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
         .font-display {
             font-family: 'Bebas Neue', cursive;
@@ -32,14 +57,14 @@
         }
         .cert-frame {
             background: linear-gradient(135deg, #111116 0%, #0a0a0d 100%);
-            border: 12px solid #1E1B18;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(245, 158, 11, 0.1);
+            border: 10px solid #1E1B18;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(245, 158, 11, 0.08);
             position: relative;
         }
         .cert-inner-border {
-            border: 2px solid rgba(245, 158, 11, 0.4);
-            outline: 1px solid rgba(245, 158, 11, 0.2);
-            outline-offset: -8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            outline: 1px solid rgba(245, 158, 11, 0.15);
+            outline-offset: -6px;
         }
         .gold-gradient-text {
             background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
@@ -70,27 +95,33 @@
     </style>
 @endpush
 
-<div class="cert-wrapper min-h-screen relative overflow-hidden flex flex-col">
+<div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden"
+     x-data="{ mobileMenuOpen: false }">
+
+    {{-- Ambient Mesh Glow Background --}}
+    <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-32 w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
     {{-- Top Navigation Bar --}}
     <div class="no-print">
         @include('layouts.lms_header')
     </div>
     
-    <div class="flex-1 py-10 px-4 sm:px-6">
+    <main class="flex-1 py-8 px-4 sm:px-6 relative z-10">
         <!-- Top Action Buttons (Hidden when printing) -->
         <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4 mb-8 no-print">
-            <a href="{{ route('graduates') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition">
+            <a href="{{ route('graduates') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/60 border border-white/5 text-xs font-semibold text-gray-300 hover:text-white transition shadow-lg">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Hall of Fame</span>
             </a>
 
             <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition">
+                <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 text-xs font-bold transition shadow-lg">
                     <i class="fa-solid fa-print"></i>
                     <span>Print / Download PDF</span>
                 </button>
                 
-                <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition">
+                <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-white text-xs font-bold transition shadow-lg">
                     <i class="fa-brands fa-tiktok"></i>
                     <span>Tag @nde_guitar</span>
                 </a>
@@ -102,16 +133,16 @@
             <div class="cert-frame rounded-3xl p-6 sm:p-12 relative overflow-hidden">
                 
                 <!-- Corner Decorative Badges -->
-                <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
-                <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
-                <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
-                <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
+                <div class="absolute top-4 left-4 w-10 h-10 border-t-2 border-l-2 border-amber-500/50 pointer-events-none"></div>
+                <div class="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 border-amber-500/50 pointer-events-none"></div>
+                <div class="absolute bottom-4 left-4 w-10 h-10 border-b-2 border-l-2 border-amber-500/50 pointer-events-none"></div>
+                <div class="absolute bottom-4 right-4 w-10 h-10 border-b-2 border-r-2 border-amber-500/50 pointer-events-none"></div>
 
                 <div class="cert-inner-border rounded-2xl p-6 sm:p-10 text-center relative z-10 space-y-6">
                     
                     <!-- Brand Badge Header -->
                     <div class="flex items-center justify-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
                             <i class="fa-solid fa-guitar"></i>
                         </div>
                         <span class="font-display text-2xl tracking-widest text-white">GUITARCLASSBYNDE</span>
@@ -142,12 +173,12 @@
 
                     <!-- Verification Status Banner -->
                     @if($isVerified)
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
                             <i class="fa-solid fa-square-check"></i>
                             <span>VERIFIED OFFICIAL GRADUATE</span>
                         </div>
                     @else
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
                             <i class="fa-solid fa-clock"></i>
                             <span>COURSE PROGRESS: {{ $completedCount }} / {{ $totalCourseTopics }} TOPICS</span>
                         </div>
@@ -181,7 +212,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
 </div>
 @endsection
