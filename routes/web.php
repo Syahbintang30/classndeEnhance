@@ -194,6 +194,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/chords', [PracticeToolController::class, 'chords'])->name('chords');
         Route::get('/scales', [PracticeToolController::class, 'scales'])->name('scales');
         Route::get('/trainer', [PracticeToolController::class, 'trainer'])->name('trainer');
+        Route::get('/quiz', [PracticeToolController::class, 'quiz'])->name('quiz');
+        Route::post('/claim-xp', [PracticeToolController::class, 'claimXp'])->name('claimXp');
     });
 });
 

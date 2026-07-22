@@ -96,8 +96,25 @@
                 </p>
             </div>
 
-            <!-- Quick Resume Button Pill -->
-            <a href="{{ $coursesUrl ?? route('kelas') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-blue-500/40 transition group max-w-xs self-start md:self-auto">
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Guitarist Rank Card -->
+                <a href="{{ route('practice.quiz') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-amber-500/40 transition group max-w-xs self-start md:self-auto">
+                    <div class="w-12 h-12 rounded-xl {{ auth()->user()->guitar_rank['badge_bg'] }} flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
+                        <i class="fa-solid {{ auth()->user()->guitar_rank['icon'] }}"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-widest">GUITAR RANK • {{ auth()->user()->xp ?? 0 }} XP</div>
+                        <div class="text-sm font-bold text-white truncate">
+                            {{ auth()->user()->guitar_rank['name'] }}
+                        </div>
+                        <div class="text-xs text-gray-400 truncate">
+                            Push Rank in Pitch Quiz →
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Quick Resume Button Pill -->
+                <a href="{{ $coursesUrl ?? route('kelas') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-blue-500/40 transition group max-w-xs self-start md:self-auto">
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
                     <i class="fa-solid fa-play ml-0.5"></i>
                 </div>

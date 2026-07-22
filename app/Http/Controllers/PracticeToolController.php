@@ -61,4 +61,27 @@ class PracticeToolController extends Controller
         if ($access = $this->checkAccess()) return $access;
         return view('practice-tools.trainer');
     }
+
+    public function quiz()
+    {
+        if ($access = $this->checkAccess()) return $access;
+        return view('practice-tools.quiz');
+    }
+
+    public function claimXp(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) return response()->json(['success' => false], 401);
+
+        $amount = (int) $request->input('amount', 50);
+        $amount = min(100, max(5, $amount)); // Cap at 100 XP per claim
+
+        $user->increment('xp', $amount);
+
+        return response()->json([
+            'success' => true,
+            'xp' => $user->fresh()->xp,
+            'rank' => $user->fresh()->guitar_rank,
+        ]);
+    }
 }

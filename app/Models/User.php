@@ -21,16 +21,83 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-    'phone',
-    'package_id',
-    'referral_code',
-    'referred_by',
-    'is_admin',
-    'is_superadmin',
-    'photo',
-    'google_id',
-    'email_verified_at',
+        'phone',
+        'package_id',
+        'referral_code',
+        'referred_by',
+        'is_admin',
+        'is_superadmin',
+        'photo',
+        'google_id',
+        'email_verified_at',
+        'xp',
     ];
+
+    public function getGuitarRankAttribute(): array
+    {
+        $xp = (int) ($this->xp ?? 0);
+        if ($xp >= 4501) {
+            return [
+                'name' => 'Mythic Shred Legend',
+                'tier' => 'Mythic',
+                'icon' => 'fa-crown',
+                'color' => '#EC4899',
+                'badge_bg' => 'bg-pink-500/10 border-pink-500/30 text-pink-400',
+                'next_xp' => 10000,
+                'min_xp' => 4501,
+            ];
+        } elseif ($xp >= 2501) {
+            return [
+                'name' => 'Diamond Virtuoso',
+                'tier' => 'Diamond',
+                'icon' => 'fa-wand-magic-sparkles',
+                'color' => '#A855F7',
+                'badge_bg' => 'bg-purple-500/10 border-purple-500/30 text-purple-400',
+                'next_xp' => 4500,
+                'min_xp' => 2501,
+            ];
+        } elseif ($xp >= 1201) {
+            return [
+                'name' => 'Platinum Riff Lord',
+                'tier' => 'Platinum',
+                'icon' => 'fa-gem',
+                'color' => '#38BDF8',
+                'badge_bg' => 'bg-sky-500/10 border-sky-500/30 text-sky-400',
+                'next_xp' => 2500,
+                'min_xp' => 1201,
+            ];
+        } elseif ($xp >= 601) {
+            return [
+                'name' => 'Gold Licksmith',
+                'tier' => 'Gold',
+                'icon' => 'fa-trophy',
+                'color' => '#F59E0B',
+                'badge_bg' => 'bg-amber-500/10 border-amber-500/30 text-amber-400',
+                'next_xp' => 1200,
+                'min_xp' => 601,
+            ];
+        } elseif ($xp >= 251) {
+            return [
+                'name' => 'Silver Fretmaster',
+                'tier' => 'Silver',
+                'icon' => 'fa-medal',
+                'color' => '#94A3B8',
+                'badge_bg' => 'bg-slate-400/10 border-slate-400/30 text-slate-300',
+                'next_xp' => 600,
+                'min_xp' => 251,
+            ];
+        } else {
+            return [
+                'name' => 'Bronze Shredder',
+                'tier' => 'Bronze',
+                'icon' => 'fa-award',
+                'color' => '#D97706',
+                'badge_bg' => 'bg-amber-700/10 border-amber-700/30 text-amber-600',
+                'next_xp' => 250,
+                'min_xp' => 0,
+            ];
+        }
+    }
 
     /**
      * Return public URL for user's photo or null.
