@@ -191,8 +191,126 @@ function closeSidebar(){
 let player = null;
 let currentTopicId = null;
 
+function destroyHtml5Player(){
+    const v = document.getElementById('html5-player'); 
+    if(v){ try{ v.pause(); }catch(e){} v.remove(); }
+    if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
+    const ph = document.getElementById('video-placeholder'); 
+    if(ph) { ph.style.display = 'flex'; ph.style.opacity = '1'; }
+}
+
+function createHtml5PlayerAndPlay(streamUrl, topicId){
+    const container = document.getElementById('player'); 
+    if(!container) return;
+    if(topicId) currentTopicId = String(topicId);
+    
+    let v = document.getElementById('html5-player');
+    if(v){ try{ v.pause(); }catch(e){} v.remove(); }
+    if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
+    
+    const placeholder = document.getElementById('video-placeholder');
+    if(placeholder) {
+        placeholder.style.setProperty('display', 'none', 'important');
+        placeholder.style.opacity = '0';
+    }
+
+    v = document.createElement('video');
+    v.id = 'html5-player';
+    v.controls = true;
+    v.autoplay = true;
+    v.setAttribute('playsinline', '');
+    v.style.position = 'absolute';
+    v.style.top = '0';
+    v.style.left = '0';
+    v.style.width = '100%';
+    v.style.height = '100%';
+    v.style.zIndex = '50';
+    v.style.backgroundColor = '#000';
+    v.className = 'rounded-2xl object-contain';
+    container.appendChild(v);
+
+    const attachAndPlay = () => {
+        if(window.Hls && Hls.isSupported() && (streamUrl.includes('.m3u8') || streamUrl.includes('b-cdn.net') || streamUrl.includes('bunnycdn'))){
+            const hls = new Hls(); 
+            window._hlsInstance = hls; 
+            hls.loadSource(streamUrl); 
+            hls.attachMedia(v);
+            hls.on(Hls.Events.MANIFEST_PARSED, function(){
+                v.play().catch(e => console.warn('Autoplay prevented:', e));
+            });
+        } else {
+            v.src = streamUrl;
+            v.play().catch(e => console.warn('Autoplay prevented:', e));
+        }
+    };
+
+    if(!window.Hls){
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+        s.async = true;
+        s.onload = () => { try{ attachAndPlay(); }catch(e){ console.error(e); } };
+        s.onerror = () => attachAndPlay();
+        document.head.appendChild(s);
+    } else {
+        attachAndPlay();
+    }
+}
+
+function playTopicById(topicId, title, description) {
+    if(!topicId) return;
+    currentTopicId = String(topicId);
+
+    const vTitle = document.getElementById('video-title');
+    if(vTitle && title) vTitle.innerText = title;
+    
+    const vDesc = document.getElementById('video-description');
+    if(vDesc && description) vDesc.innerText = description;
+
+    const placeholder = document.getElementById('video-placeholder');
+    if(placeholder) {
+        placeholder.setAttribute('data-topic-id', topicId);
+        placeholder.removeAttribute('data-stream-url');
+    }
+
+    // Fetch signed stream URL from server
+    fetch(`/topics/${topicId}/stream`)
+        .then(r => r.json())
+        .then(data => {
+            if(data && data.url) {
+                // Check if YouTube URL
+                const ytMatch = data.url.match(/(youtu\.be\/|v=)([A-Za-z0-9_-]{11})/);
+                if(ytMatch) {
+                    const ytId = ytMatch[2];
+                    if(placeholder) placeholder.style.display = 'none';
+                    if(!player || typeof player.loadVideoById !== 'function') {
+                        player = new YT.Player('player', {
+                            height: '100%', width: '100%', videoId: ytId,
+                            playerVars: { rel:0, modestbranding:1, autoplay:1 },
+                            events: { 'onReady': function(e){ player.playVideo(); } }
+                        });
+                    } else {
+                        player.loadVideoById(ytId);
+                        player.playVideo();
+                    }
+                    return;
+                }
+
+                if(placeholder) placeholder.setAttribute('data-stream-url', data.url);
+                createHtml5PlayerAndPlay(data.url, topicId);
+            } else {
+                console.warn('No stream URL returned for topic', topicId);
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load topic stream:', err);
+        });
+
+    if(window.innerWidth <= 900) closeSidebar();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const topicItems = document.querySelectorAll('.topic-item');
+    
     topicItems.forEach(item => {
         item.addEventListener('click', function() {
             topicItems.forEach(t => t.classList.remove('selected'));
@@ -200,47 +318,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const title = this.querySelector('span')?.innerText || 'Lesson Topic';
             const desc = this.getAttribute('data-description') || '';
-            const guid = this.getAttribute('data-bunny-guid') || '';
             const topicId = this.getAttribute('data-topic-id');
 
-            const vTitle = document.getElementById('video-title');
-            if(vTitle) vTitle.innerText = title;
-            
-            const vDesc = document.getElementById('video-description');
-            if(vDesc) vDesc.innerText = desc;
-
-            if(guid) {
-                createHtml5PlayerAndPlay('https://video.bunnycdn.com/play/' + guid, topicId);
-            }
+            playTopicById(topicId, title, desc);
         });
     });
-});
 
-function createHtml5PlayerAndPlay(streamUrl, topicId){
-    const container = document.getElementById('player'); if(!container) return;
-    if(topicId) currentTopicId = String(topicId);
-    let v = document.getElementById('html5-player');
-    if(v){ try{ v.pause(); }catch(e){} v.remove(); }
-    if(window._hlsInstance){ try{ window._hlsInstance.destroy(); }catch(e){} window._hlsInstance = null; }
-    
-    const placeholder = document.getElementById('video-placeholder');
-    if(placeholder) placeholder.style.display = 'none';
+    // Wire Custom Play Button
+    const customPlayBtn = document.getElementById('custom-play');
+    if(customPlayBtn) {
+        customPlayBtn.addEventListener('click', function() {
+            const placeholder = document.getElementById('video-placeholder');
+            const streamUrlAttr = placeholder ? placeholder.getAttribute('data-stream-url') : null;
+            const topicId = placeholder ? placeholder.getAttribute('data-topic-id') : null;
 
-    v = document.createElement('video');
-    v.id = 'html5-player';
-    v.controls = true;
-    v.autoplay = true;
-    v.className = 'w-full h-full absolute inset-0 object-contain bg-black rounded-2xl';
-    container.appendChild(v);
-
-    if (Hls.isSupported() && streamUrl.includes('bunnycdn')) {
-        const hls = new Hls();
-        hls.loadSource(streamUrl);
-        hls.attachMedia(v);
-        window._hlsInstance = hls;
-    } else {
-        v.src = streamUrl;
+            if(streamUrlAttr) {
+                createHtml5PlayerAndPlay(streamUrlAttr, topicId);
+            } else if(topicId) {
+                const selectedItem = document.querySelector(`.topic-item[data-topic-id="${topicId}"]`);
+                const title = selectedItem ? (selectedItem.querySelector('span')?.innerText || '') : '';
+                const desc = selectedItem ? selectedItem.getAttribute('data-description') : '';
+                playTopicById(topicId, title, desc);
+            }
+        });
     }
-}
+
+    // Wire Navigation Buttons (Prev / Next)
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    function navigateTopicOffset(offset) {
+        const items = Array.from(document.querySelectorAll('.topic-item'));
+        if(items.length === 0) return;
+
+        let currentIndex = items.findIndex(i => i.classList.contains('selected'));
+        if(currentIndex === -1) currentIndex = 0;
+
+        let targetIndex = currentIndex + offset;
+        if(targetIndex >= 0 && targetIndex < items.length) {
+            items[targetIndex].click();
+        }
+    }
+
+    if(btnPrev) {
+        btnPrev.addEventListener('click', () => navigateTopicOffset(-1));
+    }
+    if(btnNext) {
+        btnNext.addEventListener('click', () => navigateTopicOffset(1));
+    }
+});
 </script>
 @endsection
