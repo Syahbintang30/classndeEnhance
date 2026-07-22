@@ -216,13 +216,24 @@
 
         try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+
+            let stream;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } });
+            } catch(e1) {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+
             microphone = audioContext.createMediaStreamSource(stream);
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 2048;
             microphone.connect(analyser);
 
             isListening = true;
+            closeMicModal();
             document.getElementById('micStatusDot').className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
             document.getElementById('micStatusText').textContent = 'Microphone / Line-In ACTIVE';
             document.getElementById('btnToggleMic').innerHTML = '<i class="fa-solid fa-stop me-1.5"></i> STOP QUIZ';

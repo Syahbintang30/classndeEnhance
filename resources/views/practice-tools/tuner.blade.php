@@ -234,6 +234,9 @@ function tunerApp() {
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (this.audioContext.state === 'suspended') {
+                    await this.audioContext.resume();
+                }
                 this.analyser = this.audioContext.createAnalyser();
                 this.analyser.fftSize = 2048;
                 this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
