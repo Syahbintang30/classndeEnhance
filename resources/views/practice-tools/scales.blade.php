@@ -405,80 +405,123 @@ function scaleLibrary() {
             }
         },
 
-        // Synthesize authentic Electric Guitar tone (Pick attack + Dual Oscillators + Warm Tube Distortion + Amp Cabinet Filter)
+        // John Mayer Signature Stratocaster Tone Synthesizer
+        // (Physical Pick Attack + Strat Neck/Mid Pickups + Klon Centaur/TS10 Drive + Two-Rock Tube Amp EQ)
         playElectricGuitarNote(freq) {
             if (!this.audioCtx) return;
             const now = this.audioCtx.currentTime;
 
-            // 1. Dual Pickup Oscillators (Sawtooth for bite + Triangle for warm body)
-            const osc1 = this.audioCtx.createOscillator();
-            const osc2 = this.audioCtx.createOscillator();
-            const oscHarmonic = this.audioCtx.createOscillator();
+            // 1. Physical Pick Attack Impulse (Noise Snap)
+            const pickBuffer = this.audioCtx.createBuffer(1, Math.floor(this.audioCtx.sampleRate * 0.008), this.audioCtx.sampleRate);
+            const pickData = pickBuffer.getChannelData(0);
+            for (let i = 0; i < pickData.length; i++) {
+                pickData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (pickData.length * 0.25));
+            }
+            const pickSource = this.audioCtx.createBufferSource();
+            pickSource.buffer = pickBuffer;
 
-            osc1.type = 'sawtooth';
-            osc1.frequency.setValueAtTime(freq, now);
+            const pickFilter = this.audioCtx.createBiquadFilter();
+            pickFilter.type = 'bandpass';
+            pickFilter.frequency.setValueAtTime(2400, now);
+            pickFilter.Q.setValueAtTime(2.5, now);
 
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(freq * 1.0015, now); // Micro-detune for string thickness
+            const pickGain = this.audioCtx.createGain();
+            pickGain.gain.setValueAtTime(0.35, now);
+            pickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
 
-            oscHarmonic.type = 'sine';
-            oscHarmonic.frequency.setValueAtTime(freq * 2.0, now); // 2nd harmonic overtone
+            pickSource.connect(pickFilter);
+            pickFilter.connect(pickGain);
 
-            // 2. Envelope Generator (Pick Attack -> Pluck Decay -> Ring out)
-            const noteGain = this.audioCtx.createGain();
-            noteGain.gain.setValueAtTime(0.0001, now);
-            noteGain.gain.exponentialRampToValueAtTime(0.42, now + 0.005); // Fast Pick Attack
-            noteGain.gain.exponentialRampToValueAtTime(0.18, now + 0.12);  // Pluck Decay
-            noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4); // String Ring-out Fade
+            // 2. Stratocaster Dual Pickups (Neck Warmth + Middle Bell Chime)
+            const neckOsc = this.audioCtx.createOscillator();
+            const midOsc = this.audioCtx.createOscillator();
+            const chimeOsc = this.audioCtx.createOscillator();
 
-            // 3. Overdrive / Distortion Waveshaper (Warm Tube Amp Saturation)
-            const distortion = this.audioCtx.createWaveShaper();
-            distortion.curve = this.makeDistortionCurve(16); // Warm overdrive
-            distortion.oversample = '4x';
+            neckOsc.type = 'triangle';
+            neckOsc.frequency.setValueAtTime(freq, now);
 
-            // 4. Amp Cabinet Filter (Guitar Speaker High-cut & Resonance)
+            midOsc.type = 'sawtooth';
+            midOsc.frequency.setValueAtTime(freq * 1.0012, now); // Micro detune for 3D string bloom
+
+            chimeOsc.type = 'sine';
+            chimeOsc.frequency.setValueAtTime(freq * 2.0, now); // 2nd harmonic bell chime
+
+            // 3. Guitar String Gain & Envelope (Pluck -> Bloom -> Warm Sustain Decay)
+            const stringGain = this.audioCtx.createGain();
+            stringGain.gain.setValueAtTime(0.0001, now);
+            stringGain.gain.exponentialRampToValueAtTime(0.45, now + 0.004); // Instant pick attack
+            stringGain.gain.exponentialRampToValueAtTime(0.22, now + 0.14);  // Initial pluck decay
+            stringGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8); // Natural string ring-out
+
+            // 4. Klon Centaur / TS10 Soft Transparent Overdrive (Warm Tube Breakup)
+            const overdrive = this.audioCtx.createWaveShaper();
+            overdrive.curve = this.makeJohnMayerDriveCurve(14);
+            overdrive.oversample = '4x';
+
+            // 5. Two-Rock / Dumble Amp EQ Voicing (John Mayer Mid-Scoop + 160Hz Bass Thump + 2.8kHz Glass Chime)
+            const bassFilter = this.audioCtx.createBiquadFilter();
+            bassFilter.type = 'lowshelf';
+            bassFilter.frequency.setValueAtTime(160, now);
+            bassFilter.gain.setValueAtTime(3.5, now);
+
+            const midScoop = this.audioCtx.createBiquadFilter();
+            midScoop.type = 'peaking';
+            midScoop.frequency.setValueAtTime(520, now);
+            midScoop.gain.setValueAtTime(-2.5, now); // Signature Strat mid-scoop
+            midScoop.Q.setValueAtTime(1.2, now);
+
+            const glassChime = this.audioCtx.createBiquadFilter();
+            glassChime.type = 'peaking';
+            glassChime.frequency.setValueAtTime(2800, now); // Glassy Stratocaster top-end chime
+            glassChime.gain.setValueAtTime(4.5, now);
+            glassChime.Q.setValueAtTime(1.5, now);
+
             const cabFilter = this.audioCtx.createBiquadFilter();
             cabFilter.type = 'lowpass';
-            cabFilter.frequency.setValueAtTime(3800, now); // Cut harsh treble above 3.8kHz
-            cabFilter.Q.setValueAtTime(1.8, now);         // Cabinet resonance peak
+            cabFilter.frequency.setValueAtTime(4200, now); // Cabinet air cutoff
 
-            const bodyFilter = this.audioCtx.createBiquadFilter();
-            bodyFilter.type = 'peaking';
-            bodyFilter.frequency.setValueAtTime(750, now); // Midrange amp punch
-            bodyFilter.gain.setValueAtTime(3, now);
+            // Connections
+            neckOsc.connect(stringGain);
+            midOsc.connect(stringGain);
+            chimeOsc.connect(stringGain);
 
-            // Connect Nodes: Oscillators -> Gain Envelope -> Overdrive -> EQ -> Cabinet -> Speakers
-            osc1.connect(noteGain);
-            osc2.connect(noteGain);
-            oscHarmonic.connect(noteGain);
+            stringGain.connect(overdrive);
+            pickGain.connect(overdrive); // Mix physical pick attack into overdrive stage
 
-            noteGain.connect(distortion);
-            distortion.connect(bodyFilter);
-            bodyFilter.connect(cabFilter);
+            overdrive.connect(bassFilter);
+            bassFilter.connect(midScoop);
+            midScoop.connect(glassChime);
+            glassChime.connect(cabFilter);
             cabFilter.connect(this.audioCtx.destination);
 
-            // Start & Stop Oscillators
-            osc1.start(now);
-            osc2.start(now);
-            oscHarmonic.start(now);
+            // Start Oscillators & Pick Source
+            pickSource.start(now);
+            neckOsc.start(now);
+            midOsc.start(now);
+            chimeOsc.start(now);
 
-            osc1.stop(now + 1.4);
-            osc2.stop(now + 1.4);
-            oscHarmonic.stop(now + 1.4);
+            neckOsc.stop(now + 1.8);
+            midOsc.stop(now + 1.8);
+            chimeOsc.stop(now + 1.8);
         },
 
-        makeDistortionCurve(k = 16) {
+        makeJohnMayerDriveCurve(k = 14) {
             const n_samples = 44100;
             const curve = new Float32Array(n_samples);
-            const deg = Math.PI / 180;
             for (let i = 0; i < n_samples; ++i) {
                 let x = (i * 2) / n_samples - 1;
-                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                // Soft asymmetric tube saturation (Klon Centaur / TS10)
+                if (x < 0) {
+                    curve[i] = Math.tanh(x * 1.8);
+                } else {
+                    curve[i] = Math.sin(x * 1.3);
+                }
             }
             return curve;
         }
     }
 }
 </script>
+
 
 @endsection
