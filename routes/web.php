@@ -147,7 +147,7 @@ Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureA
     Route::post('videopromo', [\App\Http\Controllers\Admin\VideoPromoController::class, 'update'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('videopromo.update');
     
     // Song TAB Management (Songsterr-Style TAB Importer & Builder)
-    Route::resource('song-tabs', \App\Http\Controllers\Admin\SongTabController::class, ['names' => 'admin.song-tabs']);
+    Route::resource('song-tabs', \App\Http\Controllers\Admin\SongTabController::class);
 
     // Pengaturan sistem khusus superadmin untuk mencegah risiko keamanan.
     Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('settings.index');
