@@ -343,7 +343,6 @@ function setTopicCompletedUI(topicId, completed){
     else completionPostedTopics.delete(String(topicId));
     checkAllTopicsCompleted();
 }
-}
 
 function reportProgress(markComplete = false, targetTopicId = null){
     const topicIdToReport = String(targetTopicId || currentTopicId || '');
