@@ -162,11 +162,11 @@
                 </div>
             </div>
 
-            <!-- Top Metric Cards Grid (4 Columns) -->
+            <!-- Top Metric Cards Grid (3 Columns) -->
             <div class="row g-4 mb-4">
                 
                 <!-- Card 1: Total Users -->
-                <div class="col-12 col-sm-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-4">
                     <div class="dash-kpi-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -186,7 +186,7 @@
                 </div>
 
                 <!-- Card 2: Orders This Month -->
-                <div class="col-12 col-sm-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-4">
                     <div class="dash-kpi-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -206,7 +206,7 @@
                 </div>
 
                 <!-- Card 3: Total Lessons -->
-                <div class="col-12 col-sm-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-4">
                     <div class="dash-kpi-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -221,32 +221,6 @@
                             <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;">
                                 Modul Pembelajaran Aktif
                             </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4: Pending Coaching Bookings -->
-                <div class="col-12 col-sm-6 col-lg-3">
-                    <div class="dash-kpi-card">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="fw-semibold mb-1" style="font-size: 0.78rem; color: #64748B;">Coaching Pending</p>
-                                <h3 class="h2 fw-extrabold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">{{ number_format($pendingBookings) }}</h3>
-                            </div>
-                            <div class="dash-kpi-icon" style="background: #FFFBEB; border: 1px solid #FDE68A; color: #D97706;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            @if($pendingBookings > 0)
-                                <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;">
-                                    Membutuhkan Konfirmasi
-                                </span>
-                            @else
-                                <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0;">
-                                    Semua Terkonfirmasi
-                                </span>
-                            @endif
                         </div>
                     </div>
                 </div>
