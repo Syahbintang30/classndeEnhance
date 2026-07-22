@@ -87,8 +87,12 @@ class ContentSecurityPolicyMiddleware
             ],
             'img-src' => ["'self'", 'data:', 'blob:', 'https:', 'http:'],
             'media-src' => ["'self'", 'blob:', 'https://video.bunnycdn.com', 'https://*.bunnycdn.com', 'https://*.b-cdn.net'],
+            'worker-src' => ["'self'", 'blob:'],
             'connect-src' => [
                 "'self'",
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
                 'https://api.midtrans.com',
                 'https://app.midtrans.com',
                 'https://api.sandbox.midtrans.com',
@@ -102,12 +106,13 @@ class ContentSecurityPolicyMiddleware
                 'wss:',
                 'ws:',
             ],
-            'frame-src' => ["'self'", 'https://app.midtrans.com', 'https://api.midtrans.com', 'https://app.sandbox.midtrans.com', 'https://api.sandbox.midtrans.com'],
+            'frame-src' => ["'self'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com', 'https://iframe.mediadelivery.net', 'https://app.midtrans.com', 'https://api.midtrans.com', 'https://app.sandbox.midtrans.com', 'https://api.sandbox.midtrans.com'],
             'object-src' => ["'none'"],
             'base-uri' => ["'self'"],
             'form-action' => ["'self'"],
             'frame-ancestors' => ["'self'"],
         ];
+
 
         // Relax CSP specifically for the coaching session page to allow Twilio SDK and signaling.
         if ($request->is('coaching/session/*')) {
