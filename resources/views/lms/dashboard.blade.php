@@ -97,17 +97,22 @@
             </div>
 
             <!-- Quick Resume Button Pill -->
-            <a href="{{ route('kelas') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-blue-500/40 transition group max-w-xs self-start md:self-auto">
+            <a href="{{ $coursesUrl ?? route('kelas') }}" class="glass-panel p-3.5 px-5 flex items-center gap-4 hover:border-blue-500/40 transition group max-w-xs self-start md:self-auto">
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
                     <i class="fa-solid fa-play ml-0.5"></i>
                 </div>
                 <div class="min-w-0">
                     <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Resume Lesson</div>
-                    <div class="text-sm font-bold text-white truncate">Continue Learning</div>
-                    <div class="text-xs text-gray-400">Pick up where you left off</div>
+                    <div class="text-sm font-bold text-white truncate" title="{{ $resumeTopic->title ?? 'Continue Learning' }}">
+                        {{ $resumeTopic->title ?? 'Continue Learning' }}
+                    </div>
+                    <div class="text-xs text-gray-400 truncate" title="{{ $resumeLesson->title ?? 'Pick up where you left off' }}">
+                        {{ $resumeLesson->title ?? 'Pick up where you left off' }}
+                    </div>
                 </div>
             </a>
         </div>
+
 
         <!-- MAIN 2-COLUMN LAYOUT -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">

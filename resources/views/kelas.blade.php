@@ -733,20 +733,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Check URL parameter ?topic=... first for direct Resume link navigation
+        let topicSelected = false;
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetTopicId = urlParams.get('topic');
+            if (targetTopicId) {
+                const targetEl = document.querySelector('.topic-item[data-topic-id="' + targetTopicId + '"]');
+                if (targetEl) {
+                    targetEl.click();
+                    topicSelected = true;
+                }
+            }
+        } catch(e) {}
+
         // restore last topic selection for this lesson if exists
-        try{
-            if(lessonId){
+        if (!topicSelected) {
+            try {
+                if (lessonId) {
                     const last = localStorage.getItem('kelas_last_topic_' + lessonId);
-                    if(last){
+                    if (last) {
                         const el = document.querySelector('[data-topic-id="' + last + '"]');
-                        if(el) { el.click(); /* continue to wire buttons and handlers */ }
+                        if (el) { el.click(); topicSelected = true; }
                     }
                 }
-        }catch(e){}
+            } catch(e) {}
+        }
 
-    // otherwise auto-click first topic if present
-    const first = document.querySelector('.topic-item[data-topic-id]');
-    if(first) first.click();
+        // otherwise auto-click first topic if present
+        if (!topicSelected) {
+            const first = document.querySelector('.topic-item[data-topic-id]');
+            if (first) first.click();
+        }
+
 
         // wire next/back buttons (if present in the partial)
         const btnNext = document.getElementById('btn-next');

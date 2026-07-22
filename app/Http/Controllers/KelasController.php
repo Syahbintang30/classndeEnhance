@@ -105,34 +105,54 @@ class KelasController extends Controller
         $totalTopics = $courseTopics->count();
 
         $completedTopicIds = collect();
+        $lastWatchedTopicId = null;
+
         if (\Illuminate\Support\Facades\Schema::hasTable('topic_progresses')) {
             $progressRows = TopicProgress::query()
                 ->where('user_id', $user->id)
                 ->whereIn('topic_id', $courseTopicIds)
-                ->get(['topic_id', 'completed', 'watched_seconds']);
+                ->orderBy('updated_at', 'desc')
+                ->get(['topic_id', 'completed', 'watched_seconds', 'updated_at']);
 
             $completedTopicIds = $progressRows
                 ->where('completed', true)
                 ->pluck('topic_id')
                 ->unique()
                 ->values();
+
+            $lastProgress = $progressRows->first();
+            if ($lastProgress) {
+                $lastWatchedTopicId = $lastProgress->topic_id;
+            }
         }
 
         $completedTopics = $completedTopicIds->count();
         $progressPercent = $totalTopics > 0 ? (int) round(($completedTopics / $totalTopics) * 100) : 0;
 
-        $nextTopic = $courseTopics->first(function ($topic) use ($completedTopicIds) {
-            return ! $completedTopicIds->contains($topic->id);
-        });
-
         $firstLesson = $courseLessons->first();
         $firstTopic = $firstLesson?->topics?->first();
-        $resumeLesson = $nextTopic ? $nextTopic->lesson : $firstLesson;
-        $resumeTopic = $nextTopic ?: $firstTopic;
+
+        $resumeTopic = null;
+        $resumeLesson = null;
+
+        if ($lastWatchedTopicId) {
+            $resumeTopic = $courseTopics->firstWhere('id', $lastWatchedTopicId);
+            if ($resumeTopic) {
+                $resumeLesson = $resumeTopic->lesson;
+            }
+        }
+
+        if (! $resumeTopic) {
+            $nextTopic = $courseTopics->first(function ($topic) use ($completedTopicIds) {
+                return ! $completedTopicIds->contains($topic->id);
+            });
+            $resumeTopic = $nextTopic ?: $firstTopic;
+            $resumeLesson = $resumeTopic ? $resumeTopic->lesson : $firstLesson;
+        }
 
         $coursesUrl = $resumeLesson
             ? route('kelas.show', ['lesson' => $resumeLesson->id]) . ($resumeTopic ? ('?topic=' . $resumeTopic->id) : '')
-            : route('compro');
+            : route('kelas');
 
         $upcomingCoachingCount = CoachingBooking::query()
             ->where('user_id', $user->id)
@@ -150,11 +170,14 @@ class KelasController extends Controller
             'completedTopics' => $completedTopics,
             'totalTopics' => $totalTopics,
             'coursesUrl' => $coursesUrl,
+            'resumeTopic' => $resumeTopic,
+            'resumeLesson' => $resumeLesson,
             'hasSongTutorialAccess' => $user->hasIntermediateAccess(),
             'upcomingCoachingCount' => $upcomingCoachingCount,
             'availableTicketCount' => $availableTicketCount,
         ]);
     }
+
 
     public function index()
     {
