@@ -67,7 +67,7 @@ class ReferralController extends Controller
             ->with('package')
             ->withCount(['coachingTickets as available_tickets_count' => function($q){ $q->where('is_used', false); }])
             ->withCount(['coachingTickets as total_tickets_count'])
-            ->paginate(50);
+            ->paginate(10);
 
                 // only role packages (Beginner / Intermediate) are considered the user's class role
                 // include the upgrade-intermediate slug so upgrade users count as Intermediate

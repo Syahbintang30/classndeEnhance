@@ -50,7 +50,7 @@ class TransactionController extends Controller
             }
         }
 
-    $txns = $q->paginate(30)->appends($request->query());
+    $txns = $q->paginate(15)->appends($request->query());
 
     return view('admin.transactions.index', compact('txns', 'status', 'search'));
     }
