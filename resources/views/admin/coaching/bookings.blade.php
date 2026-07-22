@@ -38,34 +38,34 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card shadow-sm border-0 rounded-3" style="background: #ffffff;">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover light-custom-table coaching-bookings-table mb-0">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <tr>
-                                <th>Murid / Siswa</th>
-                                <th>Catatan Sesi</th>
-                                <th>Waktu Sesi</th>
-                                <th>Status Sesi</th>
-                                <th>Jenis Pembayaran / Tiket</th>
-                                <th>Ruang Video Call</th>
-                                <th class="text-end">Aksi Admin</th>
+                                <th style="min-width:180px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Murid / Siswa</th>
+                                <th style="min-width:110px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Catatan</th>
+                                <th style="min-width:170px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Waktu Sesi</th>
+                                <th style="min-width:110px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Status</th>
+                                <th style="min-width:180px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Pembayaran / Tiket</th>
+                                <th style="min-width:160px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Ruang Call</th>
+                                <th style="min-width:120px; color:#475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;" class="text-end">Aksi Admin</th>
                             </tr>
                         </thead>
                         <tbody>
                         @forelse($bookings as $b)
                             <tr>
-                                <td class="cb-col-user">
-                                    <div style="font-weight:700" class="text-white">{{ optional($b->user)->name ?? 'Guest User' }}</div>
-                                    <div class="text-muted" style="font-size:12px">
+                                <td class="cb-col-user py-3">
+                                    <div style="font-weight:700; color:#0f172a; font-size:0.92rem;">{{ optional($b->user)->name ?? 'Guest User' }}</div>
+                                    <div style="color:#64748b; font-size:12px;" class="mt-0.5">
                                         {{ optional($b->user)->email }}
                                         @if(optional($b->user)->phone)
-                                            <span class="ms-1">• No. HP: {{ $b->user->phone }}</span>
+                                            <span class="ms-1">• HP: {{ $b->user->phone }}</span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="cb-col-notes">
+                                <td class="cb-col-notes py-3">
                                     @php
                                         // hide noisy telemetry and render end-call events as a clean status badge
                                         $notes = $b->notes ?? '';
@@ -74,7 +74,6 @@
                                             $lines = preg_split('/\r?\n/', trim($notes));
                                             $filtered = array_filter($lines, function($l) {
                                                 $low = strtolower($l);
-                                                // filter lines that indicate client-side permission/connect errors or automated telemetry
                                                 if (str_contains($low, 'connect_error') || str_contains($low, 'permission denied') || str_contains($low, 'notallowederror')) return false;
                                                 return true;
                                             });
@@ -96,12 +95,12 @@
                                         }
                                     @endphp
                                     @if($display !== '-')
-                                        <div class="text-slate-300 small">{{ $display }}</div>
+                                        <div style="color:#334155; font-size:12px;">{{ $display }}</div>
                                     @else
-                                        <span class="text-muted small">—</span>
+                                        <span style="color:#94a3b8; font-size:12px;">—</span>
                                     @endif
                                 </td>
-                                <td class="cb-col-time">
+                                <td class="cb-col-time py-3">
                                     @php
                                         $bt = \Carbon\Carbon::parse($b->booking_time);
                                         $slotTime = $bt->format('H:i');
@@ -114,23 +113,23 @@
                                         $isPastByTime = $sessionEnd->lt(now());
                                         $isLiveWindow = now()->gte($sessionStart) && now()->lte($sessionEnd);
                                     @endphp
-                                    <div class="fw-bold text-white"><i class="fa-regular fa-calendar-check text-primary me-1"></i> {{ $bt->translatedFormat('j F Y') }}</div>
-                                    <div class="text-muted small mt-0.5"><i class="fa-regular fa-clock text-info me-1"></i> {{ $bt->format('H:i') }} WIB <span class="badge bg-secondary bg-opacity-25 text-muted ms-1" style="font-size:0.68rem">Sesi #{{ $taken }}</span></div>
+                                    <div style="font-weight:700; color:#0f172a; font-size:0.88rem;"><i class="fa-regular fa-calendar-check text-primary me-1"></i> {{ $bt->translatedFormat('j F Y') }}</div>
+                                    <div style="color:#475569; font-size:12px;" class="mt-0.5"><i class="fa-regular fa-clock me-1"></i> {{ $bt->format('H:i') }} WIB <span class="badge bg-light text-secondary border ms-1" style="font-size:0.65rem;">Sesi #{{ $taken }}</span></div>
                                     <div style="margin-top:4px">
-                                        <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-2 py-0.5" style="font-size:0.7rem;"><i class="fa-solid fa-hourglass-half me-1"></i> <span class="countdown" data-time-ms="{{ \Carbon\Carbon::parse($b->booking_time)->getTimestamp() * 1000 }}">-</span></span>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-0.5" style="font-size:0.7rem;"><i class="fa-solid fa-hourglass-half me-1"></i> <span class="countdown" data-time-ms="{{ \Carbon\Carbon::parse($b->booking_time)->getTimestamp() * 1000 }}">-</span></span>
                                     </div>
                                 </td>
-                                <td class="cb-col-status">
+                                <td class="cb-col-status py-3">
                                     @php $s = strtolower($b->status); @endphp
                                     @if($s === 'accepted' || $s === 'approved')
-                                        <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Disetujui</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 fw-bold" style="font-size:0.75rem;"><i class="fa-solid fa-circle-check me-1"></i> Disetujui</span>
                                     @elseif($s === 'rejected')
-                                        <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-circle-xmark me-1"></i> Ditolak</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1 fw-bold" style="font-size:0.75rem;"><i class="fa-solid fa-circle-xmark me-1"></i> Ditolak</span>
                                     @else
-                                        <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-30 px-2.5 py-1 fw-bold"><i class="fa-solid fa-clock me-1"></i> Menunggu Persetujuan</span>
+                                        <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-50 px-2.5 py-1 fw-bold" style="font-size:0.75rem;"><i class="fa-solid fa-clock me-1"></i> Menunggu</span>
                                     @endif
                                 </td>
-                                <td class="cb-col-payment">
+                                <td class="cb-col-payment py-3">
                                     @php
                                         $paymentInfo = null;
                                         $rawSource = strtolower((string) (optional($b->ticket)->source ?? ''));
@@ -153,68 +152,69 @@
                                         }
                                     @endphp
                                     @if($rawSource === 'warranty' || str_contains($rawSource, 'warranty'))
-                                        <div class="badge bg-purple-500-10 text-purple-400 border border-purple-500-20 px-2.5 py-1 fw-bold"><i class="fa-solid fa-shield-halved me-1"></i> Tiket Garansi Coaching</div>
-                                        <div class="text-muted small mt-1">Klaim Garansi Bebas Biaya</div>
+                                        <span class="badge" style="background-color: #f3e8ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important; padding: 5px 8px; font-weight: 700; font-size:0.73rem;"><i class="fa-solid fa-shield-halved me-1"></i> Garansi Coaching</span>
+                                        <div style="color:#64748b; font-size:11px;" class="mt-1">Klaim Garansi Bebas Biaya</div>
                                     @elseif($rawSource === 'free_on_register' || str_contains($rawSource, 'free'))
-                                        <div class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2.5 py-1 fw-bold"><i class="fa-solid fa-gift me-1"></i> Bonus Registrasi Gratis</div>
-                                        <div class="text-muted small mt-1">Sesi Gratis Pendaftaran</div>
+                                        <span class="badge" style="background-color: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #7dd3fc !important; padding: 5px 8px; font-weight: 700; font-size:0.73rem;"><i class="fa-solid fa-gift me-1"></i> Bonus Registrasi</span>
+                                        <div style="color:#64748b; font-size:11px;" class="mt-1">Sesi Gratis Pendaftaran</div>
                                     @elseif($paymentInfo)
                                         @if(isset($paymentInfo['id']))
-                                            <div class="fw-bold text-white font-mono small"><i class="fa-solid fa-receipt me-1 text-primary"></i> Order #{{ $paymentInfo['order'] }}</div>
-                                            <div class="text-emerald-400 fw-bold small">Rp {{ number_format($paymentInfo['amount'] ?? 0,0,',','.') }}</div>
+                                            <div style="font-weight:700; color:#0f172a; font-family:monospace; font-size:12px;"><i class="fa-solid fa-receipt me-1 text-primary"></i> Order #{{ $paymentInfo['order'] }}</div>
+                                            <div style="color:#059669; font-weight:700; font-size:12px;" class="mt-0.5">Rp {{ number_format($paymentInfo['amount'] ?? 0,0,',','.') }}</div>
                                             <div class="mt-1">
-                                                <a class="btn btn-xs btn-outline-primary" href="{{ route('admin.transactions.index') }}?q={{ $paymentInfo['order'] }}"><i class="fa-solid fa-magnifying-glass me-1"></i> Lihat Transaksi</a>
+                                                <a class="btn btn-xs btn-outline-primary" style="font-size:0.72rem; padding: 2px 7px;" href="{{ route('admin.transactions.index') }}?q={{ $paymentInfo['order'] }}"><i class="fa-solid fa-magnifying-glass me-1"></i> Lihat Transaksi</a>
                                             </div>
                                         @elseif(isset($paymentInfo['order']))
-                                            <div class="fw-bold text-white font-mono small"><i class="fa-solid fa-receipt me-1 text-primary"></i> {{ $paymentInfo['order'] }}</div>
+                                            <div style="font-weight:700; color:#0f172a; font-family:monospace; font-size:12px;"><i class="fa-solid fa-receipt me-1 text-primary"></i> {{ $paymentInfo['order'] }}</div>
                                         @else
-                                            <span class="text-muted small">—</span>
+                                            <span style="color:#94a3b8; font-size:12px;">—</span>
                                         @endif
                                     @else
-                                        <span class="text-muted small">—</span>
+                                        <span style="color:#94a3b8; font-size:12px;">—</span>
                                     @endif
                                 </td>
-                            <td class="cb-col-twilio">
+                            <td class="cb-col-twilio py-3">
                                 @php $sessionUrl = url('/coaching/session/'.$b->id); $btLocal = \Carbon\Carbon::parse($b->booking_time)->format('Y-m-d H:i:s'); @endphp
                                 @if($b->twilio_room_sid)
                                     <div class="d-flex flex-column gap-1">
-                                        <div class="text-muted font-mono" style="font-size:0.7rem;" title="Room SID: {{ $b->twilio_room_sid }}">
+                                        <div style="color:#64748b; font-family:monospace; font-size:0.7rem;" title="Room SID: {{ $b->twilio_room_sid }}">
                                             <i class="fa-solid fa-video me-1 text-primary"></i> Room #{{ substr($b->twilio_room_sid, 0, 8) }}...
                                         </div>
                                         <div>
-                                            <a class="btn btn-sm btn-primary open-session-btn d-inline-flex align-items-center gap-1.5 shadow-sm" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#">
-                                                <i class="fa-solid fa-headset"></i> <span>Masuk Ruang Call</span>
+                                            <a class="btn btn-sm btn-primary open-session-btn d-inline-flex align-items-center gap-1 shadow-sm" style="font-size:0.78rem; padding: 4px 10px;" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#">
+                                                <i class="fa-solid fa-headset me-1"></i> <span>Masuk Ruang Call</span>
                                             </a>
                                         </div>
                                     </div>
                                 @else
                                     <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/create-room') }}" style="display:inline">@csrf
-                                        <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-plus me-1"></i> Buat Room Call</button>
+                                        <button class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;"><i class="fa-solid fa-plus me-1"></i> Buat Room</button>
                                     </form>
                                 @endif
                             </td>
-                            <td class="text-end cb-col-actions">
+                            <td class="text-end cb-col-actions py-3">
                                 @if(strtolower($b->status) === 'pending')
-                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                    <div class="d-flex justify-content-end align-items-center gap-1.5">
                                         <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/accept') }}" style="display:inline">@csrf
-                                            <button class="btn btn-sm btn-success px-2.5 py-1" title="Setujui Booking"><i class="fa-solid fa-check me-1"></i> Setujui</button>
+                                            <button class="btn btn-sm btn-success px-2 py-1" style="font-size:0.75rem;" title="Setujui Booking"><i class="fa-solid fa-check me-1"></i> Setujui</button>
                                         </form>
 
-                                        <button type="button" class="btn btn-sm btn-danger reject-open-btn px-2.5 py-1" data-action="{{ url('/admin/coaching/bookings/'.$b->id.'/reject') }}" title="Tolak Booking"><i class="fa-solid fa-xmark me-1"></i> Tolak</button>
+                                        <button type="button" class="btn btn-sm btn-danger reject-open-btn px-2 py-1" style="font-size:0.75rem;" data-action="{{ url('/admin/coaching/bookings/'.$b->id.'/reject') }}" title="Tolak Booking"><i class="fa-solid fa-xmark me-1"></i> Tolak</button>
                                     </div>
                                 @else
                                     @if($hasMeetingFinished || $isPastByTime)
-                                        <span class="badge bg-secondary bg-opacity-25 text-muted"><i class="fa-solid fa-check-double me-1"></i> Sesi Telah Selesai</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1" style="font-size:0.72rem;"><i class="fa-solid fa-check-double me-1"></i> Sesi Selesai</span>
                                     @elseif(strtolower($b->status) === 'accepted' && $isLiveWindow)
-                                        <span class="badge bg-warning text-dark fw-bold"><i class="fa-solid fa-tower-broadcast me-1"></i> Sesi Berlangsung</span>
+                                        <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size:0.72rem;"><i class="fa-solid fa-tower-broadcast me-1"></i> Berlangsung</span>
                                     @elseif(strtolower($b->status) === 'accepted')
-                                        <span class="badge bg-info bg-opacity-15 text-info border border-info border-opacity-25 fw-bold"><i class="fa-solid fa-calendar-days me-1"></i> Terjadwal</span>
+                                        <span class="badge bg-info bg-opacity-15 text-info border border-info border-opacity-25 fw-bold px-2 py-1" style="font-size:0.72rem;"><i class="fa-solid fa-calendar-days me-1"></i> Terjadwal</span>
                                     @else
-                                        <span class="text-muted">—</span>
+                                        <span style="color:#94a3b8; font-size:12px;">—</span>
                                     @endif
                                 @endif
                             </td>
                         </tr>
+
 
                     @empty
                         <tr style="pointer-events: none; background: transparent;">
@@ -288,30 +288,25 @@
                     const startWindow = startMs;
                     const endWindow = startMs + (60 * 60 * 1000);
 
-                    const minutesUntilStart = Math.ceil((startMs - now) / 60000);
-
-                    // update label: if session already started or within 10m window show plain Open Session (or with minutes if >0)
-                    if (minutesUntilStart > 0) {
-                        btn.innerHTML = '<i class="fa-solid fa-headset me-1"></i> Masuk Ruang Call (' + minutesUntilStart + ' mnt)';
-                    } else {
-                        btn.innerHTML = '<i class="fa-solid fa-headset me-1"></i> Masuk Ruang Call';
-                    }
-
-
-                    // enable only when within the open window
+                    // enable only when within the open window (start time until end window)
                     if (now >= startWindow && now <= endWindow) {
-                        btn.classList.remove('disabled');
+                        btn.innerHTML = '<i class="fa-solid fa-headset me-1"></i> Masuk Ruang Call';
+                        btn.classList.remove('disabled', 'btn-outline-secondary');
+                        btn.classList.add('btn-primary');
                         btn.removeAttribute('aria-disabled');
                         if (href) btn.setAttribute('href', href);
                         btn.style.pointerEvents = '';
-                        btn.style.opacity = '';
+                        btn.style.opacity = '1';
                     } else {
-                        btn.classList.add('disabled');
+                        btn.innerHTML = '<i class="fa-solid fa-lock me-1"></i> Belum Dimulai';
+                        btn.classList.add('disabled', 'btn-outline-secondary');
+                        btn.classList.remove('btn-primary');
                         btn.setAttribute('aria-disabled', 'true');
                         btn.removeAttribute('href');
                         btn.style.pointerEvents = 'none';
-                        btn.style.opacity = '0.6';
+                        btn.style.opacity = '0.65';
                     }
+
                 });
             }
 
