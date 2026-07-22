@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guitarclassbynde — Master Guitar 10x Faster</title>
-    <meta name="description" content="Master guitar with Nde's proven curriculum, 1-on-1 coaching, HD video lessons, and AI-powered practice tools.">
+    <meta name="description" content="Master guitar with Nde's proven curriculum, 1-on-1 coaching, HD video lessons, and interactive practice tools.">
     <link rel="icon" type="image/png" href="{{ asset('compro/img/logo_icon.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -104,7 +104,7 @@
 
                 <!-- Body Paragraph -->
                 <p class="text-gray-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-                    Stop wasting months on confusing YouTube tutorials. Access Nde's proven step-by-step video curriculum, 1-on-1 live video coaching, and AI-powered practice tools in one unified platform.
+                    Stop wasting months on confusing YouTube tutorials. Access Nde's proven step-by-step video curriculum, 1-on-1 live video coaching, and interactive practice tools in one unified platform.
                 </p>
 
                 <!-- Sales Action Buttons -->
@@ -181,7 +181,7 @@
             </div>
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-purple-400">5 Suite</div>
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">AI Practice Tools</div>
+                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Interactive Practice Tools</div>
             </div>
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-emerald-400">∞</div>
@@ -350,7 +350,7 @@
         <div class="text-center space-y-3">
             <span class="text-xs font-bold text-purple-400 uppercase tracking-widest block">Integrated Practice Suite</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                5 AI-Powered <span class="text-purple-400">Practice Tools Included</span>
+                5 Interactive <span class="text-purple-400">Practice Tools Included</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
                 No need to buy external tuner or metronome apps. All tools are built directly inside your student dashboard.
