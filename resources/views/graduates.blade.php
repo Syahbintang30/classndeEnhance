@@ -1,16 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Hall of Fame - Graduates Guitarclassbynde')
+@section('title', 'Hall of Fame - Graduates - Guitarclassbynde')
 
 @section('content')
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* Hide default legacy navbar */
+        body > nav { display: none !important; }
+
         .grad-wrapper {
             background-color: #08080a;
             color: #f3f4f6;
@@ -42,12 +46,15 @@
     </style>
 @endpush
 
-<div class="grad-wrapper min-h-screen relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+<div class="grad-wrapper min-h-screen relative overflow-hidden flex flex-col">
+    {{-- Top Navigation Bar --}}
+    @include('layouts.lms_header')
+
     {{-- Background Ambient Lights --}}
     <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-amber-500/10 rounded-full blur-[160px] pointer-events-none"></div>
     <div class="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
 
-    <div class="max-w-6xl mx-auto relative z-10 space-y-10">
+    <div class="flex-1 max-w-6xl mx-auto w-full relative z-10 py-10 px-4 sm:px-6 lg:px-8 space-y-10">
         
         <!-- Header Title Section -->
         <div class="text-center space-y-4">
@@ -61,13 +68,13 @@
             </h1>
             
             <p class="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base font-normal leading-relaxed">
-                Daftar alumni terverifikasi yang telah menuntaskan 100% kurikulum pembelajaran gitar di Guitarclassbynde.
+                Verified directory of students who have completed 100% of the Guitarclassbynde curriculum.
             </p>
 
             <div class="pt-2">
                 <a href="{{ route('lms.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white hover:border-amber-500/40 transition">
                     <i class="fa-solid fa-arrow-left"></i>
-                    <span>Kembali ke LMS Dashboard</span>
+                    <span>Back to LMS Dashboard</span>
                 </a>
             </div>
         </div>
@@ -75,15 +82,15 @@
         <!-- Graduates Stats Bar -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
             <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">TOTAL LULUSAN</span>
-                <span class="block text-2xl font-extrabold text-white mt-1">{{ count($graduates) }} Murid</span>
+                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">TOTAL GRADUATES</span>
+                <span class="block text-2xl font-extrabold text-white mt-1">{{ count($graduates) }} Students</span>
             </div>
             <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">TOTAL MODUL TAMAT</span>
+                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">COMPLETED TOPICS</span>
                 <span class="block text-2xl font-extrabold text-amber-400 mt-1">{{ $totalCourseTopics }} Topics</span>
             </div>
             <div class="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 text-center">
-                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">STATUS VERIFIKASI</span>
+                <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">VERIFICATION STATUS</span>
                 <span class="block text-2xl font-extrabold text-emerald-400 mt-1">100% Authentic</span>
             </div>
         </div>
@@ -126,7 +133,7 @@
                         </div>
 
                         <p class="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed">
-                            Telah berhasil menyelesaikan seluruh materi & modul pembelajaran gitar resmi dari @nde_guitar.
+                            Has successfully completed all official guitar learning modules by @nde_guitar.
                         </p>
                     </div>
 
@@ -136,7 +143,7 @@
                             <i class="fa-regular fa-calendar me-1"></i> {{ $grad->completed_at }}
                         </span>
                         <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold transition">
-                            <span>Sertifikat</span>
+                            <span>Certificate</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                     </div>
@@ -144,8 +151,8 @@
             @empty
                 <div class="col-span-full text-center py-16 bg-zinc-900/40 border border-white/5 rounded-2xl">
                     <i class="fa-solid fa-award text-4xl text-gray-600 mb-3 block"></i>
-                    <h3 class="font-bold text-white text-lg">Belum Ada Lulusan Terdaftar</h3>
-                    <p class="text-xs text-gray-400 mt-1 max-w-md mx-auto">Selesaikan seluruh modul di kelas untuk menjadi lulusan pertama yang tampil di Hall of Fame!</p>
+                    <h3 class="font-bold text-white text-lg">No Graduates Registered Yet</h3>
+                    <p class="text-xs text-gray-400 mt-1 max-w-md mx-auto">Complete all modules in the course to become the first graduate featured in the Hall of Fame!</p>
                 </div>
             @endforelse
         </div>

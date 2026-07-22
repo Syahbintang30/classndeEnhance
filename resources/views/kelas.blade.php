@@ -1257,10 +1257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide mb-2">
-            SELAMAT! KELAS SELESAI 🎉
+            CONGRATULATIONS! COURSE COMPLETED 🎉
         </h2>
         <p class="text-xs sm:text-sm text-gray-300 max-w-md mx-auto mb-6">
-            Gokil banget! Kamu telah berhasil menuntaskan seluruh modul pembelajaran gitar resmi di <strong>Guitarclassbynde</strong>.
+            Outstanding achievement! You have successfully completed all official guitar modules at <strong>Guitarclassbynde</strong>.
         </p>
 
         <!-- Action Cards Grid -->
@@ -1271,15 +1271,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fa-brands fa-tiktok"></i>
                 </div>
                 <h4 class="font-bold text-sm text-white mb-0.5">TikTok Story Card</h4>
-                <p class="text-[11px] text-gray-400 leading-tight">Download kartu 9:16 untuk di-post & tag @nde_guitar</p>
+                <p class="text-[11px] text-gray-400 leading-tight">Download 9:16 card to post & tag @nde_guitar</p>
             </button>
 
             <a href="{{ route('certificate.verify', 'NDE-GRAD-' . str_pad(auth()->id(), 4, '0', STR_PAD_LEFT)) }}" target="_blank" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-left transition group">
                 <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
                     <i class="fa-solid fa-file-contract"></i>
                 </div>
-                <h4 class="font-bold text-sm text-white mb-0.5">Sertifikat Resmi</h4>
-                <p class="text-[11px] text-gray-400 leading-tight">Lihat & cetak sertifikat terverifikasi QR Code</p>
+                <h4 class="font-bold text-sm text-white mb-0.5">Official Certificate</h4>
+                <p class="text-[11px] text-gray-400 leading-tight">View & print verified QR code certificate</p>
             </a>
 
             <a href="{{ route('graduates') }}" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 text-left transition group">
@@ -1287,7 +1287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fa-solid fa-award"></i>
                 </div>
                 <h4 class="font-bold text-sm text-white mb-0.5">Hall of Fame</h4>
-                <p class="text-[11px] text-gray-400 leading-tight">Lihat namamu terdaftar di wall of graduates</p>
+                <p class="text-[11px] text-gray-400 leading-tight">View your name listed on the wall of graduates</p>
             </a>
 
         </div>
@@ -1295,7 +1295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <canvas id="storyCardCanvas" width="1080" height="1920" class="hidden"></canvas>
 
         <button onclick="closeGradModal()" class="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 cursor-pointer">
-            Tutup
+            Close
         </button>
     </div>
 </div>

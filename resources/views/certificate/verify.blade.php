@@ -1,16 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Sertifikat Kelulusan - ' . ($user->name ?? 'Murid'))
+@section('title', 'Verified Certificate - ' . ($user->name ?? 'Student'))
 
 @section('content')
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Reenie+Beanie&display=swap" rel="stylesheet">
     
     <style>
+        /* Hide default legacy navbar */
+        body > nav { display: none !important; }
+
         .cert-wrapper {
             background-color: #08080a;
             color: #f3f4f6;
@@ -66,109 +70,115 @@
     </style>
 @endpush
 
-<div class="cert-wrapper min-h-screen relative overflow-hidden py-10 px-4 sm:px-6">
-    
-    <!-- Top Action Buttons (Hidden when printing) -->
-    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4 mb-8 no-print">
-        <a href="{{ route('graduates') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span>Kembali ke Hall of Fame</span>
-        </a>
-
-        <div class="flex items-center gap-2">
-            <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition">
-                <i class="fa-solid fa-print"></i>
-                <span>Cetak / Download PDF</span>
-            </button>
-            
-            <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition">
-                <i class="fa-brands fa-tiktok"></i>
-                <span>Tag @nde_guitar</span>
-            </a>
-        </div>
+<div class="cert-wrapper min-h-screen relative overflow-hidden flex flex-col">
+    {{-- Top Navigation Bar --}}
+    <div class="no-print">
+        @include('layouts.lms_header')
     </div>
+    
+    <div class="flex-1 py-10 px-4 sm:px-6">
+        <!-- Top Action Buttons (Hidden when printing) -->
+        <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4 mb-8 no-print">
+            <a href="{{ route('graduates') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Hall of Fame</span>
+            </a>
 
-    <!-- CERTIFICATE PRINTABLE CONTAINER -->
-    <div class="max-w-4xl mx-auto cert-printable">
-        <div class="cert-frame rounded-3xl p-6 sm:p-12 relative overflow-hidden">
-            
-            <!-- Corner Decorative Badges -->
-            <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
-            <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
-            <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
-            <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
-
-            <div class="cert-inner-border rounded-2xl p-6 sm:p-10 text-center relative z-10 space-y-6">
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Print / Download PDF</span>
+                </button>
                 
-                <!-- Brand Badge Header -->
-                <div class="flex items-center justify-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
-                        <i class="fa-solid fa-guitar"></i>
-                    </div>
-                    <span class="font-display text-2xl tracking-widest text-white">GUITARCLASSBYNDE</span>
-                </div>
+                <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition">
+                    <i class="fa-brands fa-tiktok"></i>
+                    <span>Tag @nde_guitar</span>
+                </a>
+            </div>
+        </div>
 
-                <!-- Certificate Title -->
-                <div>
-                    <h2 class="font-cinzel text-xs sm:text-sm uppercase tracking-[0.3em] text-amber-400 font-bold mb-1">
-                        Certificate of Completion
-                    </h2>
-                    <h1 class="font-cinzel text-2xl sm:text-4xl text-white font-extrabold tracking-wide">
-                        SERTIFIKAT KELULUSAN
-                    </h1>
-                </div>
+        <!-- CERTIFICATE PRINTABLE CONTAINER -->
+        <div class="max-w-4xl mx-auto cert-printable">
+            <div class="cert-frame rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+                
+                <!-- Corner Decorative Badges -->
+                <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
+                <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
+                <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-amber-500/60 pointer-events-none"></div>
+                <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-amber-500/60 pointer-events-none"></div>
 
-                <!-- Presented To -->
-                <div class="space-y-2 py-2">
-                    <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Dengan Bangga Dipersembahkan Kepada:</p>
-                    <h3 class="font-cinzel text-2xl sm:text-4xl font-extrabold gold-gradient-text tracking-wide border-b border-amber-500/30 pb-3 inline-block px-8">
-                        {{ $user->name }}
-                    </h3>
-                </div>
-
-                <!-- Description Text -->
-                <p class="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
-                    Atas komitmen, ketekunan, dan keberhasilannya dalam menyelesaikan 100% kurikulum pembelajaran gitar resmi di <strong>Guitarclassbynde</strong> (Total {{ $totalCourseTopics }} Modul Materi).
-                </p>
-
-                <!-- Verification Status Banner -->
-                @if($isVerified)
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                        <i class="fa-solid fa-square-check"></i>
-                        <span>VERIFIED OFFICIAL GRADUATE</span>
-                    </div>
-                @else
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
-                        <i class="fa-solid fa-clock"></i>
-                        <span>PROGRESS COURSE: {{ $completedCount }} / {{ $totalCourseTopics }} TOPIC</span>
-                    </div>
-                @endif
-
-                <!-- Footer Signatures & QR Section -->
-                <div class="pt-8 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-6 items-end text-center sm:text-left">
+                <div class="cert-inner-border rounded-2xl p-6 sm:p-10 text-center relative z-10 space-y-6">
                     
-                    <!-- Left: Date & Code -->
-                    <div class="space-y-1">
-                        <span class="block text-[10px] text-gray-500 uppercase tracking-wider font-semibold">TANGGAL DITERBITKAN</span>
-                        <span class="block text-xs font-bold text-white">{{ $completedDate }}</span>
-                        <span class="block font-mono text-[10px] text-amber-400/80 mt-1">ID: {{ $certCode }}</span>
+                    <!-- Brand Badge Header -->
+                    <div class="flex items-center justify-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
+                            <i class="fa-solid fa-guitar"></i>
+                        </div>
+                        <span class="font-display text-2xl tracking-widest text-white">GUITARCLASSBYNDE</span>
                     </div>
 
-                    <!-- Center: Verification QR Code -->
-                    <div class="text-center flex flex-col items-center justify-center">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data={{ urlencode(route('certificate.verify', $certCode)) }}&color=F59E0B&bgcolor=0A0A0D" alt="QR Verify" class="w-16 h-16 rounded-lg p-1 bg-zinc-950 border border-amber-500/30 mb-1" />
-                        <span class="text-[9px] text-gray-400 uppercase tracking-wider">Scan untuk Verifikasi</span>
+                    <!-- Certificate Title -->
+                    <div>
+                        <h2 class="font-cinzel text-xs sm:text-sm uppercase tracking-[0.3em] text-amber-400 font-bold mb-1">
+                            Official Verified Document
+                        </h2>
+                        <h1 class="font-cinzel text-2xl sm:text-4xl text-white font-extrabold tracking-wide">
+                            CERTIFICATE OF COMPLETION
+                        </h1>
                     </div>
 
-                    <!-- Right: Instructor Signature -->
-                    <div class="text-center sm:text-right space-y-1">
-                        <span class="font-signature text-3xl text-amber-300 block -mb-2">Nde Guitar</span>
-                        <span class="block text-xs font-bold text-white border-t border-amber-500/30 pt-1">NDE</span>
-                        <span class="block text-[10px] text-gray-400">Founder & TikTok Creator (@nde_guitar)</span>
+                    <!-- Presented To -->
+                    <div class="space-y-2 py-2">
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">PROUDLY PRESENTED TO:</p>
+                        <h3 class="font-cinzel text-2xl sm:text-4xl font-extrabold gold-gradient-text tracking-wide border-b border-amber-500/30 pb-3 inline-block px-8">
+                            {{ $user->name }}
+                        </h3>
+                    </div>
+
+                    <!-- Description Text -->
+                    <p class="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
+                        In recognition of outstanding commitment, dedication, and successful completion of 100% of the official guitar learning curriculum at <strong>Guitarclassbynde</strong> (Total {{ $totalCourseTopics }} Course Topics).
+                    </p>
+
+                    <!-- Verification Status Banner -->
+                    @if($isVerified)
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                            <i class="fa-solid fa-square-check"></i>
+                            <span>VERIFIED OFFICIAL GRADUATE</span>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>COURSE PROGRESS: {{ $completedCount }} / {{ $totalCourseTopics }} TOPICS</span>
+                        </div>
+                    @endif
+
+                    <!-- Footer Signatures & QR Section -->
+                    <div class="pt-8 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-6 items-end text-center sm:text-left">
+                        
+                        <!-- Left: Date & Code -->
+                        <div class="space-y-1">
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider font-semibold">DATE ISSUED</span>
+                            <span class="block text-xs font-bold text-white">{{ $completedDate }}</span>
+                            <span class="block font-mono text-[10px] text-amber-400/80 mt-1">ID: {{ $certCode }}</span>
+                        </div>
+
+                        <!-- Center: Verification QR Code -->
+                        <div class="text-center flex flex-col items-center justify-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data={{ urlencode(route('certificate.verify', $certCode)) }}&color=F59E0B&bgcolor=0A0A0D" alt="QR Verify" class="w-16 h-16 rounded-lg p-1 bg-zinc-950 border border-amber-500/30 mb-1" />
+                            <span class="text-[9px] text-gray-400 uppercase tracking-wider">Scan to Verify</span>
+                        </div>
+
+                        <!-- Right: Instructor Signature -->
+                        <div class="text-center sm:text-right space-y-1">
+                            <span class="font-signature text-3xl text-amber-300 block -mb-2">Nde Guitar</span>
+                            <span class="block text-xs font-bold text-white border-t border-amber-500/30 pt-1">NDE</span>
+                            <span class="block text-[10px] text-gray-400">Founder & TikTok Creator (@nde_guitar)</span>
+                        </div>
+
                     </div>
 
                 </div>
-
             </div>
         </div>
     </div>
