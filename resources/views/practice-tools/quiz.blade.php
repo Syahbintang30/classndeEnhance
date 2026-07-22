@@ -231,9 +231,19 @@
             selectNewTargetNote();
             updatePitchLoop();
         } catch (err) {
-            alert('Microphone access denied or not available. Please allow mic access to play!');
-            console.error(err);
+            console.error('Mic Error:', err);
+            showMicPermissionModal();
         }
+    }
+
+    function showMicPermissionModal() {
+        const modal = document.getElementById('micPermissionModal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeMicModal() {
+        const modal = document.getElementById('micPermissionModal');
+        if (modal) modal.classList.add('hidden');
     }
 
     function stopAudioInput() {
@@ -380,4 +390,53 @@
         .catch(e => console.error(e));
     }
 </script>
+
+<!-- Mic Permission Instructions Modal -->
+<div id="micPermissionModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl transition-all duration-300 hidden">
+    <div class="bg-zinc-950 border border-amber-500/30 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)] space-y-6">
+        
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-3xl mx-auto">
+            <i class="fa-solid fa-microphone-slash"></i>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="font-display text-3xl text-white tracking-wide">MICROPHONE ACCESS REQUIRED</h2>
+            <p class="text-xs text-gray-300 leading-relaxed max-w-sm mx-auto">
+                Browser kamu saat ini menolak izin Mikrofon / Line-In. Ikuti 2 langkah mudah ini untuk mengizinkan:
+            </p>
+        </div>
+
+        <!-- Step-by-Step Instructions Card -->
+        <div class="bg-zinc-900/80 border border-white/10 rounded-2xl p-4 text-left space-y-3 text-xs">
+            <div class="flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs shrink-0">1</span>
+                <p class="text-gray-300">
+                    Klik ikon <strong>🔒 Gembok / Tune</strong> di sebelah kiri alamat URL website (<code class="text-amber-400">localhost:8000</code>).
+                </p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs shrink-0">2</span>
+                <p class="text-gray-300">
+                    Ubah setelan <strong>Microphone</strong> dari <em>Block</em> menjadi <strong>Allow / Izinkan</strong>.
+                </p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs shrink-0">3</span>
+                <p class="text-gray-300">
+                    Refresh halaman ini dan tekan tombol <strong>START QUIZ</strong> kembali!
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-3">
+            <button onclick="location.reload()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition shadow-lg cursor-pointer">
+                <i class="fa-solid fa-rotate-right me-1"></i> Refresh Halaman
+            </button>
+            <button onclick="closeMicModal()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 cursor-pointer">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>
 @endsection
