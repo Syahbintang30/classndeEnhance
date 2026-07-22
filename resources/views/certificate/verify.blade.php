@@ -68,9 +68,8 @@
             outline-offset: -6px;
         }
         .gold-gradient-text {
-            background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #F59E0B !important;
+            font-weight: 800;
         }
 
         @media print {
@@ -233,7 +232,7 @@
 
                         <!-- Right: Instructor Signature -->
                         <div class="text-center sm:text-right space-y-1">
-                            <span class="font-signature text-3xl text-amber-300 block -mb-2">Nde Guitar</span>
+                            <span class="font-signature text-3xl text-amber-300 block pb-1">Nde Guitar</span>
                             <span class="block text-xs font-bold text-white border-t border-amber-500/30 pt-1">NDE</span>
                             <span class="block text-[10px] text-gray-400">Founder & TikTok Creator (@nde_guitar)</span>
                         </div>
