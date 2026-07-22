@@ -977,8 +977,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }catch(e){ /* ignore */ }
             // push topic into URL as query param (keeps lesson path)
-            const newUrl = '/kelas/' + lessonId + (topicId ? '?topic=' + topicId : '');
-            if(pushState) history.pushState({ ajax: true, url: newUrl }, '', newUrl);
+            if(lessonId && String(lessonId) !== 'null'){
+                const newUrl = '/kelas/' + lessonId + (topicId ? '?topic=' + topicId : '');
+                if(pushState) history.pushState({ ajax: true, url: newUrl }, '', newUrl);
+            }
             // create player if needed and play
             if(player){
                 player.loadVideoById(placeholder.getAttribute('data-video-id'));
@@ -998,7 +1000,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     // initialize page for current lesson (try to extract lesson id from url)
     const pathParts = location.pathname.split('/').filter(Boolean);
-    const currentLessonId = (pathParts.length && pathParts[0] === 'kelas' && pathParts[1]) ? pathParts[1] : (document.querySelector('.lesson-block') ? document.querySelector('.lesson-block').querySelector('.lesson-header').getAttribute('href').split('/').filter(Boolean).pop() : null);
+    // Try URL first (/kelas/{id}), then Blade variable, then DOM fallback
+    let currentLessonId = (pathParts.length && pathParts[0] === 'kelas' && pathParts[1] && pathParts[1] !== 'null') ? pathParts[1] : null;
+    if(!currentLessonId){
+        // use server-rendered lesson id as reliable fallback
+        currentLessonId = "{{ isset($lesson) && $lesson ? $lesson->id : '' }}" || null;
+    }
+    if(!currentLessonId){
+        // last resort: try first sidebar lesson block
+        try{
+            const firstBlock = document.querySelector('.lesson-block .lesson-header');
+            if(firstBlock){
+                const href = firstBlock.getAttribute('href') || '';
+                const parts = href.split('/').filter(Boolean);
+                currentLessonId = parts.length ? parts[parts.length - 1] : null;
+            }
+        }catch(e){}
+    }
     initPage(currentLessonId);
 
     // close overlay sidebar automatically when resizing to desktop

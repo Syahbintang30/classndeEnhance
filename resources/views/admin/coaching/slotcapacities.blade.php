@@ -1,168 +1,295 @@
 @extends('layouts.admin')
 
+@section('title', 'Slot Capacities Coaching')
+
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4 header">
+    @push('styles')
+        <style>
+            .coaching-page {
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                background-color: #F8FAFC;
+            }
+
+            /* Light Modern Calendar Styling */
+            #calendar table { 
+                width: 100%; 
+                border-collapse: separate; 
+                border-spacing: 0; 
+                border-radius: 12px; 
+                overflow: hidden; 
+                border: 1px solid #E2E8F0; 
+                background: #FFFFFF; 
+            }
+            #calendar thead th { 
+                background: #F8FAFC; 
+                color: #475569; 
+                padding: 12px 8px; 
+                text-align: center; 
+                border-bottom: 1px solid #E2E8F0; 
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            #calendar tbody td { 
+                background: #FFFFFF; 
+                color: #1E293B; 
+                vertical-align: top; 
+                padding: 12px; 
+                border-right: 1px solid #F1F5F9; 
+                border-bottom: 1px solid #F1F5F9; 
+                transition: background 0.15s ease;
+            }
+            #calendar tbody tr:last-child td { border-bottom: none; }
+            #calendar tbody td .day-number { font-weight: 700; display: block; margin-bottom: 6px; color: #0F172A; font-size: 0.9rem; }
+            #calendar tbody td:not(.inactive):hover { background: #EFF6FF !important; cursor: pointer; }
+            #calendar td.inactive { background: #F8FAFC !important; color: #94A3B8 !important; cursor: default; }
+            #calendar td.past { opacity: 0.5; }
+            
+            .slot-badge-count { 
+                background: #EFF6FF; 
+                color: #1D4ED8; 
+                border: 1px solid #BFDBFE;
+                border-radius: 6px; 
+                padding: 2px 7px; 
+                font-size: 11px; 
+                font-weight: 700;
+            }
+
+            /* Hours Modal Buttons Styling */
+            .unselected-hour {
+                background: #F8FAFC !important;
+                color: #334155 !important;
+                border: 1px solid #CBD5E1 !important;
+                transition: all 0.15s ease;
+            }
+            .unselected-hour:hover {
+                background: #EFF6FF !important;
+                color: #2563EB !important;
+                border-color: #2563EB !important;
+            }
+            .selected-hour {
+                background: #2563EB !important;
+                color: #FFFFFF !important;
+                border: 1px solid #2563EB !important;
+                font-weight: 700 !important;
+                box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+            }
+            .slot-hour-booked {
+                background: #FEF2F2 !important;
+                color: #DC2626 !important;
+                border: 1px solid #FCA5A5 !important;
+                opacity: 0.85;
+                cursor: not-allowed !important;
+            }
+            .slot-hour-past {
+                background: #F1F5F9 !important;
+                color: #94A3B8 !important;
+                border: 1px solid #E2E8F0 !important;
+                opacity: 0.65;
+                cursor: not-allowed !important;
+            }
+
+            /* Side Panel Cards & Chips */
+            #pendingList .pending-item {
+                border: 1px solid #FDE68A;
+                border-radius: 10px;
+                background: #FFFBEB;
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+
+            #existingList .existing-card {
+                border: 1px solid #E2E8F0;
+                border-radius: 12px;
+                background: #FFFFFF;
+                padding: 14px;
+                margin-bottom: 12px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            }
+
+            #existingList .existing-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            #existingList .existing-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #F1F5F9;
+            }
+
+            #existingList .existing-date {
+                font-weight: 800;
+                color: #0F172A;
+                font-size: 0.88rem;
+            }
+
+            #existingList .existing-times {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            #existingList .existing-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #EFF6FF;
+                color: #1D4ED8;
+                border: 1px solid #BFDBFE;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 700;
+                padding: 4px 8px;
+                font-family: monospace;
+            }
+
+            #existingList .existing-chip button {
+                border: 0;
+                background: transparent;
+                color: #DC2626;
+                font-size: 14px;
+                line-height: 1;
+                padding: 0 0 0 2px;
+                cursor: pointer;
+                font-weight: 800;
+                transition: color 0.15s ease;
+            }
+            #existingList .existing-chip button:hover {
+                color: #991B1B;
+            }
+
+            .slot-toast {
+                position: fixed;
+                top: 18px;
+                right: 18px;
+                z-index: 9999;
+                min-width: 280px;
+                max-width: min(430px, 92vw);
+                border-radius: 10px;
+                border: 1px solid transparent;
+                padding: 10px 14px;
+                color: #fff;
+                box-shadow: 0 10px 25px -5px rgba(15,23,42,0.2);
+                opacity: 0;
+                transform: translateY(-10px);
+                pointer-events: none;
+                transition: opacity .2s ease, transform .2s ease;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .slot-toast.show { opacity: 1; transform: translateY(0); }
+            .slot-toast.success { background: #059669; border-color: #047857; }
+            .slot-toast.error { background: #DC2626; border-color: #B91C1C; }
+            .slot-toast.info { background: #2563EB; border-color: #1D4ED8; }
+
+            @media (max-width: 1200px){
+                #existingList .existing-grid { grid-template-columns: 1fr; }
+            }
+        </style>
+    @endpush
+
+    <div class="coaching-page min-h-screen p-3 md:p-6">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+            @include('admin.coaching._nav')
+
+            <!-- Header Section -->
+            <div class="d-flex flex-column flex-md-row md:items-start justify-content-between gap-3 mb-4">
                 <div>
-                    <h2 class="mb-0">Coaching Slot Capacities - {{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }}</h2>
+                    <div class="d-flex align-items-center gap-3 mb-1">
+                        <h1 class="h4 fw-bold text-slate-900 tracking-tight mb-0" style="color: #0F172A; font-weight: 800; font-size: 1.5rem;">
+                            Coaching Slot Capacities — {{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }}
+                        </h1>
+                        <span class="px-2.5 py-0.5 rounded-pill bg-blue-100 text-blue-700 fw-semibold" style="font-size: 0.75rem; background: #DBEAFE; color: #1D4ED8;">
+                            Bulan Berjalan
+                        </span>
+                    </div>
+                    <p class="text-slate-500 mb-0" style="color: #64748B; font-size: 0.875rem;">
+                        Pilih tanggal di kalender untuk mengatur slot jam mengajar per hari (kapasitas 1 murid / slot).
+                    </p>
                 </div>
-                <small style="color: #666">Showing current month</small>
             </div>
 
-            <p class="m-0" style="color:#666; font-size:14px">Select dates in the calendar, then click "Edit hours" to pick hourly slots (1-hour increments). Each slot will be for 1 person (capacity = 1).</p>
-            <p style="color:#666; font-size:14px">Click a date to pick hours, then click <strong>Add</strong> to queue the schedule in the sidebar.</p>
-
-            <style>
-                #calendar table { width:100%; border-collapse: collapse; border-radius:12px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.35); background:#0b0b0b; }
-                #calendar thead th { background:#0b0b0b; color:#e6e7e8; padding:12px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.03); }
-                #calendar tbody td { background:#0d0d0e; color:#d6d8da; vertical-align: top; padding:14px; border-right:1px solid rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.02); }
-                #calendar tbody tr:last-child td { border-bottom: none; }
-                #calendar tbody td .day-number { font-weight:600; display:block; margin-bottom:8px; color:#cfd3d6; }
-                #calendar tbody td:not(.inactive):hover { background: #1a1a1b; cursor:pointer; }
-                #calendar td.inactive { background:transparent; color:#6c757d; cursor:default; }
-                #calendar td.past { opacity:0.55; }
-                #calendar td.selected { background:#343a40 !important; color:#fff !important; }
-                .slot-badge, #calendar .badge { background:#6c757d; color:#fff; border-radius:6px; padding:4px 6px; font-size:12px; }
-                .badge.bg-success { background:#495057 !important; }
-
-                #hoursGrid .slot-hour-past { opacity: .65; }
-                #hoursGrid .slot-hour-booked { opacity: .9; }
-
-                #pendingList .pending-item,
-                #existingList .existing-card {
-                    border: 1px solid rgba(255,255,255,0.08);
-                    border-radius: 12px;
-                    background: rgba(255,255,255,0.02);
-                    padding: 12px;
-                    margin-bottom: 10px;
-                }
-
-                #existingList .existing-grid {
-                    display: grid;
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                    gap: 10px;
-                }
-
-                #existingList .existing-head {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 8px;
-                    margin-bottom: 8px;
-                }
-
-                #existingList .existing-date {
-                    font-weight: 700;
-                    letter-spacing: 0.2px;
-                    word-break: break-word;
-                }
-
-                #existingList .existing-times {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                }
-
-                #existingList .existing-chip {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 5px;
-                    background: #6c757d;
-                    color: #fff;
-                    border-radius: 999px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    padding: 4px 8px;
-                    line-height: 1;
-                }
-
-                #existingList .existing-chip button {
-                    border: 0;
-                    background: transparent;
-                    color: #f8d7da;
-                    font-size: 12px;
-                    line-height: 1;
-                    padding: 0;
-                    cursor: pointer;
-                }
-
-                .slot-toast {
-                    position: fixed;
-                    top: 18px;
-                    right: 18px;
-                    z-index: 2200;
-                    min-width: 280px;
-                    max-width: min(430px, 92vw);
-                    border-radius: 12px;
-                    border: 1px solid transparent;
-                    padding: 10px 12px;
-                    color: #fff;
-                    box-shadow: 0 18px 45px rgba(0,0,0,.45);
-                    opacity: 0;
-                    transform: translateY(-10px);
-                    pointer-events: none;
-                    transition: opacity .2s ease, transform .2s ease;
-                    font-size: 13px;
-                    font-weight: 600;
-                }
-
-                .slot-toast.show { opacity: 1; transform: translateY(0); }
-                .slot-toast.success { background: linear-gradient(180deg, #1c8f5b, #156f48); border-color: #24a469; }
-                .slot-toast.error { background: linear-gradient(180deg, #9d2f2f, #7f2323); border-color: #c74a4a; }
-                .slot-toast.info { background: linear-gradient(180deg, #2f4f80, #243e66); border-color: #4f78b3; }
-
-                @media (max-width: 1200px){
-                    #existingList .existing-grid { grid-template-columns: 1fr; }
-                }
-
-                @media (max-width: 768px){
-                    #calendar tbody td { padding:10px; font-size:14px; }
-                }
-            </style>
-
-            <div class="row">
+            <div class="row g-4">
+                <!-- Left: Calendar Box -->
                 <div class="col-lg-8">
-                    <div id="calendar" class="mb-3"></div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4" style="border-radius: 12px; border: 1px solid #E2E8F0;">
+                        <div id="calendar" class="mb-0"></div>
+                    </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card custom">
-                        <div class="card-body">
-                            <h6 class="card-title">Pending schedules</h6>
-                            <p style="font-size: 14px">Schedules you added (not yet saved)</p>
-                            <div id="pendingList" style="min-height:120px"></div>
-                            <hr>
-                            <h6 class="mb-2">Existing schedules (this month)</h6>
-                            <div id="existingList" style="min-height:80px"></div>
 
-                            <form id="saveForm" method="POST" action="{{ url('/admin/coaching/slot-capacities') }}">
-                                @csrf
-                                <input type="hidden" name="slots_json" id="slots_json">
-                                <div class="d-flex justify-content-end gap-2 mt-4">
-                                    <button id="saveAllBtn" class="btn btn-success btn-sm" type="submit" disabled>Save</button>
-                                </div>
-                            </form>
+                <!-- Right: Side Panel (Pending & Existing) -->
+                <div class="col-lg-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4" style="border-radius: 12px; border: 1px solid #E2E8F0;">
+                        <div>
+                            <h6 class="fw-bold text-slate-900 mb-1" style="color: #0F172A; font-size: 0.95rem;">Jadwal Baru (Pending)</h6>
+                            <p class="text-slate-500 mb-2" style="font-size: 0.78rem; color: #64748B;">Slot yang Anda pilih (belum disimpan ke database).</p>
+                            <div id="pendingList" style="min-height: 60px;"></div>
                         </div>
+
+                        <hr class="my-3" style="border-color: #E2E8F0;">
+
+                        <div>
+                            <h6 class="fw-bold text-slate-900 mb-2" style="color: #0F172A; font-size: 0.95rem;">Jadwal Aktif Bulan Ini</h6>
+                            <div id="existingList" style="min-height: 80px;"></div>
+                        </div>
+
+                        <form id="saveForm" method="POST" action="{{ url('/admin/coaching/slot-capacities') }}" class="m-0 pt-2">
+                            @csrf
+                            <input type="hidden" name="slots_json" id="slots_json">
+                            <button id="saveAllBtn" class="btn btn-primary w-100 font-semibold py-2" type="submit" disabled style="background: #2563EB; border-radius: 8px; font-size: 0.875rem;">
+                                Simpan Perubahan Slot
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
 
+            <!-- Pick Hours Modal -->
             <div class="modal fade" id="hoursModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content custom">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Pick hours for <span id="modalDateLabel"></span></h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                        <div class="modal-header border-bottom" style="border-bottom-color: #E2E8F0;">
+                            <h5 class="modal-title fw-bold text-slate-900" style="font-size: 1rem; color: #0F172A;">
+                                Pilih Slot Jam untuk <span id="modalDateLabel" class="text-blue-600" style="color: #2563EB;"></span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-                            <p class="m-0">Choose hours (1-hour steps) for the selected date.</p>
-                            <div class="mb-3" style="color:#888"><small>Past hours are disabled automatically. Click <strong>Add</strong> to queue this date + hours to the sidebar.</small></div>
-                            <div id="hoursGrid" class="d-flex flex-wrap gap-2"></div>
+                        <div class="modal-body p-4">
+                            <p class="text-slate-600 mb-3" style="font-size: 0.85rem;">Klik jam yang ingin dibuka untuk slot coaching (interval 1 jam):</p>
+                            <div id="hoursGrid" class="d-flex flex-wrap gap-2 pt-1 mb-2"></div>
+                            
+                            <!-- Legend -->
+                            <div class="d-flex flex-wrap align-items-center gap-3 pt-3 mt-3 border-top" style="border-top-color: #F1F5F9; font-size: 0.75rem;">
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background: #2563EB;"></span>
+                                    <span class="text-slate-600">Dipilih</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background: #F8FAFC; border: 1px solid #CBD5E1;"></span>
+                                    <span class="text-slate-600">Tersedia</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background: #FEF2F2; border: 1px solid #FCA5A5;"></span>
+                                    <span class="text-slate-600">Sudah Dipesan</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background: #F1F5F9; border: 1px solid #E2E8F0;"></span>
+                                    <span class="text-slate-600">Waktu Lewat</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button id="addHoursBtn" type="button" class="btn btn-primary">Add</button>
+                        <div class="modal-footer border-top" style="border-top-color: #E2E8F0;">
+                            <button type="button" class="btn btn-light font-semibold" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.85rem;">Batal</button>
+                            <button id="addHoursBtn" type="button" class="btn btn-primary font-semibold" style="background: #2563EB; border-radius: 8px; font-size: 0.85rem;">Tambahkan ke Daftar</button>
                         </div>
                     </div>
                 </div>
@@ -170,9 +297,9 @@
 
         </div>
     </div>
-</div>
 
-<div id="slotToast" class="slot-toast" role="status" aria-live="polite"></div>
+    <div id="slotToast" class="slot-toast" role="status" aria-live="polite"></div>
+@endsection
 
 @section('scripts')
 <script>
@@ -185,6 +312,11 @@
 
     let pendingEntries = {};
     let toastTimer = null;
+
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
 
     function showToast(message, type = 'success') {
         const toast = document.getElementById('slotToast');
@@ -234,8 +366,6 @@
         container.innerHTML = '';
 
         const table = document.createElement('table');
-        table.className = 'table table-dark';
-        table.style.background = 'transparent';
 
         const thead = document.createElement('thead');
         thead.innerHTML = '<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>';
@@ -254,7 +384,7 @@
 
                 if (!cell.inMonth) {
                     td.classList.add('inactive');
-                    td.innerHTML = `<div class="small">${cell.day}</div>`;
+                    td.innerHTML = `<div class="small text-slate-400" style="color: #94A3B8;">${cell.day}</div>`;
                 } else {
                     const iso = formatDateLocal(cell.date);
                     const has = existing[iso] && existing[iso].length > 0;
@@ -262,7 +392,7 @@
                     const now = new Date();
                     const isPast = cell.date < new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-                    td.innerHTML = `<div class="d-flex justify-content-between align-items-center"><div><strong>${cell.day}</strong></div><div>${has ? '<span class="badge bg-success">' + existing[iso].length + '</span>' : ''}${hasBookings ? '<span title="Has bookings" style="display:inline-block;width:10px;height:10px;background:#dc3545;border-radius:50%;margin-left:8px"></span>' : ''}</div></div>`;
+                    td.innerHTML = `<div class="d-flex justify-content-between align-items-center"><div class="day-number">${cell.day}</div><div>${has ? '<span class="slot-badge-count">' + existing[iso].length + '</span>' : ''}${hasBookings ? '<span title="Has bookings" style="display:inline-block;width:8px;height:8px;background:#EF4444;border-radius:50%;margin-left:6px"></span>' : ''}</div></div>`;
                     td.dataset.date = iso;
 
                     if (isPast) {
@@ -287,15 +417,17 @@
     for (let h = 0; h < 24; h++) {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn btn-outline-secondary btn-sm';
+        btn.className = 'btn btn-sm font-mono unselected-hour';
         btn.style.width = '70px';
+        btn.style.borderRadius = '6px';
+        btn.style.fontSize = '0.78rem';
         const label = ('0' + h).slice(-2) + ':00';
         btn.textContent = label;
         btn.dataset.hour = label;
         btn.addEventListener('click', () => {
             if (!btn.disabled) {
-                btn.classList.toggle('btn-success');
-                btn.classList.toggle('btn-outline-secondary');
+                btn.classList.toggle('selected-hour');
+                btn.classList.toggle('unselected-hour');
             }
         });
         hoursGrid.appendChild(btn);
@@ -305,8 +437,10 @@
         document.querySelectorAll('#hoursGrid button').forEach(b => {
             b.disabled = false;
             b.title = '';
-            b.classList.remove('btn-danger', 'btn-dark', 'slot-hour-past', 'slot-hour-booked', 'btn-success');
-            b.classList.add('btn-outline-secondary');
+            b.className = 'btn btn-sm font-mono unselected-hour';
+            b.style.width = '70px';
+            b.style.borderRadius = '6px';
+            b.style.fontSize = '0.78rem';
         });
 
         document.getElementById('modalDateLabel').textContent = iso;
@@ -318,26 +452,31 @@
 
             if (hourBooked) {
                 b.disabled = true;
-                b.classList.remove('btn-outline-secondary');
-                b.classList.add('btn-danger', 'slot-hour-booked');
+                b.className = 'btn btn-sm font-mono slot-hour-booked';
+                b.style.width = '70px';
+                b.style.borderRadius = '6px';
+                b.style.fontSize = '0.78rem';
                 b.title = 'Already booked';
             } else if (hourPast) {
                 b.disabled = true;
-                b.classList.remove('btn-outline-secondary');
-                b.classList.add('btn-dark', 'slot-hour-past');
+                b.className = 'btn btn-sm font-mono slot-hour-past';
+                b.style.width = '70px';
+                b.style.borderRadius = '6px';
+                b.style.fontSize = '0.78rem';
                 b.title = 'This time has passed';
             }
         });
 
-        if (existing[iso]) {
-            existing[iso].forEach(h => {
-                const b = Array.from(document.querySelectorAll('#hoursGrid button')).find(x => x.dataset.hour === h);
-                if (b && !b.disabled) {
-                    b.classList.remove('btn-outline-secondary');
-                    b.classList.add('btn-success');
-                }
-            });
-        }
+        const activeHours = pendingEntries[iso] || existing[iso] || [];
+        activeHours.forEach(h => {
+            const b = Array.from(document.querySelectorAll('#hoursGrid button')).find(x => x.dataset.hour === h);
+            if (b && !b.disabled) {
+                b.className = 'btn btn-sm font-mono selected-hour';
+                b.style.width = '70px';
+                b.style.borderRadius = '6px';
+                b.style.fontSize = '0.78rem';
+            }
+        });
 
         document.getElementById('hoursModal').dataset.currentDate = iso;
         const modal = new bootstrap.Modal(document.getElementById('hoursModal'));
@@ -346,12 +485,12 @@
 
     document.getElementById('addHoursBtn').addEventListener('click', function () {
         const iso = document.getElementById('hoursModal').dataset.currentDate;
-        const hours = Array.from(document.querySelectorAll('#hoursGrid button.btn-success'))
+        const hours = Array.from(document.querySelectorAll('#hoursGrid button.selected-hour'))
             .map(b => b.dataset.hour)
             .filter(h => !isPastHour(iso, h));
 
         if (!iso || hours.length === 0) {
-            showToast('Please pick at least one available future hour for the date', 'error');
+            showToast('Pilih setidaknya 1 slot jam yang tersedia', 'error');
             return;
         }
 
@@ -364,7 +503,7 @@
     document.getElementById('saveForm').addEventListener('submit', function (e) {
         e.preventDefault();
         if (Object.keys(pendingEntries).length === 0) {
-            showToast('No pending schedules to save', 'error');
+            showToast('Tidak ada jadwal pending untuk disimpan', 'error');
             return;
         }
 
@@ -376,14 +515,14 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                'X-CSRF-TOKEN': getCsrfToken(),
                 'Accept': 'application/json'
             },
             body: JSON.stringify({ slots_json: pendingEntries, replace: replace })
         }).then(async (r) => {
             const data = await r.json().catch(() => null);
             if (!r.ok) {
-                const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Save failed (${r.status})`;
+                const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Gagal menyimpan (${r.status})`;
                 throw new Error(message);
             }
             return data;
@@ -395,13 +534,13 @@
                 buildCalendar(year, month);
                 renderExisting();
                 document.getElementById('saveAllBtn').disabled = true;
-                showToast('Schedules saved successfully', 'success');
+                showToast('Jadwal slot berhasil disimpan', 'success');
             } else {
-                showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Save failed', 'error');
+                showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Gagal menyimpan slot', 'error');
             }
         }).catch(err => {
             console.error(err);
-            showToast(err && err.message ? err.message : 'Network error saving schedules', 'error');
+            showToast(err && err.message ? err.message : 'Terjadi kesalahan jaringan', 'error');
         });
     }
 
@@ -411,15 +550,15 @@
 
         const keys = Object.keys(pendingEntries).sort();
         if (keys.length === 0) {
-            list.innerHTML = '<div>No pending schedules.</div>';
+            list.innerHTML = '<div class="text-slate-400" style="font-size: 0.8rem; color: #94A3B8;">Tidak ada slot pending.</div>';
             return;
         }
 
         keys.forEach(d => {
             const div = document.createElement('div');
             div.className = 'pending-item';
-            const hrs = pendingEntries[d].map(h => `<span class="badge bg-info text-white me-1">${h}</span>`).join('');
-            div.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${d}</strong><div class="mt-1">${hrs}</div></div><div><button class="btn btn-sm btn-outline-danger">Remove</button></div></div>`;
+            const hrs = pendingEntries[d].map(h => `<span class="badge bg-amber-100 text-amber-800 me-1" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A; border-radius:4px;">${h}</span>`).join('');
+            div.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong class="text-slate-900" style="font-size:0.85rem">${d}</strong><div class="mt-1">${hrs}</div></div><div><button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.75rem; border-radius:4px;">Hapus</button></div></div>`;
             div.querySelector('button').addEventListener('click', () => {
                 delete pendingEntries[d];
                 renderPending();
@@ -440,7 +579,7 @@
 
         const keys = Object.keys(existing).sort();
         if (keys.length === 0) {
-            container.innerHTML = '<div style="font-size:14px">No saved schedules for this month.</div>';
+            container.innerHTML = '<div class="text-slate-400" style="font-size:0.8rem; color: #94A3B8;">Belum ada jadwal slot bulan ini.</div>';
             return;
         }
 
@@ -451,14 +590,14 @@
             const div = document.createElement('div');
             div.className = 'existing-card';
             const hours = (existing[d] || []).slice().sort();
-            const chips = hours.map(h => `<span class="existing-chip">${h} <button class="remove-hour" data-date="${d}" data-time="${h}" title="Delete ${h}">x</button></span>`).join('');
+            const chips = hours.map(h => `<span class="existing-chip">${h} <button class="remove-hour" data-date="${d}" data-time="${h}" title="Hapus ${h}">×</button></span>`).join('');
 
             div.innerHTML = `
                 <div class="existing-head">
                     <div class="existing-date">${d}</div>
-                    <button class="btn btn-sm btn-outline-danger delete-date" data-date="${d}">Delete</button>
+                    <button class="btn btn-sm btn-outline-danger delete-date px-2 py-0.5" style="font-size: 0.72rem; border-radius: 6px; background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5;" data-date="${d}">Hapus Tanggal</button>
                 </div>
-                <div class="existing-times">${chips || '<span class="text-muted">No slots</span>'}</div>
+                <div class="existing-times">${chips || '<span class="text-slate-400">Tidak ada slot</span>'}</div>
             `;
 
             grid.appendChild(div);
@@ -475,20 +614,20 @@
             e.preventDefault();
             const dt = removeHourBtn.dataset.date;
             const tm = removeHourBtn.dataset.time;
-            if (!confirm('Delete ' + tm + ' on ' + dt + '?')) return;
+            if (!confirm('Hapus slot jam ' + tm + ' pada tanggal ' + dt + '?')) return;
 
             fetch('/admin/coaching/slot-capacities/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'X-CSRF-TOKEN': getCsrfToken(),
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ date: dt, time: tm })
             }).then(async (r) => {
                 const data = await r.json().catch(() => null);
                 if (!r.ok) {
-                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Delete failed (${r.status})`;
+                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Gagal menghapus (${r.status})`;
                     throw new Error(message);
                 }
                 return data;
@@ -498,13 +637,13 @@
                     if (existing[dt].length === 0) delete existing[dt];
                     renderExisting();
                     buildCalendar(year, month);
-                    showToast('Deleted ' + tm + ' on ' + dt, 'info');
+                    showToast('Slot ' + tm + ' pada ' + dt + ' berhasil dihapus', 'info');
                 } else {
-                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Delete failed', 'error');
+                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Gagal menghapus slot', 'error');
                 }
             }).catch(err => {
                 console.error(err);
-                showToast(err && err.message ? err.message : 'Network error deleting slot', 'error');
+                showToast(err && err.message ? err.message : 'Kesalahan jaringan saat menghapus slot', 'error');
             });
             return;
         }
@@ -512,20 +651,20 @@
         if (removeDateBtn) {
             e.preventDefault();
             const date = removeDateBtn.dataset.date;
-            if (!confirm('Delete all schedules for ' + date + '?')) return;
+            if (!confirm('Hapus seluruh slot pada tanggal ' + date + '?')) return;
 
             fetch('/admin/coaching/slot-capacities/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'X-CSRF-TOKEN': getCsrfToken(),
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ date: date })
             }).then(async (r) => {
                 const data = await r.json().catch(() => null);
                 if (!r.ok) {
-                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Delete failed (${r.status})`;
+                    const message = (data && (data.error || data.message)) ? (data.error || data.message) : `Gagal menghapus (${r.status})`;
                     throw new Error(message);
                 }
                 return data;
@@ -534,13 +673,13 @@
                     delete existing[date];
                     renderExisting();
                     buildCalendar(year, month);
-                    showToast('Deleted all slots on ' + date, 'info');
+                    showToast('Semua slot pada ' + date + ' berhasil dihapus', 'info');
                 } else {
-                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Delete failed', 'error');
+                    showToast((data && (data.error || data.message)) ? (data.error || data.message) : 'Gagal menghapus slot', 'error');
                 }
             }).catch(err => {
                 console.error(err);
-                showToast(err && err.message ? err.message : 'Network error deleting slots', 'error');
+                showToast(err && err.message ? err.message : 'Kesalahan jaringan saat menghapus slot', 'error');
             });
         }
     });
@@ -552,6 +691,4 @@
         showToast(sessionSuccess, 'success');
     }
 </script>
-@endsection
-
 @endsection

@@ -54,6 +54,28 @@ class CoachingBookingController extends Controller
             $baseQuery->whereDate('booking_time', '<=', $request->input('date_to'));
         }
 
+        // Ticket Types Filter (Garansi, Bonus, Paid)
+        if ($request->filled('ticket_types')) {
+            $types = (array) $request->input('ticket_types');
+            $baseQuery->whereHas('ticket', function ($tQuery) use ($types) {
+                $tQuery->where(function ($q) use ($types) {
+                    if (in_array('warranty', $types, true)) {
+                        $q->orWhere('source', 'like', '%warranty%');
+                    }
+                    if (in_array('free', $types, true)) {
+                        $q->orWhere('source', 'like', '%free%');
+                    }
+                    if (in_array('paid', $types, true)) {
+                        $q->orWhere('source', 'like', 'midtrans:%')
+                          ->orWhere(function($sub) {
+                              $sub->where('source', 'not like', '%warranty%')
+                                  ->where('source', 'not like', '%free%');
+                          });
+                    }
+                });
+            });
+        }
+
         $now = Carbon::now();
 
         // Calculate count for upcoming active sessions vs finished/rejected history

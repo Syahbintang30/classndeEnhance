@@ -1,265 +1,325 @@
-/* Unified admin visual layer
-   Applied across admin pages so modules match dashboard language. */
+/* ==========================================================================
+   Guitarclassbynde Admin Unified Light Mode Design System
+   High-Contrast Dark Typography & Complete Bar Chart Styling
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-.admin-shell {
-    --u-bg: #f6f8fc;
-    --u-surface: #ffffff;
-    --u-surface-soft: rgba(37, 99, 235, 0.03);
-    --u-border: rgba(15, 23, 42, 0.08);
-    --u-text: #162033;
-    --u-muted: #64748b;
-    --u-primary: #1f6feb;
-    --u-success: #1ea971;
-    --u-warning: #facc15;
-    --u-danger: #ef4444;
-    --u-radius-sm: 10px;
-    --u-radius-md: 14px;
-    --u-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+body.admin-shell {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    background-color: #F8FAFC !important;
+    color: #0F172A !important;
 }
 
-.admin-shell .admin-content {
-    color: var(--u-text);
+/* Force Default Text to Deep Dark Slate Across All Child Elements */
+.admin-shell main,
+.admin-shell .admin-content,
+.admin-shell .card,
+.admin-shell .panel,
+.admin-shell .box,
+.admin-shell .glass-card,
+.admin-shell table,
+.admin-shell tr,
+.admin-shell td,
+.admin-shell th,
+.admin-shell div,
+.admin-shell span,
+.admin-shell p,
+.admin-shell a,
+.admin-shell li,
+.admin-shell label {
+    color: #0F172A;
 }
 
-.admin-shell .admin-content .container,
-.admin-shell .admin-content .container-fluid {
-    max-width: 100%;
-}
-
-/* Page blocks */
-.admin-shell .admin-content .content-wrapper {
-    background: transparent;
-    border-radius: var(--u-radius-md);
-}
-
-.admin-shell .admin-content .header h2,
-.admin-shell .admin-content h1,
-.admin-shell .admin-content h2,
-.admin-shell .admin-content h3,
-.admin-shell .admin-content h4,
-.admin-shell .admin-content h5,
-.admin-shell .admin-content h6 {
-    color: var(--u-text);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-}
-
-.admin-shell .admin-content .header p,
-.admin-shell .admin-content p.text-muted,
-.admin-shell .admin-content .text-muted,
-.admin-shell .admin-content small.text-muted {
-    color: var(--u-muted) !important;
-}
-
-/* Cards */
-.admin-shell .admin-content .card,
-.admin-shell .admin-content .panel,
-.admin-shell .admin-content .box {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98)) !important;
-    border: 1px solid var(--u-border) !important;
-    border-radius: var(--u-radius-md) !important;
-    box-shadow: var(--u-shadow);
-    color: var(--u-text) !important;
-}
-
-.admin-shell .admin-content .card .card-body {
-    background: transparent !important;
-}
-
-/* Forms */
-.admin-shell .admin-content .form-control,
-.admin-shell .admin-content .form-select,
-.admin-shell .admin-content textarea,
-.admin-shell .admin-content input[type="text"],
-.admin-shell .admin-content input[type="email"],
-.admin-shell .admin-content input[type="number"],
-.admin-shell .admin-content input[type="date"],
-.admin-shell .admin-content input[type="password"] {
-    min-height: 40px;
-    border-radius: 10px;
+/* Glassmorphic Light Cards */
+.admin-shell .glass-card,
+.admin-shell .card,
+.admin-shell .panel,
+.admin-shell .box,
+.admin-shell .kpi-card {
     background: #ffffff !important;
-    border: 1px solid rgba(148, 163, 184, 0.35) !important;
-    color: var(--u-text) !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
+    border-radius: 16px !important;
+    color: #0F172A !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.admin-shell .admin-content .form-control::placeholder,
-.admin-shell .admin-content textarea::placeholder {
-    color: #94a3b8;
+.admin-shell .glass-card-hover:hover,
+.admin-shell .card:hover,
+.admin-shell .quick-action:hover {
+    border-color: rgba(37, 99, 235, 0.35) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.12) !important;
 }
 
-.admin-shell .admin-content .form-control:focus,
-.admin-shell .admin-content .form-select:focus,
-.admin-shell .admin-content textarea:focus {
-    border-color: rgba(99, 163, 255, 0.55) !important;
-    box-shadow: 0 0 0 0.15rem rgba(31, 111, 235, 0.2) !important;
-    background: #ffffff !important;
+/* High-Contrast Headings & Subtext */
+.admin-shell h1, .admin-shell h2, .admin-shell h3, 
+.admin-shell h4, .admin-shell h5, .admin-shell h6 {
+    color: #0F172A !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
 }
 
-/* Buttons */
-.admin-shell .admin-content .btn {
-    border-radius: 10px;
-    font-weight: 700;
-}
-
-.admin-shell .admin-content .btn-primary {
-    background: var(--u-primary) !important;
-    border-color: #195bc2 !important;
-    color: #fff !important;
-}
-
-.admin-shell .admin-content .btn-primary:hover {
-    background: #1862d8 !important;
-    border-color: #1457bf !important;
-}
-
-.admin-shell .admin-content .btn-success {
-    background: var(--u-success) !important;
-    border-color: #19895d !important;
-}
-
-.admin-shell .admin-content .btn-danger {
-    background: var(--u-danger) !important;
-    border-color: #db3d3d !important;
-}
-
-.admin-shell .admin-content .btn-outline-primary,
-.admin-shell .admin-content .btn-outline-secondary,
-.admin-shell .admin-content .btn-outline-danger {
-    background: #ffffff !important;
-    color: var(--u-text) !important;
-    border-color: rgba(148, 163, 184, 0.35) !important;
-}
-
-.admin-shell .admin-content .btn-outline-primary:hover,
-.admin-shell .admin-content .btn-outline-secondary:hover,
-.admin-shell .admin-content .btn-outline-danger:hover {
-    background: rgba(37, 99, 235, 0.08) !important;
-    color: #0f172a !important;
-}
-
-/* Badges */
-.admin-shell .admin-content .badge {
-    border-radius: 8px;
-    font-weight: 700;
-    letter-spacing: 0.15px;
-    padding: 0.35rem 0.55rem;
-}
-
-.admin-shell .admin-content .badge.bg-success {
-    background: var(--u-success) !important;
-}
-
-.admin-shell .admin-content .badge.bg-warning {
-    background: var(--u-warning) !important;
-    color: #111 !important;
-}
-
-.admin-shell .admin-content .badge.bg-danger {
-    background: var(--u-danger) !important;
-}
-
-.admin-shell .admin-content .badge.bg-secondary {
-    background: #e2e8f0 !important;
+.admin-shell p, .admin-shell .text-slate-500, .admin-shell .text-muted {
     color: #334155 !important;
+    font-weight: 500 !important;
 }
+
+.admin-shell small, .admin-shell .small {
+    color: #475569 !important;
+}
+
+/* High-Contrast Text Utility Overrides */
+.admin-shell .text-slate-900 { color: #0F172A !important; }
+.admin-shell .text-slate-800 { color: #1E293B !important; }
+.admin-shell .text-slate-700 { color: #334155 !important; }
+.admin-shell .text-slate-600 { color: #475569 !important; }
+.admin-shell .text-slate-500 { color: #334155 !important; }
+.admin-shell .text-slate-400 { color: #475569 !important; }
+.admin-shell .text-blue-600 { color: #2563EB !important; }
+.admin-shell .text-blue-700 { color: #1D4ED8 !important; }
+.admin-shell .text-emerald-600 { color: #059669 !important; }
+.admin-shell .text-emerald-700 { color: #047857 !important; }
+.admin-shell .text-emerald-800 { color: #065F46 !important; }
+.admin-shell .text-indigo-600 { color: #4F46E5 !important; }
+.admin-shell .text-cyan-600 { color: #0891B2 !important; }
+.admin-shell .text-amber-600 { color: #D97706 !important; }
+
+/* Revenue Bar Chart Visual Component */
+.admin-shell .bar-chart {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    height: 220px !important;
+    padding: 24px 14px 34px 14px !important;
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 16px !important;
+    position: relative !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.admin-shell .bar-chart .bar {
+    flex: 1 !important;
+    min-height: 10px !important;
+    background: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%) !important;
+    border-radius: 6px 6px 0 0 !important;
+    position: relative !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+}
+
+.admin-shell .bar-chart .bar:hover {
+    background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35) !important;
+}
+
+.admin-shell .bar-chart .bar::after {
+    content: attr(data-m) !important;
+    position: absolute !important;
+    bottom: -26px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
+    white-space: nowrap !important;
+}
+
+.admin-shell .bar-chart .bar:hover::before {
+    content: attr(title) !important;
+    position: absolute !important;
+    top: -32px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #0F172A !important;
+    color: #ffffff !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+    z-index: 20 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+/* Badge Color Mappings */
+.admin-shell .bg-emerald-50 {
+    background-color: #ECFDF5 !important;
+    color: #047857 !important;
+    border: 1px solid #A7F3D0 !important;
+}
+
+.admin-shell .bg-blue-50 {
+    background-color: #EFF6FF !important;
+    color: #1D4ED8 !important;
+    border: 1px solid #BFDBFE !important;
+}
+
+.admin-shell .bg-indigo-50 {
+    background-color: #EEF2FF !important;
+    color: #4338CA !important;
+    border: 1px solid #C7D2FE !important;
+}
+
+.admin-shell .bg-cyan-50 {
+    background-color: #ECFEFF !important;
+    color: #0E7490 !important;
+    border: 1px solid #A5F3FC !important;
+}
+
+.admin-shell .bg-purple-50 {
+    background-color: #FAF5FF !important;
+    color: #7E22CE !important;
+    border: 1px solid #E9D5FF !important;
+}
+
+.admin-shell .bg-amber-50 {
+    background-color: #FFFBEB !important;
+    color: #B45309 !important;
+    border: 1px solid #FDE68A !important;
+}
+
+.admin-shell .bg-slate-50 {
+    background-color: #F8FAFC !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
+}
+
+.admin-shell .bg-slate-100 {
+    background-color: #F1F5F9 !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
+}
+
+/* Override Bootstrap .badge forced white text */
+.admin-shell .badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    padding: 4px 10px !important;
+    border-radius: 9999px !important;
+    font-size: 0.72rem !important;
+    color: inherit !important;
+}
+
+/* Border Radius Utilities */
+.admin-shell .rounded-xl { border-radius: 12px !important; }
+.admin-shell .rounded-2xl { border-radius: 16px !important; }
+.admin-shell .rounded-pill, 
+.admin-shell .rounded-full { border-radius: 9999px !important; }
 
 /* Tables */
-.admin-shell .admin-content .table-responsive {
-    border-radius: var(--u-radius-md);
-}
-
-.admin-shell .admin-content .table,
-.admin-shell .admin-content .custom-table,
-.admin-shell .admin-content .light-custom-table {
-    margin-bottom: 0;
-    color: var(--u-text) !important;
-}
-
-.admin-shell .admin-content .table thead th,
-.admin-shell .admin-content .custom-table thead th,
-.admin-shell .admin-content .light-custom-table thead th {
-    background: linear-gradient(180deg, #f8fafc, #eef2f7) !important;
-    color: #0f172a !important;
-    border-bottom: 1px solid var(--u-border) !important;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.admin-shell .admin-content .table td,
-.admin-shell .admin-content .table th,
-.admin-shell .admin-content .custom-table td,
-.admin-shell .admin-content .custom-table th,
-.admin-shell .admin-content .light-custom-table td,
-.admin-shell .admin-content .light-custom-table th {
-    border-color: rgba(148, 163, 184, 0.16) !important;
-    vertical-align: top;
-}
-
-.admin-shell .admin-content .table.table-hover tbody tr:hover td,
-.admin-shell .admin-content .custom-table tbody tr:hover td,
-.admin-shell .admin-content .light-custom-table tbody tr:hover td {
-    background: rgba(37, 99, 235, 0.04) !important;
-}
-
-/* Tabs / subnav buttons */
-.admin-shell .admin-content .btn-group .btn,
-.admin-shell .admin-content .nav .btn,
-.admin-shell .admin-content .admin-subnav .btn {
-    border-radius: 9px;
-}
-
-/* Modal */
-.admin-shell .admin-content .modal-content,
-.admin-shell .admin-content .modal-inner,
-.admin-shell .admin-content .modal_content {
-    background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
-    border: 1px solid rgba(148, 163, 184, 0.2) !important;
-    border-radius: 12px !important;
-    color: var(--u-text) !important;
-}
-
-.admin-shell .admin-content .modal-header,
-.admin-shell .admin-content .modal-footer {
-    border-color: rgba(148, 163, 184, 0.18) !important;
-}
-
-/* Pagination */
-.admin-shell .admin-content .pagination .page-link {
+.admin-shell .table,
+.admin-shell table,
+.admin-shell .custom-table,
+.admin-shell .table-lite {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    color: #0F172A !important;
     background: #ffffff !important;
+    margin-bottom: 0 !important;
+}
+
+.admin-shell .table thead th,
+.admin-shell table thead th,
+.admin-shell .custom-table thead th,
+.admin-shell .table-lite thead th {
+    background: #F8FAFC !important;
     color: #334155 !important;
-    border-color: rgba(148, 163, 184, 0.24) !important;
-    border-radius: 8px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    border-top: none !important;
+    padding: 14px 16px !important;
+    white-space: nowrap !important;
 }
 
-.admin-shell .admin-content .pagination .page-link:hover {
-    background: #eff6ff !important;
+.admin-shell .table tbody td,
+.admin-shell table tbody td,
+.admin-shell .custom-table tbody td,
+.admin-shell .table-lite tbody td {
+    padding: 14px 16px !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    color: #0F172A !important;
+    background: #ffffff !important;
+    vertical-align: middle !important;
+    font-size: 0.82rem !important;
 }
 
-.admin-shell .admin-content .pagination .page-item.active .page-link {
-    background: var(--u-primary) !important;
-    border-color: #195bc2 !important;
-    color: #fff !important;
+.admin-shell .table tbody tr:hover td,
+.admin-shell table tbody tr:hover td,
+.admin-shell .custom-table tbody tr:hover td {
+    background-color: #F8FAFC !important;
 }
 
-/* Settings page refinements */
-.admin-shell .admin-content .settings-clean-page .card-header {
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18) !important;
-    padding-top: 0.9rem;
-    padding-bottom: 0.9rem;
+/* Form Controls */
+.admin-shell .form-control,
+.admin-shell .form-select,
+.admin-shell textarea,
+.admin-shell input[type="text"],
+.admin-shell input[type="email"],
+.admin-shell input[type="password"],
+.admin-shell input[type="number"],
+.admin-shell input[type="date"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #0F172A !important;
+    border-radius: 12px !important;
+    padding: 8px 14px !important;
+    font-size: 0.82rem !important;
+    box-shadow: none !important;
 }
 
-.admin-shell .admin-content .settings-clean-page .form-label {
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.35rem;
+.admin-shell .form-control:focus,
+.admin-shell .form-select:focus,
+.admin-shell textarea:focus {
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
 }
 
-.admin-shell .admin-content .settings-clean-page .form-check-label {
-    font-weight: 700;
-    color: #1e293b;
+/* Primary Button White Text Exception */
+.admin-shell .btn-primary,
+.admin-shell .btn-primary *,
+.admin-shell .brand-badge,
+.admin-shell .avatar-dot,
+.admin-shell .bg-primary,
+.admin-shell .bg-blue-600 {
+    color: #ffffff !important;
 }
 
-.admin-shell .admin-content .settings-clean-page .form-check small,
-.admin-shell .admin-content .settings-clean-page small.text-muted {
-    font-size: 0.8rem;
+/* Animations */
+@keyframes ping {
+    75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+.admin-shell .animate-ping {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #2563EB;
 }

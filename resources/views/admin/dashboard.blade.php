@@ -1,529 +1,397 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard')
-
-@push('styles')
-<style>
-    .admin-dash {
-        color: #162033;
-    }
-
-    .admin-dash .page-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .admin-dash .page-title h1 {
-        margin: 0;
-        font-size: 1.35rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: #162033;
-    }
-
-    .admin-dash .page-title p {
-        margin: .35rem 0 0;
-        color: #64748b;
-        font-size: .9rem;
-    }
-
-    .admin-dash .chip {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, .28);
-        color: #1d4ed8;
-        text-decoration: none;
-        font-size: .78rem;
-        font-weight: 700;
-        padding: .32rem .7rem;
-        background: #eff6ff;
-    }
-
-    .admin-dash .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: .9rem;
-    }
-
-    .admin-dash .kpi-card,
-    .admin-dash .panel,
-    .admin-dash .quick-action {
-        background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 250, 252, .98));
-        border: 1px solid rgba(148, 163, 184, .18);
-        border-radius: 16px;
-        box-shadow: 0 16px 32px rgba(15, 23, 42, .08);
-    }
-
-    .admin-dash .kpi-card {
-        padding: 1rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .admin-dash .kpi-card .label {
-        color: #64748b;
-        font-size: .8rem;
-        font-weight: 600;
-    }
-
-    .admin-dash .kpi-card .value {
-        margin-top: .25rem;
-        font-size: 1.6rem;
-        font-weight: 800;
-        letter-spacing: -.02em;
-        color: #162033;
-    }
-
-    .admin-dash .kpi-icon {
-        position: absolute;
-        right: .9rem;
-        top: .9rem;
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: #eff6ff;
-        color: #1d4ed8;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .admin-dash .trend {
-        margin-top: .45rem;
-        font-size: .76rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: .2rem;
-        padding: .2rem .44rem;
-        border-radius: 999px;
-    }
-
-    .admin-dash .trend.up {
-        background: rgba(34, 197, 94, .2);
-        color: #86efac;
-    }
-
-    .admin-dash .trend.down {
-        background: rgba(244, 63, 94, .2);
-        color: #fda4af;
-    }
-
-    .admin-dash .trend.neutral {
-        background: #e2e8f0;
-        color: #475569;
-    }
-
-    .admin-dash .layout-grid {
-        display: grid;
-        grid-template-columns: 1.7fr 1fr;
-        gap: .9rem;
-        margin-top: .9rem;
-    }
-
-    .admin-dash .panel {
-        padding: 1rem;
-    }
-
-    .admin-dash .panel-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: .8rem;
-        gap: .6rem;
-    }
-
-    .admin-dash .panel-head h2 {
-        margin: 0;
-        font-size: 1rem;
-        font-weight: 700;
-        color: #162033;
-    }
-
-    .admin-dash .bar-chart {
-        display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        gap: .42rem;
-        align-items: end;
-        height: 190px;
-        border-top: 1px dashed rgba(148, 163, 184, .34);
-        border-bottom: 1px dashed rgba(148, 163, 184, .34);
-        padding: .8rem .2rem;
-    }
-
-    .admin-dash .bar {
-        background: linear-gradient(180deg, #60a5fa, #2563eb);
-        border-radius: 8px 8px 4px 4px;
-        position: relative;
-    }
-
-    .admin-dash .bar::after {
-        content: attr(data-m);
-        position: absolute;
-        bottom: -1.05rem;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: .63rem;
-        color: #64748b;
-        font-weight: 700;
-    }
-
-    .admin-dash .target-wrap {
-        display: grid;
-        gap: .7rem;
-    }
-
-    .admin-dash .target-track {
-        width: 100%;
-        height: 12px;
-        border-radius: 999px;
-        background: #e2e8f0;
-        overflow: hidden;
-    }
-
-    .admin-dash .target-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #60a5fa, #2563eb);
-    }
-
-    .admin-dash .target-num {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #162033;
-        letter-spacing: -.02em;
-    }
-
-    .admin-dash .gauge-meta {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: .55rem;
-        margin-top: .2rem;
-    }
-
-    .admin-dash .gauge-meta div {
-        text-align: center;
-        background: #f8fafc;
-        border: 1px solid rgba(148, 163, 184, .18);
-        border-radius: 10px;
-        padding: .46rem .32rem;
-    }
-
-    .admin-dash .gauge-meta .k {
-        color: #64748b;
-        font-size: .69rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .admin-dash .gauge-meta .v {
-        font-size: .9rem;
-        font-weight: 800;
-        color: #162033;
-        margin-top: .1rem;
-    }
-
-    .admin-dash .quick-actions {
-        margin-top: .9rem;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: .8rem;
-    }
-
-    .admin-dash .quick-action {
-        text-decoration: none;
-        color: #162033;
-        padding: .82rem;
-        transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    }
-
-    .admin-dash .quick-action:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 34px rgba(15, 23, 42, .12);
-        border-color: rgba(96, 165, 250, .32);
-    }
-
-    .admin-dash .quick-action .title {
-        font-weight: 800;
-        font-size: .88rem;
-        margin-bottom: .2rem;
-        color: #162033;
-    }
-
-    .admin-dash .quick-action .desc {
-        color: #64748b;
-        font-size: .8rem;
-    }
-
-    .admin-dash .table-lite {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .admin-dash .table-lite th,
-    .admin-dash .table-lite td {
-        padding: .52rem .2rem;
-        border-bottom: 1px solid rgba(148, 163, 184, .16);
-        font-size: .82rem;
-        color: #334155;
-    }
-
-    .admin-dash .table-lite th {
-        color: #64748b;
-        font-size: .72rem;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        font-weight: 800;
-    }
-
-    .admin-dash .status-pill {
-        padding: .16rem .46rem;
-        border-radius: 999px;
-        font-size: .68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .admin-dash .status-ok {
-        background: rgba(34, 197, 94, .2);
-        color: #86efac;
-    }
-
-    .admin-dash .status-pending {
-        background: rgba(250, 204, 21, .2);
-        color: #fde68a;
-    }
-
-    .admin-dash .audit-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    .admin-dash .audit-list li {
-        padding: .5rem 0;
-        border-bottom: 1px solid rgba(148, 163, 184, .16);
-        color: #334155;
-        font-size: .8rem;
-    }
-
-    .admin-dash .small-note {
-        color: #64748b;
-        font-size: .78rem;
-    }
-
-    @media (max-width: 1200px) {
-        .admin-dash .kpi-grid,
-        .admin-dash .quick-actions {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .admin-dash .layout-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 720px) {
-        .admin-dash .kpi-grid,
-        .admin-dash .quick-actions {
-            grid-template-columns: 1fr;
-        }
-
-        .admin-dash .page-title {
-            flex-direction: column;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Dashboard Admin')
 
 @section('content')
-@php
-    $dashboardMetrics = $dashboardMetrics ?? [];
-    $bars = $dashboardMetrics['chart_bars'] ?? collect();
-    $monthLabels = $dashboardMetrics['month_labels'] ?? ['current' => now()->translatedFormat('F Y'), 'previous' => now()->subMonthNoOverflow()->translatedFormat('F Y')];
-    $monthOrders = $dashboardMetrics['month_orders'] ?? ['current' => 0, 'previous' => 0];
-    $monthRevenue = $dashboardMetrics['month_revenue'] ?? ['current' => 0, 'previous' => 0];
-    $target = $dashboardMetrics['target'] ?? ['value' => 1, 'percent' => 0];
-    $kpiDeltas = $dashboardMetrics['kpi_deltas'] ?? ['users' => 0, 'orders' => 0, 'lessons' => 0];
+    @push('styles')
+        <style>
+            .dash-wrapper {
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                color: #0F172A;
+                background-color: #F8FAFC;
+            }
+            
+            .dash-kpi-card {
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+                border-radius: 14px !important;
+                padding: 1.25rem !important;
+                position: relative !important;
+                overflow: hidden !important;
+                transition: all 0.2s ease !important;
+            }
 
-    $deltaLabel = function ($value) {
-        $prefix = $value > 0 ? '+' : '';
-        return $prefix . number_format((float) $value, 1, ',', '.') . '%';
-    };
+            .dash-kpi-card:hover {
+                border-color: #CBD5E1 !important;
+                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08) !important;
+                transform: translateY(-2px) !important;
+            }
 
-    $trendClass = function ($value) {
-        if ($value > 0) {
-            return 'up';
-        }
-        if ($value < 0) {
-            return 'down';
-        }
-        return 'neutral';
-    };
+            .dash-kpi-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                flex-shrink: 0;
+            }
 
-    $targetPercent = (float) ($target['percent'] ?? 0);
-@endphp
-<div class="admin-dash">
-    <div class="page-title">
-        <div>
-            <h1>Dashboard {{ $isSuperadmin ? 'Super Admin' : 'Admin' }}</h1>
-            <p>The dashboard theme is aligned with the landing page, and the metrics below pull live system data.</p>
+            .dash-chart-container {
+                display: flex !important;
+                align-items: flex-end !important;
+                justify-content: space-between !important;
+                gap: 12px !important;
+                height: 230px !important;
+                padding: 24px 16px 36px 16px !important;
+                background: #F8FAFC !important;
+                border: 1px solid #E2E8F0 !important;
+                border-radius: 12px !important;
+                position: relative !important;
+                margin-top: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .dash-chart-bar {
+                flex: 1 !important;
+                min-height: 8px !important;
+                background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
+                border-radius: 6px 6px 0 0 !important;
+                position: relative !important;
+                transition: all 0.2s ease !important;
+                cursor: pointer !important;
+            }
+
+            .dash-chart-bar:hover {
+                background: linear-gradient(180deg, #3B82F6 0%, #1E40AF 100%) !important;
+                transform: translateY(-3px) !important;
+                box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3) !important;
+            }
+
+            .dash-chart-bar::after {
+                content: attr(data-m) !important;
+                position: absolute !important;
+                bottom: -28px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+                color: #64748B !important;
+                white-space: nowrap !important;
+            }
+
+            .dash-chart-bar:hover::before {
+                content: attr(title) !important;
+                position: absolute !important;
+                top: -34px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                background: #0F172A !important;
+                color: #FFFFFF !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+                padding: 4px 10px !important;
+                border-radius: 6px !important;
+                white-space: nowrap !important;
+                z-index: 20 !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            }
+
+            .badge-live-pulse {
+                background-color: #ECFDF5 !important;
+                color: #047857 !important;
+                border: 1px solid #A7F3D0 !important;
+                border-radius: 9999px;
+                padding: 4px 10px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+        </style>
+    @endpush
+
+    @php
+        $dashboardMetrics = $dashboardMetrics ?? [];
+        $bars = $dashboardMetrics['chart_bars'] ?? collect();
+        $monthLabels = $dashboardMetrics['month_labels'] ?? ['current' => now()->translatedFormat('F Y'), 'previous' => now()->subMonthNoOverflow()->translatedFormat('F Y')];
+        $monthOrders = $dashboardMetrics['month_orders'] ?? ['current' => 0, 'previous' => 0];
+        $monthRevenue = $dashboardMetrics['month_revenue'] ?? ['current' => 0, 'previous' => 0];
+        $target = $dashboardMetrics['target'] ?? ['value' => 1, 'percent' => 0];
+        $kpiDeltas = $dashboardMetrics['kpi_deltas'] ?? ['users' => 0, 'orders' => 0, 'lessons' => 0];
+
+        $deltaLabel = function ($value) {
+            $prefix = $value > 0 ? '+' : '';
+            return $prefix . number_format((float) $value, 1, ',', '.') . '%';
+        };
+
+        $targetPercent = (float) ($target['percent'] ?? 0);
+        $pendingBookings = (int) ($stats['pending_bookings'] ?? 0);
+    @endphp
+
+    <div class="dash-wrapper min-h-screen p-3 md:p-6">
+        <div class="max-w-7xl mx-auto space-y-6">
+            
+            <!-- Page Header Title Section -->
+            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+                <div>
+                    <div class="d-flex align-items-center gap-3 mb-1">
+                        <h1 class="h4 fw-bold text-slate-900 tracking-tight mb-0" style="color: #0F172A; font-weight: 800; font-size: 1.5rem;">
+                            Dashboard {{ $isSuperadmin ? 'Super Admin' : 'Admin' }}
+                        </h1>
+                        <span class="badge-live-pulse">
+                            <span class="position-relative d-inline-flex" style="width: 6px; height: 6px;">
+                                <span class="position-absolute w-100 h-100 rounded-circle bg-emerald-400 opacity-75 animate-ping"></span>
+                                <span class="position-relative w-100 h-100 rounded-circle bg-emerald-500"></span>
+                            </span>
+                            <span>Live Sync</span>
+                        </span>
+                    </div>
+                    <p class="text-slate-500 mb-0" style="color: #64748B; font-size: 0.875rem;">
+                        Ringkasan statistik realtime, pendapatan bulanan, dan aktivitas Guitarclassbynde.
+                    </p>
+                </div>
+                <div>
+                    <span class="badge bg-white border border-slate-200 text-slate-700 font-mono shadow-xs px-3 py-2 rounded-lg d-inline-flex align-items-center gap-2" style="font-size: 0.8rem; background: #FFFFFF !important; color: #334155 !important; border: 1px solid #CBD5E1 !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span>{{ now()->translatedFormat('F Y') }}</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Top Metric Cards Grid (4 Columns) -->
+            <div class="row g-4 mb-4">
+                
+                <!-- Card 1: Total Users -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="dash-kpi-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="fw-semibold mb-1" style="font-size: 0.78rem; color: #64748B;">Total Users</p>
+                                <h3 class="h2 fw-extrabold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">{{ number_format((int) $stats['users']) }}</h3>
+                            </div>
+                            <div class="dash-kpi-icon" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #2563EB;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">
+                                {{ $deltaLabel($kpiDeltas['users']) }} vs bulan lalu
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Orders This Month -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="dash-kpi-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="fw-semibold mb-1" style="font-size: 0.78rem; color: #64748B;">Orders Bulan Ini</p>
+                                <h3 class="h2 fw-extrabold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">{{ number_format((int) $monthOrders['current']) }}</h3>
+                            </div>
+                            <div class="dash-kpi-icon" style="background: #ECFEFF; border: 1px solid #A5F3FC; color: #0891B2;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">
+                                {{ $deltaLabel($kpiDeltas['orders']) }} vs bulan lalu
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Total Lessons -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="dash-kpi-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="fw-semibold mb-1" style="font-size: 0.78rem; color: #64748B;">Total Lessons</p>
+                                <h3 class="h2 fw-extrabold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">{{ number_format((int) $stats['lessons']) }}</h3>
+                            </div>
+                            <div class="dash-kpi-icon" style="background: #EEF2FF; border: 1px solid #C7D2FE; color: #4F46E5;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;">
+                                Modul Pembelajaran Aktif
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Pending Coaching Bookings -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="dash-kpi-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="fw-semibold mb-1" style="font-size: 0.78rem; color: #64748B;">Coaching Pending</p>
+                                <h3 class="h2 fw-extrabold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">{{ number_format($pendingBookings) }}</h3>
+                            </div>
+                            <div class="dash-kpi-icon" style="background: #FFFBEB; border: 1px solid #FDE68A; color: #D97706;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            @if($pendingBookings > 0)
+                                <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;">
+                                    Membutuhkan Konfirmasi
+                                </span>
+                            @else
+                                <span class="badge px-2.5 py-1 rounded-pill font-semibold" style="font-size: 0.72rem; background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0;">
+                                    Semua Terkonfirmasi
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Revenue & Target Progress Row -->
+            <div class="row g-4 mb-4">
+                
+                <!-- Monthly Revenue Chart Card (2 Columns Wide) -->
+                <div class="col-12 col-lg-8">
+                    <div class="dash-kpi-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h3 class="h5 fw-bold mb-1 tracking-tight" style="color: #0F172A; font-weight: 800;">Monthly Revenue {{ now()->year }}</h3>
+                                    <p class="small mb-0" style="color: #64748B; font-size: 0.85rem;">Grafik tren pendapatan dari transaksi lisensi kelas & booking coaching.</p>
+                                </div>
+                                <span class="badge px-3 py-1.5 rounded-lg font-semibold" style="background: #EFF6FF !important; color: #1D4ED8 !important; border: 1px solid #BFDBFE !important; font-size: 0.75rem;">
+                                    {{ $monthLabels['current'] }}
+                                </span>
+                            </div>
+
+                            <!-- Visual Revenue Bar Chart Container -->
+                            <div class="dash-chart-container">
+                                @foreach($bars as $bar)
+                                    <div class="dash-chart-bar" data-m="{{ $bar['label'] }}" style="height: {{ max(10, (int) $bar['height']) }}%" title="Rp {{ number_format((int) $bar['value'], 0, ',', '.') }}"></div>
+                                @endforeach
+                            </div>
+                        </div>
+                        
+                        <p class="small fst-italic mt-3 pt-2 border-top border-slate-200 d-flex align-items-center gap-1.5 mb-0" style="font-size: 0.78rem; color: #64748B;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <span>Dihitung berdasarkan transaksi sukses (settlement / capture / paid).</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Monthly Target Progress Card (1 Column Wide) -->
+                <div class="col-12 col-lg-4">
+                    <div class="dash-kpi-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h3 class="h5 fw-bold mb-0 tracking-tight" style="color: #0F172A; font-weight: 800;">Pencapaian Target</h3>
+                                <span class="badge px-2.5 py-1 rounded-lg font-semibold" style="background: #EFF6FF !important; color: #1D4ED8 !important; border: 1px solid #BFDBFE !important; font-size: 0.75rem;">
+                                    {{ number_format($targetPercent, 1, ',', '.') }}%
+                                </span>
+                            </div>
+
+                            <div class="my-4">
+                                <div class="h1 fw-extrabold mb-2 tracking-tight" style="color: #0F172A; font-size: 2.2rem; font-weight: 800;">{{ number_format($targetPercent, 1, ',', '.') }}%</div>
+                                <div class="w-100 rounded-pill p-0.5" style="height: 12px; overflow: hidden; background: #F1F5F9; border: 1px solid #CBD5E1;">
+                                    <div class="rounded-pill h-100" style="width: {{ max(0, min(100, $targetPercent)) }}%; background: linear-gradient(90deg, #2563eb, #4f46e5, #0891b2);"></div>
+                                </div>
+                            </div>
+
+                            <p class="small leading-relaxed mb-4" style="font-size: 0.78rem; color: #64748B;">
+                                Target dihitung berdasarkan perbandingan omzet bulan ini vs bulan sebelumnya.
+                            </p>
+
+                            <!-- Breakdown Numbers Grid -->
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 rounded-xl" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+                                        <span class="d-block fw-bold uppercase tracking-wider" style="font-size: 0.65rem; color: #64748B;">TARGET</span>
+                                        <span class="d-block fw-extrabold small mt-1" style="color: #0F172A; font-weight: 700;">Rp {{ number_format((int) $target['value'], 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded-xl" style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px;">
+                                        <span class="d-block fw-bold uppercase tracking-wider" style="font-size: 0.65rem; color: #047857;">OMZET</span>
+                                        <span class="d-block fw-extrabold small mt-1" style="color: #065F46; font-weight: 700;">Rp {{ number_format((int) $monthRevenue['current'], 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded-xl" style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px;">
+                                        <span class="d-block fw-bold uppercase tracking-wider" style="font-size: 0.65rem; color: #B45309;">PENDING</span>
+                                        <span class="d-block fw-extrabold small mt-1" style="color: #D97706; font-weight: 700;">{{ number_format($pendingBookings) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{{ route('admin.transactions.index') }}" class="btn w-100 mt-4 py-2 rounded-lg text-xs font-semibold d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; border-radius: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <span>Lihat Riwayat Transaksi</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quick Action Shortcut Cards (3 Columns) -->
+            <div class="row g-4">
+                
+                <div class="col-12 col-md-4">
+                    <a class="dash-kpi-card text-decoration-none d-block h-100" href="{{ route('admin.lessons.create') }}">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="dash-kpi-icon" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #2563EB;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                            </div>
+                            <h4 class="h6 font-bold mb-0" style="color: #0F172A; font-weight: 700;">Tambah Lesson Baru</h4>
+                        </div>
+                        <p class="small mb-3" style="color: #64748B; font-size: 0.82rem;">Buat modul pembelajaran, unggah materi lagu, atau video kelas baru.</p>
+                        <div class="d-flex align-items-center font-semibold text-xs gap-1.5" style="color: #2563EB;">
+                            <span>Buka Form Tambah</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <a class="dash-kpi-card text-decoration-none d-block h-100" href="{{ url('/admin/coaching/bookings') }}">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="dash-kpi-icon" style="background: #EEF2FF; border: 1px solid #C7D2FE; color: #4F46E5;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </div>
+                            <h4 class="h6 font-bold mb-0" style="color: #0F172A; font-weight: 700;">Kelola Booking Coaching</h4>
+                        </div>
+                        <p class="small mb-3" style="color: #64748B; font-size: 0.82rem;">Pantau sesi 1-on-1 live coaching murid, konfirmasi jadwal & link video call.</p>
+                        <div class="d-flex align-items-center font-semibold text-xs gap-1.5" style="color: #4F46E5;">
+                            <span>Lihat Sesi Coaching</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <a class="dash-kpi-card text-decoration-none d-block h-100" href="{{ route('admin.users.packages') }}">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="dash-kpi-icon" style="background: #ECFEFF; border: 1px solid #A5F3FC; color: #0891B2;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                            </div>
+                            <h4 class="h6 font-bold mb-0" style="color: #0F172A; font-weight: 700;">Paket & Tiket Murid</h4>
+                        </div>
+                        <p class="small mb-3" style="color: #64748B; font-size: 0.82rem;">Lihat akses paket murid, sisa tiket coaching yang tersedia, dan kuota.</p>
+                        <div class="d-flex align-items-center font-semibold text-xs gap-1.5" style="color: #0891B2;">
+                            <span>Kelola Tiket User</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+
         </div>
     </div>
-
-    <section class="kpi-grid">
-        <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-users-three"></i></span>
-            <div class="label">Total Users</div>
-            <div class="value">{{ number_format((int) $stats['users']) }}</div>
-            <div class="trend {{ $trendClass($kpiDeltas['users']) }}">
-                <i class="ph {{ $kpiDeltas['users'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
-                {{ $deltaLabel($kpiDeltas['users']) }} vs last month
-            </div>
-        </article>
-        <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-shopping-cart"></i></span>
-            <div class="label">Orders This Month</div>
-            <div class="value">{{ number_format((int) $monthOrders['current']) }}</div>
-            <div class="trend {{ $trendClass($kpiDeltas['orders']) }}">
-                <i class="ph {{ $kpiDeltas['orders'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
-                {{ $deltaLabel($kpiDeltas['orders']) }} vs last month
-            </div>
-        </article>
-        <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-book-open-text"></i></span>
-            <div class="label">Total Lessons</div>
-            <div class="value">{{ number_format((int) $stats['lessons']) }}</div>
-            <div class="trend {{ $trendClass($kpiDeltas['lessons']) }}">
-                <i class="ph {{ $kpiDeltas['lessons'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
-                {{ $deltaLabel($kpiDeltas['lessons']) }} new lessons
-            </div>
-        </article>
-    </section>
-
-    <section class="layout-grid">
-        <article class="panel">
-            <div class="panel-head">
-                <h2>Monthly Revenue {{ now()->year }}</h2>
-                <span class="chip">{{ $monthLabels['current'] }}</span>
-            </div>
-            <div class="bar-chart">
-                @foreach($bars as $bar)
-                    <div class="bar" data-m="{{ $bar['label'] }}" style="height: {{ $bar['height'] }}%" title="Rp {{ number_format((int) $bar['value'], 0, ',', '.') }}"></div>
-                @endforeach
-            </div>
-            <p class="small-note mt-4 mb-0">Chart based on successful transactions (settlement/capture/success/paid/settled).</p>
-        </article>
-
-        <article class="panel">
-            <div class="panel-head">
-                <h2>Monthly Target Progress</h2>
-                <span class="chip">{{ number_format($targetPercent, 2, ',', '.') }}%</span>
-            </div>
-            <div class="target-wrap">
-                <div class="target-num">{{ number_format($targetPercent, 2, ',', '.') }}%</div>
-                <div class="target-track">
-                    <div class="target-fill" style="width: {{ max(0, min(100, $targetPercent)) }}%"></div>
-                </div>
-                <div class="small-note">The target is based on the previous month's revenue to make current-month tracking easier.</div>
-            </div>
-            <div class="gauge-meta">
-                <div>
-                    <div class="k">Target</div>
-                    <div class="v">Rp {{ number_format((int) $target['value'], 0, ',', '.') }}</div>
-                </div>
-                <div>
-                    <div class="k">Revenue</div>
-                    <div class="v">Rp {{ number_format((int) $monthRevenue['current'], 0, ',', '.') }}</div>
-                </div>
-                <div>
-                    <div class="k">Pending</div>
-                    <div class="v">{{ number_format((int) $stats['pending_bookings']) }}</div>
-                </div>
-            </div>
-        </article>
-    </section>
-
-    <section class="quick-actions">
-        <a class="quick-action" href="{{ route('admin.lessons.create') }}">
-            <div class="title">Add New Lesson</div>
-            <div class="desc">Create modules and lesson content directly from the admin panel.</div>
-        </a>
-        <a class="quick-action" href="{{ url('/admin/coaching/bookings') }}">
-            <div class="title">Manage Coaching Bookings</div>
-            <div class="desc">Monitor coaching requests and respond faster.</div>
-        </a>
-        <a class="quick-action" href="{{ route('admin.users.packages') }}">
-            <div class="title">Manage User Packages</div>
-            <div class="desc">Control user class access from one place.</div>
-        </a>
-    </section>
-
-    <section class="layout-grid mt-1">
-        <article class="panel">
-            <div class="panel-head">
-                <h2>Recent Transactions</h2>
-                @if($isSuperadmin)
-                    <a class="chip" href="{{ route('admin.transactions.index') }}">See all</a>
-                @endif
-            </div>
-            <div class="table-responsive">
-                <table class="table-lite">
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>User</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentTransactions as $txn)
-                            @php
-                                $status = strtolower((string) $txn->status);
-                                $ok = in_array($status, ['settlement', 'capture', 'success', 'paid', 'settled']);
-                            @endphp
-                            <tr>
-                                <td>{{ $txn->order_id }}</td>
-                                <td>{{ optional($txn->user)->name ?? 'Guest' }}</td>
-                                <td>Rp {{ number_format((int) $txn->amount, 0, ',', '.') }}</td>
-                                <td><span class="status-pill {{ $ok ? 'status-ok' : 'status-pending' }}">{{ $txn->status }}</span></td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="small-note">No recent transactions yet.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </article>
-
-        <article class="panel">
-            <div class="panel-head">
-                <h2>{{ $isSuperadmin ? 'Audit Activity' : 'Operational Summary' }}</h2>
-            </div>
-            @if($isSuperadmin)
-                <ul class="audit-list">
-                    @forelse($recentAudits as $audit)
-                        <li>
-                            <strong>{{ $audit->action ?? 'activity' }}</strong><br>
-                            {{ $audit->user_name ?? ('User #' . ($audit->user_id ?? '-')) }}
-                            <div class="small-note">{{ optional($audit->created_at)->format('d M Y H:i') }}</div>
-                        </li>
-                    @empty
-                        <li class="small-note">No recent audit data yet.</li>
-                    @endforelse
-                </ul>
-            @else
-                <ul class="audit-list">
-                    <li><strong>Total Topics</strong><div class="small-note">{{ number_format((int) $stats['topics']) }} active topics across all lessons.</div></li>
-                    <li><strong>Total Packages</strong><div class="small-note">{{ number_format((int) $stats['packages']) }} packages available for sale.</div></li>
-                    <li><strong>Today's Revenue</strong><div class="small-note">Rp {{ number_format((int) $stats['today_revenue'], 0, ',', '.') }} from {{ number_format((int) $stats['today_transactions']) }} transactions.</div></li>
-                </ul>
-            @endif
-        </article>
-    </section>
-</div>
 @endsection
