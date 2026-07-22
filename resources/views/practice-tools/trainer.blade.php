@@ -372,14 +372,15 @@ function trainerQuizApp() {
                 this.score += 10 + (this.streak * 2);
                 this.streak++;
                 this.correctAttempts++;
-                this.feedbackMsg = `CORRECT! Nada ${this.correctNoteName} (+10 Poin)`;
+                this.feedbackMsg = `CORRECT! Note ${this.correctNoteName} (+10 Points)`;
                 this.playChime(true);
             } else {
                 this.isCorrect = false;
                 this.streak = 0;
-                this.feedbackMsg = `SALAH! Jawabannya adalah ${this.correctNoteName}`;
+                this.feedbackMsg = `INCORRECT! The correct note is ${this.correctNoteName}`;
                 this.playChime(false);
             }
+
 
             setTimeout(() => {
                 this.feedbackMsg = '';
