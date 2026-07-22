@@ -283,9 +283,6 @@
                                         <!-- Note Dot (Root vs Scale Note) -->
                                         <template x-if="isNoteInScale(sIdx, fIdx)">
                                             <div :class="isRootNote(sIdx, fIdx) ? 'root-note-dot' : 'scale-note-dot'"
-                                                 @click.stop="playSingleFretNote(sIdx, fIdx)"
-                                                 class="cursor-pointer hover:scale-125 transition-transform"
-                                                 title="Click to play note"
                                                  x-text="getNoteNameAt(sIdx, fIdx)"></div>
                                         </template>
                                     </div>
@@ -299,7 +296,6 @@
             
             <div class="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-white/5">
                 <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block border border-white"></span> Amber Gold = Root Note</span>
-                <span class="flex items-center gap-2"><i class="fa-solid fa-guitar text-cyan-400"></i> Click any note on fretboard to listen</span>
                 <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-cyan-500 inline-block border border-white"></span> Cyan Blue = Scale Notes</span>
             </div>
 
@@ -357,18 +353,6 @@ function scaleLibrary() {
             return noteName === this.selectedRoot;
         },
 
-        playSingleFretNote(sIdx, fIdx) {
-            if (!this.audioCtx) {
-                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (this.audioCtx.state === 'suspended') {
-                this.audioCtx.resume();
-            }
-            let baseFreq = this.baseFrequencies[sIdx];
-            let noteFreq = baseFreq * Math.pow(2, fIdx / 12);
-            this.playElectricGuitarNote(noteFreq);
-        },
-
         playScaleAudio() {
             if (!this.audioCtx) {
                 this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -389,7 +373,7 @@ function scaleLibrary() {
                 }
             }
 
-            // Play ascending frequencies
+            // Play first 8 unique ascending frequencies
             let delay = 0;
             let playedCount = 0;
             let lastFreq = 0;
@@ -397,131 +381,31 @@ function scaleLibrary() {
                 if (freq > lastFreq + 5 && playedCount < 12) {
                     lastFreq = freq;
                     setTimeout(() => {
-                        this.playElectricGuitarNote(freq);
-                    }, delay * 170);
+                        this.playNoteTone(freq);
+                    }, delay * 160);
                     delay++;
                     playedCount++;
                 }
             }
         },
 
-        // John Mayer Signature Stratocaster Tone Synthesizer
-        // (Physical Pick Attack + Strat Neck/Mid Pickups + Klon Centaur/TS10 Drive + Two-Rock Tube Amp EQ)
-        playElectricGuitarNote(freq) {
-            if (!this.audioCtx) return;
-            const now = this.audioCtx.currentTime;
-
-            // 1. Physical Pick Attack Impulse (Noise Snap)
-            const pickBuffer = this.audioCtx.createBuffer(1, Math.floor(this.audioCtx.sampleRate * 0.008), this.audioCtx.sampleRate);
-            const pickData = pickBuffer.getChannelData(0);
-            for (let i = 0; i < pickData.length; i++) {
-                pickData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (pickData.length * 0.25));
-            }
-            const pickSource = this.audioCtx.createBufferSource();
-            pickSource.buffer = pickBuffer;
-
-            const pickFilter = this.audioCtx.createBiquadFilter();
-            pickFilter.type = 'bandpass';
-            pickFilter.frequency.setValueAtTime(2400, now);
-            pickFilter.Q.setValueAtTime(2.5, now);
-
-            const pickGain = this.audioCtx.createGain();
-            pickGain.gain.setValueAtTime(0.35, now);
-            pickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
-
-            pickSource.connect(pickFilter);
-            pickFilter.connect(pickGain);
-
-            // 2. Stratocaster Dual Pickups (Neck Warmth + Middle Bell Chime)
-            const neckOsc = this.audioCtx.createOscillator();
-            const midOsc = this.audioCtx.createOscillator();
-            const chimeOsc = this.audioCtx.createOscillator();
-
-            neckOsc.type = 'triangle';
-            neckOsc.frequency.setValueAtTime(freq, now);
-
-            midOsc.type = 'sawtooth';
-            midOsc.frequency.setValueAtTime(freq * 1.0012, now); // Micro detune for 3D string bloom
-
-            chimeOsc.type = 'sine';
-            chimeOsc.frequency.setValueAtTime(freq * 2.0, now); // 2nd harmonic bell chime
-
-            // 3. Guitar String Gain & Envelope (Pluck -> Bloom -> Warm Sustain Decay)
-            const stringGain = this.audioCtx.createGain();
-            stringGain.gain.setValueAtTime(0.0001, now);
-            stringGain.gain.exponentialRampToValueAtTime(0.45, now + 0.004); // Instant pick attack
-            stringGain.gain.exponentialRampToValueAtTime(0.22, now + 0.14);  // Initial pluck decay
-            stringGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8); // Natural string ring-out
-
-            // 4. Klon Centaur / TS10 Soft Transparent Overdrive (Warm Tube Breakup)
-            const overdrive = this.audioCtx.createWaveShaper();
-            overdrive.curve = this.makeJohnMayerDriveCurve(14);
-            overdrive.oversample = '4x';
-
-            // 5. Two-Rock / Dumble Amp EQ Voicing (John Mayer Mid-Scoop + 160Hz Bass Thump + 2.8kHz Glass Chime)
-            const bassFilter = this.audioCtx.createBiquadFilter();
-            bassFilter.type = 'lowshelf';
-            bassFilter.frequency.setValueAtTime(160, now);
-            bassFilter.gain.setValueAtTime(3.5, now);
-
-            const midScoop = this.audioCtx.createBiquadFilter();
-            midScoop.type = 'peaking';
-            midScoop.frequency.setValueAtTime(520, now);
-            midScoop.gain.setValueAtTime(-2.5, now); // Signature Strat mid-scoop
-            midScoop.Q.setValueAtTime(1.2, now);
-
-            const glassChime = this.audioCtx.createBiquadFilter();
-            glassChime.type = 'peaking';
-            glassChime.frequency.setValueAtTime(2800, now); // Glassy Stratocaster top-end chime
-            glassChime.gain.setValueAtTime(4.5, now);
-            glassChime.Q.setValueAtTime(1.5, now);
-
-            const cabFilter = this.audioCtx.createBiquadFilter();
-            cabFilter.type = 'lowpass';
-            cabFilter.frequency.setValueAtTime(4200, now); // Cabinet air cutoff
-
-            // Connections
-            neckOsc.connect(stringGain);
-            midOsc.connect(stringGain);
-            chimeOsc.connect(stringGain);
-
-            stringGain.connect(overdrive);
-            pickGain.connect(overdrive); // Mix physical pick attack into overdrive stage
-
-            overdrive.connect(bassFilter);
-            bassFilter.connect(midScoop);
-            midScoop.connect(glassChime);
-            glassChime.connect(cabFilter);
-            cabFilter.connect(this.audioCtx.destination);
-
-            // Start Oscillators & Pick Source
-            pickSource.start(now);
-            neckOsc.start(now);
-            midOsc.start(now);
-            chimeOsc.start(now);
-
-            neckOsc.stop(now + 1.8);
-            midOsc.stop(now + 1.8);
-            chimeOsc.stop(now + 1.8);
-        },
-
-        makeJohnMayerDriveCurve(k = 14) {
-            const n_samples = 44100;
-            const curve = new Float32Array(n_samples);
-            for (let i = 0; i < n_samples; ++i) {
-                let x = (i * 2) / n_samples - 1;
-                // Soft asymmetric tube saturation (Klon Centaur / TS10)
-                if (x < 0) {
-                    curve[i] = Math.tanh(x * 1.8);
-                } else {
-                    curve[i] = Math.sin(x * 1.3);
-                }
-            }
-            return curve;
+        playNoteTone(freq) {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0.4, this.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 1.2);
+            
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            
+            osc.start();
+            osc.stop(this.audioCtx.currentTime + 1.2);
         }
     }
 }
 </script>
-
-
 @endsection
