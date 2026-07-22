@@ -586,8 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const prevTopicId = currentTopicId;
             const html5 = document.getElementById('html5-player');
             if(html5 && prevTopicId) maybeCompleteByThreshold(html5, prevTopicId);
-            if(prevTopicId) reportProgress(false, prevTopicId);
-            if(progressTimer){ clearInterval(progressTimer); progressTimer = null; }
+            destroyHtml5Player();
             if(player && typeof player.stopVideo === 'function'){ try{ player.stopVideo(); }catch(e){} }
             if(player && typeof player.destroy === 'function'){ try{ player.destroy(); }catch(e){} }
             player = null;
