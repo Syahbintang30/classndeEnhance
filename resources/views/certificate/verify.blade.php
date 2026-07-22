@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Reenie+Beanie&display=swap" rel="stylesheet">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = {
             important: true,
@@ -57,12 +58,12 @@
         }
         .cert-frame {
             background: linear-gradient(135deg, #111116 0%, #0a0a0d 100%);
-            border: 10px solid #1E1B18;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(245, 158, 11, 0.08);
+            border: 4px solid #F59E0B;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 40px rgba(245, 158, 11, 0.1);
             position: relative;
         }
         .cert-inner-border {
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.35);
             outline: 1px solid rgba(245, 158, 11, 0.15);
             outline-offset: -6px;
         }
@@ -146,9 +147,9 @@
             </a>
 
             <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 text-xs font-bold transition shadow-lg">
-                    <i class="fa-solid fa-print"></i>
-                    <span>Print / Download PDF</span>
+                <button id="btn-download-png" onclick="downloadCertificatePNG()" class="inline-flex items-center gap-2 px-4.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition shadow-lg shadow-amber-500/20 border border-amber-400/40 cursor-pointer">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download Certificate (PNG)</span>
                 </button>
                 
                 <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-white text-xs font-bold transition shadow-lg">
@@ -245,4 +246,41 @@
     </main>
 
 </div>
+
+<script>
+function downloadCertificatePNG() {
+    const certElement = document.querySelector('.cert-frame');
+    if (!certElement) return;
+
+    const btn = document.getElementById('btn-download-png');
+    const originalHTML = btn ? btn.innerHTML : '';
+    if(btn) {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Generating Image...';
+        btn.disabled = true;
+    }
+
+    html2canvas(certElement, {
+        scale: 2, // High resolution (Retina 2x)
+        backgroundColor: '#0a0a0d',
+        useCORS: true,
+        logging: false,
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Guitarclassbynde-Certificate-{{ Str::slug($user->name) }}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        if(btn) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }).catch(err => {
+        console.error('Certificate PNG generation error:', err);
+        if(btn) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    });
+}
+</script>
 @endsection
