@@ -1,48 +1,60 @@
-/* Page-specific dark tweaks for Coaching Bookings */
-/* Use the light-custom-table look (which is a dark table in our admin.css) */
-.light-custom-table thead th { background: linear-gradient(180deg, rgba(10,10,10,0.98), rgba(6,6,6,0.98)); color: #fff; }
-.light-custom-table td, .light-custom-table th { color: #e6eef8; }
+/* Clean Modern Light Theme for Coaching Bookings */
+.coaching-bookings-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
 
-/* Make the reject modal match the dark theme */
-#rejectModal { background: rgba(0,0,0,0.6); }
-#rejectModal .modal-inner { background: #0b0b0b; color: #fff; }
-#rejectModal .reject-modal-close { color: #fff; }
-
-/* Ensure open session button looks good on dark bg */
-.open-session-btn.disabled { opacity: 0.6; pointer-events: none; }
-
-/* Coaching bookings table alignment */
 .coaching-bookings-table {
-	table-layout: fixed;
-	width: 100%;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.coaching-bookings-table th,
-.coaching-bookings-table td {
-	vertical-align: top;
+.coaching-bookings-table thead th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
 }
 
-.coaching-bookings-table .cb-col-user { width: 17%; min-width: 180px; }
-.coaching-bookings-table .cb-col-notes { width: 20%; white-space: pre-wrap; word-break: break-word; }
-.coaching-bookings-table .cb-col-time { width: 16%; min-width: 180px; }
-.coaching-bookings-table .cb-col-status { width: 9%; }
-.coaching-bookings-table .cb-col-payment { width: 18%; min-width: 200px; word-break: break-word; }
-.coaching-bookings-table .cb-col-twilio { width: 14%; min-width: 180px; word-break: break-word; }
-.coaching-bookings-table .cb-col-actions {
-	width: 10%;
-	min-width: 120px;
-	white-space: nowrap;
+.coaching-bookings-table tbody td {
+    padding: 16px !important;
+    vertical-align: middle !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #334155;
+    background: #ffffff;
 }
 
-.coaching-bookings-table .meeting-finished-badge {
-	font-size: 12px;
-	font-weight: 700;
-	padding: 6px 10px;
+.coaching-bookings-table tbody tr:hover td {
+    background-color: #f8fafc !important;
 }
 
-@media (max-width: 1200px) {
-	.coaching-bookings-table {
-		table-layout: auto;
-	}
+/* Make the reject modal match light theme cleanly */
+#rejectModal { 
+    background: rgba(15, 23, 42, 0.5); 
+    backdrop-filter: blur(4px);
+}
+#rejectModal .modal-inner { 
+    background: #ffffff; 
+    color: #0f172a; 
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+#rejectModal .reject-modal-close { 
+    color: #64748b; 
 }
 
+/* Column dimensions */
+.coaching-bookings-table .cb-col-user { width: 20%; min-width: 200px; }
+.coaching-bookings-table .cb-col-notes { width: 15%; min-width: 130px; }
+.coaching-bookings-table .cb-col-time { width: 18%; min-width: 180px; }
+.coaching-bookings-table .cb-col-status { width: 12%; min-width: 120px; }
+.coaching-bookings-table .cb-col-payment { width: 18%; min-width: 180px; }
+.coaching-bookings-table .cb-col-twilio { width: 15%; min-width: 160px; }
+.coaching-bookings-table .cb-col-actions { width: 12%; min-width: 130px; }
