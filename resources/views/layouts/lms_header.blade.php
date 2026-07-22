@@ -72,6 +72,19 @@
             @auth
                 <!-- User Actions & Avatar Pill for Logged In User -->
                 <div class="hidden md:flex items-center gap-3">
+                    @if(auth()->check())
+                        @php $userRank = auth()->user()->guitar_rank; @endphp
+                        <a href="{{ route('practice.quiz') }}" class="hidden lg:flex items-center gap-2 bg-zinc-950/70 border border-amber-500/30 rounded-full px-3 py-1.5 hover:border-amber-500/60 transition-all shadow-md group">
+                            <span class="w-6 h-6 rounded-full {{ $userRank['badge_bg'] }} flex items-center justify-center text-xs shadow-inner">
+                                <i class="fa-solid {{ $userRank['icon'] }}"></i>
+                            </span>
+                            <div class="text-left leading-none pr-1">
+                                <div class="text-[10px] font-extrabold text-amber-400 font-mono tracking-tight">{{ auth()->user()->xp ?? 0 }} XP</div>
+                                <div class="text-[9px] font-bold text-gray-300 group-hover:text-white transition-colors">{{ $userRank['tier'] }}</div>
+                            </div>
+                        </a>
+                    @endif
+
                     @if($isPublicPage)
                     <!-- Direct Enter LMS Button (Shown only on public/landing pages) -->
                     <a href="{{ route('lms.dashboard') }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-full text-xs shadow-lg shadow-blue-600/25 transition-all hover:scale-105 flex items-center gap-2">
