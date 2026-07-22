@@ -4,10 +4,38 @@
     $initialUrl = $firstTopic?->video_url ?? '';
 @endphp
 
+<style>
+    /* Full-bleed Edge-to-Edge Video in Landscape Mode on Mobile & Tablet */
+    @media (orientation: landscape) and (max-height: 600px) {
+        .player-wrapper {
+            margin-bottom: 8px !important;
+        }
+        #player {
+            padding-bottom: 0 !important;
+            height: 84vh !important;
+            max-height: 84vh !important;
+            border-radius: 14px !important;
+        }
+        #html5-player,
+        #player iframe {
+            height: 100% !important;
+            width: 100% !important;
+            object-fit: contain !important;
+        }
+        .header-lesson-info {
+            margin-bottom: 8px !important;
+        }
+        .header-lesson-info h1 {
+            font-size: 1.5rem !important;
+        }
+    }
+</style>
+
 <div class="w-full max-w-4xl mx-auto flex flex-col items-center">
     
     <!-- BADGE & LESSON TITLE HEADER -->
-    <div class="text-center space-y-2 mb-6">
+    <div class="header-lesson-info text-center space-y-2 mb-6">
+
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-circle-play text-blue-400"></i> Active Video Lesson
         </div>
@@ -56,3 +84,6 @@
     </div>
 
 </div>
+
+
+
