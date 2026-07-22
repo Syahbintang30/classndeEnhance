@@ -142,8 +142,29 @@
                 </div>
 
                 <span class="text-[11px] font-bold text-gray-400 block" id="quizFeedbackMessage">
-                    Click "START QUIZ & MIC" and pluck your guitar!
+                    Click "START QUIZ & MIC" or tap any note button below to answer!
                 </span>
+            </div>
+
+            <!-- Interactive Virtual Note Buttons Grid (Instant Playable Mode) -->
+            <div class="space-y-3 pt-2">
+                <span class="text-xs font-bold text-amber-400/90 uppercase tracking-wider block">
+                    🎸 OR ANSWER BY TAPPING NOTE (VIRTUAL GUITAR MODE)
+                </span>
+                <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-w-md mx-auto">
+                    <button onclick="submitVirtualNote('C')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">C</button>
+                    <button onclick="submitVirtualNote('C#')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">C#</button>
+                    <button onclick="submitVirtualNote('D')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">D</button>
+                    <button onclick="submitVirtualNote('D#')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">D#</button>
+                    <button onclick="submitVirtualNote('E')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">E</button>
+                    <button onclick="submitVirtualNote('F')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">F</button>
+                    <button onclick="submitVirtualNote('F#')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">F#</button>
+                    <button onclick="submitVirtualNote('G')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">G</button>
+                    <button onclick="submitVirtualNote('G#')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">G#</button>
+                    <button onclick="submitVirtualNote('A')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">A</button>
+                    <button onclick="submitVirtualNote('A#')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">A#</button>
+                    <button onclick="submitVirtualNote('B')" class="p-3 rounded-xl bg-zinc-900/90 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/40 text-white font-extrabold text-sm transition shadow cursor-pointer">B</button>
+                </div>
             </div>
 
             <!-- Score & Streak Footer -->
@@ -374,8 +395,43 @@
         setTimeout(() => {
             selectNewTargetNote();
             successCooldown = false;
-            document.getElementById('quizFeedbackMessage').textContent = 'Pluck your guitar string now!';
+            document.getElementById('quizFeedbackMessage').textContent = 'Pluck your guitar string or tap note button!';
         }, 1500);
+    }
+
+    function submitVirtualNote(selectedNote) {
+        if (successCooldown) return;
+
+        const target = quizTargets[currentTargetIndex];
+        document.getElementById('detectedNoteDisplay').textContent = selectedNote;
+        document.getElementById('detectedFreqDisplay').textContent = Math.round(target.freq) + ' Hz';
+        document.getElementById('pitchMatchBar').style.width = '100%';
+
+        playAudioPitchTone(target.freq);
+
+        if (selectedNote === target.note) {
+            onCorrectNotePlayed();
+        } else {
+            quizStreak = 0;
+            document.getElementById('quizStreak').textContent = '🔥 0';
+            document.getElementById('quizFeedbackMessage').innerHTML = '<span class="text-red-400 font-bold">❌ WRONG NOTE! Target was ' + target.note + '. Try again!</span>';
+        }
+    }
+
+    function playAudioPitchTone(freq) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch(e){}
     }
 
     function claimXpToBackend(amount) {
