@@ -76,13 +76,17 @@
         
         <!-- Header Section -->
         <div class="text-center space-y-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
+            <div class="flex justify-center mb-3">
+                <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" class="h-12 sm:h-16 w-auto object-contain filter drop-shadow-[0_0_20px_rgba(245,158,11,0.55)]" />
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(245,158,11,0.2)]">
                 <i class="fa-solid fa-trophy text-amber-400 text-xs"></i>
                 <span>Official Hall of Fame</span>
             </div>
             
             <h1 class="font-display text-4xl sm:text-6xl text-white tracking-wider">
-                GUITARCLASSBYNDE <span class="text-amber-400">GRADUATES</span>
+                GUITARCLASSBYNDE <span class="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 bg-clip-text text-transparent">GRADUATES</span>
             </h1>
             
             <p class="text-gray-400 max-w-xl mx-auto text-xs sm:text-sm font-normal leading-relaxed">

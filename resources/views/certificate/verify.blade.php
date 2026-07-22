@@ -171,11 +171,8 @@
                 <div class="cert-inner-border rounded-2xl p-6 sm:p-10 text-center relative z-10 space-y-6">
                     
                     <!-- Brand Badge Header -->
-                    <div class="flex items-center justify-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
-                            <i class="fa-solid fa-guitar"></i>
-                        </div>
-                        <span class="font-display text-2xl tracking-widest text-white">GUITARCLASSBYNDE</span>
+                    <div class="flex items-center justify-center py-1">
+                        <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" class="h-12 sm:h-16 w-auto object-contain filter drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]" />
                     </div>
 
                     <!-- Certificate Title -->
