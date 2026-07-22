@@ -63,6 +63,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(\App\Models\CoachingTicket::class);
     }
 
+    public function topicProgresses()
+    {
+        return $this->hasMany(\App\Models\TopicProgress::class);
+    }
+
     /**
      * Check whether user should be allowed to enter LMS course pages.
      */

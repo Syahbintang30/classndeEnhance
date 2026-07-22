@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -340,6 +341,8 @@ function setTopicCompletedUI(topicId, completed){
     if(checkbox) checkbox.checked = !!completed;
     if(completed) completionPostedTopics.add(String(topicId));
     else completionPostedTopics.delete(String(topicId));
+    checkAllTopicsCompleted();
+}
 }
 
 function reportProgress(markComplete = false, targetTopicId = null){
@@ -1123,7 +1126,178 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateLmsThemeToggle();
+
+    // Celebration modal logic
+    window.checkAllTopicsCompleted = function() {
+        const total = document.querySelectorAll('.topic-item[data-topic-id]').length;
+        const completed = document.querySelectorAll('.topic-item.completed').length;
+        if (total > 0 && total === completed) {
+            if (!sessionStorage.getItem('celebrated_grad')) {
+                sessionStorage.setItem('celebrated_grad', '1');
+                setTimeout(window.triggerGraduationCelebration, 800);
+            }
+        }
+    };
+
+    window.triggerGraduationCelebration = function() {
+        const modal = document.getElementById('gradCelebrationModal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        try {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            }
+        } catch(e){}
+    };
+
+    window.closeGradModal = function() {
+        const modal = document.getElementById('gradCelebrationModal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.downloadStoryCard = function() {
+        const canvas = document.getElementById('storyCardCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw Background
+        const grad = ctx.createLinearGradient(0, 0, 0, 1920);
+        grad.addColorStop(0, '#0a0a0e');
+        grad.addColorStop(0.5, '#121218');
+        grad.addColorStop(1, '#08080a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1080, 1920);
+
+        // Outer Decorative Border
+        ctx.strokeStyle = '#F59E0B';
+        ctx.lineWidth = 12;
+        ctx.strokeRect(60, 60, 960, 1800);
+
+        // Inner Accent Line
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(84, 84, 912, 1752);
+
+        // Header Tag
+        ctx.fillStyle = '#F59E0B';
+        ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏆 OFFICIAL GRADUATE @nde_guitar', 540, 220);
+
+        // Main Title
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 84px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('GUITARCLASSBYNDE', 540, 360);
+
+        ctx.fillStyle = '#FCD34D';
+        ctx.font = 'extrabold 52px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('CERTIFICATE OF COURSE MASTERY', 540, 440);
+
+        // Student Name Box
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillRect(140, 560, 800, 320);
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(140, 560, 800, 320);
+
+        const userName = "{{ auth()->user()?->name ?? 'Student' }}";
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 64px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(userName, 540, 710);
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '32px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('Has 100% Completed All Guitar Modules', 540, 790);
+
+        // Badge Circle
+        ctx.beginPath();
+        ctx.arc(540, 1100, 140, 0, 2 * Math.PI);
+        ctx.fillStyle = '#F59E0B';
+        ctx.fill();
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.stroke();
+
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 100px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('100%', 540, 1135);
+
+        // Social Call to Action
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 44px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('Tag @nde_guitar di Story kamu!', 540, 1380);
+
+        ctx.fillStyle = '#64748B';
+        ctx.font = '32px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('#Guitarclassbynde • #LulusGitar', 540, 1450);
+
+        // Cert Code Footer
+        const certCode = "NDE-GRAD-" + String("{{ auth()->id() ?? '000' }}").padStart(4, '0');
+        ctx.fillStyle = '#F59E0B';
+        ctx.font = 'bold 36px monospace';
+        ctx.fillText('VERIFIED ID: ' + certCode, 540, 1720);
+
+        // Trigger Image Download
+        const dataUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'Guitarclassbynde-Graduate-Story.png';
+        a.click();
+    };
 });
 </script>
+
+<!-- Full-Screen Graduation Celebration Modal -->
+<div id="gradCelebrationModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl transition-all duration-300 hidden">
+    <div class="bg-zinc-950 border border-amber-500/30 rounded-3xl p-6 sm:p-8 max-w-2xl w-full text-center relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+        
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider mb-4">
+            <i class="fa-solid fa-trophy"></i>
+            <span>100% Course Complete</span>
+        </div>
+
+        <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide mb-2">
+            SELAMAT! KELAS SELESAI 🎉
+        </h2>
+        <p class="text-xs sm:text-sm text-gray-300 max-w-md mx-auto mb-6">
+            Gokil banget! Kamu telah berhasil menuntaskan seluruh modul pembelajaran gitar resmi di <strong>Guitarclassbynde</strong>.
+        </p>
+
+        <!-- Action Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            
+            <button onclick="downloadStoryCard()" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-amber-500/40 text-left transition group cursor-pointer">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
+                    <i class="fa-brands fa-tiktok"></i>
+                </div>
+                <h4 class="font-bold text-sm text-white mb-0.5">TikTok Story Card</h4>
+                <p class="text-[11px] text-gray-400 leading-tight">Download kartu 9:16 untuk di-post & tag @nde_guitar</p>
+            </button>
+
+            <a href="{{ route('certificate.verify', 'NDE-GRAD-' . str_pad(auth()->id(), 4, '0', STR_PAD_LEFT)) }}" target="_blank" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-left transition group">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-file-contract"></i>
+                </div>
+                <h4 class="font-bold text-sm text-white mb-0.5">Sertifikat Resmi</h4>
+                <p class="text-[11px] text-gray-400 leading-tight">Lihat & cetak sertifikat terverifikasi QR Code</p>
+            </a>
+
+            <a href="{{ route('graduates') }}" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 text-left transition group">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <h4 class="font-bold text-sm text-white mb-0.5">Hall of Fame</h4>
+                <p class="text-[11px] text-gray-400 leading-tight">Lihat namamu terdaftar di wall of graduates</p>
+            </a>
+
+        </div>
+
+        <canvas id="storyCardCanvas" width="1080" height="1920" class="hidden"></canvas>
+
+        <button onclick="closeGradModal()" class="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 cursor-pointer">
+            Tutup
+        </button>
+    </div>
+</div>
 @endsection
 

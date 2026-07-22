@@ -52,6 +52,10 @@ Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'
 Route::get('/kelas/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified']);
 Route::get('/kelas/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified']);
 
+// Public Hall of Fame & Certificate Verification Routes
+Route::get('/graduates', [KelasController::class, 'graduates'])->name('graduates');
+Route::get('/verify/{code}', [KelasController::class, 'verifyCertificate'])->name('certificate.verify');
+
 // Jalur song tutorial dipertahankan sebagai entry point konten belajar yang sudah ada di sisi frontend.
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/song-tutorial/index', [SongTutorialController::class, 'index'])->name('song.tutorial.index');

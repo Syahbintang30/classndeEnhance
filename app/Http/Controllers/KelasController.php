@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Topic;
+use App\Models\User;
 use App\Models\Lesson;
 use App\Models\Package;
 use App\Models\CoachingTicket;
@@ -914,5 +916,87 @@ class KelasController extends Controller
         }
 
         return view('kelas.thankyou', compact('user', 'package', 'ticket', 'lesson'));
+    }
+
+    /**
+     * Hall of Fame / Public Graduates Wall
+     */
+    public function graduates(Request $request)
+    {
+        $courseTopicIds = Topic::whereHas('lesson', function($q){
+            $q->where('type', 'course');
+        })->pluck('id');
+
+        $totalCourseTopics = $courseTopicIds->count();
+
+        // Get users who completed course topics
+        $graduates = User::query()
+            ->whereHas('topicProgresses', function($q) use ($courseTopicIds) {
+                $q->whereIn('topic_id', $courseTopicIds)->where('completed', true);
+            }, '>=', max(1, $totalCourseTopics))
+            ->with(['package', 'topicProgresses' => function($q) {
+                $q->where('completed', true)->orderBy('updated_at', 'desc');
+            }])
+            ->get()
+            ->map(function($u) use ($totalCourseTopics) {
+                $lastProgress = $u->topicProgresses->first();
+                return (object)[
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'email' => $u->email,
+                    'photo' => method_exists($u, 'photoUrl') ? $u->photoUrl() : null,
+                    'package_name' => optional($u->package)->name ?? 'VIP Student',
+                    'cert_code' => 'NDE-GRAD-' . str_pad($u->id, 4, '0', STR_PAD_LEFT),
+                    'completed_at' => $lastProgress ? $lastProgress->updated_at->format('d M Y') : now()->format('d M Y'),
+                ];
+            });
+
+        return view('graduates', compact('graduates', 'totalCourseTopics'));
+    }
+
+    /**
+     * Public Certificate Verification Page
+     */
+    public function verifyCertificate($code)
+    {
+        // Extract numeric user ID from code like NDE-GRAD-0073 or raw ID
+        $userId = (int) preg_replace('/[^0-9]/', '', $code);
+        $user = User::find($userId);
+
+        if (! $user) {
+            abort(404, 'Sertifikat tidak ditemukan');
+        }
+
+        $courseTopicIds = Topic::whereHas('lesson', function($q){
+            $q->where('type', 'course');
+        })->pluck('id');
+        $totalCourseTopics = $courseTopicIds->count();
+
+        $completedCount = TopicProgress::where('user_id', $user->id)
+            ->whereIn('topic_id', $courseTopicIds)
+            ->where('completed', true)
+            ->count();
+
+        $isVerified = ($totalCourseTopics > 0 && $completedCount >= $totalCourseTopics);
+
+        $certCode = 'NDE-GRAD-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+        $userPhoto = method_exists($user, 'photoUrl') ? $user->photoUrl() : null;
+
+        $lastProgress = TopicProgress::where('user_id', $user->id)
+            ->where('completed', true)
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        $completedDate = $lastProgress ? $lastProgress->updated_at->format('d F Y') : now()->format('d F Y');
+
+        return view('certificate.verify', compact(
+            'user',
+            'certCode',
+            'isVerified',
+            'completedCount',
+            'totalCourseTopics',
+            'userPhoto',
+            'completedDate'
+        ));
     }
 }
