@@ -415,21 +415,58 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
     // hide the placeholder so the video element is visible
     try{ const ph = document.getElementById('video-placeholder'); if(ph) { ph.style.setProperty('display', 'none', 'important'); ph.style.opacity = '0'; } }catch(e){}
 
+    const setupQualitySelector = (hls) => {
+        const select = document.getElementById('quality-select');
+        if(!select || !hls || !hls.levels || hls.levels.length === 0) return;
+        
+        select.innerHTML = '<option value="-1" class="bg-zinc-900 text-white">Auto (Adaptive)</option>';
+        
+        const levelItems = hls.levels.map((lvl, idx) => ({
+            index: idx,
+            height: lvl.height || (lvl.attrs && lvl.attrs.RESOLUTION ? parseInt(lvl.attrs.RESOLUTION.split('x')[1]) : 0),
+            bitrate: lvl.bitrate || 0
+        })).sort((a, b) => b.height - a.height);
+
+        levelItems.forEach(item => {
+            const label = item.height > 0 ? (item.height + 'p' + (item.height >= 720 ? ' HD' : '')) : ('Quality ' + (item.index + 1));
+            const opt = document.createElement('option');
+            opt.value = item.index;
+            opt.className = 'bg-zinc-900 text-white';
+            opt.textContent = label;
+            select.appendChild(opt);
+        });
+
+        select.onchange = function(){
+            const val = parseInt(this.value, 10);
+            hls.currentLevel = val;
+            try { localStorage.setItem('user_preferred_quality', val); } catch(e){}
+        };
+
+        try {
+            const saved = localStorage.getItem('user_preferred_quality');
+            if(saved !== null){
+                const val = parseInt(saved, 10);
+                if(val === -1 || (val >= 0 && val < hls.levels.length)){
+                    select.value = val;
+                    hls.currentLevel = val;
+                }
+            }
+        } catch(e){}
+    };
+
     // attach HLS if available; if hls.js not yet loaded, load it dynamically then retry
     const attachAndPlay = () => {
         if(window.Hls && Hls.isSupported()){
             const hls = new Hls(); window._hlsInstance = hls; hls.loadSource(streamUrl); hls.attachMedia(v);
             hls.on(Hls.Events.MANIFEST_PARSED, function(){
-                // Autoplay removed per user request
-                // v.play().catch(e => console.warn('Autoplay prevented:', e));
+                setupQualitySelector(hls);
             });
         } else {
             // native HLS (iOS) or MP4
             v.src = streamUrl;
-            // Autoplay removed per user request
-            // v.play().catch(e => console.warn('Autoplay prevented:', e));
         }
     };
+
 
     if(!window.Hls){
         // try to load hls.js from CDN, then attach

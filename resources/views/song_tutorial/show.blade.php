@@ -221,6 +221,45 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
     v.className = 'rounded-2xl object-contain';
     container.appendChild(v);
 
+    const setupQualitySelector = (hls) => {
+        const select = document.getElementById('quality-select');
+        if(!select || !hls || !hls.levels || hls.levels.length === 0) return;
+        
+        select.innerHTML = '<option value="-1" class="bg-zinc-900 text-white">Auto (Adaptive)</option>';
+        
+        const levelItems = hls.levels.map((lvl, idx) => ({
+            index: idx,
+            height: lvl.height || (lvl.attrs && lvl.attrs.RESOLUTION ? parseInt(lvl.attrs.RESOLUTION.split('x')[1]) : 0),
+            bitrate: lvl.bitrate || 0
+        })).sort((a, b) => b.height - a.height);
+
+        levelItems.forEach(item => {
+            const label = item.height > 0 ? (item.height + 'p' + (item.height >= 720 ? ' HD' : '')) : ('Quality ' + (item.index + 1));
+            const opt = document.createElement('option');
+            opt.value = item.index;
+            opt.className = 'bg-zinc-900 text-white';
+            opt.textContent = label;
+            select.appendChild(opt);
+        });
+
+        select.onchange = function(){
+            const val = parseInt(this.value, 10);
+            hls.currentLevel = val;
+            try { localStorage.setItem('user_preferred_quality', val); } catch(e){}
+        };
+
+        try {
+            const saved = localStorage.getItem('user_preferred_quality');
+            if(saved !== null){
+                const val = parseInt(saved, 10);
+                if(val === -1 || (val >= 0 && val < hls.levels.length)){
+                    select.value = val;
+                    hls.currentLevel = val;
+                }
+            }
+        } catch(e){}
+    };
+
     const attachAndPlay = () => {
         if(window.Hls && Hls.isSupported() && (streamUrl.includes('.m3u8') || streamUrl.includes('b-cdn.net') || streamUrl.includes('bunnycdn'))){
             const hls = new Hls(); 
@@ -228,6 +267,7 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
             hls.loadSource(streamUrl); 
             hls.attachMedia(v);
             hls.on(Hls.Events.MANIFEST_PARSED, function(){
+                setupQualitySelector(hls);
                 v.play().catch(e => console.warn('Autoplay prevented:', e));
             });
         } else {
@@ -235,6 +275,7 @@ function createHtml5PlayerAndPlay(streamUrl, topicId){
             v.play().catch(e => console.warn('Autoplay prevented:', e));
         }
     };
+
 
     if(!window.Hls){
         const s = document.createElement('script');

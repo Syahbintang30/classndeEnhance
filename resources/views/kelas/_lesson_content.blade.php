@@ -71,17 +71,27 @@
     </div>
 
     <!-- CONTROLS & NAVIGATION BAR -->
-    <div class="video-controls flex items-center justify-between gap-4 w-full bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 shadow-lg">
+    <div class="video-controls flex items-center justify-between gap-4 w-full bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 shadow-lg flex-wrap sm:flex-nowrap">
         <button id="btn-prev" class="video-nav-btn relative overflow-hidden h-10 px-5 bg-zinc-800/80 hover:bg-zinc-700 text-gray-300 font-bold rounded-xl text-xs transition inline-flex items-center gap-2 border border-white/5 flex-none self-center disabled:opacity-40 disabled:cursor-not-allowed">
             <i class="fa-solid fa-chevron-left text-[10px]"></i>
             <span class="label">Previous Topic</span>
         </button>
+
+        <!-- VIDEO RESOLUTION / QUALITY SELECTOR -->
+        <div id="quality-selector-wrapper" class="relative inline-flex items-center gap-2 bg-zinc-950/80 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-gray-300 hover:border-blue-500/50 transition shadow-inner">
+            <i class="fa-solid fa-sliders text-blue-400 text-xs"></i>
+            <span class="font-semibold text-gray-400 text-[11px] uppercase tracking-wider hidden sm:inline">Quality:</span>
+            <select id="quality-select" class="bg-transparent text-white font-bold text-xs cursor-pointer border-none focus:ring-0 focus:outline-none pr-1">
+                <option value="-1" class="bg-zinc-900 text-white">Auto (Adaptive)</option>
+            </select>
+        </div>
 
         <button id="btn-next" class="video-nav-btn relative overflow-hidden h-10 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-2 shadow-lg shadow-blue-600/20 border border-blue-500/30 flex-none self-center disabled:opacity-40 disabled:cursor-not-allowed">
             <span class="label">Next Topic</span>
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
     </div>
+
 
 </div>
 
