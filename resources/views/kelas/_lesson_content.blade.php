@@ -57,6 +57,15 @@
 
         <!-- Video Player Box -->
         <div id="player" class="relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] bg-zinc-950 w-full z-10" style="padding-bottom: 56.25%;">
+            
+            <!-- OVERLAY VIDEO RESOLUTION / QUALITY SELECTOR INSIDE PLAYER FRAME -->
+            <div id="quality-selector-wrapper" class="absolute top-3 right-3 z-[60] inline-flex items-center gap-1.5 bg-black/75 hover:bg-zinc-950/90 backdrop-blur-md border border-white/20 rounded-xl px-3 py-1.5 text-xs text-gray-200 transition-all shadow-xl">
+                <i class="fa-solid fa-sliders text-blue-400 text-xs"></i>
+                <select id="quality-select" class="bg-transparent text-white font-bold text-xs cursor-pointer border-none focus:ring-0 focus:outline-none pr-1">
+                    <option value="-1" class="bg-zinc-900 text-white">Auto</option>
+                </select>
+            </div>
+
             {{-- HTML5 player will be injected here when playing Bunny HLS/MP4 --}}
             <div id="video-placeholder" class="video-placeholder bg-cover bg-center absolute inset-0 flex items-center justify-center z-10" style="background-color:#08080a;"
                 data-bunny-guid="{{ $initialGuid }}"
@@ -71,26 +80,18 @@
     </div>
 
     <!-- CONTROLS & NAVIGATION BAR -->
-    <div class="video-controls flex items-center justify-between gap-4 w-full bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 shadow-lg flex-wrap sm:flex-nowrap">
+    <div class="video-controls flex items-center justify-between gap-4 w-full bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 shadow-lg">
         <button id="btn-prev" class="video-nav-btn relative overflow-hidden h-10 px-5 bg-zinc-800/80 hover:bg-zinc-700 text-gray-300 font-bold rounded-xl text-xs transition inline-flex items-center gap-2 border border-white/5 flex-none self-center disabled:opacity-40 disabled:cursor-not-allowed">
             <i class="fa-solid fa-chevron-left text-[10px]"></i>
             <span class="label">Previous Topic</span>
         </button>
-
-        <!-- VIDEO RESOLUTION / QUALITY SELECTOR -->
-        <div id="quality-selector-wrapper" class="relative inline-flex items-center gap-2 bg-zinc-950/80 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-gray-300 hover:border-blue-500/50 transition shadow-inner">
-            <i class="fa-solid fa-sliders text-blue-400 text-xs"></i>
-            <span class="font-semibold text-gray-400 text-[11px] uppercase tracking-wider hidden sm:inline">Quality:</span>
-            <select id="quality-select" class="bg-transparent text-white font-bold text-xs cursor-pointer border-none focus:ring-0 focus:outline-none pr-1">
-                <option value="-1" class="bg-zinc-900 text-white">Auto (Adaptive)</option>
-            </select>
-        </div>
 
         <button id="btn-next" class="video-nav-btn relative overflow-hidden h-10 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-2 shadow-lg shadow-blue-600/20 border border-blue-500/30 flex-none self-center disabled:opacity-40 disabled:cursor-not-allowed">
             <span class="label">Next Topic</span>
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
     </div>
+
 
 
 </div>
