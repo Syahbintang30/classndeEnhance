@@ -36,6 +36,7 @@ class EnsureAdminOrSuper
             'admin/users/packages*',
             'admin/packages*',
             'admin/transactions*',
+            'admin/song-tabs*',
         ];
 
         $path = ltrim($request->path(), '/'); // normalize

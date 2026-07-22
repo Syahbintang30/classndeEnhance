@@ -4,7 +4,7 @@
 <div class="container-fluid px-4 py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 font-weight-bold text-gray-800">Songsterr TAB Management</h1>
+            <h1 class="h3 font-weight-bold text-gray-800">Songs TAB Management</h1>
             <p class="text-muted small">Manage interactive 6-string guitar TABs, song tracks, and BPM for the student player.</p>
         </div>
         <a href="{{ route('admin.song-tabs.create') }}" class="btn btn-primary btn-sm shadow-sm">
