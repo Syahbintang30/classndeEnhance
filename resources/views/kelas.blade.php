@@ -362,13 +362,14 @@ function maybeCompleteByThreshold(videoEl){
     if(!videoEl || !currentTopicId) return;
     const duration = Number(videoEl.duration || 0);
     const current = Number(videoEl.currentTime || 0);
-    if(!Number.isFinite(duration) || duration <= 0) return;
+    if(!Number.isFinite(duration) || duration < 10 || current < 10) return;
 
-    const threshold = Math.max(1, duration * 0.95);
+    const threshold = duration * 0.95;
     if(current >= threshold){
         reportProgress(true);
     }
 }
+
 
 function fetchTopicProgress(topicId){
     if(!topicId) return;

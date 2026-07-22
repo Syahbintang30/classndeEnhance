@@ -53,10 +53,11 @@ class TopicProgressController extends Controller
         $durationSeconds = (int) ($data['duration_seconds'] ?? 0);
         $incomingCompleted = (bool) ($data['completed'] ?? false);
 
-        // Kalau user sudah menonton 95% durasi, sistem menandai topic sebagai selesai otomatis.
-        if (! $incomingCompleted && $durationSeconds > 0) {
-            $incomingCompleted = $incomingSeconds >= max(1, (int) floor($durationSeconds * 0.95));
+        // Topic is auto-completed ONLY if valid duration exists (>= 10s) AND watched seconds >= 95% of duration (and >= 10s), or if explicitly marked completed by video end event.
+        if (! $incomingCompleted && $durationSeconds >= 10 && $incomingSeconds >= 10) {
+            $incomingCompleted = $incomingSeconds >= (int) floor($durationSeconds * 0.95);
         }
+
 
         $progress = TopicProgress::firstOrNew([
             'user_id' => auth()->id(),
