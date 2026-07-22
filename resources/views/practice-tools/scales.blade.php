@@ -283,6 +283,9 @@
                                         <!-- Note Dot (Root vs Scale Note) -->
                                         <template x-if="isNoteInScale(sIdx, fIdx)">
                                             <div :class="isRootNote(sIdx, fIdx) ? 'root-note-dot' : 'scale-note-dot'"
+                                                 @click.stop="playSingleFretNote(sIdx, fIdx)"
+                                                 class="cursor-pointer hover:scale-125 transition-transform"
+                                                 title="Click to play note"
                                                  x-text="getNoteNameAt(sIdx, fIdx)"></div>
                                         </template>
                                     </div>
@@ -296,6 +299,7 @@
             
             <div class="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-white/5">
                 <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block border border-white"></span> Amber Gold = Root Note</span>
+                <span class="flex items-center gap-2"><i class="fa-solid fa-guitar text-cyan-400"></i> Click any note on fretboard to listen</span>
                 <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-cyan-500 inline-block border border-white"></span> Cyan Blue = Scale Notes</span>
             </div>
 
@@ -353,6 +357,18 @@ function scaleLibrary() {
             return noteName === this.selectedRoot;
         },
 
+        playSingleFretNote(sIdx, fIdx) {
+            if (!this.audioCtx) {
+                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (this.audioCtx.state === 'suspended') {
+                this.audioCtx.resume();
+            }
+            let baseFreq = this.baseFrequencies[sIdx];
+            let noteFreq = baseFreq * Math.pow(2, fIdx / 12);
+            this.playElectricGuitarNote(noteFreq);
+        },
+
         playScaleAudio() {
             if (!this.audioCtx) {
                 this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -373,7 +389,7 @@ function scaleLibrary() {
                 }
             }
 
-            // Play first 8 unique ascending frequencies
+            // Play ascending frequencies
             let delay = 0;
             let playedCount = 0;
             let lastFreq = 0;
@@ -381,31 +397,88 @@ function scaleLibrary() {
                 if (freq > lastFreq + 5 && playedCount < 12) {
                     lastFreq = freq;
                     setTimeout(() => {
-                        this.playNoteTone(freq);
-                    }, delay * 160);
+                        this.playElectricGuitarNote(freq);
+                    }, delay * 170);
                     delay++;
                     playedCount++;
                 }
             }
         },
 
-        playNoteTone(freq) {
-            const osc = this.audioCtx.createOscillator();
-            const gain = this.audioCtx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
-            
-            gain.gain.setValueAtTime(0.4, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 1.2);
-            
-            osc.connect(gain);
-            gain.connect(this.audioCtx.destination);
-            
-            osc.start();
-            osc.stop(this.audioCtx.currentTime + 1.2);
+        // Synthesize authentic Electric Guitar tone (Pick attack + Dual Oscillators + Warm Tube Distortion + Amp Cabinet Filter)
+        playElectricGuitarNote(freq) {
+            if (!this.audioCtx) return;
+            const now = this.audioCtx.currentTime;
+
+            // 1. Dual Pickup Oscillators (Sawtooth for bite + Triangle for warm body)
+            const osc1 = this.audioCtx.createOscillator();
+            const osc2 = this.audioCtx.createOscillator();
+            const oscHarmonic = this.audioCtx.createOscillator();
+
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(freq, now);
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(freq * 1.0015, now); // Micro-detune for string thickness
+
+            oscHarmonic.type = 'sine';
+            oscHarmonic.frequency.setValueAtTime(freq * 2.0, now); // 2nd harmonic overtone
+
+            // 2. Envelope Generator (Pick Attack -> Pluck Decay -> Ring out)
+            const noteGain = this.audioCtx.createGain();
+            noteGain.gain.setValueAtTime(0.0001, now);
+            noteGain.gain.exponentialRampToValueAtTime(0.42, now + 0.005); // Fast Pick Attack
+            noteGain.gain.exponentialRampToValueAtTime(0.18, now + 0.12);  // Pluck Decay
+            noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4); // String Ring-out Fade
+
+            // 3. Overdrive / Distortion Waveshaper (Warm Tube Amp Saturation)
+            const distortion = this.audioCtx.createWaveShaper();
+            distortion.curve = this.makeDistortionCurve(16); // Warm overdrive
+            distortion.oversample = '4x';
+
+            // 4. Amp Cabinet Filter (Guitar Speaker High-cut & Resonance)
+            const cabFilter = this.audioCtx.createBiquadFilter();
+            cabFilter.type = 'lowpass';
+            cabFilter.frequency.setValueAtTime(3800, now); // Cut harsh treble above 3.8kHz
+            cabFilter.Q.setValueAtTime(1.8, now);         // Cabinet resonance peak
+
+            const bodyFilter = this.audioCtx.createBiquadFilter();
+            bodyFilter.type = 'peaking';
+            bodyFilter.frequency.setValueAtTime(750, now); // Midrange amp punch
+            bodyFilter.gain.setValueAtTime(3, now);
+
+            // Connect Nodes: Oscillators -> Gain Envelope -> Overdrive -> EQ -> Cabinet -> Speakers
+            osc1.connect(noteGain);
+            osc2.connect(noteGain);
+            oscHarmonic.connect(noteGain);
+
+            noteGain.connect(distortion);
+            distortion.connect(bodyFilter);
+            bodyFilter.connect(cabFilter);
+            cabFilter.connect(this.audioCtx.destination);
+
+            // Start & Stop Oscillators
+            osc1.start(now);
+            osc2.start(now);
+            oscHarmonic.start(now);
+
+            osc1.stop(now + 1.4);
+            osc2.stop(now + 1.4);
+            oscHarmonic.stop(now + 1.4);
+        },
+
+        makeDistortionCurve(k = 16) {
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+            for (let i = 0; i < n_samples; ++i) {
+                let x = (i * 2) / n_samples - 1;
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+            }
+            return curve;
         }
     }
 }
 </script>
+
 @endsection
