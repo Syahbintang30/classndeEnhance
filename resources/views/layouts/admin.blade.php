@@ -424,6 +424,12 @@
                         <span>Lessons</span>
                     </div>
                 </a>
+                <a class="side-link {{ request()->is('admin/song-tabs*') ? 'active' : '' }}" href="{{ route('admin.song-tabs.index') }}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-music text-warning"></i>
+                        <span>Songsterr TABs</span>
+                    </div>
+                </a>
                 <a class="side-link {{ request()->is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.packages') }}">
                     <div class="d-flex align-items-center gap-2">
                         <i class="fa-solid fa-users"></i>

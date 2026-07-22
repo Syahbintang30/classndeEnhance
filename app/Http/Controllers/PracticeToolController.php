@@ -68,6 +68,13 @@ class PracticeToolController extends Controller
         return view('practice-tools.quiz');
     }
 
+    public function guitarHero()
+    {
+        if ($access = $this->checkAccess()) return $access;
+        $songTabs = \App\Models\SongTab::where('is_published', true)->get();
+        return view('practice-tools.guitar-hero', compact('songTabs'));
+    }
+
     public function claimXp(Request $request)
     {
         $user = auth()->user();

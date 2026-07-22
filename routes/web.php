@@ -146,6 +146,9 @@ Route::prefix('admin')->name('admin.')->middleware([\App\Http\Middleware\EnsureA
     Route::get('videopromo', [\App\Http\Controllers\Admin\VideoPromoController::class, 'edit'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('videopromo');
     Route::post('videopromo', [\App\Http\Controllers\Admin\VideoPromoController::class, 'update'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('videopromo.update');
     
+    // Song TAB Management (Songsterr-Style TAB Importer & Builder)
+    Route::resource('song-tabs', \App\Http\Controllers\Admin\SongTabController::class, ['names' => 'admin.song-tabs']);
+
     // Pengaturan sistem khusus superadmin untuk mencegah risiko keamanan.
     Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->middleware(\App\Http\Middleware\EnsureSuperAdmin::class)->name('settings.update');
@@ -195,6 +198,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/scales', [PracticeToolController::class, 'scales'])->name('scales');
         Route::get('/trainer', [PracticeToolController::class, 'trainer'])->name('trainer');
         Route::get('/quiz', [PracticeToolController::class, 'quiz'])->name('quiz');
+        Route::get('/guitar-hero', [PracticeToolController::class, 'guitarHero'])->name('guitarHero');
         Route::post('/claim-xp', [PracticeToolController::class, 'claimXp'])->name('claimXp');
     });
 });

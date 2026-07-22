@@ -139,6 +139,32 @@
                 </div>
             </a>
 
+            <!-- 0.5. Songsterr-Style Interactive TAB Player Card -->
+            <a href="{{ route('practice.guitarHero') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
+                <div class="w-full flex items-center justify-between">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20">Songsterr-Style Player</span>
+                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
+                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
+                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
+                    </div>
+                </div>
+
+                <div class="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:bg-gradient-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-black flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-amber-500/10 group-hover:shadow-amber-500/30 group-hover:scale-105">
+                    <i class="fa-solid fa-guitar"></i>
+                </div>
+                
+                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Interactive TAB Player</h2>
+                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
+                    Songsterr-style TAB player for Black Label Society, Sweet Child O' Mine & Sal Priadi with moving playhead and speed controls!
+                </p>
+                
+                <div class="w-full py-3 rounded-xl bg-amber-500/20 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-orange-500 border border-amber-500/30 text-amber-300 group-hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
+                    <span>Open TAB Player</span>
+                    <i class="fa-solid fa-play text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+
             <!-- 1. Guitar Tuner Card -->
             <a href="{{ route('practice.tuner') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
                 <div class="w-full flex items-center justify-between">
