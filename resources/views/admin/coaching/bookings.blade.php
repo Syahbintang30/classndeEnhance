@@ -10,33 +10,50 @@
         @include('admin.coaching._nav')
 
     <div class="content-wrapper">
-        <div class="d-flex justify-content-between align-items-center mb-4 header">
+        <div class="d-flex justify-content-between align-items-center mb-3 header">
             <div>
-                <h2>Jadwal Live Coaching</h2>
-                <p style="color:#888; font-size:14px">Kelola dan pantau seluruh jadwal sesi 1-on-1 live coaching murid, ruang video call, serta konfirmasi pendaftaran.</p>
+                <h2 style="color:#0f172a; font-weight:800; font-size:1.6rem;">Jadwal Live Coaching</h2>
+                <p style="color:#64748b; font-size:14px; margin-bottom:0;">Kelola dan pantau sesi 1-on-1 live coaching murid, ruang video call, serta konfirmasi pendaftaran.</p>
             </div>
 
             <div style="min-width:320px;">
                 <form method="GET" class="d-flex flex-wrap justify-content-end gap-2">
-                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" style="width:240px;" placeholder="Cari nama murid, email, order ID..." />
+                    <input type="hidden" name="tab" value="{{ $tab }}" />
+                    <input name="q" value="{{ request('q') }}" class="form-control form-control-sm border-secondary border-opacity-25" style="width:240px; background:#fff; color:#0f172a;" placeholder="Cari nama murid, email, order ID..." />
 
-                    <select name="status" class="form-select form-select-sm text-white" style="width:160px; background-color: #1a1a1a; border:1px solid #333;">
+                    <select name="status" class="form-select form-select-sm border-secondary border-opacity-25" style="width:160px; background-color: #fff; color:#0f172a;">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                         <option value="accepted" {{ request('status')=='accepted' ? 'selected' : '' }}>Disetujui / Terjadwal</option>
                         <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
 
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm text-white" style="width:140px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal Mulai" />
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm text-white" style="width:140px; background-color:#1a1a1a; border:1px solid #333;" title="Tanggal Akhir" />
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm border-secondary border-opacity-25" style="width:135px; background-color:#fff; color:#0f172a;" title="Tanggal Mulai" />
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm border-secondary border-opacity-25" style="width:135px; background-color:#fff; color:#0f172a;" title="Tanggal Akhir" />
 
-                    <button class="btn btn-sm btn-primary">Filter</button>
+                    <button class="btn btn-sm btn-primary px-3 fw-bold">Filter</button>
                     @if(request()->hasAny(['q', 'status', 'date_from', 'date_to']))
-                        <a href="{{ url('/admin/coaching/bookings') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                        <a href="{{ url('/admin/coaching/bookings') }}?tab={{ $tab }}" class="btn btn-sm btn-outline-secondary">Reset</a>
                     @endif
                 </form>
             </div>
         </div>
+
+        <!-- Navigation Tabs: Active Scheduled vs Completed History -->
+        <div class="d-flex align-items-center gap-2 mb-3 pb-1 border-bottom">
+            <a href="{{ request()->fullUrlWithQuery(['tab' => 'upcoming']) }}" class="btn {{ $tab === 'upcoming' ? 'btn-primary shadow-sm fw-bold' : 'btn-outline-secondary text-dark' }} px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-2" style="font-size:0.85rem;">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Jadwal Aktif & Mendatang</span>
+                <span class="badge {{ $tab === 'upcoming' ? 'bg-white text-primary' : 'bg-secondary bg-opacity-25 text-dark' }} rounded-pill px-2" style="font-size:0.72rem;">{{ $upcomingCount ?? 0 }}</span>
+            </a>
+
+            <a href="{{ request()->fullUrlWithQuery(['tab' => 'history']) }}" class="btn {{ $tab === 'history' ? 'btn-primary shadow-sm fw-bold' : 'btn-outline-secondary text-dark' }} px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-2" style="font-size:0.85rem;">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Riwayat Sesi (Selesai & Ditolak)</span>
+                <span class="badge {{ $tab === 'history' ? 'bg-white text-primary' : 'bg-secondary bg-opacity-25 text-dark' }} rounded-pill px-2" style="font-size:0.72rem;">{{ $historyCount ?? 0 }}</span>
+            </a>
+        </div>
+
 
         <div class="card shadow-sm border-0 rounded-3" style="background: #ffffff;">
             <div class="card-body p-0">

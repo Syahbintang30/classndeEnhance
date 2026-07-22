@@ -13,11 +13,16 @@ class CoachingBookingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CoachingBooking::with(['user','coach','ticket']);
+        $tab = strtolower((string) $request->input('tab', 'upcoming'));
+        if (! in_array($tab, ['upcoming', 'history'], true)) {
+            $tab = 'upcoming';
+        }
+
+        $baseQuery = CoachingBooking::with(['user','coach','ticket']);
 
         $search = trim((string) $request->input('q', ''));
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $baseQuery->where(function ($q) use ($search) {
                 $q->whereHas('user', function ($userQuery) use ($search) {
                     $userQuery
                         ->where('name', 'like', '%' . $search . '%')
@@ -38,32 +43,63 @@ class CoachingBookingController extends Controller
             $status = 'accepted';
         }
         if (in_array($status, ['pending', 'accepted', 'rejected'], true)) {
-            $query->where('status', $status);
+            $baseQuery->where('status', $status);
         }
 
         if ($request->filled('date_from')) {
-            $query->whereDate('booking_time', '>=', $request->input('date_from'));
+            $baseQuery->whereDate('booking_time', '>=', $request->input('date_from'));
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('booking_time', '<=', $request->input('date_to'));
+            $baseQuery->whereDate('booking_time', '<=', $request->input('date_to'));
+        }
+
+        $now = Carbon::now();
+
+        // Calculate count for upcoming active sessions vs finished/rejected history
+        $upcomingCount = (clone $baseQuery)->where(function($q) use ($now) {
+            $q->whereIn('status', ['pending', 'accepted'])
+              ->where('booking_time', '>=', $now->copy()->subHours(2));
+        })->count();
+
+        $historyCount = (clone $baseQuery)->where(function($q) use ($now) {
+            $q->where('status', 'rejected')
+              ->orWhere(function($sub) use ($now) {
+                  $sub->whereIn('status', ['ended', 'finished', 'completed'])
+                      ->orWhere('booking_time', '<', $now->copy()->subHours(2));
+              });
+        })->count();
+
+        $query = clone $baseQuery;
+
+        if ($tab === 'upcoming') {
+            // Active & scheduled bookings only, ordered from SOONEST starting time first
+            $query->where(function($q) use ($now) {
+                $q->whereIn('status', ['pending', 'accepted'])
+                  ->where('booking_time', '>=', $now->copy()->subHours(2));
+            })->orderBy('booking_time', 'asc');
+        } else {
+            // Ended / completed / rejected / past bookings history
+            $query->where(function($q) use ($now) {
+                $q->where('status', 'rejected')
+                  ->orWhere(function($sub) use ($now) {
+                      $sub->whereIn('status', ['ended', 'finished', 'completed'])
+                          ->orWhere('booking_time', '<', $now->copy()->subHours(2));
+                  });
+            })->orderByDesc('booking_time');
         }
 
         $bookings = $query
-            ->orderByDesc('booking_time')
-            ->orderByDesc('created_at')
             ->paginate(50)
             ->withQueryString();
 
         // Compute aggregated "Taken" counts per slot for the dates shown on this page to avoid N+1 queries.
-        // Use safe database-agnostic approach instead of raw SQL expressions
         $dates = $bookings->getCollection()->pluck('booking_time')
             ->map(fn($t) => Carbon::parse($t)->toDateString())
             ->unique()->values()->all();
 
         $slotCounts = [];
         if (!empty($dates)) {
-            // Use safer approach with whereDate for each date
             $bookingsQuery = CoachingBooking::query();
             foreach ($dates as $date) {
                 $bookingsQuery->orWhereDate('booking_time', $date);
@@ -71,7 +107,6 @@ class CoachingBookingController extends Controller
             $bookingsForCounts = $bookingsQuery->get();
             
             foreach ($bookingsForCounts as $booking) {
-                // Only count active bookings towards "Taken": pending or accepted
                 if (! in_array(strtolower($booking->status), ['pending','accepted'])) {
                     continue;
                 }
@@ -83,8 +118,9 @@ class CoachingBookingController extends Controller
             }
         }
 
-        return view('admin.coaching.bookings', compact('bookings', 'slotCounts'));
+        return view('admin.coaching.bookings', compact('bookings', 'slotCounts', 'tab', 'upcomingCount', 'historyCount'));
     }
+
 
     /**
      * Create Twilio room for the booking on-demand and persist sid.
