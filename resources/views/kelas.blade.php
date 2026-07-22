@@ -177,9 +177,21 @@
             </div>
             
             <div class="p-0 md:p-4 mt-4 md:mt-0">
+                @php
+                    $activeLessonIndex = 0;
+                    if (isset($lesson) && isset($lessons)) {
+                        foreach ($lessons as $idx => $lsItem) {
+                            if ((string)$lsItem->id === (string)$lesson->id) {
+                                $activeLessonIndex = $idx;
+                                break;
+                            }
+                        }
+                    }
+                @endphp
                 <!-- SINGLE UNIFIED SYLLABUS CONTAINER (EXCLUSIVE ACCORDION) -->
                 <div class="bg-zinc-900/60 border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl"
-                     x-data="{ activeSection: 0 }">
+                     x-data="{ activeSection: {{ $activeLessonIndex }} }"
+                     @open-section.window="activeSection = $event.detail">
                     @forelse($lessons as $index => $ls)
                         @php $topics = $ls->topics ?? collect(); @endphp
                         <div>
@@ -205,7 +217,8 @@
                                     <div class="topic-item cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition flex items-center gap-2.5" 
                                          data-bunny-guid="{{ $topic->bunny_guid }}"
                                          data-description="{{ $topic->description }}"
-                                         data-topic-id="{{ $topic->id }}">
+                                         data-topic-id="{{ $topic->id }}"
+                                         data-lesson-index="{{ $index }}">
                                         <input type="checkbox" class="topic-check cursor-pointer" style="cursor: pointer;">
                                         <span class="truncate">{{ $topic->title }}</span>
                                     </div>
@@ -706,6 +719,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 navigateTopic(lessonId, topicId, null, true);
                 // On small screens close the sidebar so the video becomes visible again
                 try{ if(window.innerWidth <= 900) closeSidebar(); }catch(e){}
+                const lessonIdx = item.getAttribute('data-lesson-index');
+                if (lessonIdx !== null && lessonIdx !== undefined) {
+                    window.dispatchEvent(new CustomEvent('open-section', { detail: parseInt(lessonIdx, 10) }));
+                }
                 // selection highlight
                 document.querySelectorAll('.topic-item.selected').forEach(s => s.classList.remove('selected'));
                 item.classList.add('selected');
@@ -1013,6 +1030,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(topicEl){
                     if(titleEl) titleEl.textContent = topicEl.textContent.trim();
                     if(descEl) descEl.textContent = topicEl.getAttribute('data-description') || '';
+                    const lessonIdx = topicEl.getAttribute('data-lesson-index');
+                    if (lessonIdx !== null && lessonIdx !== undefined) {
+                        window.dispatchEvent(new CustomEvent('open-section', { detail: parseInt(lessonIdx, 10) }));
+                    }
                 }
             }catch(e){ /* ignore */ }
             // push topic into URL as query param (keeps lesson path)
