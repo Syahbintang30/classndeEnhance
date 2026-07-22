@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .admin-dash {
-        color: #162033;
+        color: #f3f4f6;
     }
 
     .admin-dash .page-title {
@@ -18,27 +18,27 @@
 
     .admin-dash .page-title h1 {
         margin: 0;
-        font-size: 1.35rem;
+        font-size: 1.5rem;
         font-weight: 800;
         letter-spacing: -0.02em;
-        color: #162033;
+        color: #ffffff;
     }
 
     .admin-dash .page-title p {
         margin: .35rem 0 0;
-        color: #64748b;
+        color: #94a3b8;
         font-size: .9rem;
     }
 
     .admin-dash .chip {
         border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, .28);
-        color: #1d4ed8;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #60a5fa;
         text-decoration: none;
         font-size: .78rem;
         font-weight: 700;
         padding: .32rem .7rem;
-        background: #eff6ff;
+        background: rgba(59, 130, 246, 0.15);
     }
 
     .admin-dash .kpi-grid {
@@ -50,10 +50,13 @@
     .admin-dash .kpi-card,
     .admin-dash .panel,
     .admin-dash .quick-action {
-        background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 250, 252, .98));
-        border: 1px solid rgba(148, 163, 184, .18);
+        background: rgba(18, 18, 26, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
-        box-shadow: 0 16px 32px rgba(15, 23, 42, .08);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        color: #ffffff;
     }
 
     .admin-dash .kpi-card {
@@ -63,7 +66,7 @@
     }
 
     .admin-dash .kpi-card .label {
-        color: #64748b;
+        color: #94a3b8;
         font-size: .8rem;
         font-weight: 600;
     }
@@ -73,7 +76,7 @@
         font-size: 1.6rem;
         font-weight: 800;
         letter-spacing: -.02em;
-        color: #162033;
+        color: #ffffff;
     }
 
     .admin-dash .kpi-icon {
@@ -83,8 +86,8 @@
         width: 34px;
         height: 34px;
         border-radius: 10px;
-        background: #eff6ff;
-        color: #1d4ed8;
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -102,18 +105,18 @@
     }
 
     .admin-dash .trend.up {
-        background: rgba(34, 197, 94, .2);
-        color: #86efac;
+        background: rgba(16, 185, 129, .2);
+        color: #34d399;
     }
 
     .admin-dash .trend.down {
-        background: rgba(244, 63, 94, .2);
-        color: #fda4af;
+        background: rgba(239, 68, 68, .2);
+        color: #f87171;
     }
 
     .admin-dash .trend.neutral {
-        background: #e2e8f0;
-        color: #475569;
+        background: rgba(255, 255, 255, .1);
+        color: #94a3b8;
     }
 
     .admin-dash .layout-grid {
@@ -139,36 +142,41 @@
         margin: 0;
         font-size: 1rem;
         font-weight: 700;
-        color: #162033;
+        color: #ffffff;
     }
+
 
     .admin-dash .bar-chart {
         display: grid;
         grid-template-columns: repeat(12, minmax(0, 1fr));
         gap: .42rem;
         align-items: end;
-        height: 190px;
-        border-top: 1px dashed rgba(148, 163, 184, .34);
-        border-bottom: 1px dashed rgba(148, 163, 184, .34);
-        padding: .8rem .2rem;
+        height: 200px;
+        border-top: 1px dashed rgba(255, 255, 255, .1);
+        border-bottom: 1px dashed rgba(255, 255, 255, .1);
+        padding: .8rem .2rem 1.6rem .2rem;
+        margin-bottom: .6rem;
     }
 
     .admin-dash .bar {
         background: linear-gradient(180deg, #60a5fa, #2563eb);
         border-radius: 8px 8px 4px 4px;
         position: relative;
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
     }
 
     .admin-dash .bar::after {
         content: attr(data-m);
         position: absolute;
-        bottom: -1.05rem;
+        bottom: -1.35rem;
         left: 50%;
         transform: translateX(-50%);
-        font-size: .63rem;
-        color: #64748b;
+        font-size: .68rem;
+        color: #94a3b8;
         font-weight: 700;
+        white-space: nowrap;
     }
+
 
     .admin-dash .target-wrap {
         display: grid;
@@ -179,7 +187,7 @@
         width: 100%;
         height: 12px;
         border-radius: 999px;
-        background: #e2e8f0;
+        background: rgba(255, 255, 255, 0.08);
         overflow: hidden;
     }
 
@@ -191,7 +199,7 @@
     .admin-dash .target-num {
         font-size: 2rem;
         font-weight: 800;
-        color: #162033;
+        color: #ffffff;
         letter-spacing: -.02em;
     }
 
@@ -204,14 +212,14 @@
 
     .admin-dash .gauge-meta div {
         text-align: center;
-        background: #f8fafc;
-        border: 1px solid rgba(148, 163, 184, .18);
+        background: rgba(12, 12, 18, 0.6);
+        border: 1px solid rgba(255, 255, 255, .08);
         border-radius: 10px;
         padding: .46rem .32rem;
     }
 
     .admin-dash .gauge-meta .k {
-        color: #64748b;
+        color: #94a3b8;
         font-size: .69rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -220,7 +228,7 @@
     .admin-dash .gauge-meta .v {
         font-size: .9rem;
         font-weight: 800;
-        color: #162033;
+        color: #ffffff;
         margin-top: .1rem;
     }
 
@@ -233,26 +241,27 @@
 
     .admin-dash .quick-action {
         text-decoration: none;
-        color: #162033;
+        color: #ffffff;
         padding: .82rem;
         transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
 
     .admin-dash .quick-action:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 34px rgba(15, 23, 42, .12);
-        border-color: rgba(96, 165, 250, .32);
+        box-shadow: 0 18px 34px rgba(0, 0, 0, .4);
+        border-color: rgba(59, 130, 246, 0.4);
     }
+
 
     .admin-dash .quick-action .title {
         font-weight: 800;
         font-size: .88rem;
         margin-bottom: .2rem;
-        color: #162033;
+        color: #ffffff;
     }
 
     .admin-dash .quick-action .desc {
-        color: #64748b;
+        color: #94a3b8;
         font-size: .8rem;
     }
 
@@ -264,13 +273,13 @@
     .admin-dash .table-lite th,
     .admin-dash .table-lite td {
         padding: .52rem .2rem;
-        border-bottom: 1px solid rgba(148, 163, 184, .16);
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
         font-size: .82rem;
-        color: #334155;
+        color: #e2e8f0;
     }
 
     .admin-dash .table-lite th {
-        color: #64748b;
+        color: #94a3b8;
         font-size: .72rem;
         text-transform: uppercase;
         letter-spacing: .04em;
@@ -286,14 +295,15 @@
     }
 
     .admin-dash .status-ok {
-        background: rgba(34, 197, 94, .2);
-        color: #86efac;
+        background: rgba(16, 185, 129, .2);
+        color: #34d399;
     }
 
     .admin-dash .status-pending {
-        background: rgba(250, 204, 21, .2);
-        color: #fde68a;
+        background: rgba(245, 158, 11, .2);
+        color: #fbbf24;
     }
+
 
     .admin-dash .audit-list {
         margin: 0;

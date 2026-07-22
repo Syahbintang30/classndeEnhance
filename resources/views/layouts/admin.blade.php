@@ -28,17 +28,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --adm-bg: #f6f8fc;
-            --adm-surface: #ffffff;
-            --adm-card: #ffffff;
-            --adm-border: rgba(15, 23, 42, 0.10);
-            --adm-text: #162033;
-            --adm-muted: #6b7280;
-            --adm-primary: #1d4ed8;
-            --adm-primary-soft: rgba(29, 78, 216, 0.10);
-            --adm-ok: #22c55e;
-            --adm-warn: #f43f5e;
-            --adm-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+            --adm-bg: #08080a;
+            --adm-surface: #0c0c12;
+            --adm-card: rgba(18, 18, 26, 0.75);
+            --adm-border: rgba(255, 255, 255, 0.1);
+            --adm-text: #f3f4f6;
+            --adm-muted: #94a3b8;
+            --adm-primary: #3b82f6;
+            --adm-primary-soft: rgba(59, 130, 246, 0.18);
+            --adm-ok: #10b981;
+            --adm-warn: #f59e0b;
+            --adm-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
         body.admin-shell,
@@ -51,9 +51,7 @@
 
         body.admin-shell {
             margin: 0;
-            background:
-                radial-gradient(circle at top right, rgba(59, 130, 246, 0.10) 0%, rgba(59, 130, 246, 0) 28%),
-                linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%) !important;
+            background: #08080a !important;
             color: var(--adm-text) !important;
         }
 
@@ -61,10 +59,11 @@
             min-height: 100vh;
             display: grid;
             grid-template-columns: 264px minmax(0, 1fr);
+            background: #08080a;
         }
 
         .admin-shell .admin-sidebar {
-            background: var(--adm-surface) !important;
+            background: #0c0c12 !important;
             border-right: 1px solid var(--adm-border) !important;
             padding: 1.2rem 1rem;
             position: sticky;
@@ -79,7 +78,7 @@
             align-items: center;
             gap: .7rem;
             text-decoration: none;
-            color: var(--adm-text);
+            color: #ffffff;
             font-weight: 800;
             letter-spacing: -.02em;
             margin-bottom: 1.2rem;
@@ -94,14 +93,14 @@
             justify-content: center;
             color: #ffffff;
             background: linear-gradient(145deg, #2563eb, #1d4ed8);
-            box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
         }
 
         .admin-shell .menu-label {
             font-size: .72rem;
             letter-spacing: .08em;
             text-transform: uppercase;
-            color: var(--adm-muted);
+            color: #64748b;
             margin: .95rem .65rem .45rem;
             font-weight: 700;
         }
@@ -111,25 +110,27 @@
             align-items: center;
             gap: .65rem;
             padding: .65rem .75rem;
-            border-radius: 10px;
+            border-radius: 12px;
             text-decoration: none;
-            color: #475569;
+            color: #94a3b8;
             font-size: .92rem;
             font-weight: 600;
             transition: background .16s ease, color .16s ease, transform .16s ease;
             margin-bottom: .2rem;
+            border: 1px solid transparent;
         }
 
         .admin-shell .side-link:hover {
-            background: rgba(37, 99, 235, 0.08);
-            color: #0f172a;
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
             transform: translateX(1px);
         }
 
         .admin-shell .side-link.active {
-            color: var(--adm-primary);
-            background: var(--adm-primary-soft);
-            box-shadow: inset 0 0 0 1px rgba(29, 78, 216, .10);
+            color: #60a5fa !important;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.15)) !important;
+            border-color: rgba(59, 130, 246, 0.35);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
         }
 
         .admin-shell .side-link i {
@@ -140,16 +141,17 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
+            background: #08080a;
         }
 
         .admin-shell .admin-topbar {
             position: sticky;
             top: 0;
             z-index: 1010;
-            background: rgba(248, 251, 255, .92) !important;
+            background: rgba(8, 8, 12, 0.9) !important;
             border-bottom: 1px solid var(--adm-border) !important;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .admin-shell .topbar-inner {
@@ -180,11 +182,15 @@
         .admin-shell .top-search input {
             width: 100%;
             border: 1px solid var(--adm-border);
-            background: var(--adm-card);
+            background: rgba(18, 18, 26, 0.8) !important;
             border-radius: 12px;
             height: 42px;
             padding: 0 .95rem 0 2.2rem;
-            color: var(--adm-text);
+            color: #ffffff !important;
+        }
+
+        .admin-shell .top-search input::placeholder {
+            color: #64748b;
         }
 
         .admin-shell .top-search i {
@@ -201,10 +207,10 @@
             top: calc(100% + 8px);
             left: 0;
             right: 0;
-            background: #ffffff;
-            border: 1px solid var(--adm-border);
+            background: #0d0d14 !important;
+            border: 1px solid var(--adm-border) !important;
             border-radius: 12px;
-            box-shadow: 0 16px 42px rgba(15, 23, 42, .12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             z-index: 1050;
             display: none;
@@ -225,7 +231,7 @@
             text-align: left;
             border: 0;
             background: transparent;
-            color: var(--adm-text);
+            color: #ffffff;
             padding: .62rem .78rem;
             font-size: .9rem;
             cursor: pointer;
@@ -233,8 +239,9 @@
 
         .admin-shell .top-search-item:hover,
         .admin-shell .top-search-item.active {
-            background: rgba(37, 99, 235, 0.08);
+            background: rgba(59, 130, 246, 0.15);
         }
+
 
         .admin-shell .top-search-item small {
             color: var(--adm-muted);
@@ -270,9 +277,9 @@
 
         .admin-shell .btn-lms {
             border-radius: 10px;
-            border: 1px solid rgba(37, 99, 235, .22);
-            background: #eff6ff;
-            color: #1d4ed8;
+            border: 1px solid rgba(59, 130, 246, 0.35) !important;
+            background: rgba(59, 130, 246, 0.15) !important;
+            color: #60a5fa !important;
             padding: .45rem .75rem;
             font-size: .85rem;
             font-weight: 700;
@@ -282,22 +289,26 @@
             gap: .4rem;
             line-height: 1;
             white-space: nowrap;
+            transition: all 0.2s ease;
         }
 
         .admin-shell .btn-lms,
         .admin-shell .btn-lms:visited,
         .admin-shell .btn-lms:hover,
         .admin-shell .btn-lms:focus {
-            color: #1d4ed8 !important;
+            color: #ffffff !important;
+            background: rgba(59, 130, 246, 0.3) !important;
+            border-color: rgba(59, 130, 246, 0.6) !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
             text-decoration: none;
         }
 
         .admin-shell .user-dropdown > a {
-            border: 1px solid var(--adm-border);
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
             border-radius: 999px;
-            background: var(--adm-card);
-            color: var(--adm-text);
-            padding: .35rem .6rem;
+            background: rgba(18, 18, 26, 0.8) !important;
+            color: #ffffff !important;
+            padding: .35rem .65rem;
             font-size: .85rem;
             font-weight: 700;
             display: inline-flex;
@@ -309,14 +320,16 @@
             width: 28px;
             height: 28px;
             border-radius: 999px;
-            background: linear-gradient(140deg, #dbeafe, #bfdbfe);
-            color: #1d4ed8;
+            background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
+            color: #ffffff !important;
             font-size: .75rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
         }
+
 
         .admin-shell .admin-content {
             padding: 1.25rem;
