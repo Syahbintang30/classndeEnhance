@@ -73,6 +73,19 @@
         }
 
         @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+            html, body {
+                background-color: #08080a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
             body * {
                 visibility: hidden;
             }
@@ -80,13 +93,30 @@
                 visibility: visible;
             }
             .cert-printable {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                background: #000 !important;
+                position: absolute !important;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 90% !important;
+                max-width: 980px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .cert-frame {
+                border: 3px solid #F59E0B !important;
+                box-shadow: none !important;
+                background: #0f0f14 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .cert-inner-border {
+                border: 1px solid rgba(245, 158, 11, 0.4) !important;
+                outline: none !important;
+            }
+            .gold-gradient-text {
+                background: none !important;
+                -webkit-text-fill-color: initial !important;
+                color: #F59E0B !important;
             }
             .no-print {
                 display: none !important;
