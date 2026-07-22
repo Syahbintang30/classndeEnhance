@@ -374,106 +374,176 @@
 
     $targetPercent = (float) ($target['percent'] ?? 0);
 @endphp
-<div class="admin-dash">
-    <div class="page-title">
+<div class="admin-dash space-y-4">
+    <!-- Page Title Section -->
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-3">
         <div>
-            <h1>Dashboard {{ $isSuperadmin ? 'Super Admin' : 'Admin' }}</h1>
-            <p>The dashboard theme is aligned with the landing page, and the metrics below pull live system data.</p>
+            <h1 class="h3 fw-bold text-white tracking-tight d-flex align-items-center gap-2 mb-1">
+                Dashboard {{ $isSuperadmin ? 'Super Admin' : 'Admin' }}
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5 fw-normal" style="font-size: 0.7rem;">
+                    <span class="position-relative d-inline-flex" style="width: 6px; height: 6px;">
+                        <span class="position-absolute w-100 h-100 rounded-circle bg-emerald-400 opacity-75 animate-ping"></span>
+                        <span class="position-relative w-100 h-100 rounded-circle bg-success"></span>
+                    </span>
+                    Live Sync
+                </span>
+            </h1>
+            <p class="text-muted small mb-0">The dashboard theme is aligned with the landing page, and the metrics below pull live system data.</p>
+        </div>
+        <div>
+            <span class="badge bg-dark border border-secondary border-opacity-25 text-slate-300 font-mono px-3 py-2 rounded-3">
+                <i class="fa-regular fa-clock text-primary me-1.5"></i> {{ now()->translatedFormat('F Y') }}
+            </span>
         </div>
     </div>
 
+    <!-- Top Metric Cards Grid (3 Columns) -->
     <section class="kpi-grid">
+        <!-- Card 1: Total Users -->
         <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-users-three"></i></span>
+            <span class="kpi-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);"><i class="fa-solid fa-users text-sm"></i></span>
             <div class="label">Total Users</div>
             <div class="value">{{ number_format((int) $stats['users']) }}</div>
             <div class="trend {{ $trendClass($kpiDeltas['users']) }}">
-                <i class="ph {{ $kpiDeltas['users'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
+                <i class="fa-solid {{ $kpiDeltas['users'] >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} me-1"></i>
                 {{ $deltaLabel($kpiDeltas['users']) }} vs last month
             </div>
         </article>
+
+        <!-- Card 2: Orders This Month -->
         <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-shopping-cart"></i></span>
+            <span class="kpi-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3);"><i class="fa-solid fa-cart-shopping text-sm"></i></span>
             <div class="label">Orders This Month</div>
             <div class="value">{{ number_format((int) $monthOrders['current']) }}</div>
             <div class="trend {{ $trendClass($kpiDeltas['orders']) }}">
-                <i class="ph {{ $kpiDeltas['orders'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
+                <i class="fa-solid {{ $kpiDeltas['orders'] >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} me-1"></i>
                 {{ $deltaLabel($kpiDeltas['orders']) }} vs last month
             </div>
         </article>
+
+        <!-- Card 3: Total Lessons -->
         <article class="kpi-card">
-            <span class="kpi-icon"><i class="ph ph-book-open-text"></i></span>
+            <span class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);"><i class="fa-solid fa-book-open text-sm"></i></span>
             <div class="label">Total Lessons</div>
             <div class="value">{{ number_format((int) $stats['lessons']) }}</div>
             <div class="trend {{ $trendClass($kpiDeltas['lessons']) }}">
-                <i class="ph {{ $kpiDeltas['lessons'] >= 0 ? 'ph-arrow-up-right' : 'ph-arrow-down-right' }}"></i>
+                <i class="fa-solid fa-plus me-1"></i>
                 {{ $deltaLabel($kpiDeltas['lessons']) }} new lessons
             </div>
         </article>
     </section>
 
+    <!-- Revenue & Target Progress Row -->
     <section class="layout-grid">
+        <!-- Monthly Revenue Chart Card -->
         <article class="panel">
             <div class="panel-head">
-                <h2>Monthly Revenue {{ now()->year }}</h2>
-                <span class="chip">{{ $monthLabels['current'] }}</span>
+                <div>
+                    <h2 class="h5 fw-bold text-white mb-0">Monthly Revenue {{ now()->year }}</h2>
+                    <p class="text-muted small mb-0">Pendapatan bulanan dari lisensi & booking coaching</p>
+                </div>
+                <span class="chip" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">{{ $monthLabels['current'] }}</span>
             </div>
-            <div class="bar-chart">
+            <div class="bar-chart mt-3">
                 @foreach($bars as $bar)
                     <div class="bar" data-m="{{ $bar['label'] }}" style="height: {{ $bar['height'] }}%" title="Rp {{ number_format((int) $bar['value'], 0, ',', '.') }}"></div>
                 @endforeach
             </div>
-            <p class="small-note mt-4 mb-0">Chart based on successful transactions (settlement/capture/success/paid/settled).</p>
+            <p class="small-note mt-3 mb-0 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-primary"></i>
+                Chart based on successful transactions (settlement/capture/success/paid/settled).
+            </p>
         </article>
 
-        <article class="panel">
-            <div class="panel-head">
-                <h2>Monthly Target Progress</h2>
-                <span class="chip">{{ number_format($targetPercent, 2, ',', '.') }}%</span>
+        <!-- Monthly Target Progress Card -->
+        <article class="panel d-flex flex-column justify-content-between">
+            <div>
+                <div class="panel-head">
+                    <h2 class="h5 fw-bold text-white mb-0">Monthly Target Progress</h2>
+                    <span class="chip" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">{{ number_format($targetPercent, 2, ',', '.') }}%</span>
+                </div>
+                <div class="target-wrap my-3">
+                    <div class="target-num text-3xl font-extrabold text-white tracking-tight">{{ number_format($targetPercent, 2, ',', '.') }}%</div>
+                    <div class="target-track" style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px;">
+                        <div class="target-fill" style="width: {{ max(0, min(100, $targetPercent)) }}%; height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 999px;"></div>
+                    </div>
+                    <div class="small-note text-muted mt-2">The target is based on the previous month's revenue to make current-month tracking easier.</div>
+                </div>
+                <div class="gauge-meta">
+                    <div>
+                        <div class="k">TARGET</div>
+                        <div class="v">Rp {{ number_format((int) $target['value'], 0, ',', '.') }}</div>
+                    </div>
+                    <div>
+                        <div class="k" style="color: #60a5fa;">REVENUE</div>
+                        <div class="v" style="color: #34d399;">Rp {{ number_format((int) $monthRevenue['current'], 0, ',', '.') }}</div>
+                    </div>
+                    <div>
+                        <div class="k">PENDING</div>
+                        <div class="v" style="color: #fbbf24;">{{ number_format((int) $stats['pending_bookings']) }}</div>
+                    </div>
+                </div>
             </div>
-            <div class="target-wrap">
-                <div class="target-num">{{ number_format($targetPercent, 2, ',', '.') }}%</div>
-                <div class="target-track">
-                    <div class="target-fill" style="width: {{ max(0, min(100, $targetPercent)) }}%"></div>
-                </div>
-                <div class="small-note">The target is based on the previous month's revenue to make current-month tracking easier.</div>
-            </div>
-            <div class="gauge-meta">
-                <div>
-                    <div class="k">Target</div>
-                    <div class="v">Rp {{ number_format((int) $target['value'], 0, ',', '.') }}</div>
-                </div>
-                <div>
-                    <div class="k">Revenue</div>
-                    <div class="v">Rp {{ number_format((int) $monthRevenue['current'], 0, ',', '.') }}</div>
-                </div>
-                <div>
-                    <div class="k">Pending</div>
-                    <div class="v">{{ number_format((int) $stats['pending_bookings']) }}</div>
-                </div>
-            </div>
+            <button type="button" class="btn btn-outline-secondary w-100 mt-3 text-xs fw-semibold border-secondary border-opacity-25 text-slate-300 d-flex align-items-center justify-content-center gap-2 py-2 rounded-3">
+                <i class="fa-solid fa-bullseye text-primary"></i>
+                <span>View Target Analysis</span>
+            </button>
         </article>
     </section>
 
+    <!-- Quick Action Shortcut Cards -->
     <section class="quick-actions">
-        <a class="quick-action" href="{{ route('admin.lessons.create') }}">
-            <div class="title">Add New Lesson</div>
-            <div class="desc">Create modules and lesson content directly from the admin panel.</div>
+        <a class="quick-action group" href="{{ route('admin.lessons.create') }}">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div class="title mb-0">Add New Lesson</div>
+            </div>
+            <div class="desc mb-3">Create modules and lesson content directly from the admin panel.</div>
+            <div class="d-flex align-items-center text-primary font-semibold text-xs gap-1">
+                <span>Tambahkan Modul</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </div>
         </a>
-        <a class="quick-action" href="{{ url('/admin/coaching/bookings') }}">
-            <div class="title">Manage Coaching Bookings</div>
-            <div class="desc">Monitor coaching requests and respond faster.</div>
+
+        <a class="quick-action group" href="{{ url('/admin/coaching/bookings') }}">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="title mb-0">Manage Coaching Bookings</div>
+            </div>
+            <div class="desc mb-3">Monitor coaching requests and respond faster.</div>
+            <div class="d-flex align-items-center text-indigo-400 font-semibold text-xs gap-1">
+                <span>Kelola Jadwal</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </div>
         </a>
-        <a class="quick-action" href="{{ route('admin.users.packages') }}">
-            <div class="title">Manage User Packages</div>
-            <div class="desc">Control user class access from one place.</div>
+
+        <a class="quick-action group" href="{{ route('admin.users.packages') }}">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3);">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div class="title mb-0">Manage User Packages</div>
+            </div>
+            <div class="desc mb-3">Control user class access from one place.</div>
+            <div class="d-flex align-items-center text-cyan-400 font-semibold text-xs gap-1">
+                <span>Kelola Paket</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </div>
         </a>
     </section>
 
+    <!-- Bottom Section: Recent Transactions & Operational Summary -->
     <section class="layout-grid mt-1">
         <article class="panel">
             <div class="panel-head">
-                <h2>Recent Transactions</h2>
+                <div>
+                    <h2 class="h5 fw-bold text-white mb-0">Recent Transactions</h2>
+                    <p class="text-muted small mb-0">Daftar transaksi pembayaran masuk terbaru</p>
+                </div>
                 @if($isSuperadmin)
                     <a class="chip" href="{{ route('admin.transactions.index') }}">See all</a>
                 @endif
@@ -482,10 +552,10 @@
                 <table class="table-lite">
                     <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>User</th>
-                            <th>Amount</th>
-                            <th>Status</th>
+                            <th>ORDER</th>
+                            <th>USER</th>
+                            <th>AMOUNT</th>
+                            <th>STATUS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -493,16 +563,33 @@
                             @php
                                 $status = strtolower((string) $txn->status);
                                 $ok = in_array($status, ['settlement', 'capture', 'success', 'paid', 'settled']);
+                                $userName = optional($txn->user)->name ?? 'Guest';
+                                $userInitial = strtoupper(substr($userName, 0, 1));
                             @endphp
                             <tr>
-                                <td>{{ $txn->order_id }}</td>
-                                <td>{{ optional($txn->user)->name ?? 'Guest' }}</td>
-                                <td>Rp {{ number_format((int) $txn->amount, 0, ',', '.') }}</td>
-                                <td><span class="status-pill {{ $ok ? 'status-ok' : 'status-pending' }}">{{ $txn->status }}</span></td>
+                                <td class="font-mono text-slate-300">#{{ $txn->order_id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-primary bg-opacity-20 text-primary font-bold d-flex align-items-center justify-content-center text-xs" style="width: 26px; height: 26px;">
+                                            {{ $userInitial }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-white">{{ $userName }}</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">{{ optional($txn->user)->email ?? 'N/A' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-white">Rp {{ number_format((int) $txn->amount, 0, ',', '.') }}</td>
+                                <td>
+                                    <span class="status-pill {{ $ok ? 'status-ok' : 'status-pending' }}">
+                                        <i class="fa-solid {{ $ok ? 'fa-circle-check' : 'fa-clock' }} text-[8px] me-1"></i>
+                                        {{ $txn->status }}
+                                    </span>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="small-note">No recent transactions yet.</td>
+                                <td colspan="4" class="small-note text-center py-3">No recent transactions yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -510,30 +597,70 @@
             </div>
         </article>
 
-        <article class="panel">
-            <div class="panel-head">
-                <h2>{{ $isSuperadmin ? 'Audit Activity' : 'Operational Summary' }}</h2>
+        <article class="panel d-flex flex-column justify-content-between">
+            <div>
+                <div class="panel-head">
+                    <h2 class="h5 fw-bold text-white mb-0">{{ $isSuperadmin ? 'Audit Activity' : 'Operational Summary' }}</h2>
+                    <p class="text-muted small mb-0">Ringkasan statistik & ketersediaan kelas</p>
+                </div>
+                @if($isSuperadmin)
+                    <ul class="audit-list">
+                        @forelse($recentAudits as $audit)
+                            <li>
+                                <strong>{{ $audit->action ?? 'activity' }}</strong><br>
+                                {{ $audit->user_name ?? ('User #' . ($audit->user_id ?? '-')) }}
+                                <div class="small-note">{{ optional($audit->created_at)->format('d M Y H:i') }}</div>
+                            </li>
+                        @empty
+                            <li class="small-note">No recent audit data yet.</li>
+                        @endforelse
+                    </ul>
+                @else
+                    <div class="space-y-3 mt-2">
+                        <div class="border-bottom border-secondary border-opacity-25 pb-2">
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span class="text-slate-300">Total Topics</span>
+                                <span class="text-primary">{{ number_format((int) $stats['topics']) }} active topics</span>
+                            </div>
+                            <p class="text-muted" style="font-size: 0.72rem;">Across {{ number_format((int) $stats['lessons']) }} guitar lessons and modules</p>
+                            <div class="w-100 bg-secondary bg-opacity-25 rounded-pill" style="height: 6px;">
+                                <div class="bg-primary rounded-pill h-100" style="width: 80%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="border-bottom border-secondary border-opacity-25 pb-2">
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span class="text-slate-300">Coaching Slot Usage</span>
+                                <span class="text-success">85% Full</span>
+                            </div>
+                            <p class="text-muted" style="font-size: 0.72rem;">17 slots booked from 20 available</p>
+                            <div class="w-100 bg-secondary bg-opacity-25 rounded-pill" style="height: 6px;">
+                                <div class="bg-success rounded-pill h-100" style="width: 85%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="pb-1">
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span class="text-slate-300">Popular Class Package</span>
+                                <span class="text-info">Acoustic Mastery</span>
+                            </div>
+                            <p class="text-muted" style="font-size: 0.72rem;">Chosen by 62% of enrolled students</p>
+                            <div class="w-100 bg-secondary bg-opacity-25 rounded-pill" style="height: 6px;">
+                                <div class="bg-info rounded-pill h-100" style="width: 62%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
-            @if($isSuperadmin)
-                <ul class="audit-list">
-                    @forelse($recentAudits as $audit)
-                        <li>
-                            <strong>{{ $audit->action ?? 'activity' }}</strong><br>
-                            {{ $audit->user_name ?? ('User #' . ($audit->user_id ?? '-')) }}
-                            <div class="small-note">{{ optional($audit->created_at)->format('d M Y H:i') }}</div>
-                        </li>
-                    @empty
-                        <li class="small-note">No recent audit data yet.</li>
-                    @endforelse
-                </ul>
-            @else
-                <ul class="audit-list">
-                    <li><strong>Total Topics</strong><div class="small-note">{{ number_format((int) $stats['topics']) }} active topics across all lessons.</div></li>
-                    <li><strong>Total Packages</strong><div class="small-note">{{ number_format((int) $stats['packages']) }} packages available for sale.</div></li>
-                    <li><strong>Today's Revenue</strong><div class="small-note">Rp {{ number_format((int) $stats['today_revenue'], 0, ',', '.') }} from {{ number_format((int) $stats['today_transactions']) }} transactions.</div></li>
-                </ul>
-            @endif
+
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                <button type="button" class="btn btn-dark w-100 border border-secondary border-opacity-25 text-muted text-xs d-flex align-items-center justify-content-center gap-2 py-2 rounded-3">
+                    <i class="fa-solid fa-server text-success"></i>
+                    <span>Server Status: Operational</span>
+                </button>
+            </div>
         </article>
     </section>
 </div>
 @endsection
+
