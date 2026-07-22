@@ -1,30 +1,47 @@
 @extends('layouts.app')
 
+@push('head')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+@endpush
+
 @section('content')
 @php
     $participantName = optional($booking->user)->name ?: 'Participant';
     $sessionLabel = $booking->session_number ?? $booking->id;
     $isWarrantySession = ($booking->ticket && $booking->ticket->source === 'warranty');
+    $isUserAdmin = ($isAdmin ?? false) || (auth()->check() && (auth()->user()->is_admin || auth()->user()->role === 'admin'));
 @endphp
 
-<div class="vc-root">
-    <header class="vc-header">
+
+<div class="vc-root relative selection:bg-blue-600 selection:text-white" x-data="{ mobileMenuOpen: false }">
+    
+    <!-- Ambient Background Glows -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-[600px] h-[500px] bg-blue-600/10 rounded-full blur-[160px] mix-blend-screen"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[160px] mix-blend-screen"></div>
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 36px 36px;"></div>
+    </div>
+
+    <!-- Session Header Bar -->
+    <header class="vc-header relative z-10">
         <div class="vc-session-info">
             <h1 class="vc-title">
                 <span class="vc-avatar">{{ strtoupper(substr($participantName, 0, 1)) }}</span>
-                <span>{{ $participantName }}</span>
-                <span class="vc-dot">·</span>
-                <span>Session {{ $sessionLabel }}</span>
+                <span class="text-white font-bold text-sm sm:text-base">{{ $participantName }}</span>
+                <span class="vc-dot text-gray-500">·</span>
+                <span class="text-gray-300 font-semibold text-xs sm:text-sm">Session {{ $sessionLabel }}</span>
             </h1>
 
             <div class="vc-meta-row">
-                <span class="vc-pill vc-pill-muted">{{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y — H:i') }}</span>
-                <span class="vc-pill vc-pill-ok">{{ ucfirst($booking->status) }}</span>
+                <span class="vc-pill vc-pill-muted flex items-center gap-1.5"><i class="fa-regular fa-clock text-[10px]"></i> {{ \Carbon\Carbon::parse($booking->booking_time)->format('d M Y — H:i') }}</span>
+                <span class="vc-pill vc-pill-ok flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-[10px]"></i> {{ ucfirst($booking->status) }}</span>
                 <span class="vc-pill vc-pill-timer" id="vc-countdown-timer">
-                    <svg class="vc-timer-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-right: 4px;">
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
-                        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <i class="fa-regular fa-hourglass-half text-[11px] mr-1"></i>
                     <span id="vc-countdown-text">1:00:00</span>
                 </span>
                 @if(($isAdmin ?? false) && !empty($booking->notes))
@@ -33,37 +50,52 @@
             </div>
         </div>
 
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
-                <button type="button" id="vc-theme-toggle" class="vc-theme-btn" title="Toggle theme" aria-label="Toggle theme">
-                    <svg id="vc-theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <svg id="vc-theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:none;">
-                        <path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36-6.36-1.41 1.41M7.05 16.95l-1.41 1.41m12.72 0-1.41-1.41M7.05 7.05 5.64 5.64M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-
-                <div class="vc-live-pill">
-                    <span class="vc-live-dot"></span>
-                    <span>Live</span>
-                </div>
+        <div class="flex items-center gap-3">
+            <div class="vc-live-pill">
+                <span class="vc-live-dot"></span>
+                <span>LIVE</span>
+            </div>
         </div>
     </header>
 
-    <main class="vc-main">
+
+    <main class="vc-main relative z-10">
         <section class="vc-video-grid">
             <div class="vc-video-card" id="remote-media">
-                <div class="vc-empty" id="vc-empty-state">Waiting for the other participant to join...</div>
+                <div class="vc-empty" id="vc-empty-state">
+                    <div class="flex flex-col items-center justify-center space-y-3.5 p-6 text-center">
+                        <div class="relative flex items-center justify-center">
+                            <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-2xl animate-pulse shadow-lg shadow-blue-500/20">
+                                <i class="fa-solid {{ $isUserAdmin ? 'fa-user-graduate' : 'fa-user-ninja' }}"></i>
+                            </div>
+                            <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-blue-500"></span>
+                            </span>
+                        </div>
+                        <div class="space-y-1">
+                            @if($isUserAdmin)
+                                <h3 class="font-bold text-white text-sm sm:text-base">Waiting for {{ $participantName }}...</h3>
+                                <p class="text-xs text-gray-400 max-w-xs leading-relaxed">{{ $participantName }} is currently preparing. They will join the session shortly.</p>
+                            @else
+                                <h3 class="font-bold text-white text-sm sm:text-base">Waiting for Nde...</h3>
+                                <p class="text-xs text-gray-400 max-w-xs leading-relaxed">Nde is currently preparing for your session. Please hold on a moment.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="vc-video-card vc-local" id="local-media">
                 <div class="vc-local-fallback" id="vc-local-fallback">
                     <div class="vc-fallback-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
-                    <span>Camera off</span>
+                    <span class="text-xs font-semibold text-gray-400">Camera Off</span>
                 </div>
                 <div class="vc-tile-label">You</div>
             </div>
         </section>
+
 
         <aside class="vc-sidepanel" id="vc-sidepanel" hidden>
             <div class="vc-sidepanel-head">
@@ -207,9 +239,41 @@
         <h3 id="vc-modal-title">End Session</h3>
         <p id="vc-modal-text">Are you sure you want to end this session?</p>
         @if(($isAdmin ?? false) && ! $isWarrantySession)
-            <div class="vc-modal-field">
-                <label for="vc-warranty-minutes" class="vc-modal-label">Warranty minutes to grant</label>
-                <input id="vc-warranty-minutes" type="number" min="0" max="180" inputmode="numeric" placeholder="e.g. 40" class="vc-modal-input" />
+            <div class="vc-modal-field mt-4 pt-3 border-t border-white/10 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label for="vc-warranty-minutes" class="vc-modal-label font-bold text-amber-300 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-ticket text-amber-400"></i>
+                        <span>Issue Compensation Warranty Ticket</span>
+                    </label>
+                    <span class="text-[10px] text-amber-400/70 font-semibold uppercase">(Optional)</span>
+                </div>
+                
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Select quick minutes or type a custom amount to grant student a compensation ticket:
+                </p>
+
+                <!-- Quick Selection Chips -->
+                <div class="vc-warranty-chips flex flex-wrap gap-2 py-1">
+                    <button type="button" class="vc-chip active" data-mins="0">None (0m)</button>
+                    <button type="button" class="vc-chip" data-mins="15">15m</button>
+                    <button type="button" class="vc-chip" data-mins="30">30m</button>
+                    <button type="button" class="vc-chip" data-mins="45">45m</button>
+                    <button type="button" class="vc-chip" data-mins="60">60m</button>
+                </div>
+
+                <!-- Custom Input Field -->
+                <div class="vc-custom-input-wrap flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <input id="vc-warranty-minutes" type="number" min="0" max="180" inputmode="numeric" placeholder="Or type custom minutes (e.g., 40)" class="vc-modal-input w-full bg-zinc-950/80 border border-white/15 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 rounded-xl text-xs py-2.5 px-3 text-white transition placeholder-gray-500" value="" />
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">min</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Info Badge -->
+                <div id="vc-warranty-info-badge" class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-amber-400 text-xs"></i>
+                    <span id="vc-warranty-info-text">Session will end without issuing a warranty ticket.</span>
+                </div>
             </div>
         @endif
         <div class="vc-modal-actions">
@@ -219,6 +283,7 @@
         </div>
     </div>
 </div>
+
 
 <div id="vc-session-ended-backdrop" class="vc-modal-backdrop" aria-hidden="true">
     <div class="vc-modal" role="dialog" aria-modal="true" aria-labelledby="vc-session-ended-title">
@@ -246,15 +311,18 @@
 
 @push('styles')
 <style>
+    body { background-color: #08080a !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    body > nav { display: none !important; }
+    
     .vc-root {
-        min-height: calc(100vh - 20px);
-        background: radial-gradient(circle at 10% 10%, #1a1c22 0%, #090a0d 45%, #060608 100%);
+        min-height: 100vh;
+        background: #08080a !important;
         color: #eceff4;
         display: flex;
         flex-direction: column;
-        padding: 14px;
-        gap: 14px;
-        font-family: "Manrope", "Segoe UI", sans-serif;
+        padding: 16px;
+        gap: 16px;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     .vc-header {
@@ -262,11 +330,13 @@
         justify-content: space-between;
         align-items: center;
         gap: 14px;
-        background: rgba(15, 17, 23, 0.72);
+        background: rgba(12, 12, 18, 0.75);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 14px 18px;
-        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        padding: 1rem 1.5rem;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     }
 
     .vc-title {
@@ -274,20 +344,22 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 700;
     }
 
     .vc-avatar {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 999px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #4f7cff, #3656cc);
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
         font-size: 13px;
-        box-shadow: 0 8px 24px rgba(79, 124, 255, 0.28);
+        font-weight: 800;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
     }
 
     .vc-dot {
@@ -295,44 +367,46 @@
     }
 
     .vc-meta-row {
-        margin-top: 8px;
+        margin-top: 6px;
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
     }
 
     .vc-pill {
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 700;
         border-radius: 999px;
-        padding: 6px 11px;
+        padding: 5px 12px;
         border: 1px solid transparent;
     }
 
     .vc-pill-muted {
-        color: #c8ceda;
-        background: rgba(255, 255, 255, 0.07);
+        color: #cbd5e1;
+        background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.1);
     }
 
     .vc-pill-ok {
-        color: #80f3b5;
-        background: rgba(17, 99, 57, 0.3);
-        border-color: rgba(67, 196, 122, 0.35);
+        color: #34d399;
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.25);
     }
 
     .vc-pill-note {
-        color: #9ec6ff;
-        background: rgba(27, 52, 92, 0.32);
-        border-color: rgba(103, 161, 255, 0.3);
+        color: #60a5fa;
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.25);
     }
 
     .vc-pill-timer {
-        color: #ffc107;
-        background: rgba(97, 80, 14, 0.32);
-        border-color: rgba(255, 193, 7, 0.35);
+        color: #fbbf24;
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.25);
         display: inline-flex;
         align-items: center;
     }
+
 
     .vc-timer-icon {
         display: inline-block;
@@ -1105,6 +1179,35 @@
         color: #fff;
     }
 
+    .vc-warranty-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .vc-chip {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: #94a3b8;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .vc-chip:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+    .vc-chip.active {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fef08a;
+        border-color: rgba(245, 158, 11, 0.5);
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+    }
+
+
     .vc-btn {
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: #1b2231;
@@ -1779,13 +1882,42 @@
         window.location.href = leaveUrl;
     }
 
+    function updateWarrantyState(val) {
+        const mins = Math.max(0, parseInt(val || '0', 10));
+        const warrantyInput = document.getElementById('vc-warranty-minutes');
+        const warrantyChips = document.querySelectorAll('.vc-chip');
+        const warrantyInfoText = document.getElementById('vc-warranty-info-text');
+
+        if (warrantyInput) {
+            warrantyInput.value = mins > 0 ? mins : '';
+        }
+        if (warrantyChips) {
+            warrantyChips.forEach(chip => {
+                const chipMins = parseInt(chip.getAttribute('data-mins'), 10);
+                if (chipMins === mins || (mins === 0 && chipMins === 0)) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+        }
+        if (warrantyInfoText) {
+            if (mins > 0) {
+                warrantyInfoText.innerHTML = `Student will receive a 🎟️ <strong>Warranty Ticket of ${mins} Minutes</strong> compensation.`;
+            } else {
+                warrantyInfoText.textContent = 'Session will end without issuing a warranty ticket.';
+            }
+        }
+    }
+
     function openEndModal(message) {
         if (modalText && message) modalText.textContent = message;
         if (modalLeaveOnly) modalLeaveOnly.style.display = isAdmin ? '' : 'none';
         if (modalConfirm) modalConfirm.textContent = isAdmin ? 'End for Everyone' : 'End Now';
-        if (warrantyInput) warrantyInput.value = '';
+        updateWarrantyState(0);
         if (modal) modal.style.display = 'flex';
     }
+
 
     function closeEndModal() {
         if (modal) modal.style.display = 'none';
@@ -1928,11 +2060,29 @@
         // Update countdown timer every second
         setInterval(updateCountdownTimer, 1000);
 
+        const warrantyChips = document.querySelectorAll('.vc-chip');
+        const warrantyInputEl = document.getElementById('vc-warranty-minutes');
+        if (warrantyChips) {
+            warrantyChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    const mins = parseInt(this.getAttribute('data-mins'), 10);
+                    updateWarrantyState(mins);
+                });
+            });
+        }
+        if (warrantyInputEl) {
+            warrantyInputEl.addEventListener('input', function() {
+                const val = parseInt(this.value || '0', 10);
+                updateWarrantyState(val);
+            });
+        }
+
         if (btnDetail && chatPanel) {
             btnDetail.addEventListener('click', function () {
                 toggleChatPanel();
             });
         }
+
 
         if (closeChat && chatPanel) {
             closeChat.addEventListener('click', function () {

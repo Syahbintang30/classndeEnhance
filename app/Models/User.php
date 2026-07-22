@@ -263,6 +263,58 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if user is an Intermediate package member (or admin).
+     */
+    public function isIntermediateMember(): bool
+    {
+        if (($this->is_admin ?? false) || ($this->is_superadmin ?? false) || $this->hasIntermediateAccess()) {
+            return true;
+        }
+
+        $intermediateSlug = 'intermediate';
+        if (! empty($this->package_id)) {
+            $pkg = \App\Models\Package::find($this->package_id);
+            if ($pkg && ($pkg->slug ?? null) === $intermediateSlug) {
+                return true;
+            }
+        }
+
+        return \App\Models\UserPackage::where('user_id', $this->id)
+            ->whereHas('package', function ($q) use ($intermediateSlug) {
+                $q->where('slug', $intermediateSlug);
+            })
+            ->exists();
+    }
+
+    /**
+     * Check if user is a Beginner / Reguler package member (and not Intermediate).
+     */
+    public function isBeginnerMember(): bool
+    {
+        if ($this->isIntermediateMember()) {
+            return false;
+        }
+
+        $beginnerSlug = 'beginner';
+        if (! empty($this->package_id)) {
+            $pkg = \App\Models\Package::find($this->package_id);
+            if ($pkg && ($pkg->slug ?? null) === $beginnerSlug) {
+                return true;
+            }
+        }
+
+        return \App\Models\UserPackage::where('user_id', $this->id)
+            ->whereHas('package', function ($q) use ($beginnerSlug) {
+                $q->where('slug', $beginnerSlug);
+            })
+            ->exists();
+    }
+
+
+
+
+
+    /**
      * Check if user has intermediate package access
      * Uses configurable package ID and slugs instead of hardcoded values
      */

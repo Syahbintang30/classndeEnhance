@@ -397,6 +397,9 @@
             }
         })();
     </script>
+
+    @include('components.ai_chatbot')
 </body>
 
 </html>
+

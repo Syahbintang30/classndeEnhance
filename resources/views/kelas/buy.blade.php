@@ -111,17 +111,24 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
             @foreach($orderedPackages as $i => $pkg)
                 @php
-                    $paymentLink = $paymentBase
-                        ? ($paymentBase . '?package_id=' . $pkg->id . '&package_qty=1')
-                        : '#';
+                    $paymentLink = auth()->check()
+                        ? ($paymentBase ? ($paymentBase . '?package_id=' . $pkg->id . '&package_qty=1') : '#')
+                        : route('register', ['package_id' => $pkg->id, 'package_qty' => 1]);
+
                     $isFeatured = ($pkg->slug ?? null) === 'intermediate';
                     $benefits = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
-                    $price = number_format($pkg->price, 0, ',', '.');
-                    $imgSrc = $pkg->image
-                        ? asset('storage/' . $pkg->image)
-                        : asset('pictures/' . $pkg->slug . '.jpg');
+                    
+                    $isUserBeginner = auth()->check() && auth()->user()->isBeginnerMember();
+                    $rawPrice = $pkg->price;
+                    $isUpgradeDeal = false;
+                    if (($pkg->slug ?? null) === 'intermediate' && $isUserBeginner) {
+                        $rawPrice = 150000;
+                        $isUpgradeDeal = true;
+                    }
+                    $price = number_format($rawPrice, 0, ',', '.');
+
                     $isTicketPkg = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
-                    $pricingUnit = $isTicketPkg ? '/ 1x' : '/ lifetime';
+                    $pricingUnit = $isTicketPkg ? '/ 1x' : ($isUpgradeDeal ? '/ upgrade' : '/ lifetime');
                 @endphp
 
 
@@ -135,7 +142,7 @@
                     <!-- Best Value Floating Badge -->
                     <div class="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-[10px] uppercase tracking-wider shadow-lg shadow-blue-600/40 border border-blue-400/30 flex items-center gap-1.5">
                         <i class="fa-solid fa-crown text-[10px]"></i>
-                        <span>BEST VALUE</span>
+                        <span>{{ $isUpgradeDeal ? 'SPECIAL UPGRADE' : 'BEST VALUE' }}</span>
                     </div>
 
                     <!-- Card Header Image -->
@@ -147,10 +154,18 @@
                     <!-- Card Body -->
                     <div class="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-6 -mt-8 relative z-10">
                         <div>
-                            <span class="text-blue-400 text-[11px] font-bold uppercase tracking-wider block mb-1">Recommended</span>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-blue-400 text-[11px] font-bold uppercase tracking-wider block">Recommended</span>
+                                @if($isUpgradeDeal)
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold text-[9px] uppercase">Upgrade Deal</span>
+                                @endif
+                            </div>
                             <h3 class="font-display text-3xl text-white uppercase tracking-wide leading-tight mb-2">{{ $pkg->name }}</h3>
                             
                             <div class="flex items-baseline gap-1 my-3">
+                                @if($isUpgradeDeal)
+                                    <span class="text-xs text-gray-500 line-through mr-1">Rp 250.000</span>
+                                @endif
                                 <span class="text-xs font-bold text-gray-400">Rp</span>
                                 <span class="text-3xl font-extrabold text-white tracking-tight">{{ $price }}</span>
                                 <span class="text-xs text-gray-400 font-normal ml-1">{{ $pricingUnit }}</span>
@@ -158,7 +173,7 @@
 
 
                             <p class="text-gray-400 text-xs leading-relaxed mb-5">
-                                {{ $pkg->description ?? 'Full access to intermediate modules, advanced techniques, and personal coaching.' }}
+                                {{ $pkg->description ?? 'Full access to intermediate modules, advanced techniques, practice tools, and personal coaching.' }}
                             </p>
 
                             <!-- Benefits List -->
@@ -176,11 +191,12 @@
 
                         <!-- CTA Button -->
                         <a href="{{ $paymentLink }}" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider text-center shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                            <span>Get Access Now</span>
+                            <span>{{ $isUpgradeDeal ? 'Upgrade to Intermediate' : 'Get Access Now' }}</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </a>
                     </div>
                 </div>
+
                 @else
                 <!-- Regular Glass Card -->
                 <div class="group relative flex flex-col bg-zinc-950/50 border border-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-white/20 hover:bg-zinc-950/80">

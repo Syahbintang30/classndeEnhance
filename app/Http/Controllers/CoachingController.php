@@ -53,8 +53,18 @@ class CoachingController extends Controller
         // Package coaching diambil dari slug config supaya flow booking tetap fleksibel.
         $coachingPkg = \App\Models\Package::where('slug', config('coaching.coaching_package_slug'))->first();
 
-        return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg', 'warrantyTickets', 'hasWarrantyTicket', 'selectedWarrantyTicket'));
+        // Reschedule target booking if requested
+        $rescheduleBooking = null;
+        if ($user && request()->filled('reschedule')) {
+            $rescheduleBooking = CoachingBooking::where('id', request()->input('reschedule'))
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['pending', 'accepted'])
+                ->first();
+        }
+
+        return view('coaching.index', compact('tickets', 'bookings', 'hasAvailableTicket', 'coachingPkg', 'warrantyTickets', 'hasWarrantyTicket', 'selectedWarrantyTicket', 'rescheduleBooking'));
     }
+
 
     // Feedback sekarang disimpan bersama booking di storeBooking().
 
@@ -367,7 +377,131 @@ class CoachingController extends Controller
         return redirect()->route('coaching.thankyou', ['booking' => $booking->id])->with('success', 'Booking created successfully');
     }
 
+    /**
+     * Reschedule an existing coaching booking to a new time slot
+     */
+    public function rescheduleBooking(Request $request, CoachingBooking $booking)
+    {
+        $user = Auth::user();
+        if (! $user || $booking->user_id !== $user->id) {
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => 'Unauthorized action.'], 403);
+            }
+            return redirect()->back()->withErrors(['error' => 'Unauthorized action.']);
+        }
+
+        // Warranty sessions cannot be rescheduled — they are compensation sessions issued by admin.
+        $booking->load('ticket');
+        if ($booking->ticket && $booking->ticket->source === 'warranty') {
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => 'Sessions booked via Warranty Ticket cannot be rescheduled. This is a compensation session.'], 422);
+            }
+            return redirect()->back()->withErrors(['error' => 'Sessions booked via Warranty Ticket cannot be rescheduled. This is a compensation session.']);
+        }
+
+        // Enforce Max 1 Reschedule Per Session Policy
+        if (($booking->rescheduled_count ?? 0) >= 1) {
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => 'This coaching session has already been rescheduled once. Each session can only be rescheduled maximum 1 time.'], 422);
+            }
+            return redirect()->back()->withErrors(['error' => 'This coaching session has already been rescheduled once. Each session can only be rescheduled maximum 1 time.']);
+        }
+
+        $request->validate([
+            'new_booking_time' => 'required|string',
+            'reschedule_reason' => 'required|string|min:3|max:500',
+        ], [
+            'reschedule_reason.required' => 'Please provide a reason for rescheduling your coaching session.',
+            'reschedule_reason.min' => 'Reschedule reason must be at least 3 characters.',
+        ]);
+
+
+        $newTimeStr = $request->input('new_booking_time');
+        $reasonStr = $request->input('reschedule_reason');
+        try {
+            $newDt = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $newTimeStr);
+        } catch (\Throwable $e) {
+            try {
+                $newDt = \Carbon\Carbon::parse($newTimeStr);
+            } catch (\Throwable $e2) {
+                if ($request->wantsJson()) {
+                    return response()->json(['ok' => false, 'error' => 'Invalid date format.'], 422);
+                }
+                return redirect()->back()->withErrors(['error' => 'Invalid date format.']);
+            }
+        }
+
+        if ($newDt->isPast() || $newDt->toDateString() <= now()->toDateString()) {
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => 'Rescheduling must be done at least 1 day in advance (H-1). Same-day rescheduling is not permitted.'], 422);
+            }
+            return redirect()->back()->withErrors(['error' => 'Rescheduling must be done at least 1 day in advance (H-1). Same-day rescheduling is not permitted.']);
+        }
+
+        $date = $newDt->toDateString();
+        $time = $newDt->format('H:i');
+
+        // Check if Nde opened this slot on the capacity schedule
+        $capacityRow = \App\Models\CoachingSlotCapacity::where('date', $date)->where('time', $time)->first();
+        $maxCapacity = $capacityRow ? (int) ($capacityRow->capacity ?? 1) : 1;
+
+        if ($maxCapacity <= 0) {
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => 'This slot is disabled on Nde\'s schedule calendar. Please select an available slot.'], 422);
+            }
+            return redirect()->back()->withErrors(['error' => 'This slot is disabled on Nde\'s schedule calendar. Please select an available slot.']);
+        }
+
+        $oldBookingTime = $booking->booking_time;
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function() use ($booking, $newDt, $date, $time, $maxCapacity, $reasonStr) {
+                $taken = CoachingBooking::whereDate('booking_time', $date)
+                    ->whereTime('booking_time', $time)
+                    ->whereIn('status', ['pending', 'accepted'])
+                    ->where('id', '!=', $booking->id)
+                    ->count();
+
+                if ($taken >= $maxCapacity) {
+                    throw new \RuntimeException('The selected slot is already fully booked. Please choose another slot.');
+                }
+
+                $booking->booking_time = $newDt->toDateTimeString();
+                $booking->rescheduled_count = ($booking->rescheduled_count ?? 0) + 1;
+                $booking->reschedule_reason = $reasonStr;
+                $booking->save();
+            });
+
+
+
+
+            try {
+                \Illuminate\Support\Facades\Cache::flush();
+            } catch (\Throwable $e) {}
+
+            logger()->info('Coaching booking rescheduled', [
+                'booking_id' => $booking->id,
+                'user_id' => $user->id,
+                'from' => $oldBookingTime,
+                'to' => $booking->booking_time,
+            ]);
+
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => true, 'message' => 'Coaching appointment rescheduled successfully!', 'booking' => $booking]);
+            }
+
+            return redirect()->back()->with('success', 'Coaching appointment rescheduled successfully!');
+        } catch (\Throwable $e) {
+            logger()->error('Failed to reschedule booking', ['error' => $e->getMessage()]);
+            if ($request->wantsJson()) {
+                return response()->json(['ok' => false, 'error' => $e->getMessage()], 422);
+            }
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
     public function joinSession(CoachingBooking $booking)
+
     {
         // Endpoint ini membuka ruang video coaching untuk owner booking, coach, atau admin.
         $user = Auth::user();

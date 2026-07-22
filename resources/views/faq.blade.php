@@ -55,8 +55,9 @@
         [
             'category' => 'Coaching',
             'question' => 'How do 1-on-1 Coaching Sessions work?',
-            'answer' => 'When you purchase a package with coaching tickets (or standalone coaching tickets), you can schedule live video bimbingan sessions with Nde directly from your dashboard. Choose an open time slot, submit your goals, and meet live!'
+            'answer' => 'Coaching sessions are conducted live directly inside our platform’s built-in interactive Video Call Room! After purchasing a package or coaching ticket, pick an open date & time slot in your dashboard. When your session time arrives, simply click "Join Video Session" to enter the live room with Nde!'
         ],
+
         [
             'category' => 'Coaching',
             'question' => 'Can I reschedule a 1-on-1 Coaching appointment?',
@@ -202,11 +203,12 @@
                     </button>
                     <div x-show="activeAccordion === idx" 
                          x-collapse
-                         class="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        <div class="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/5 text-gray-300 leading-relaxed shadow-inner"
+                         class="px-5 sm:px-6 pt-2 pb-6 sm:pb-8 text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/5 text-gray-300 leading-relaxed shadow-inner my-1"
                              x-text="faq.answer">
                         </div>
                     </div>
+
                 </div>
             </template>
 

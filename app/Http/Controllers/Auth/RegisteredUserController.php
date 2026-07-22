@@ -63,35 +63,14 @@ class RegisteredUserController extends Controller
             'package_id' => ['nullable', 'integer', 'exists:packages,id'],
         ], $messages);
 
-        // If the form included a selected package, don't create the user yet.
-        // Store registration data in session temporarily and redirect to the purchase/payment page.
-        if ($request->filled('selected_package') || $request->filled('package_id')) {
-            $pkg = $request->input('selected_package') ?: $request->input('package_id');
-            // Keep registration input in session until payment completes. We'll create the user after payment.
-            // SECURITY FIX: Do NOT store password in session - generate random password during user creation instead
-            $request->session()->put('pre_register', [
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-                'password_provided' => $request->filled('password'), // Just flag if password was provided
-                'referral' => $request->input('referral') ?: $request->session()->get('referral') ?: null,
-                'package_id' => $pkg,
-                'package_qty' => $request->input('package_qty') ? intval($request->input('package_qty')) : 1,
-            ]);
+        $selectedPkg = $request->input('selected_package') ?: $request->input('package_id');
 
-            // redirect to the buy/payment page (use buy route which renders the payment view)
-            $firstLesson = \App\Models\Lesson::orderBy('position')->first();
-            return redirect(route('kelas.buy', ['lesson' => $firstLesson->id ?? null, 'package_id' => $pkg]));
-        }
-
-        // No package selected: proceed with normal immediate registration flow
-    $user = User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone ?? null,
-            // lesson_id removed; use package_id only
-            'package_id' => $request->input('selected_package') ?: $request->input('package_id') ?: null,
+            'package_id' => null, // Will be set after payment settlement
             'referred_by' => null,
         ]);
 
@@ -104,30 +83,34 @@ class RegisteredUserController extends Controller
             if ($referrer) {
                 $user->referred_by = $referrer->id;
                 $user->save();
-                // Clear the session referral after applying
                 if ($refCodeSession) { $request->session()->forget('referral'); }
             } else if ($request->filled('referral')) {
-                // Only error when an explicit invalid code was typed into the form
                 return redirect()->back()->withInput()->withErrors(['referral' => 'Referral code is not valid. Please check the code you entered.']);
             }
         }
 
-    // Dispatch Registered event (this will queue the email verification notification)
-    // Do not fail registration if mail/notification throws; log and continue
-    try {
-        event(new Registered($user));
-    } catch (\Throwable $e) {
-        Log::error('Failed to send verification email after registration', [
-            'user_id' => $user->id,
-            'error' => $e->getMessage(),
-        ]);
+        try {
+            event(new Registered($user));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send verification email after registration', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        Auth::login($user);
+
+        $firstLesson = \App\Models\Lesson::orderBy('position')->first();
+        $firstLessonId = $firstLesson ? $firstLesson->id : 1;
+
+        if ($selectedPkg) {
+            return redirect()->route('kelas.payment', ['lesson' => $firstLessonId, 'package_id' => $selectedPkg]);
+        }
+
+        return redirect()->route('kelas.buy', ['lesson' => $firstLessonId])
+            ->with('status', 'Registration successful! Choose your package below to start learning.');
     }
 
-    // Keep user signed in and redirect them directly to package selection (buy.blade.php / checkout).
-    Auth::login($user);
-    return redirect()->route('registerclass')
-        ->with('status', 'Registration successful! A verification link has been sent to your email. Please check your inbox or spam folder.');
-    }
 
 
     private function normalizeIntendedUrl(Request $request, ?string $url): ?string

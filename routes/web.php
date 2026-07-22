@@ -41,7 +41,8 @@ Route::get('/dashboard', [KelasController::class, 'lmsEntry'])->middleware(['aut
 Route::get('/lms', [KelasController::class, 'lmsEntry'])->middleware(['auth', 'verified'])->name('lms.entry');
 Route::get('/lms/dashboard', [KelasController::class, 'customerDashboard'])->middleware(['auth', 'verified'])->name('lms.dashboard');
 Route::view('/lms/access-pending', 'lms.access-pending')->middleware(['auth', 'verified'])->name('lms.pending');
-Route::get('/kelas', [KelasController::class, 'lmsEntry'])->middleware(['auth', 'verified'])->name('kelas');
+Route::get('/kelas', [KelasController::class, 'lessonsEntry'])->middleware(['auth', 'verified'])->name('kelas');
+
 
 Route::get('/registerclass/{lesson}', [KelasController::class, 'show'])->middleware(['auth', 'verified'])->name('kelas.show');
 Route::get('/registerclass/{lesson}/content', [KelasController::class, 'content'])->middleware(['auth', 'verified'])->name('kelas.content');
@@ -166,7 +167,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/coaching/book', [CoachingController::class, 'storeBooking'])->name('coaching.book');
     Route::get('/coaching/thankyou/{booking?}', [CoachingController::class, 'thankyou'])->name('coaching.thankyou');
     Route::get('/coaching/upcoming', [CoachingController::class, 'upcoming'])->name('coaching.upcoming');
+    Route::post('/coaching/bookings/{booking}/reschedule', [CoachingController::class, 'rescheduleBooking'])->name('coaching.bookings.reschedule');
     Route::post('/coaching/{booking}/note', [CoachingController::class, 'updateNote'])->name('coaching.note');
+
     Route::post('/coaching/caching/{caching}/note', [CoachingController::class, 'updateCachingNote'])->name('coaching.caching.note');
     Route::get('/coaching/checkout', [CoachingCheckoutController::class, 'checkoutForm'])->name('coaching.checkout');
     Route::post('/coaching/checkout/create-order', [CoachingCheckoutController::class, 'createOrder'])->name('coaching.checkout.create');
@@ -205,6 +208,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // CSRF dan rate limit tetap aktif kecuali untuk webhook-notify di bawah.
 Route::post('/api/midtrans/create', [MidtransController::class, 'createSnapToken'])
     ->middleware(['throttle:30,1']);
+
+// AI Assistant Chatbot API Endpoint
+Route::post('/api/ai-chatbot/chat', [\App\Http\Controllers\AiChatbotController::class, 'chat'])
+    ->middleware(['throttle:60,1']);
+
 
 
 // Notifikasi server-to-server dari Midtrans: harus bebas session/CSRF karena dipanggil gateway eksternal.

@@ -76,6 +76,8 @@
                     <p class="text-gray-400 text-xs">Enter your credentials to access your dashboard.</p>
                 </div>
 
+
+
                 @if(session('status'))
                     <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl font-medium text-center">{{ session('status') }}</div>
                 @endif

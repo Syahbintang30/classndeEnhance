@@ -265,43 +265,49 @@
 
                                     <div class="text-xs text-gray-400 flex items-center gap-2">
                                         <i class="fa-regular fa-clock text-blue-400"></i>
-                                        {{ $dt->translatedFormat('d F Y') }}, <span class="text-white font-semibold">{{ $dt->format('H:i') }} WIB</span>
+                                        {{ $dt->format('F j, Y') }}, <span class="text-white font-semibold">{{ $dt->format('H:i') }} WIB</span>
                                     </div>
+
 
                                     @if($b->notes)
                                         @php
                                             $rawNotes = (string) $b->notes;
-                                            $noteLines = preg_split('/\r?\n/', $rawNotes) ?: [];
                                             $cleanLines = [];
-                                            $hasMeetingFinishedEvent = false;
+                                            $parts = preg_split('/(?=\[\d{4}-\d{2}-\d{2})|\r?\n/', $rawNotes) ?: [$rawNotes];
 
-                                            foreach ($noteLines as $line) {
-                                                $line = trim($line);
-                                                if ($line === '') continue;
+                                            foreach ($parts as $part) {
+                                                $part = trim($part);
+                                                if ($part === '') continue;
 
-                                                $lower = strtolower($line);
-                                                if (str_contains($lower, 'session_end_clicked') || str_contains($lower, 'session_ended_by_admin')) {
-                                                    $hasMeetingFinishedEvent = true;
+                                                $cleanPart = preg_replace('/^\[\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\]\s*/', '', $part);
+                                                $cleanPart = trim($cleanPart);
+                                                if ($cleanPart === '') continue;
+
+                                                $lower = strtolower($cleanPart);
+                                                if (
+                                                    str_contains($lower, 'meeting selesai') ||
+                                                    str_contains($lower, 'session_end') ||
+                                                    str_contains($lower, 'session_ended') ||
+                                                    str_contains($lower, 'connect_error') ||
+                                                    str_contains($lower, 'notallowederror') ||
+                                                    str_contains($lower, 'permission denied')
+                                                ) {
                                                     continue;
                                                 }
-                                                if (str_contains($lower, 'connect_error') || str_contains($lower, 'notallowederror') || str_contains($lower, 'permission denied')) {
-                                                    continue;
-                                                }
-                                                $cleanLines[] = $line;
+
+                                                $cleanLines[] = $cleanPart;
                                             }
 
                                             $displayNotes = trim(implode(' ', $cleanLines));
-                                            if ($hasMeetingFinishedEvent) {
-                                                $notice = 'Meeting dipaksa selesai oleh admin karena kendala koneksi. Anda mendapatkan warranty tickets untuk melanjutkan sesi.';
-                                                $displayNotes = trim($displayNotes === '' ? $notice : ($displayNotes . ' ' . $notice));
-                                            }
                                         @endphp
-                                        @if($displayNotes !== '' || $hasMeetingFinishedEvent)
-                                            <div class="mt-2 bg-zinc-950/60 rounded-xl p-3 border border-white/5 text-xs text-gray-400">
-                                                <span class="font-bold text-gray-500 mr-2">Notes:</span>{{ $displayNotes }}
+                                        @if($displayNotes !== '')
+                                            <div class="mt-2.5 bg-zinc-950/70 rounded-xl p-3 border border-white/10 text-xs text-gray-300 shadow-inner flex items-start gap-2">
+                                                <span class="font-bold text-gray-400 uppercase text-[10px] tracking-wider bg-white/5 px-2 py-0.5 rounded border border-white/5 shrink-0">Notes</span>
+                                                <p class="leading-relaxed text-gray-300">{{ $displayNotes }}</p>
                                             </div>
                                         @endif
                                     @endif
+
 
                                     @if(strtolower($b->status) === 'rejected')
                                         <div class="mt-2 text-xs text-red-400 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
@@ -318,13 +324,55 @@
                                     @if($statusLower === 'rejected')
                                         <button type="button" class="py-2.5 px-5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition" onclick="window.location.href='{{ route('coaching.index') }}'">Reschedule</button>
                                     @elseif(in_array($statusLower, ['accepted', 'scheduled'], true))
-                                        <div class="booking-timer-wrapper flex flex-col items-end gap-2 w-full sm:w-auto" data-booking-time="{{ $dtLocal }}" data-status="{{ $b->status }}" data-href="{{ $sessionUrl }}">
-                                            <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/90 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block">--:--:--</span>
-                                            <button type="button" class="start-btn w-full py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 hidden cursor-pointer" disabled>
-                                                <i class="fa-solid fa-video text-sm animate-pulse"></i>
-                                                <span class="start-label">Join Session</span>
-                                            </button>
-                                        </div>
+                                         @php
+                                             $gCalStart = $dt->copy()->setTimezone('UTC')->format('Ymd\THis\Z');
+                                             $gCalEnd = $dt->copy()->addMinutes($sessionLength)->setTimezone('UTC')->format('Ymd\THis\Z');
+                                             $gCalParams = [
+                                                 'action' => 'TEMPLATE',
+                                                 'text' => '1-on-1 Guitar Coaching Session with Nde',
+                                                 'dates' => $gCalStart . '/' . $gCalEnd,
+                                                 'details' => "1-on-1 Private Mentorship Session with Nde on Guitarclassbynde.\nStudent: " . (auth()->user()->name ?? 'Student') . "\nJoin Meeting: " . route('coaching.upcoming'),
+                                                 'location' => 'Guitarclassbynde Portal / Online Video Session',
+                                             ];
+                                             $gCalItemUrl = 'https://calendar.google.com/calendar/render?' . http_build_query($gCalParams);
+                                         @endphp
+                                         <div class="flex items-center gap-2">
+                                              @if(! $isPast && ! $isLiveWindow)
+                                                  <a href="{{ $gCalItemUrl }}" target="_blank" rel="noopener noreferrer" class="gcal-btn py-2 px-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25 font-bold text-[11px] transition flex items-center gap-2 cursor-pointer shadow-sm">
+                                                      <i class="fa-brands fa-google text-xs text-emerald-400"></i>
+                                                      <span>Add to Google Calendar</span>
+                                                  </a>
+                                                  
+                                                  @php
+                                                      $isWarrantySession = ($b->ticket && $b->ticket->source === 'warranty');
+                                                  @endphp
+
+                                                  @if($isWarrantySession)
+                                                      <span title="Sessions booked via Warranty Ticket cannot be rescheduled." class="py-2 px-3.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/25 font-bold text-[11px] flex items-center gap-1.5 cursor-not-allowed shadow-sm">
+                                                          <i class="fa-solid fa-shield-halved text-xs text-amber-400"></i>
+                                                          <span>Warranty Session (Non-reschedulable)</span>
+                                                      </span>
+                                                  @elseif(($b->rescheduled_count ?? 0) >= 1)
+                                                      <span title="Each coaching session can only be rescheduled once." class="py-2 px-3.5 rounded-xl bg-white/5 text-gray-500 border border-white/10 text-[11px] font-semibold flex items-center gap-1.5 cursor-not-allowed">
+                                                          <i class="fa-solid fa-lock text-xs"></i>
+                                                          <span>Rescheduled (Max 1x)</span>
+                                                      </span>
+                                                  @else
+                                                      <a href="{{ route('coaching.index', ['reschedule' => $b->id]) }}" class="py-2 px-3.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/25 font-bold text-[11px] transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+                                                          <i class="fa-solid fa-calendar-days text-xs"></i>
+                                                          <span>Reschedule</span>
+                                                      </a>
+                                                  @endif
+                                              @endif
+
+                                             <div class="booking-timer-wrapper flex flex-col items-end gap-2 w-full sm:w-auto" data-booking-time="{{ $dtLocal }}" data-status="{{ $b->status }}" data-href="{{ $sessionUrl }}">
+                                                 <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/90 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block">--:--:--</span>
+                                                 <button type="button" class="start-btn w-full py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 hidden cursor-pointer" disabled>
+                                                     <i class="fa-solid fa-video text-sm animate-pulse"></i>
+                                                     <span class="start-label">Join Session</span>
+                                                 </button>
+                                             </div>
+                                         </div>
                                     @else
                                         <span class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-white/5 border border-white/10 uppercase">{{ $b->status }}</span>
                                     @endif
@@ -385,7 +433,13 @@
                     const endWindow = dt.getTime() + (60 * 60 * 1000); // 1 hour session window
 
                     if (now.getTime() >= startWindow && now.getTime() <= endWindow) {
+                        const parentContainer = wrap.closest('.flex');
+                        if (parentContainer) {
+                            const gcalBtn = parentContainer.querySelector('.gcal-btn');
+                            if (gcalBtn) gcalBtn.style.display = 'none';
+                        }
                         // LIVE NOW!
+
                         if (cd) {
                             cd.textContent = 'LIVE NOW';
                             cd.className = 'countdown px-4 py-2 rounded-xl font-mono text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 tracking-widest text-center shadow-[0_0_15px_rgba(16,185,129,0.2)] inline-block font-bold animate-pulse';
@@ -431,3 +485,7 @@
         });
     </script>
 @endpush
+
+
+
+

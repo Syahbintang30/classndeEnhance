@@ -141,10 +141,17 @@ class MidtransController extends Controller
             $pkg = $pkg ?: Package::find($data['package_id']);
             if ($pkg && ($pkg->slug ?? null) === config('coaching.coaching_package_slug', 'coaching-ticket')) {
                 $unit = CoachingPricingService::resolveStandaloneTicketUnitPrice($pkg, Auth::user());
+            } elseif ($pkg && (($pkg->slug ?? null) === 'intermediate' || ($pkg->slug ?? null) === 'upgrade-intermediate')) {
+                if (Auth::check() && Auth::user()->isBeginnerMember()) {
+                    $unit = 150000;
+                } elseif (empty($unit)) {
+                    $unit = $pkg ? (int) $pkg->price : 0;
+                }
             } elseif (empty($unit)) {
                 $unit = $pkg ? (int) $pkg->price : 0;
             }
         }
+
 
     $rawGross = $unit * max(1, $qty);
     // apply referral first

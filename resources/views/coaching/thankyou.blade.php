@@ -86,8 +86,20 @@
                     if ($bookingObj->coach) {
                         $coachStr = $bookingObj->coach->name;
                     }
+
+                    $startUtc = $bookingObj->booking_time->copy()->setTimezone('UTC')->format('Ymd\THis\Z');
+                    $endUtc = $bookingObj->booking_time->copy()->addMinutes($bookingObj->session_duration_minutes ?? 60)->setTimezone('UTC')->format('Ymd\THis\Z');
+                    $params = [
+                        'action' => 'TEMPLATE',
+                        'text' => '1-on-1 Guitar Coaching Session with Nde',
+                        'dates' => $startUtc . '/' . $endUtc,
+                        'details' => "1-on-1 Private Guitar Mentorship with Nde on Guitarclassbynde.\nStudent: {$studentStr}\nNotes: " . ($bookingObj->notes ?? 'None') . "\nJoin Meeting: https://guitarclassbynde.id/coaching/upcoming",
+                        'location' => 'Guitarclassbynde Portal / Online Video Session',
+                    ];
+                    $googleCalendarUrl = 'https://calendar.google.com/calendar/render?' . http_build_query($params);
                 }
             @endphp
+
 
             <!-- SUCCESS HERO ANIMATION -->
             <div class="text-center space-y-4 mb-8 flex flex-col items-center">
@@ -171,8 +183,18 @@
                             </div>
                         </div>
                     </div>
+
+                    @if(!empty($googleCalendarUrl))
+                        <div class="pt-5 mt-5 border-t border-white/10">
+                            <a href="{{ $googleCalendarUrl }}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-emerald-600/30 hover:scale-[1.02] active:scale-95 cursor-pointer">
+                                <i class="fa-brands fa-google text-sm"></i>
+                                <span>Add to Google Calendar</span>
+                            </a>
+                        </div>
+                    @endif
                 </div>
             @endif
+
 
             <!-- DUAL ACTION BUTTONS -->
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full">

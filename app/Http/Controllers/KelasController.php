@@ -26,8 +26,9 @@ class KelasController extends Controller
         $user = $request->user();
 
         if (! $user) {
-            return redirect()->route('login');
+            return redirect()->route('register');
         }
+
 
         if (($user->is_admin ?? false) || ($user->is_superadmin ?? false)) {
             $targetUrl = $this->resolveFirstCourseTargetUrl();
@@ -47,6 +48,34 @@ class KelasController extends Controller
         // Redirect to LMS customer dashboard for users with course access
         return redirect()->route('lms.dashboard');
     }
+
+    /**
+     * Lessons entry point for navbar navigation.
+     * Redirects to the first available course lesson page.
+     */
+    public function lessonsEntry(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
+            return redirect()->route('lms.pending');
+        }
+
+        $firstLesson = Lesson::where('type', 'course')
+            ->orderBy('position')
+            ->first();
+
+        if ($firstLesson) {
+            return redirect()->route('kelas.show', ['lesson' => $firstLesson->id]);
+        }
+
+        return redirect()->route('lms.dashboard');
+    }
+
 
 
     /**
@@ -320,7 +349,16 @@ class KelasController extends Controller
             if ($user->hasLmsAccess() && !$isCoachingTicket) {
                 return redirect()->route('lms.dashboard')->with('status', 'You already have full access to this course! Enjoy learning.');
             }
+        } else {
+            // For guest users: if a package was selected, redirect straight to register page with package_id!
+            if (! empty($packageId)) {
+                return redirect()->route('register', [
+                    'package_id' => $packageId,
+                    'package_qty' => request()->input('package_qty', 1),
+                ]);
+            }
         }
+
 
         // package price is canonical; coaching-ticket uses conditional member/non-member pricing
         $price = (int) ($package->price ?? 0);
