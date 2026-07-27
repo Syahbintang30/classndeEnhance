@@ -444,19 +444,32 @@
                     return;
                 }
 
+                const nowObj = new Date();
+                const todayY = nowObj.getFullYear();
+                const todayM = String(nowObj.getMonth() + 1).padStart(2, '0');
+                const todayD = String(nowObj.getDate()).padStart(2, '0');
+                const todayStr = `${todayY}-${todayM}-${todayD}`;
+                const currentMinutes = nowObj.getHours() * 60 + nowObj.getMinutes();
+
                 times.forEach(t => {
+                    const tClean = t.replace('.', ':');
+                    const parts = tClean.split(':').map(Number);
+                    const slotMinutes = (parts[0] || 0) * 60 + (parts[1] || 0);
+
+                    const isPast = (dateStr === todayStr && slotMinutes <= currentMinutes) || (dateStr < todayStr);
+
                     const s = hasConfiguredSlots
-                        ? ((json.slots && typeof json.slots[t] !== 'undefined') ? json.slots[t] : { remaining: 0 })
+                        ? ((json.slots && typeof json.slots[tClean] !== 'undefined') ? json.slots[tClean] : ((json.slots && typeof json.slots[t] !== 'undefined') ? json.slots[t] : { remaining: 0 }))
                         : { remaining: 1 };
 
                     const b = document.createElement('button');
                     b.type = 'button';
-                    b.textContent = t.replace(':', '.');
-                    b.dataset.time = t;
+                    b.textContent = tClean.replace(':', '.');
+                    b.dataset.time = tClean;
                     
                     const baseClass = 'time flex items-center justify-center px-3 py-2.5 rounded-xl text-xs font-bold transition-all border ';
 
-                    if (typeof s.remaining !== 'undefined' && s.remaining <= 0) {
+                    if (isPast || (typeof s.remaining !== 'undefined' && s.remaining <= 0)) {
                         b.className = baseClass + 'bg-white/[0.02] text-gray-600 border-white/5 cursor-not-allowed opacity-40 disabled';
                         b.disabled = true;
                     } else {

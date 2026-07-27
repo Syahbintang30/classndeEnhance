@@ -119,29 +119,28 @@ class CoachingController extends Controller
         logger()->info('CoachingController@storeBooking called', ['user_id' => $user->id ?? null, 'payload' => $data]);
 
         // Pastikan format waktu booking benar dan masih berada dalam jendela waktu yang diizinkan.
+        $rawBookingTime = str_replace('.', ':', $data['booking_time']);
         try {
-            $dt = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $data['booking_time']);
+            $dt = \Carbon\Carbon::parse($rawBookingTime);
         } catch (\Throwable $e) {
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Invalid datetime format, expected YYYY-MM-DD HH:MM:SS']]], 422);
+                return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Invalid datetime format']]], 422);
             }
-            return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Invalid datetime format, expected YYYY-MM-DD HH:MM:SS'])->withInput();
+            return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Invalid datetime format'])->withInput();
         }
-        // Booking masih boleh dibuat kalau sesi sudah dimulai, selama sesi belum selesai.
-        // Contoh: slot 01:00, user booking jam 01:10, lalu tetap bisa join jika accepted.
-        // Panjang sesi diambil dari coaching.session_length_minutes (default 60).
+        $data['booking_time'] = $dt->toDateTimeString();
+
+        // Booking masih boleh dibuat kalau sesi belum dimulai atau belum lewat.
         $sessionLength = config('coaching.session_length_minutes', 60);
         $now = now();
         try {
-            $endWindow = $dt->copy()->addMinutes($sessionLength);
-            if ($now->gt($endWindow)) {
+            if ($now->gte($dt)) {
                 if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                    return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Booking time is in the past and cannot be booked']]], 422);
+                    return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Jadwal ini sudah lewat. Silakan pilih jadwal mendatang.']]], 422);
                 }
-                return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Booking time is in the past and cannot be booked'])->withInput();
+                return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Jadwal ini sudah lewat. Silakan pilih jadwal mendatang.'])->withInput();
             }
         } catch (\Throwable $e) {
-            // Kalau ada masalah saat membandingkan waktu, sistem menolak booking demi keamanan.
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
                 return response()->json(['ok' => false, 'errors' => ['booking_time' => ['Invalid booking time']]], 422);
             }
@@ -213,10 +212,8 @@ class CoachingController extends Controller
             \Illuminate\Support\Facades\DB::transaction(function() use (&$booking, $data, $user, $ticket, $warrantyTicket, $sessionLength) {
                 $dt = \Carbon\Carbon::parse($data['booking_time']);
                 $date = $dt->toDateString();
-                $time = $dt->format('H:i');
-
-                // Setiap slot dianggap kapasitas 1 sesuai desain coaching saat ini.
-                $capacity = 1;
+                $timeFormatted = $dt->format('H:i');
+                $timeDot = str_replace(':', '.', $timeFormatted);
 
                 // Row locking dipakai hanya jika driver mendukung, supaya double booking bisa dicegah.
                 $driver = null;
@@ -226,31 +223,38 @@ class CoachingController extends Controller
                     $driver = null;
                 }
 
-                // Kunci baris slot untuk mencegah double booking saat belum ada booking lain.
-                $slotQuery = \App\Models\CoachingSlotCapacity::where('date', $date)
-                    ->where('time', $time);
-                if (in_array($driver, ['mysql', 'pgsql', 'pgsql'])) {
-                    $slotQuery = $slotQuery->lockForUpdate();
-                }
-                $slotRow = $slotQuery->first();
-                if (! $slotRow) {
-                    throw new \RuntimeException('Slot not available');
+                // Cek kapasitas slot: jika admin belum mengatur jadwal khusus untuk tanggal ini, default kapasitas = 1.
+                $capacityRowsCount = \App\Models\CoachingSlotCapacity::where('date', $date)->count();
+                $slotRow = \App\Models\CoachingSlotCapacity::where('date', $date)
+                    ->whereIn('time', [$timeFormatted, $timeDot])
+                    ->first();
+
+                if ($capacityRowsCount > 0) {
+                    if (! $slotRow || (int)($slotRow->capacity ?? 0) <= 0) {
+                        throw new \RuntimeException('Jadwal ini tidak tersedia.');
+                    }
+                    $capacity = (int) $slotRow->capacity;
+                } else {
+                    $capacity = 1;
                 }
 
                 // Hitung booking aktif (pending/accepted) pada slot ini.
                 $qb = CoachingBooking::whereDate('booking_time', $date)
-                    ->whereTime('booking_time', $time)
+                    ->where(function($q) use ($timeFormatted, $timeDot) {
+                        $q->whereTime('booking_time', $timeFormatted)
+                          ->orWhereTime('booking_time', $timeDot);
+                    })
                     ->whereIn('status', ['pending','accepted']);
 
-                if (in_array($driver, ['mysql', 'pgsql', 'pgsql'])) {
+                if (in_array($driver, ['mysql', 'pgsql'])) {
                     $qb = $qb->lockForUpdate();
                 }
 
                 $taken = $qb->count();
 
                 if ($taken >= $capacity) {
-                    logger()->info('Booking slot full', ['date' => $date, 'time' => $time, 'taken' => $taken]);
-                    throw new \RuntimeException('Slot full');
+                    logger()->info('Booking slot full', ['date' => $date, 'time' => $timeFormatted, 'taken' => $taken]);
+                    throw new \RuntimeException('Jadwal ini sudah penuh. Silakan pilih jadwal lain.');
                 }
 
                 if ($warrantyTicket) {
@@ -730,40 +734,29 @@ class CoachingController extends Controller
             ->whereIn('status', ['pending','accepted'])
             ->get();
 
-        // Pre-compute jam booking milik user agar frontend bisa menandai "booking saya".
-        $myBookedTimes = [];
-        foreach ($booked as $b) {
-            try {
-                if ($b->user_id === ($user->id ?? null)) {
-                    $myBookedTimes[] = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
-                }
-            } catch (\Throwable $e) { /* abaikan masalah parsing */ }
-        }
-
-        // Muat kapasitas slot yang sudah ditetapkan admin untuk tanggal ini.
         $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $date)->get();
-
-        $sessionLength = (int) config('coaching.session_length_minutes', 60);
         $now = now();
         $result = [];
+
         if ($capacityRows->count() > 0) {
-            // Bangun daftar slot dari waktu yang ditentukan admin (key HH:MM persis).
             foreach ($capacityRows as $r) {
-                $time = $r->time;
+                $timeClean = str_replace('.', ':', $r->time);
+                if (strlen($timeClean) === 5) {
+                    $timeClean .= ':00';
+                }
                 try {
-                    $slotStart = \Carbon\Carbon::parse($date . ' ' . $time . ':00');
-                    $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
-                    if ($now->gte($slotEnd)) {
+                    $slotStart = \Carbon\Carbon::parse($date . ' ' . $timeClean);
+                    if ($now->gte($slotStart)) {
                         continue;
                     }
                 } catch (\Throwable $e) {
                     continue;
                 }
+                $timeKey = \Carbon\Carbon::parse($date . ' ' . $timeClean)->format('H:i');
                 $cap = (int) ($r->capacity ?? 1);
-                $result[$time] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
+                $result[$timeKey] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
             }
 
-            // Hitung booking untuk waktu yang cocok persis (HH:MM).
             foreach ($booked as $b) {
                 $t = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
                 if (isset($result[$t])) {
@@ -775,8 +768,30 @@ class CoachingController extends Controller
                 }
             }
         } else {
-            // Tidak ada slot buatan admin untuk tanggal ini, jadi frontend menyembunyikan availability.
-            $result = [];
+            // Default slots jika admin belum membuat jadwal kustom untuk tanggal ini
+            $defaultTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '19:00', '20:00'];
+            foreach ($defaultTimes as $t) {
+                try {
+                    $slotStart = \Carbon\Carbon::parse($date . ' ' . $t . ':00');
+                    if ($now->gte($slotStart)) {
+                        continue;
+                    }
+                } catch (\Throwable $e) {
+                    continue;
+                }
+                $result[$t] = ['capacity' => 1, 'taken' => 0, 'remaining' => 1];
+            }
+
+            foreach ($booked as $b) {
+                $t = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
+                if (isset($result[$t])) {
+                    $result[$t]['taken']++;
+                    $result[$t]['remaining'] = max(0, $result[$t]['capacity'] - $result[$t]['taken']);
+                    if ($b->user_id === ($user->id ?? null)) {
+                        $result[$t]['mine'] = true;
+                    }
+                }
+            }
         }
 
         return response()->json(['slots' => $result]);
@@ -803,19 +818,20 @@ class CoachingController extends Controller
         }
 
         if ($endDt->lt($startDt)) return response()->json(['error' => 'end must be >= start'], 400);
-
-        // Validasi kecil supaya rentang tanggal tidak terlalu besar.
         if ($endDt->diffInDays($startDt) > 92) return response()->json(['error' => 'range too large'], 400);
 
-        $sessionLength = (int) config('coaching.session_length_minutes', 60);
+        $now = now();
         $days = [];
-        // Cache pendek opsional untuk mengurangi beban DB kalau banyak user membuka bulan yang sama.
-        $cacheKey = 'coaching_avail_range:' . $startDt->toDateString() . ':' . $endDt->toDateString();
-        $cached = \Illuminate\Support\Facades\Cache::get($cacheKey);
-        if ($cached) return response()->json(['days' => $cached]);
 
         for ($d = $startDt->copy(); $d->lte($endDt); $d->addDay()) {
             $ds = $d->toDateString();
+
+            // Tanggal yang sudah lewat di masa lalu langsung 0 slot
+            if ($d->lt($now->copy()->startOfDay())) {
+                $days[$ds] = 0;
+                continue;
+            }
+
             $booked = CoachingBooking::whereDate('booking_time', $ds)
                 ->whereIn('status', ['pending','accepted'])
                 ->get();
@@ -825,18 +841,19 @@ class CoachingController extends Controller
             if ($capacityRows->count() > 0) {
                 $map = [];
                 foreach ($capacityRows as $r) {
-                    $time = $r->time;
+                    $timeClean = str_replace('.', ':', $r->time);
+                    if (strlen($timeClean) === 5) $timeClean .= ':00';
                     try {
-                        $slotStart = \Carbon\Carbon::parse($ds . ' ' . $time . ':00');
-                        $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
-                        if (now()->gte($slotEnd)) {
+                        $slotStart = \Carbon\Carbon::parse($ds . ' ' . $timeClean);
+                        if ($now->gte($slotStart)) {
                             continue;
                         }
                     } catch (\Throwable $e) {
                         continue;
                     }
+                    $timeKey = \Carbon\Carbon::parse($ds . ' ' . $timeClean)->format('H:i');
                     $cap = (int) ($r->capacity ?? 1);
-                    $map[$time] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
+                    $map[$timeKey] = ['capacity' => $cap, 'taken' => 0, 'remaining' => $cap];
                 }
                 foreach ($booked as $b) {
                     $t = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
@@ -849,7 +866,29 @@ class CoachingController extends Controller
                     if (($info['remaining'] ?? 0) > 0) $remainingCount++;
                 }
             } else {
-                $remainingCount = 0;
+                $defaultTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '19:00', '20:00'];
+                $map = [];
+                foreach ($defaultTimes as $t) {
+                    try {
+                        $slotStart = \Carbon\Carbon::parse($ds . ' ' . $t . ':00');
+                        if ($now->gte($slotStart)) {
+                            continue;
+                        }
+                    } catch (\Throwable $e) {
+                        continue;
+                    }
+                    $map[$t] = ['capacity' => 1, 'taken' => 0, 'remaining' => 1];
+                }
+                foreach ($booked as $b) {
+                    $t = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
+                    if (isset($map[$t])) {
+                        $map[$t]['taken']++;
+                        $map[$t]['remaining'] = max(0, $map[$t]['capacity'] - $map[$t]['taken']);
+                    }
+                }
+                foreach ($map as $time => $info) {
+                    if (($info['remaining'] ?? 0) > 0) $remainingCount++;
+                }
             }
             $days[$ds] = $remainingCount;
         }
