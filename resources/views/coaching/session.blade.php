@@ -2255,11 +2255,26 @@
         document.addEventListener('fullscreenchange', updateFullscreenUi);
         updateFullscreenUi();
 
+        function embedFallbackVideoCall() {
+            const grid = document.querySelector('.vc-video-grid');
+            if (grid) {
+                const jitsiRoom = 'guitarclassbynde-session-' + bookingId;
+                const displayName = encodeURIComponent("{{ $participantName }}");
+                grid.innerHTML = `
+                    <iframe 
+                        src="https://meet.jit.si/${jitsiRoom}#userInfo.displayName=%22${displayName}%22"
+                        allow="camera; microphone; display-capture; autoplay; clipboard-write"
+                        style="width:100%; height:100%; min-height:520px; border:none; border-radius:16px; background:#090d16;"
+                    ></iframe>
+                `;
+            }
+        }
+
         try {
             await connectRoom();
         } catch (e) {
             log(e && e.message ? e.message : e);
-            alert('Failed to connect to the video session. Please refresh the page and try again.');
+            embedFallbackVideoCall();
         }
     }
 
