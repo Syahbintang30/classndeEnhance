@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag();
+@endphp
+
+@section('title', $isEn ? 'Login' : 'Masuk')
 
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,13 +75,17 @@
                 <div class="text-center space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-inner mb-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(59,130,246,1)]"></span>
-                        Student Portal
+                        {{ $isEn ? 'Student Portal' : 'Portal Murid' }}
                     </div>
-                    <h1 class="font-display text-4xl text-white tracking-wide uppercase leading-none">Welcome <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Back</span></h1>
-                    <p class="text-gray-400 text-xs">Enter your credentials to access your dashboard.</p>
+                    <h1 class="font-display text-4xl text-white tracking-wide uppercase leading-none">
+                        @if($isEn)
+                            Welcome <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Back</span>
+                        @else
+                            Selamat <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Datang</span>
+                        @endif
+                    </h1>
+                    <p class="text-gray-400 text-xs">{{ $isEn ? 'Enter your credentials to access your dashboard.' : 'Masukkan email & password untuk masuk ke dashboard kamu.' }}</p>
                 </div>
-
-
 
                 @if(session('status'))
                     <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl font-medium text-center">{{ session('status') }}</div>
@@ -108,31 +117,31 @@
                             <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
                             <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
                         </svg>
-                        <span>Sign In with Google</span>
+                        <span>{{ $isEn ? 'Sign In with Google' : 'Masuk dengan Google' }}</span>
                     </a>
 
                     <div class="flex items-center gap-3 text-[11px] text-gray-500 my-2 uppercase font-bold tracking-widest">
                         <div class="h-px bg-white/10 flex-1"></div>
-                        <span>Or</span>
+                        <span>{{ $isEn ? 'Or' : 'Atau' }}</span>
                         <div class="h-px bg-white/10 flex-1"></div>
                     </div>
 
                     <!-- Email -->
                     <div class="space-y-1.5">
-                        <label for="login-email" class="text-[12px] font-bold text-gray-300">Email Address</label>
-                        <input id="login-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="Enter your email">
+                        <label for="login-email" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Email Address' : 'Alamat Email' }}</label>
+                        <input id="login-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="{{ $isEn ? 'Enter your email' : 'Masukkan alamat email kamu' }}">
                     </div>
 
                     <!-- Password -->
                     <div class="space-y-1.5" x-data="{ showPass: false }">
                         <div class="flex justify-between items-center">
-                            <label for="login-password" class="text-[12px] font-bold text-gray-300">Password</label>
+                            <label for="login-password" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Password' : 'Kata Sandi' }}</label>
                             @if(Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="text-[11px] text-blue-400 hover:text-blue-300 transition">Forgot?</a>
+                                <a href="{{ route('password.request') }}" class="text-[11px] text-blue-400 hover:text-blue-300 transition">{{ $isEn ? 'Forgot?' : 'Lupa?' }}</a>
                             @endif
                         </div>
                         <div class="relative flex items-center">
-                            <input id="login-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-11 backdrop-blur-md" placeholder="Enter your password">
+                            <input id="login-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-11 backdrop-blur-md" placeholder="{{ $isEn ? 'Enter your password' : 'Masukkan kata sandi kamu' }}">
                             <button type="button" @click="showPass = !showPass" class="absolute right-3.5 text-gray-400 hover:text-white transition text-sm">
                                 <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
                             </button>
@@ -146,19 +155,19 @@
                                 <input type="checkbox" name="remember" class="absolute opacity-0 w-full h-full cursor-pointer peer">
                                 <i class="fa-solid fa-check text-[10px] text-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                             </div>
-                            <span>Remember me for 30 days</span>
+                            <span>{{ $isEn ? 'Remember me for 30 days' : 'Ingat saya di perangkat ini' }}</span>
                         </label>
                     </div>
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-display text-xl tracking-widest shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] cursor-pointer mt-2">
-                        SIGN IN
+                        {{ $isEn ? 'SIGN IN' : 'MASUK' }}
                     </button>
                 </form>
 
                 <!-- Footer -->
                 <div class="text-center text-[13px] text-gray-400 pt-3 border-t border-white/10">
-                    Don’t have an account yet? <a href="{{ route('register') }}" class="text-blue-400 font-bold hover:text-blue-300 transition">Sign up now</a>
+                    {{ $isEn ? 'Don’t have an account yet?' : 'Belum punya akun?' }} <a href="{{ route('register') }}" class="text-blue-400 font-bold hover:text-blue-300 transition">{{ $isEn ? 'Sign up now' : 'Daftar sekarang' }}</a>
                 </div>
 
             </div>

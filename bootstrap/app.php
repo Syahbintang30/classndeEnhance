@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         // Apply security middlewares to all web routes
         $middleware->web(append: [
+            \App\Http\Middleware\SetAppLocale::class,
             \App\Http\Middleware\ContentSecurityPolicyMiddleware::class,
             \App\Http\Middleware\SessionSecurityMiddleware::class,
             \App\Http\Middleware\ReferralCaptureMiddleware::class,

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Register')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag();
+@endphp
+
+@section('title', $isEn ? 'Register' : 'Daftar')
 
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,10 +75,16 @@
                 <div class="text-center space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-inner mb-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(59,130,246,1)]"></span>
-                        New Account
+                        {{ $isEn ? 'New Account' : 'Akun Baru' }}
                     </div>
-                    <h1 class="font-display text-4xl text-white tracking-wide uppercase leading-none">Create <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Account</span></h1>
-                    <p class="text-gray-400 text-xs">Fill in your details to start learning guitar.</p>
+                    <h1 class="font-display text-4xl text-white tracking-wide uppercase leading-none">
+                        @if($isEn)
+                            Create <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Account</span>
+                        @else
+                            Buat <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Akun</span>
+                        @endif
+                    </h1>
+                    <p class="text-gray-400 text-xs">{{ $isEn ? 'Fill in your details to start learning guitar.' : 'Lengkapi data dirimu untuk mulai belajar gitar.' }}</p>
                 </div>
 
                 @if(session('status'))
@@ -102,34 +113,34 @@
                             <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.2l-6.1-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.3 39.5 16.1 44 24 44z"/>
                             <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.5-2.4 4.6-4.4 6.1l.1-.1 6.1 5.2C36.7 39.5 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
                         </svg>
-                        <span>Sign Up with Google</span>
+                        <span>{{ $isEn ? 'Sign Up with Google' : 'Daftar dengan Google' }}</span>
                     </a>
 
                     <div class="flex items-center gap-3 text-[11px] text-gray-500 my-2 uppercase font-bold tracking-widest">
                         <div class="h-px bg-white/10 flex-1"></div>
-                        <span>Or</span>
+                        <span>{{ $isEn ? 'Or' : 'Atau' }}</span>
                         <div class="h-px bg-white/10 flex-1"></div>
                     </div>
 
                     <!-- Name -->
                     <div class="space-y-1.5">
-                        <label for="register-name" class="text-[12px] font-bold text-gray-300">Full Name</label>
-                        <input id="register-name" name="name" type="text" value="{{ old('name') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="Enter your full name">
+                        <label for="register-name" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Full Name' : 'Nama Lengkap' }}</label>
+                        <input id="register-name" name="name" type="text" value="{{ old('name') }}" required autofocus class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="{{ $isEn ? 'Enter your full name' : 'Masukkan nama lengkap kamu' }}">
                     </div>
 
                     <!-- Email -->
                     <div class="space-y-1.5">
-                        <label for="register-email" class="text-[12px] font-bold text-gray-300">Email Address</label>
-                        <input id="register-email" name="email" type="email" value="{{ old('email') }}" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="Enter your email">
+                        <label for="register-email" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Email Address' : 'Alamat Email' }}</label>
+                        <input id="register-email" name="email" type="email" value="{{ old('email') }}" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition backdrop-blur-md" placeholder="{{ $isEn ? 'Enter your email' : 'Masukkan alamat email kamu' }}">
                     </div>
 
                     <!-- Password Group (2 cols on sm) -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <!-- Password -->
                         <div class="space-y-1.5" x-data="{ showPass: false }">
-                            <label for="register-password" class="text-[12px] font-bold text-gray-300">Password</label>
+                            <label for="register-password" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Password' : 'Kata Sandi' }}</label>
                             <div class="relative flex items-center">
-                                <input id="register-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10 backdrop-blur-md" placeholder="Create password">
+                                <input id="register-password" name="password" :type="showPass ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10 backdrop-blur-md" placeholder="{{ $isEn ? 'Create password' : 'Buat kata sandi' }}">
                                 <button type="button" @click="showPass = !showPass" class="absolute right-3.5 text-gray-400 hover:text-white transition text-sm">
                                     <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
                                 </button>
@@ -138,9 +149,9 @@
 
                         <!-- Confirm Password -->
                         <div class="space-y-1.5" x-data="{ showPassConf: false }">
-                            <label for="register-password-confirmation" class="text-[12px] font-bold text-gray-300">Confirm</label>
+                            <label for="register-password-confirmation" class="text-[12px] font-bold text-gray-300">{{ $isEn ? 'Confirm' : 'Konfirmasi' }}</label>
                             <div class="relative flex items-center">
-                                <input id="register-password-confirmation" name="password_confirmation" :type="showPassConf ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10 backdrop-blur-md" placeholder="Repeat password">
+                                <input id="register-password-confirmation" name="password_confirmation" :type="showPassConf ? 'text' : 'password'" required class="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-white/10 text-white text-[13px] placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition pr-10 backdrop-blur-md" placeholder="{{ $isEn ? 'Repeat password' : 'Ulangi kata sandi' }}">
                                 <button type="button" @click="showPassConf = !showPassConf" class="absolute right-3.5 text-gray-400 hover:text-white transition text-sm">
                                     <i class="fa-solid" :class="showPassConf ? 'fa-eye-slash' : 'fa-eye'"></i>
                                 </button>
@@ -153,13 +164,13 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-display text-xl tracking-widest shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] cursor-pointer mt-2">
-                        CREATE ACCOUNT
+                        {{ $isEn ? 'CREATE ACCOUNT' : 'BUAT AKUN' }}
                     </button>
                 </form>
 
                 <!-- Footer -->
                 <div class="text-center text-[13px] text-gray-400 pt-3 border-t border-white/10">
-                    Already have an account? <a href="{{ route('login') }}" class="text-blue-400 font-bold hover:text-blue-300 transition">Sign in here</a>
+                    {{ $isEn ? 'Already have an account?' : 'Sudah punya akun?' }} <a href="{{ route('login') }}" class="text-blue-400 font-bold hover:text-blue-300 transition">{{ $isEn ? 'Sign in here' : 'Masuk di sini' }}</a>
                 </div>
 
             </div>
