@@ -127,10 +127,17 @@
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
 
-                    <a href="#packages" class="px-7 py-4 bg-zinc-950/60 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-bold rounded-2xl text-sm transition backdrop-blur-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-tags text-blue-400"></i>
-                        <span>{{ $isEn ? 'Explore Packages' : 'Lihat Pilihan Paket' }}</span>
-                    </a>
+                    @if(!$isLoggedIn)
+                        <a href="{{ route('register') }}" class="px-7 py-4 bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 font-bold rounded-2xl text-sm transition backdrop-blur-md flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10">
+                            <i class="fa-solid fa-sparkles text-emerald-400"></i>
+                            <span>{{ $isEn ? 'Try Free Member (Modul 1 Trial)' : '✨ Coba Gratis Member (Modul 1 Trial)' }}</span>
+                        </a>
+                    @else
+                        <a href="#packages" class="px-7 py-4 bg-zinc-950/60 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-bold rounded-2xl text-sm transition backdrop-blur-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-layer-group text-blue-400"></i>
+                            <span>{{ $isEn ? 'View Pricing Tiers' : 'Lihat Pilihan Paket' }}</span>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Social Proof Badges -->
@@ -429,16 +436,35 @@
         </div>
     </section>
 
-    <!-- ─── PRICING PACKAGES (HIGH CONVERTING PURE SALES) ────────────────── -->
+    <!-- ─── PRICING PACKAGES & MEMBERSHIP TIERS ────────────────────────── -->
     <section id="packages" class="py-20 px-4 lg:px-8 max-w-7xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">{{ $isEn ? 'Choose Your Membership Tier' : 'Pilih Tingkat Keanggotaan Kamu' }}</span>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">{{ $isEn ? 'Membership Tiers & Access Levels' : 'Pilihan Tingkat Keanggotaan Murid' }}</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
                 {{ $isEn ? 'Simple' : 'Harga' }} <span class="text-blue-500">{{ $isEn ? 'Transparent Pricing' : 'Transparan & Terjangkau' }}</span>
             </h2>
-            <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                {{ $isEn ? 'Once in a lifetime investment. No hidden monthly subscriptions.' : 'Investasi sekali seumur hidup. Tanpa biaya langganan bulanan tersembunyi.' }}
+            <p class="text-gray-400 text-xs sm:text-sm max-w-2xl mx-auto">
+                {{ $isEn ? 'Compare Guest Free Trial, Beginner Student, and Intermediate Student membership tiers. No monthly subscriptions.' : 'Bandingkan akses Guest Member Gratis, Beginner Student, dan Intermediate Student. Investasi sekali seumur hidup tanpa biaya bulanan.' }}
             </p>
+
+            <!-- Free Member Trial Banner Callout -->
+            <div class="pt-4 max-w-3xl mx-auto">
+                <div class="bg-gradient-to-r from-emerald-950/80 via-zinc-950 to-blue-950/80 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-sparkles text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">{{ $isEn ? 'Free Guest Member Access' : 'Akses Member Gratis (Rp 0)' }}</div>
+                            <div class="text-xs text-gray-300">{{ $isEn ? 'Register a free account to enter LMS Dashboard & test Modul 1 Video Trial.' : 'Daftar akun gratis untuk masuk LMS Dashboard & uji coba Video Modul 1 secara gratis.' }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ route('register') }}" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-extrabold rounded-xl text-xs uppercase tracking-wider shrink-0 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                        <span>{{ $isEn ? 'Try Free Access' : '⚡ Coba Gratis Sekarang' }}</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
