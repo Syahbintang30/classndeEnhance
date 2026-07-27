@@ -97,19 +97,20 @@
 
     @php
         $paymentBase = isset($lesson) && $lesson ? route('kelas.payment', $lesson->id) : null;
-        $orderedPackages = $packages->sortBy(function ($pkg) {
-            $slug = strtolower((string) ($pkg->slug ?? ''));
-            $name = strtolower((string) ($pkg->name ?? ''));
+        $orderedPackages = $packages->reject(fn($p) => str_contains(strtolower((string)($p->slug ?? '')), 'upgrade'))
+            ->sortBy(function ($pkg) {
+                $slug = strtolower((string) ($pkg->slug ?? ''));
+                $name = strtolower((string) ($pkg->name ?? ''));
 
-            if (str_contains($slug, 'beginner') || str_contains($name, 'beginner')) {
-                return 0;
-            }
-            if (str_contains($slug, 'intermediate') || str_contains($name, 'intermediate')) {
-                return 1;
-            }
+                if (str_contains($slug, 'beginner') || str_contains($name, 'beginner')) {
+                    return 0;
+                }
+                if (str_contains($slug, 'intermediate') || str_contains($name, 'intermediate')) {
+                    return 1;
+                }
 
-            return 2;
-        })->values();
+                return 2;
+            })->values();
     @endphp
 
     <!-- Package Cards Grid -->

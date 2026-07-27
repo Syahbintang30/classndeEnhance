@@ -29,9 +29,16 @@ class Package extends Model
             if (str_starts_with($this->image, 'pictures/') || str_starts_with($this->image, 'storage/')) {
                 return asset($this->image);
             }
+            if (file_exists(public_path('pictures/' . $this->image))) {
+                return asset('pictures/' . $this->image);
+            }
             return asset('storage/' . ltrim($this->image, '/'));
         }
 
-        return asset('pictures/' . $this->slug . '.jpg');
+        if ($this->slug && file_exists(public_path('pictures/' . $this->slug . '.jpg'))) {
+            return asset('pictures/' . $this->slug . '.jpg');
+        }
+
+        return asset('pictures/beginner.jpg');
     }
 }

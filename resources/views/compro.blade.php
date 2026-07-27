@@ -443,14 +443,15 @@
                     'intermediate' => 1,
                     config('coaching.coaching_package_slug','coaching-ticket') => 2,
                 ];
-                $orderedPackages = $packages->sortBy(fn($p) => $orderMap[$p->slug] ?? 99)->values();
+                $orderedPackages = $packages->reject(fn($p) => str_contains(strtolower((string)($p->slug ?? '')), 'upgrade'))
+                    ->sortBy(fn($p) => $orderMap[$p->slug] ?? 99)->values();
             @endphp
 
             @foreach($orderedPackages as $pkg)
                 @php
                     $isFeatured = ($pkg->slug ?? null) === 'intermediate';
                     $benefits   = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
-                    $imgSrc     = $pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg');
+                    $imgSrc     = method_exists($pkg, 'imageUrl') ? $pkg->imageUrl() : ($pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg'));
                     $priceFormatted = number_format($pkg->price, 0, '', '.');
                 @endphp
 

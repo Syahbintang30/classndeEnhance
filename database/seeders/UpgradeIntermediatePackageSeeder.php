@@ -12,22 +12,15 @@ class UpgradeIntermediatePackageSeeder extends Seeder
      */
     public function run(): void
     {
-        $beginner = \App\Models\Package::where('slug','beginner')->first();
-        $intermediate = \App\Models\Package::where('slug','intermediate')->first();
-        if ($beginner && $intermediate) {
-            $diff = max(0, intval($intermediate->price) - intval($beginner->price));
-            if ($diff > 0) {
-                \App\Models\Package::updateOrCreate(
-                    ['slug' => 'upgrade-intermediate'],
-                    [
-                        'name' => 'Upgrade Intermediate',
-                        'price' => $diff,
-                        'description' => 'Upgrade from Beginner to Intermediate — bayar selisih harga saja.',
-                        'benefits' => 'Upgrade fee to move from Beginner to Intermediate.',
-                        'image' => null,
-                    ]
-                );
-            }
-        }
+        \App\Models\Package::updateOrCreate(
+            ['slug' => 'upgrade-intermediate'],
+            [
+                'name' => 'Upgrade Intermediate',
+                'price' => 150000,
+                'description' => 'Upgrade dari paket Beginner ke Intermediate — membuka seluruh modul & Song TAB.',
+                'benefits' => 'Upgrade fee to move from Beginner to Intermediate.',
+                'image' => null,
+            ]
+        );
     }
 }
