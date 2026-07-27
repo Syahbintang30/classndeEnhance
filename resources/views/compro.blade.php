@@ -439,9 +439,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             @php
                 $orderMap = [
-                    config('coaching.coaching_package_slug','coaching-ticket') => 0,
+                    'beginner'     => 0,
                     'intermediate' => 1,
-                    'beginner'     => 2,
+                    config('coaching.coaching_package_slug','coaching-ticket') => 2,
                 ];
                 $orderedPackages = $packages->sortBy(fn($p) => $orderMap[$p->slug] ?? 99)->values();
             @endphp

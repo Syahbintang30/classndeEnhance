@@ -58,6 +58,10 @@ class ImportLegacyDatabase extends Command
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+            // Refresh package data with clean seeder
+            $this->info("Refreshing package details & pricing...");
+            Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\PackageSeeder', '--force' => true]);
+
             $userCount = DB::table('users')->count();
             $this->info("Successfully imported user accounts! Total Users in DB: {$userCount}");
 

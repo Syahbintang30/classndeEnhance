@@ -101,14 +101,14 @@
             $slug = strtolower((string) ($pkg->slug ?? ''));
             $name = strtolower((string) ($pkg->name ?? ''));
 
+            if (str_contains($slug, 'beginner') || str_contains($name, 'beginner')) {
+                return 0;
+            }
             if (str_contains($slug, 'intermediate') || str_contains($name, 'intermediate')) {
                 return 1;
             }
-            if (str_contains($slug, 'beginner') || str_contains($name, 'beginner')) {
-                return 2;
-            }
 
-            return 0;
+            return 2;
         })->values();
     @endphp
 
