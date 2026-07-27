@@ -196,7 +196,7 @@
                     @forelse($lessons as $index => $ls)
                         @php 
                             $topics = $ls->topics ?? collect();
-                            $isLessonLocked = ! auth()->user()->isPaidMember() && ((int)$ls->position > 1);
+                            $isLessonLocked = (! auth()->check() || ! auth()->user()->isPaidMember()) && ((int)$ls->position > 1);
                         @endphp
                         <div>
                             <!-- Accordion Header Button -->
@@ -1292,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="text-[11px] text-gray-400 leading-tight">Download 9:16 card to post & tag @nde_guitar</p>
             </button>
 
-            <a href="{{ route('certificate.verify', 'NDE-GRAD-' . str_pad(auth()->id(), 4, '0', STR_PAD_LEFT)) }}" target="_blank" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-left transition group">
+            <a href="{{ route('certificate.verify', 'NDE-GRAD-' . str_pad((string)(auth()->id() ?? 0), 4, '0', STR_PAD_LEFT)) }}" target="_blank" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-left transition group">
                 <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
                     <i class="fa-solid fa-file-contract"></i>
                 </div>
