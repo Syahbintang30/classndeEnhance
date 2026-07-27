@@ -33,9 +33,20 @@ Route::get('/migrate-legacy-db-secret-key-99', function() {
     }
     try {
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        // Drop all existing tables so import can replace them cleanly
+        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+        foreach ($tables as $t) {
+            $arr = array_values((array)$t);
+            if (!empty($arr[0])) {
+                \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `' . $arr[0] . '`');
+            }
+        }
+
         $sqlContent = \Illuminate\Support\Facades\File::get($sqlFile);
         \Illuminate\Support\Facades\DB::unprepared($sqlContent);
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $userCount = \Illuminate\Support\Facades\DB::table('users')->count();
         return "BERHASIL IMPOR DATABASE! Total User saat ini: " . $userCount . ". Silakan login sekarang di https://guitarclassbynde.id/login";
     } catch (\Throwable $e) {

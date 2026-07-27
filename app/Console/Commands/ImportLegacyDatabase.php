@@ -39,6 +39,14 @@ class ImportLegacyDatabase extends Command
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+            $tables = DB::select('SHOW TABLES');
+            foreach ($tables as $t) {
+                $arr = array_values((array)$t);
+                if (!empty($arr[0])) {
+                    DB::statement('DROP TABLE IF EXISTS `' . $arr[0] . '`');
+                }
+            }
+
             $sqlContent = File::get($sqlFile);
             DB::unprepared($sqlContent);
 
