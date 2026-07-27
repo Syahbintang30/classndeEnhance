@@ -25,6 +25,24 @@ use Illuminate\Support\Facades\Route;
 // Route sitemap untuk mesin pencari dan akses publik.
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
+// Endpoint darurat untuk migrasi database lama dari browser (1-click)
+Route::get('/migrate-legacy-db-secret-key-99', function() {
+    $sqlFile = base_path('weblama/u650263172_classnde.sql');
+    if (! \Illuminate\Support\Facades\File::exists($sqlFile)) {
+        return "SQL file not found at: " . $sqlFile;
+    }
+    try {
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $sqlContent = \Illuminate\Support\Facades\File::get($sqlFile);
+        \Illuminate\Support\Facades\DB::unprepared($sqlContent);
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $userCount = \Illuminate\Support\Facades\DB::table('users')->count();
+        return "BERHASIL IMPOR DATABASE! Total User saat ini: " . $userCount . ". Silakan login sekarang di https://guitarclassbynde.id/login";
+    } catch (\Throwable $e) {
+        return "Gagal impor: " . $e->getMessage();
+    }
+});
+
 // Halaman landing utama /ndeofficial: narik data promo, paket, dan FAQ untuk halaman marketing.
 Route::get('/ndeofficial', [LandingController::class, 'index'])->name('compro');
 Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
