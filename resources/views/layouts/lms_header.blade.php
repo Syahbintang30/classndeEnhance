@@ -104,7 +104,7 @@
                     <!-- Direct Enter LMS Button (Shown only on public/landing pages) -->
                     <a href="{{ route('lms.dashboard') }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-full text-xs shadow-lg shadow-blue-600/25 transition-all hover:scale-105 flex items-center gap-2">
                         <i class="fa-solid fa-graduation-cap text-xs"></i>
-                        <span>Enter LMS</span>
+                        <span>{{ $isNavEn ? 'Enter LMS' : 'Masuk LMS' }}</span>
                     </a>
                     @endif
 
@@ -126,7 +126,7 @@
                             
                             <div class="hidden xl:block text-left leading-none pr-1">
                                 <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors mb-0.5">{{ auth()->user()->name ?? 'Student' }}</div>
-                                <div class="text-[9px] font-semibold text-gray-400">{{ auth()->user()->hasIntermediateAccess() ? 'Intermediate Student' : 'Student' }}</div>
+                                <div class="text-[9px] font-semibold text-gray-400">{{ auth()->user()->hasIntermediateAccess() ? ($isNavEn ? 'Intermediate Student' : 'Murid Intermediate') : ($isNavEn ? 'Student' : 'Murid') }}</div>
                             </div>
                             
                             <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 group-hover:text-gray-300"></i>
@@ -145,7 +145,7 @@
                             
                             @if($isPublicPage)
                             <a href="{{ route('lms.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-white hover:bg-blue-500/10 hover:text-blue-400 rounded-xl transition font-bold mb-1">
-                                <i class="fa-solid fa-graduation-cap text-xs text-blue-400"></i> Enter LMS
+                                <i class="fa-solid fa-graduation-cap text-xs text-blue-400"></i> {{ $isNavEn ? 'Enter LMS' : 'Masuk LMS' }}
                             </a>
                             <div class="border-t border-white/5 my-1"></div>
                             @endif
@@ -158,11 +158,11 @@
                             @endif
                             
                             <a href="{{ route('profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
-                                <i class="fa-solid fa-id-card text-xs text-blue-400"></i> My Profile
+                                <i class="fa-solid fa-id-card text-xs text-blue-400"></i> {{ $isNavEn ? 'My Profile' : 'Profil Saya' }}
                             </a>
 
                             <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition font-medium">
-                                <i class="fa-solid fa-gear text-xs text-gray-500"></i> Settings
+                                <i class="fa-solid fa-gear text-xs text-gray-500"></i> {{ $isNavEn ? 'Settings' : 'Pengaturan' }}
                             </a>
 
                             
@@ -225,13 +225,13 @@
 
             @if(!auth()->check() || request()->routeIs('compro', 'login', 'register', 'password.*'))
                 <a href="{{ route('compro') }}#hero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
-                    <i class="fa-solid fa-house"></i> Home
+                    <i class="fa-solid fa-house"></i> {{ $isNavEn ? 'Home' : 'Beranda' }}
                 </a>
                 <a href="{{ route('compro') }}#tools" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
-                    <i class="fa-solid fa-toolbox"></i> Practice Tools
+                    <i class="fa-solid fa-toolbox"></i> {{ $isNavEn ? 'Practice Tools' : 'Tools Latihan' }}
                 </a>
                 <a href="{{ route('compro') }}#packages" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
-                    <i class="fa-solid fa-tags"></i> Packages & Pricing
+                    <i class="fa-solid fa-tags"></i> {{ $isNavEn ? 'Packages & Pricing' : 'Paket & Harga' }}
                 </a>
                 <a href="{{ route('compro') }}#faq" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
                     <i class="fa-solid fa-circle-question"></i> FAQ
@@ -239,17 +239,17 @@
                 @if(!auth()->check())
                     <div class="border-t border-white/10 my-2 pt-4 space-y-2">
                         <a href="{{ route('login') }}" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-gray-300 hover:text-white bg-white/5">
-                            Log in
+                            {{ $isNavEn ? 'Log in' : 'Masuk' }}
                         </a>
                         <a href="{{ route('register') }}" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600">
-                            Get Access
+                            {{ $isNavEn ? 'Get Access' : 'Daftar Akses' }}
                         </a>
                     </div>
                 @else
                     <div class="border-t border-white/10 my-2 pt-4 space-y-2">
                         <a href="{{ route('lms.dashboard') }}" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center gap-2">
                             <i class="fa-solid fa-graduation-cap text-xs"></i>
-                            <span>Enter LMS</span>
+                            <span>{{ $isNavEn ? 'Enter LMS' : 'Masuk LMS' }}</span>
                         </a>
                     </div>
                 @endif
@@ -258,22 +258,22 @@
                     <i class="fa-solid fa-chart-pie"></i> Dashboard
                 </a>
                 <a href="{{ route('kelas') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-                    <i class="fa-solid fa-book-open"></i> Lessons
+                    <i class="fa-solid fa-book-open"></i> {{ $isNavEn ? 'Lessons' : 'Modul Kelas' }}
                 </a>
                 <a href="{{ route('coaching.upcoming') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-                    <i class="fa-solid fa-user-ninja"></i> 1-on-1 Coaching
+                    <i class="fa-solid fa-user-ninja"></i> {{ $isNavEn ? '1-on-1 Coaching' : 'Coaching 1-on-1' }}
                 </a>
                 <a href="{{ route('practice.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-                    <i class="fa-solid fa-toolbox"></i> Practice Tools
+                    <i class="fa-solid fa-toolbox"></i> {{ $isNavEn ? 'Practice Tools' : 'Tools Latihan' }}
                 </a>
                 @if(auth()->check() && auth()->user()->hasIntermediateAccess())
                 <a href="{{ route('song.tutorial.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl {{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5' }} text-xs">
-                    <i class="fa-solid fa-music"></i> Song Library
+                    <i class="fa-solid fa-music"></i> {{ $isNavEn ? 'Song Library' : 'Pustaka Lagu' }}
                 </a>
                 @endif
 
                 <a href="{{ route('profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-xs">
-                    <i class="fa-solid fa-id-card text-blue-400"></i> My Profile
+                    <i class="fa-solid fa-id-card text-blue-400"></i> {{ $isNavEn ? 'My Profile' : 'Profil Saya' }}
                 </a>
 
             @endif
