@@ -54,6 +54,7 @@
     </div>
 
     @php
+        $isEn = (session('app_lang', request('lang', 'id')) === 'en');
         $hasSelectedWarranty = isset($selectedWarrantyTicket) && $selectedWarrantyTicket;
         $hasAvailableWarranty = isset($hasWarrantyTicket) && $hasWarrantyTicket;
         $hasAnyTicket = $hasAvailableTicket || $hasSelectedWarranty || $hasAvailableWarranty;

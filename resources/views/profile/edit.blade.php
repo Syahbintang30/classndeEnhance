@@ -66,6 +66,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="min-h-screen bg-[#08080a] text-white flex flex-col relative selection:bg-blue-600 selection:text-white overflow-hidden pb-16">
     
     {{-- Ambient Mesh Background Glows --}}
@@ -84,14 +87,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">
-                    Account Settings
+                    {{ $isEn ? 'Account Settings' : 'Pengaturan Akun' }}
                 </div>
                 <h1 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase leading-none">Edit <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Profile</span></h1>
-                <p class="text-gray-400 text-xs sm:text-sm mt-1">Manage your personal information, profile photo, and security settings.</p>
+                <p class="text-gray-400 text-xs sm:text-sm mt-1">{{ $isEn ? 'Manage your personal information, profile photo, and security settings.' : 'Kelola informasi pribadi, foto profil, dan kata sandi akun kamu.' }}</p>
             </div>
             <a href="{{ route('profile') }}" class="py-2.5 px-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-xs font-bold text-gray-300 hover:text-white transition inline-flex items-center gap-2 self-start sm:self-auto">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>View Profile</span>
+                <span>{{ $isEn ? 'View Profile' : 'Lihat Profil' }}</span>
             </a>
         </div>
 

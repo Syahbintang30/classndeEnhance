@@ -100,6 +100,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="tunerApp()" 
      x-init="initTuner()">
@@ -116,11 +119,11 @@
         <!-- BACK & TITLE HEADER -->
         <div class="flex items-center justify-between gap-4">
             <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition">
-                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
+                <i class="fa-solid fa-arrow-left"></i> {{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}
             </a>
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-microphone text-blue-400"></i> Realtime Mic Pitch Detection
+                <i class="fa-solid fa-microphone text-blue-400"></i> {{ $isEn ? 'Realtime Mic Pitch Detection' : 'Deteksi Nada Mikrofon Realtime' }}
             </div>
         </div>
 
@@ -132,7 +135,7 @@
                     Guitar <span class="text-blue-400">Tuner</span>
                 </h1>
                 <p class="text-gray-400 text-xs max-w-sm mx-auto">
-                    Allow microphone access and pluck any guitar string to tune in real-time.
+                    {{ $isEn ? 'Allow microphone access and pluck any guitar string to tune in real-time.' : 'Izinkan akses mikrofon dan petik senar gitar untuk menyetem secara realtime.' }}
                 </p>
             </div>
 

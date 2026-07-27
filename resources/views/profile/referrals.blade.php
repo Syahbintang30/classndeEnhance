@@ -35,6 +35,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="min-h-screen bg-[#08080a] text-white flex flex-col relative selection:bg-blue-600 selection:text-white overflow-hidden pb-16">
     
     {{-- Ambient Mesh Background Glows --}}
@@ -53,14 +56,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">
-                    Rewards Program
+                    {{ $isEn ? 'Rewards Program' : 'Program Hadiah Referral' }}
                 </div>
                 <h1 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase leading-none">My <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Referrals</span></h1>
-                <p class="text-gray-400 text-xs sm:text-sm mt-1">Track your referred students and active discount rewards.</p>
+                <p class="text-gray-400 text-xs sm:text-sm mt-1">{{ $isEn ? 'Track your referred students and active discount rewards.' : 'Pantau teman yang mendaftar dan komisi diskon aktif kamu.' }}</p>
             </div>
             <a href="{{ route('profile') }}" class="py-2.5 px-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-xs font-bold text-gray-300 hover:text-white transition inline-flex items-center gap-2 self-start sm:self-auto">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>Back to Profile</span>
+                <span>{{ $isEn ? 'Back to Profile' : 'Kembali ke Profil' }}</span>
             </a>
         </div>
 

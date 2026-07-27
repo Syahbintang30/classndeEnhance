@@ -11,6 +11,7 @@
 
 @section('content')
 @php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
     $participantName = optional($booking->user)->name ?: 'Participant';
     $sessionLabel = $booking->session_number ?? $booking->id;
     $isWarrantySession = ($booking->ticket && $booking->ticket->source === 'warranty');
