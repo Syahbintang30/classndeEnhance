@@ -224,32 +224,27 @@ class CoachingController extends Controller
                 }
 
                 // Cek kapasitas slot: jika admin belum mengatur jadwal khusus untuk tanggal ini, default kapasitas = 1.
-                $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $date)->get();
+                $capacityRows = \App\Models\CoachingSlotCapacity::where(function($q) use ($date) {
+                    $q->whereDate('date', $date)->orWhere('date', $date);
+                })->get();
+
                 $capacityRowsCount = $capacityRows->count();
                 $slotRow = null;
 
                 if ($capacityRowsCount > 0) {
+                    $targetDigits = preg_replace('/[^0-9]/', '', $timeFormatted); // "1900"
                     foreach ($capacityRows as $r) {
                         $rawTime = trim((string) $r->time);
-                        $tClean = str_replace('.', ':', $rawTime);
-                        if (strlen($tClean) === 5) {
-                            $tClean .= ':00';
-                        }
-                        try {
-                            $tFormatted = \Carbon\Carbon::parse($date . ' ' . $tClean)->format('H:i');
-                            if ($tFormatted === $timeFormatted) {
-                                $slotRow = $r;
-                                break;
-                            }
-                        } catch (\Throwable $e) {
-                            if ($tClean === $timeFormatted || $rawTime === $timeFormatted || $rawTime === $timeDot) {
-                                $slotRow = $r;
-                                break;
-                            }
+                        $cleanDigits = preg_replace('/[^0-9]/', '', $rawTime); // "1900" or "190000"
+
+                        if (!empty($cleanDigits) && str_starts_with($cleanDigits, $targetDigits)) {
+                            $slotRow = $r;
+                            break;
                         }
                     }
 
                     if (! $slotRow || (int)($slotRow->capacity ?? 0) <= 0) {
+                        logger()->warning('Slot capacity row not matched or 0 capacity', ['date' => $date, 'time' => $timeFormatted, 'available_times' => $capacityRows->pluck('time')->toArray()]);
                         throw new \RuntimeException('Jadwal ini tidak tersedia.');
                     }
                     $capacity = (int) $slotRow->capacity;
