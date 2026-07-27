@@ -311,7 +311,11 @@ class CoachingController extends Controller
             logger()->error('Booking transaction failed', ['error' => $e->getMessage()]);
             $msg = $e->getMessage() ?: 'Selected slot is full or failed to create booking';
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                return response()->json(['ok' => false, 'error' => $msg], 422);
+                return response()->json([
+                    'ok' => false,
+                    'error' => $msg,
+                    'errors' => ['booking_time' => [$msg]]
+                ], 422);
             }
             return redirect()->route('coaching.index')->withErrors(['booking_time' => $msg]);
         }

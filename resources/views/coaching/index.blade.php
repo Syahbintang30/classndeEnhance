@@ -664,11 +664,18 @@
                         window.location.reload();
                     } else {
                         const json = await resp.json().catch(() => null);
-                        const msg = (json && json.errors) ? Object.values(json.errors).flat().join('\n') : 'Failed to create booking.';
+                        let msg = 'Failed to create booking.';
+                        if (json) {
+                            if (json.errors) {
+                                msg = Object.values(json.errors).flat().join('\n');
+                            } else if (json.error) {
+                                msg = json.error;
+                            }
+                        }
                         alert(msg);
                     }
                 } catch (err) {
-                    alert('Failed to create booking. Please try again.');
+                    alert('Error: ' + (err.message || 'Failed to create booking. Please try again.'));
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = usingWarranty ? 'Confirm & Use Warranty Ticket' : 'Confirm & Use 1 Ticket';
