@@ -6,6 +6,7 @@
     $isSongLib = str_contains($routeName, 'song.tutorial');
     $isPractice = str_contains($routeName, 'practice.');
     $isPublicPage = request()->routeIs('compro', 'login', 'register', 'password.*');
+    $isNavEn = (session('app_lang', request('lang', 'id')) === 'en');
 @endphp
 
 <div x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 w-full">
@@ -22,9 +23,9 @@
         <div class="hidden md:flex items-center justify-center flex-1">
             <nav class="flex items-center gap-1 bg-zinc-950/70 border border-white/10 backdrop-blur-xl rounded-full p-1.5 shadow-2xl">
                 @if(!auth()->check() || $isPublicPage)
-                    <a href="{{ route('compro') }}#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Home</a>
-                    <a href="{{ route('compro') }}#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Practice Tools</a>
-                    <a href="{{ route('compro') }}#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">Packages & Pricing</a>
+                    <a href="{{ route('compro') }}#hero" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">{{ $isNavEn ? 'Home' : 'Beranda' }}</a>
+                    <a href="{{ route('compro') }}#tools" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">{{ $isNavEn ? 'Practice Tools' : 'Tools Latihan' }}</a>
+                    <a href="{{ route('compro') }}#packages" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">{{ $isNavEn ? 'Packages & Pricing' : 'Paket & Harga' }}</a>
                     <a href="{{ route('compro') }}#faq" class="text-gray-400 hover:text-white hover:bg-white/5 font-semibold px-4 py-1.5 rounded-full text-xs transition-all">FAQ</a>
                 @else
                     <a href="{{ route('lms.dashboard') }}" class="{{ $isDashboard ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
@@ -34,23 +35,23 @@
                     
                     <a href="{{ route('kelas') }}" class="{{ $isLessons ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                         <i class="fa-solid fa-book-open text-[11px]"></i>
-                        <span>Lessons</span>
+                        <span>{{ $isNavEn ? 'Lessons' : 'Modul Kelas' }}</span>
                     </a>
                     
                     <a href="{{ route('coaching.upcoming') }}" class="{{ $isCoaching ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                         <i class="fa-solid fa-user-ninja text-[11px]"></i>
-                        <span>1-on-1 Coaching</span>
+                        <span>{{ $isNavEn ? '1-on-1 Coaching' : 'Coaching 1-on-1' }}</span>
                     </a>
                     
                     <a href="{{ route('practice.index') }}" class="{{ $isPractice ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                         <i class="fa-solid fa-toolbox text-[11px]"></i>
-                        <span>Practice Tools</span>
+                        <span>{{ $isNavEn ? 'Practice Tools' : 'Tools Latihan' }}</span>
                     </a>
                     
                     @if(auth()->check() && auth()->user()->hasIntermediateAccess())
                     <a href="{{ route('song.tutorial.index') }}" class="{{ $isSongLib ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
                         <i class="fa-solid fa-music text-[11px]"></i>
-                        <span>Song Library</span>
+                        <span>{{ $isNavEn ? 'Song Library' : 'Pustaka Lagu' }}</span>
                     </a>
                     @endif
 
@@ -189,10 +190,10 @@
                 <!-- Guest Actions (Login & Join Class Buttons) -->
                 <div class="hidden md:flex items-center gap-3">
                     <a href="{{ route('login') }}" class="text-xs font-bold text-gray-300 hover:text-white px-4 py-2 rounded-xl transition hover:bg-white/5">
-                        Log in
+                        {{ $isNavEn ? 'Log in' : 'Masuk' }}
                     </a>
                     <a href="{{ route('register') }}" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/25 transition-all hover:scale-105">
-                        Get Access
+                        {{ $isNavEn ? 'Get Access' : 'Daftar' }}
                     </a>
                 </div>
             @endauth

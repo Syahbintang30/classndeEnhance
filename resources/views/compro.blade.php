@@ -571,14 +571,16 @@
             $faqsToDisplay = [];
             if (isset($faq_items) && count($faq_items) > 0) {
                 foreach ($faq_items as $item) {
+                    $q = method_exists($item, 'getQuestionForLocale') ? $item->getQuestionForLocale($isEn ? 'en' : 'id') : ($item->question ?? '');
+                    $a = method_exists($item, 'getAnswerForLocale') ? $item->getAnswerForLocale($isEn ? 'en' : 'id') : ($item->answer ?? '');
                     $faqsToDisplay[] = [
-                        'question' => $item->question ?? $item->title ?? '',
-                        'answer' => $item->answer ?? $item->content ?? ''
+                        'question' => $q,
+                        'answer' => $a,
                     ];
                 }
-                $faqsToDisplay = array_slice($faqsToDisplay, 0, 4);
+                $faqsToDisplay = array_slice($faqsToDisplay, 0, 5);
             } else {
-                $faqsToDisplay = array_slice($defaultFaqs, 0, 4);
+                $faqsToDisplay = array_slice($defaultFaqs, 0, 5);
             }
         @endphp
 

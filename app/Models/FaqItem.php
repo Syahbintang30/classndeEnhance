@@ -12,6 +12,10 @@ class FaqItem extends Model
     protected $fillable = [
         'question',
         'answer',
+        'question_id',
+        'answer_id',
+        'question_en',
+        'answer_en',
         'is_active',
         'sort_order',
     ];
@@ -20,4 +24,20 @@ class FaqItem extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    public function getQuestionForLocale(string $lang = 'id'): string
+    {
+        if ($lang === 'en') {
+            return $this->question_en ?: ($this->question ?: '');
+        }
+        return $this->question_id ?: ($this->question ?: '');
+    }
+
+    public function getAnswerForLocale(string $lang = 'id'): string
+    {
+        if ($lang === 'en') {
+            return $this->answer_en ?: ($this->answer ?: '');
+        }
+        return $this->answer_id ?: ($this->answer ?: '');
+    }
 }
