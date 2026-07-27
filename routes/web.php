@@ -45,10 +45,23 @@ Route::get('/migrate-legacy-db-secret-key-99', function() {
 
         $sqlContent = \Illuminate\Support\Facades\File::get($sqlFile);
         \Illuminate\Support\Facades\DB::unprepared($sqlContent);
+
+        // Reset & Hash Admin & Super Admin passwords
+        \Illuminate\Support\Facades\DB::table('users')->where('email', 'super@admin')->update([
+            'password' => \Illuminate\Support\Facades\Hash::make('superadminpass'),
+            'is_admin' => 1,
+            'is_superadmin' => 1,
+        ]);
+        \Illuminate\Support\Facades\DB::table('users')->where('email', 'admin@admin')->update([
+            'password' => \Illuminate\Support\Facades\Hash::make('adminpass'),
+            'is_admin' => 1,
+            'is_superadmin' => 0,
+        ]);
+
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $userCount = \Illuminate\Support\Facades\DB::table('users')->count();
-        return "BERHASIL IMPOR DATABASE! Total User saat ini: " . $userCount . ". Silakan login sekarang di https://guitarclassbynde.id/login";
+        return "BERHASIL IMPOR DATABASE LAMA! Total User: " . $userCount . ". Akun Admin: super@admin / superadminpass atau admin@admin / adminpass. Silakan login di https://guitarclassbynde.id/login";
     } catch (\Throwable $e) {
         return "Gagal impor: " . $e->getMessage();
     }
