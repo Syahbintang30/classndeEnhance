@@ -576,6 +576,7 @@ class CoachingController extends Controller
             return redirect()->back()->withErrors(['error' => 'Format waktu jadwal tidak valid.']);
         }
 
+        $roomName = 'coaching-session-' . $booking->id;
         $accessToken = null;
         if ($this->twilio->isConfigured()) {
             try {
