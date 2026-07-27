@@ -309,10 +309,11 @@ class CoachingController extends Controller
             });
         } catch (\Throwable $e) {
             logger()->error('Booking transaction failed', ['error' => $e->getMessage()]);
+            $msg = $e->getMessage() ?: 'Selected slot is full or failed to create booking';
             if (request()->wantsJson() || request()->header('Accept') === 'application/json') {
-                return response()->json(['ok' => false, 'error' => 'Selected slot is full or failed to create booking'], 422);
+                return response()->json(['ok' => false, 'error' => $msg], 422);
             }
-            return redirect()->route('coaching.index')->withErrors(['booking_time' => 'Failed to create booking, please try again.']);
+            return redirect()->route('coaching.index')->withErrors(['booking_time' => $msg]);
         }
 
         // Pastikan data booking terbaru dan ticket sudah benar-benar ter-reserve.
