@@ -154,6 +154,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="trainerQuizApp()" 
      x-init="initQuiz()">
@@ -170,11 +173,11 @@
         <!-- BACK & TITLE HEADER -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition self-start">
-                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
+                <i class="fa-solid fa-arrow-left"></i> {{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}
             </a>
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-wider self-start sm:self-auto">
-                <i class="fa-solid fa-gamepad"></i> Interactive Ear & Fretboard Trainer
+                <i class="fa-solid fa-gamepad"></i> {{ $isEn ? 'Interactive Ear & Fretboard Trainer' : 'Trainer Fretboard & Pendengaran Interaktif' }}
             </div>
         </div>
 
@@ -186,7 +189,7 @@
                     Ear & Fretboard <span class="text-rose-400">Trainer Quiz</span>
                 </h1>
                 <p class="text-gray-400 text-xs max-w-md mx-auto">
-                    Challenge your ears and fretboard note memory. Earn score points and build your streak!
+                    {{ $isEn ? 'Challenge your ears and fretboard note memory. Earn score points and build your streak!' : 'Latih ingatan nada di fretboard dan kepekaan telinga kamu. Dapatkan poin skor & tingkatkan streak!' }}
                 </p>
             </div>
 

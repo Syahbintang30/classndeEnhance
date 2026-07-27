@@ -58,6 +58,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden"
      x-data="{ mobileMenuOpen: false }">
 
@@ -75,13 +78,13 @@
             <div>
                 <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition mb-2">
                     <i class="fa-solid fa-arrow-left"></i>
-                    <span>Back to Practice Tools</span>
+                    <span>{{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}</span>
                 </a>
                 <h1 class="font-display text-3xl sm:text-5xl text-white tracking-wider">
                     LIVE GUITAR <span class="text-amber-400">PITCH QUIZ</span> 🎸
                 </h1>
                 <p class="text-gray-400 text-xs sm:text-sm mt-1">
-                    Plug in your guitar or use your mic. Play the correct note to earn XP & push your rank!
+                    {{ $isEn ? 'Plug in your guitar or use your mic. Play the correct note to earn XP & push your rank!' : 'Tancapkan gitar atau gunakan mikrofon. Mainkan nada yang tepat untuk mendapat XP & naikkan rank!' }}
                 </p>
             </div>
 

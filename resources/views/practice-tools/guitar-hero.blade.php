@@ -64,6 +64,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#121216] text-gray-200 relative overflow-hidden"
      x-data="{ mobileMenuOpen: false }">
 
@@ -81,7 +84,7 @@
 
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">INTERACTIVE TAB PLAYER</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">{{ $isEn ? 'INTERACTIVE TAB PLAYER' : 'PLAYER TAB INTERAKTIF' }}</span>
                         <span class="text-xs text-gray-400 font-semibold" id="songBpmDisplay">72 BPM • 4/4</span>
                     </div>
                     <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-0.5" id="songTitleDisplay">
@@ -92,7 +95,7 @@
 
             <!-- SONG SELECTOR DROPDOWN -->
             <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-gray-400 hidden sm:inline">SELECT SONG:</span>
+                <span class="text-xs font-bold text-gray-400 hidden sm:inline">{{ $isEn ? 'SELECT SONG:' : 'PILIH LAGU:' }}</span>
                 <select id="songSelectDropdown" onchange="loadSongsterrTrack(this.value)" class="bg-[#121216] text-amber-400 font-bold text-xs rounded-xl border border-white/15 px-3 py-2 focus:outline-none cursor-pointer">
                     @foreach($songTabs as $index => $tab)
                         <option value="{{ $index }}">🎵 {{ $tab->artist }} - {{ $tab->title }} ({{ $tab->bpm }} BPM)</option>

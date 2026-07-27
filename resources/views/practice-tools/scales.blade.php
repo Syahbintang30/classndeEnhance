@@ -169,6 +169,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="scaleLibrary()" 
      x-init="initScales()">
@@ -185,11 +188,11 @@
         <!-- BACK & TITLE HEADER -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition self-start">
-                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
+                <i class="fa-solid fa-arrow-left"></i> {{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}
             </a>
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-wider self-start sm:self-auto">
-                <i class="fa-solid fa-graduation-cap"></i> Solo & Improvisation Suite
+                <i class="fa-solid fa-graduation-cap"></i> {{ $isEn ? 'Solo & Improvisation Suite' : 'Suite Solo & Improvisasi' }}
             </div>
         </div>
 
@@ -201,7 +204,7 @@
                     Scale <span class="text-cyan-400">Visualizer</span>
                 </h1>
                 <p class="text-gray-400 text-xs max-w-md mx-auto">
-                    Visualize guitar scale patterns across all 12 frets. Essential for solos, improvising, and lead playing.
+                    {{ $isEn ? 'Explore Pentatonic, Major, Minor & Blues scales across the entire fretboard with audio playback.' : 'Jelajahi tangga nada Pentatonik, Major, Minor & Blues di seluruh fretboard dengan audio playback.' }}
                 </p>
             </div>
 

@@ -164,6 +164,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="chordLibrary()" 
      x-init="drawFretboard()">
@@ -180,11 +183,11 @@
         <!-- BACK & TITLE HEADER -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition self-start">
-                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
+                <i class="fa-solid fa-arrow-left"></i> {{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}
             </a>
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider self-start sm:self-auto">
-                <i class="fa-solid fa-guitar"></i> Interactive Fretboard Visualizer
+                <i class="fa-solid fa-guitar"></i> {{ $isEn ? 'Interactive Fretboard Visualizer' : 'Visualizer Fretboard Interaktif' }}
             </div>
         </div>
 
@@ -196,7 +199,7 @@
                     Chord <span class="text-purple-400">Library</span>
                 </h1>
                 <p class="text-gray-400 text-xs max-w-md mx-auto">
-                    Select a root note and chord formula to visualize finger positions and play reference arpeggios on the neck.
+                    {{ $isEn ? 'Select a root note and chord formula to visualize finger positions and play reference arpeggios on the neck.' : 'Pilih nada dasar dan bentuk chord untuk melihat posisi jari dan mendengarkan suara chord.' }}
                 </p>
             </div>
 

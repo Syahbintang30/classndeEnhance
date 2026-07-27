@@ -76,6 +76,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="metronomeApp()" 
      x-init="initMetronome()">
@@ -92,11 +95,11 @@
         <!-- BACK & TITLE HEADER -->
         <div class="flex items-center justify-between gap-4">
             <a href="{{ route('practice.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-zinc-950/60 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md transition">
-                <i class="fa-solid fa-arrow-left"></i> Back to Practice Tools
+                <i class="fa-solid fa-arrow-left"></i> {{ $isEn ? 'Back to Practice Tools' : 'Kembali ke Tools Latihan' }}
             </a>
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-stopwatch"></i> Precision Rhythm Engine
+                <i class="fa-solid fa-stopwatch"></i> {{ $isEn ? 'Precision Rhythm Engine' : 'Mesin Tempo Ritme Presisi' }}
             </div>
         </div>
 
@@ -108,7 +111,7 @@
                     Precision <span class="text-emerald-400">Metronome</span>
                 </h1>
                 <p class="text-gray-400 text-xs max-w-sm mx-auto">
-                    Master your timing with Web Audio sample-accurate ticking.
+                    {{ $isEn ? 'Master your timing with Web Audio sample-accurate ticking.' : 'Latih ketukan ritme gitar kamu secara presisi dan teratur.' }}
                 </p>
             </div>
 

@@ -39,6 +39,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden selection:bg-blue-600 selection:text-white" x-data="{ mobileMenuOpen: false }">
     
     <!-- Ambient Background Glows -->
@@ -61,15 +64,19 @@
             <div class="space-y-4">
                 <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest shadow-inner">
                     <i class="fa-solid fa-lock text-[11px]"></i>
-                    <span>INTERMEDIATE EXCLUSIVE FEATURE</span>
+                    <span>{{ $isEn ? 'INTERMEDIATE EXCLUSIVE FEATURE' : 'FITUR EKSKLUSIF INTERMEDIATE' }}</span>
                 </div>
 
                 <h1 class="font-display text-4xl sm:text-6xl text-white tracking-wide uppercase leading-none">
-                    Unlock <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-blue-500">Practice Tools</span>
+                    @if($isEn)
+                        Unlock <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-blue-500">Practice Tools</span>
+                    @else
+                        Buka Akses <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-blue-500">Tools Latihan</span>
+                    @endif
                 </h1>
 
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
-                    The Tuner, Metronome, Chord Library, Scale Finder &amp; Fretboard Trainer are exclusively available for <strong class="text-white">Intermediate</strong> members.
+                    {{ $isEn ? 'The Tuner, Metronome, Chord Library, Scale Finder & Fretboard Trainer are exclusively available for Intermediate members.' : 'Tuner, Metronom, Chord Library, Scale Finder & Fretboard Trainer hanya tersedia untuk anggota Intermediate.' }}
                 </p>
             </div>
 
@@ -79,7 +86,7 @@
                 <!-- Card Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
                     <div>
-                        <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block">Target Tier: Intermediate</span>
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block">{{ $isEn ? 'Target Tier: Intermediate' : 'Tingkat Paket: Intermediate' }}</span>
                         <h2 class="font-display text-3xl text-white uppercase tracking-wide">Intermediate Membership</h2>
                     </div>
 
@@ -87,7 +94,7 @@
                         @if($isBeginner)
                             <div class="flex items-center gap-2 sm:justify-end">
                                 <span class="text-xs text-gray-500 line-through">Rp 250.000</span>
-                                <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold text-[10px] uppercase">Special Upgrade Price</span>
+                                <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold text-[10px] uppercase">{{ $isEn ? 'Special Upgrade Price' : 'Harga Khusus Upgrade' }}</span>
                             </div>
                             <div class="flex items-baseline gap-1 text-white">
                                 <span class="text-xs font-bold text-gray-400">Rp</span>
