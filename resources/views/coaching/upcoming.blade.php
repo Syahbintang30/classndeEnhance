@@ -170,7 +170,7 @@
                             </a>
                         @else
                             <div class="w-full sm:w-auto py-3 px-6 bg-zinc-950/60 border border-white/5 text-gray-500 font-semibold text-xs rounded-xl text-center">
-                                No Warranty Tickets
+                                {{ $isEn ? 'No Warranty Tickets' : 'Tidak Ada Tiket Garansi' }}
                             </div>
                         @endif
                     </div>
@@ -181,7 +181,7 @@
         <!-- SECTION 2: UPCOMING APPOINTMENTS -->
         <section>
             <h2 class="font-display text-2xl tracking-wide text-white mb-5 flex items-center gap-3">
-                <i class="fa-regular fa-calendar-check text-blue-400"></i> Scheduled Appointments
+                <i class="fa-regular fa-calendar-check text-blue-400"></i> {{ $isEn ? 'Scheduled Appointments' : 'Jadwal Sesi Mendatang' }}
             </h2>
 
             @if($bookings->isEmpty() && (empty($caching) || $caching->isEmpty()))
@@ -189,10 +189,10 @@
                     <div class="w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-3xl mb-5 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
                         <i class="fa-regular fa-calendar-plus"></i>
                     </div>
-                    <h3 class="font-display text-3xl text-white tracking-wide mb-2">Ready to start your session?</h3>
-                    <p class="text-gray-400 text-sm max-w-md mb-6">You don't have any upcoming appointments scheduled. Book a session with your available tickets to level up your guitar skills.</p>
+                    <h3 class="font-display text-3xl text-white tracking-wide mb-2">{{ $isEn ? 'Ready to start your session?' : 'Siap untuk memulai sesi?' }}</h3>
+                    <p class="text-gray-400 text-sm max-w-md mb-6">{{ $isEn ? 'You don\'t have any upcoming appointments scheduled. Book a session with your available tickets to level up your guitar skills.' : 'Kamu belum memiliki jadwal sesi mendatang. Pesan sesi dengan tiketmu untuk meningkatkan skill gitar secara cepat.' }}</p>
                     <a href="{{ $availableTickets > 0 ? route('coaching.index') : route('coaching.checkout') }}" class="py-3.5 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-full transition shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-day"></i> Schedule Session Now
+                        <i class="fa-solid fa-calendar-day"></i> {{ $isEn ? 'Schedule Session Now' : 'Jadwalkan Sesi Sekarang' }}
                     </a>
                 </div>
             @else

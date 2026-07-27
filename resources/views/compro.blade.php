@@ -77,12 +77,13 @@
     @include('layouts.lms_header')
 
     @php
-        $isEn = (session('app_lang', request('lang', 'id')) === 'en');
-        $isLoggedIn = auth()->check();
-        $lmsUrl = route('lms.dashboard');
-        $firstLesson = \App\Models\Lesson::orderBy('position')->first();
-        $lessonId = $firstLesson ? $firstLesson->id : 9;
-    @endphp
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+    $isLoggedIn = auth()->check();
+    $lmsUrl = route('lms.dashboard');
+    $firstLesson = \App\Models\Lesson::orderBy('position')->first();
+    $lessonId = $firstLesson ? $firstLesson->id : 9;
+    $totalStudentsCount = number_format(1200 + \App\Models\User::count());
+@endphp
 
     <!-- ─── HERO SECTION (HIGH CONVERTING SALES HOOK) ───────────────────── -->
     <header class="relative pt-12 pb-20 lg:pt-20 lg:pb-32 px-4 lg:px-8 max-w-7xl mx-auto z-10">
@@ -134,7 +135,7 @@
                             <img src="https://i.pravatar.cc/100?img=33" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
                             <img src="https://i.pravatar.cc/100?img=47" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
                         </div>
-                        <span class="font-bold text-white">1,200+ <span class="font-normal text-gray-400">{{ $isEn ? 'Students Mentored' : 'Murid Dibimbing' }}</span></span>
+                        <span class="font-bold text-white">{{ $totalStudentsCount }}+ <span class="font-normal text-gray-400">{{ $isEn ? 'Students Mentored' : 'Murid Dibimbing' }}</span></span>
                     </div>
 
                     <div class="h-4 w-px bg-white/10 hidden sm:block"></div>

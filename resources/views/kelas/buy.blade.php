@@ -121,7 +121,7 @@
                     $isTicket = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
                     $isFeatured = str_contains(strtolower((string)($pkg->slug ?? '')), 'intermediate') || str_contains(strtolower((string)($pkg->name ?? '')), 'intermediate');
                     $benefits = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
-                    $imgSrc = $pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg');
+                    $imgSrc = method_exists($pkg, 'imageUrl') ? $pkg->imageUrl() : ($pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg'));
                     $pricingUnit = $isTicket ? ($isEn ? '/ 1x session' : '/ 1x sesi') : ($isEn ? '/ lifetime' : '/ seumur hidup');
                 @endphp
 
@@ -130,19 +130,19 @@
                     <!-- Inner Top Accent Border -->
                     <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r {{ $isFeatured ? 'from-blue-500 via-indigo-400 to-cyan-400' : 'from-transparent via-white/20 to-transparent' }}"></div>
 
-                    @if($isFeatured)
-                        <div class="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
-                            {{ $isEn ? 'RECOMMENDED' : 'REKOMENDASI' }}
-                        </div>
-                    @endif
-
                     <div class="space-y-6">
                         <!-- Package Header Image & Badges -->
                         <div class="relative w-full h-40 rounded-2xl overflow-hidden bg-zinc-900 border border-white/10">
                             <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80">
                             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
                             
-                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                            @if($isFeatured)
+                                <div class="absolute top-3 right-3 z-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg border border-white/20">
+                                    {{ $isEn ? 'RECOMMENDED' : 'REKOMENDASI' }}
+                                </div>
+                            @endif
+
+                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between z-10">
                                 <span class="px-2.5 py-1 rounded-lg bg-zinc-950/80 border border-white/10 backdrop-blur-md text-blue-400 text-[10px] font-bold uppercase tracking-wider">
                                     {{ $pkg->slug }}
                                 </span>
@@ -181,7 +181,7 @@
                         @if($paymentBase)
                             <a href="{{ $paymentBase }}?package_id={{ $pkg->id }}&package_qty=1" 
                                class="w-full py-4 rounded-xl font-display text-xl tracking-widest text-center flex items-center justify-center gap-2.5 shadow-xl transition-all duration-300 cursor-pointer {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 hover:scale-[1.02]' : 'bg-white/10 hover:bg-white/15 border border-white/10 text-white' }}">
-                                <span>{{ $isEn ? 'PAY WITH MIDTRANS' : 'BAYAR DENGAN MIDTRANS' }}</span>
+                                <span>{{ $isEn ? 'BUY NOW' : 'BAYAR SEKARANG' }}</span>
                                 <i class="fa-solid fa-arrow-right text-sm"></i>
                             </a>
                         @else
@@ -194,7 +194,7 @@
 
                         <div class="text-center text-[10px] text-gray-500 font-semibold flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-                            <span>{{ $isEn ? '100% Secure Payment via Midtrans' : '100% Pembayaran Aman via Midtrans' }}</span>
+                            <span>{{ $isEn ? '100% Secure Payment' : '100% Pembayaran Aman' }}</span>
                         </div>
                     </div>
 

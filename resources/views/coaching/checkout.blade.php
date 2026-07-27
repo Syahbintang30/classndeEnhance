@@ -159,7 +159,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-bold text-white">Payment Method</h4>
-                                <div class="text-xs text-gray-400">Instant via Midtrans</div>
+                                <div class="text-xs text-gray-400">Automated Instant Checkout</div>
                             </div>
                         </div>
 
@@ -182,7 +182,7 @@
 
                         <button id="payBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
                             <i class="fa-solid fa-lock text-xs"></i>
-                            <span>PAY WITH MIDTRANS</span>
+                            <span>{{ $isEn ? 'PAY NOW' : 'BAYAR SEKARANG' }}</span>
                         </button>
 
                         <div class="flex items-center justify-center gap-2 text-[11px] text-gray-400">
