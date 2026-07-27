@@ -676,9 +676,9 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <a class="btn btn-sm btn-primary fw-semibold w-100 justify-content-center d-flex align-items-center gap-2 shadow-sm" style="font-size: 0.8rem; border-radius: 8px; padding: 7px 12px; background: linear-gradient(135deg, #2563EB, #4F46E5); border: none; color: #fff; text-decoration: none;" target="_blank" href="{{ $sessionUrl }}">
-                                                <i class="fa-solid fa-video text-xs"></i>
-                                                <span>Masuk Sesi Video</span>
+                                            <a class="btn-session-pending open-session-btn w-100 justify-content-center d-flex align-items-center gap-2" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#" style="font-size: 0.78rem; border-radius: 8px; padding: 7px 12px; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; pointer-events: none; opacity: 0.6; background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1;">
+                                                <i class="fa-regular fa-clock text-xs"></i>
+                                                <span>Belum Dimulai</span>
                                             </a>
                                         </div>
                                     </div>
@@ -760,28 +760,48 @@
                     const dt = new Date(iso);
                     if (isNaN(dt.getTime())) return;
                     const startMs = dt.getTime();
-                    const endWindow = startMs + (60 * 60 * 1000);
+                    const earlyAccessMs = startMs - (15 * 60 * 1000); // 15 menit sebelum sesi
+                    const endWindow = startMs + (60 * 60 * 1000); // 1 jam durasi sesi
 
-                    if (now >= startMs && now <= endWindow) {
-                        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg> <span>Masuk Call</span>';
-                        btn.style.background = '#EFF6FF';
-                        btn.style.color = '#1D4ED8';
-                        btn.style.border = '1.5px solid #2563EB';
-                        btn.style.fontWeight = '600';
+                    if (now >= earlyAccessMs && now <= endWindow) {
+                        btn.innerHTML = '<i class="fa-solid fa-video text-xs"></i> <span>Masuk Sesi Video</span>';
+                        btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                        btn.style.color = '#FFFFFF';
+                        btn.style.border = 'none';
+                        btn.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+                        btn.style.fontWeight = '700';
                         btn.style.gap = '8px';
                         btn.removeAttribute('aria-disabled');
                         if (href) btn.setAttribute('href', href);
-                        btn.style.pointerEvents = '';
+                        btn.style.pointerEvents = 'auto';
                         btn.style.opacity = '1';
-                    } else if (now < startMs) {
-                        btn.innerHTML = '<span>Belum Dimulai</span>';
+                        btn.classList.add('animate-pulse');
+                    } else if (now < earlyAccessMs) {
+                        btn.innerHTML = '<i class="fa-regular fa-clock text-xs"></i> <span>Belum Dimulai</span>';
                         btn.style.background = '#F1F5F9';
-                        btn.style.color = '#475569';
+                        btn.style.color = '#64748B';
                         btn.style.border = '1px solid #CBD5E1';
+                        btn.style.fontWeight = '600';
                         btn.style.gap = '8px';
+                        btn.style.boxShadow = 'none';
                         btn.setAttribute('aria-disabled', 'true');
                         btn.removeAttribute('href');
                         btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.6';
+                        btn.classList.remove('animate-pulse');
+                    } else {
+                        btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> <span>Sesi Selesai</span>';
+                        btn.style.background = '#F8FAFC';
+                        btn.style.color = '#94A3B8';
+                        btn.style.border = '1px solid #E2E8F0';
+                        btn.style.fontWeight = '600';
+                        btn.style.gap = '8px';
+                        btn.style.boxShadow = 'none';
+                        btn.setAttribute('aria-disabled', 'true');
+                        btn.removeAttribute('href');
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.5';
+                        btn.classList.remove('animate-pulse');
                     }
                 });
             }

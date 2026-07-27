@@ -525,36 +525,37 @@ class CoachingController extends Controller
             $isAdmin = false;
         }
         if (! $user || (! $isOwner && ! $isAssignedCoach && ! $isConfiguredCoach && ! $isAdmin)) {
-            abort(403);
-        }
-        if (! $this->twilio->isConfigured()) {
-            abort(500, 'Twilio not configured');
+            abort(403, 'Unauthorized access to coaching session.');
         }
 
         $status = strtolower((string) $booking->status);
         if (in_array($status, ['ended', 'finished', 'completed'], true)) {
-            abort(403, 'Session already ended');
+            return redirect()->back()->withErrors(['error' => 'Sesi coaching ini sudah selesai.']);
         }
         if (! $isAdmin && ! in_array($status, ['accepted', 'scheduled'], true)) {
-            abort(403, 'Session not available');
+            return redirect()->back()->withErrors(['error' => 'Sesi coaching belum dikonfirmasi atau telah dibatalkan.']);
         }
 
-        // Nama room dibuat konsisten supaya sesi yang sama selalu mengarah ke ruang video yang sama.
-        $roomName = 'coaching-' . $booking->id;
-
-        // Load relasi penting lebih awal supaya view tidak kena lazy-loading berulang.
-        $booking->loadMissing(['user', 'ticket']);
-
-        // Batas waktu akses untuk non-admin: mulai 10 menit sebelum sesi sampai durasi sesi habis.
+        // Batas waktu akses: tombol baru aktif dari 15 menit sebelum sesi sampai durasi sesi habis.
         try {
             $start = \Carbon\Carbon::parse($booking->booking_time);
             $now = now();
             $duration = (int) ($booking->session_duration_minutes ?? config('coaching.session_length_minutes', 60));
-            if (! $isAdmin && ($now->lt($start->copy()->subMinutes(10)) || $now->gt($start->copy()->addMinutes($duration)))) {
-                abort(403, 'Session not available at this time');
+
+            if ($now->lt($start->copy()->subMinutes(15))) {
+                $timeDiff = $start->diffForHumans($now, ['parts' => 2]);
+                return redirect()->back()->withErrors(['error' => "Sesi coaching belum dimulai ({$timeDiff}). Ruang video call baru dapat dibuka 15 menit sebelum jam jadwal."]);
+            }
+
+            if ($now->gt($start->copy()->addMinutes($duration))) {
+                return redirect()->back()->withErrors(['error' => 'Sesi coaching sudah melewati batas waktu yang dijadwalkan.']);
             }
         } catch (\Throwable $e) {
-            abort(400, 'Invalid booking time');
+            return redirect()->back()->withErrors(['error' => 'Format waktu jadwal tidak valid.']);
+        }
+
+        if (! $this->twilio->isConfigured()) {
+            return redirect()->back()->withErrors(['error' => 'Layanan video call (Twilio) belum diatur di file .env server. Silakan tambahkan TWILIO_ACCOUNT_SID & TWILIO_AUTH_TOKEN.']);
         }
 
         try {
