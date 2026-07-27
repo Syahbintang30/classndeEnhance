@@ -224,18 +224,31 @@ class CoachingController extends Controller
                 }
 
                 // Cek kapasitas slot: jika admin belum mengatur jadwal khusus untuk tanggal ini, default kapasitas = 1.
-                $timeSec = $timeFormatted . ':00';
-                $capacityRowsCount = \App\Models\CoachingSlotCapacity::where('date', $date)->count();
-                $slotRow = \App\Models\CoachingSlotCapacity::where('date', $date)
-                    ->where(function($q) use ($timeFormatted, $timeDot, $timeSec) {
-                        $q->where('time', $timeFormatted)
-                          ->orWhere('time', $timeDot)
-                          ->orWhere('time', $timeSec)
-                          ->orWhereRaw("TIME_FORMAT(`time`, '%H:%i') = ?", [$timeFormatted]);
-                    })
-                    ->first();
+                $capacityRows = \App\Models\CoachingSlotCapacity::where('date', $date)->get();
+                $capacityRowsCount = $capacityRows->count();
+                $slotRow = null;
 
                 if ($capacityRowsCount > 0) {
+                    foreach ($capacityRows as $r) {
+                        $rawTime = trim((string) $r->time);
+                        $tClean = str_replace('.', ':', $rawTime);
+                        if (strlen($tClean) === 5) {
+                            $tClean .= ':00';
+                        }
+                        try {
+                            $tFormatted = \Carbon\Carbon::parse($date . ' ' . $tClean)->format('H:i');
+                            if ($tFormatted === $timeFormatted) {
+                                $slotRow = $r;
+                                break;
+                            }
+                        } catch (\Throwable $e) {
+                            if ($tClean === $timeFormatted || $rawTime === $timeFormatted || $rawTime === $timeDot) {
+                                $slotRow = $r;
+                                break;
+                            }
+                        }
+                    }
+
                     if (! $slotRow || (int)($slotRow->capacity ?? 0) <= 0) {
                         throw new \RuntimeException('Jadwal ini tidak tersedia.');
                     }
@@ -245,18 +258,21 @@ class CoachingController extends Controller
                 }
 
                 // Hitung booking aktif (pending/accepted) pada slot ini.
-                $qb = CoachingBooking::whereDate('booking_time', $date)
-                    ->where(function($q) use ($timeFormatted, $timeDot) {
-                        $q->whereTime('booking_time', $timeFormatted)
-                          ->orWhereTime('booking_time', $timeDot);
-                    })
-                    ->whereIn('status', ['pending','accepted']);
+                $allBooked = CoachingBooking::whereDate('booking_time', $date)
+                    ->whereIn('status', ['pending','accepted'])
+                    ->get();
 
-                if (in_array($driver, ['mysql', 'pgsql'])) {
-                    $qb = $qb->lockForUpdate();
+                $taken = 0;
+                foreach ($allBooked as $b) {
+                    try {
+                        $bTime = \Carbon\Carbon::parse($b->booking_time)->format('H:i');
+                        if ($bTime === $timeFormatted) {
+                            $taken++;
+                        }
+                    } catch (\Throwable $e) {
+                        // ignore invalid dates
+                    }
                 }
-
-                $taken = $qb->count();
 
                 if ($taken >= $capacity) {
                     logger()->info('Booking slot full', ['date' => $date, 'time' => $timeFormatted, 'taken' => $taken]);
