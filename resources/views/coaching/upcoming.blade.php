@@ -63,6 +63,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" x-data="{ mobileMenuOpen: false }">
 
     {{-- Ambient Mesh Background Glow --}}
@@ -76,12 +79,12 @@
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 lg:px-8 py-10 space-y-10 relative z-10">
         <header class="mb-6">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">
-                <i class="fa-solid fa-user-ninja"></i> Personal Coaching Hub
+                <i class="fa-solid fa-user-ninja"></i> {{ $isEn ? 'Personal Coaching Hub' : 'Hub Coaching Privat' }}
             </div>
             <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl tracking-wide text-white mb-2 uppercase">
                 Coaching <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-white">Dashboard</span>
             </h1>
-            <p class="text-gray-400 text-sm max-w-xl">Manage your active passes and upcoming live 1-on-1 video sessions to accelerate your playing.</p>
+            <p class="text-gray-400 text-sm max-w-xl">{{ $isEn ? 'Manage your active passes and upcoming live 1-on-1 video sessions to accelerate your playing.' : 'Kelola tiket aktif dan jadwal video call live 1-on-1 bersama mentor.' }}</p>
         </header>
 
         {{-- Ticket variables --}}
@@ -102,7 +105,7 @@
         <!-- SECTION 1: YOUR PASSES -->
         <section>
             <h2 class="font-display text-2xl tracking-wide text-white mb-5 flex items-center gap-3">
-                <i class="fa-solid fa-ticket text-blue-400"></i> Your Passes
+                <i class="fa-solid fa-ticket text-blue-400"></i> {{ $isEn ? 'Your Passes' : 'Tiket & Akses Kamu' }}
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -114,24 +117,24 @@
                                 <i class="fa-solid fa-star"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white">Coaching Tickets</h3>
-                                <p class="text-xs text-gray-400">Regular 1-on-1 Live Sessions</p>
+                                <h3 class="font-bold text-lg text-white">{{ $isEn ? 'Coaching Tickets' : 'Tiket Coaching' }}</h3>
+                                <p class="text-xs text-gray-400">{{ $isEn ? 'Regular 1-on-1 Live Sessions' : 'Sesi Live 1-on-1 Privat' }}</p>
                             </div>
                         </div>
                         <div class="mt-4 flex items-baseline gap-2">
                             <span class="font-display text-5xl text-blue-400">{{ $availableTickets }}</span>
-                            <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">available of {{ $totalTickets }} total</span>
+                            <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">{{ $isEn ? 'available of '.$totalTickets.' total' : 'tersedia dari total '.$totalTickets }}</span>
                         </div>
                     </div>
 
                     <div class="w-full sm:w-auto flex-shrink-0">
                         @if($availableTickets > 0)
                             <a href="{{ route('coaching.index') }}" class="w-full sm:w-auto py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl text-center transition shadow-lg hover:shadow-blue-600/30 flex items-center justify-center gap-2">
-                                <span>Book Session</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                <span>{{ $isEn ? 'Book Session' : 'Jadwalkan Sesi' }}</span> <i class="fa-solid fa-arrow-right text-xs"></i>
                             </a>
                         @else
                             <a href="{{ route('coaching.checkout') }}" class="w-full sm:w-auto py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl text-center transition shadow-lg hover:shadow-blue-600/30 flex items-center justify-center gap-2">
-                                <span>Buy Ticket</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                <span>{{ $isEn ? 'Buy Ticket' : 'Beli Tiket' }}</span> <i class="fa-solid fa-arrow-right text-xs"></i>
                             </a>
                         @endif
                     </div>

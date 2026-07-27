@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
+
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -37,7 +41,7 @@
     </style>
 @endpush
 
-@section('title', 'Song Tutorial Library')
+@section('title', $isEn ? 'Song Tutorial Library' : 'Pustaka Tutorial Lagu')
 
 @section('content')
 <div class="tw-dash min-h-screen bg-[#08080a] flex flex-col antialiased relative overflow-hidden" x-data="{ mobileMenuOpen: false }">
@@ -62,24 +66,24 @@
             @auth
                 @if (! empty($hasIntermediate))
                     <p class="text-gray-400 mb-8 leading-relaxed text-xs sm:text-sm">
-                        No Song Tutorial content is available yet. Our mentors are currently producing new song breakdowns. Please check back soon!
+                        {{ $isEn ? 'No Song Tutorial content is available yet. Our mentors are currently producing new song breakdowns. Please check back soon!' : 'Belum ada konten Tutorial Lagu yang tersedia saat ini. Mentor kami sedang menyiapkan video tutorial lagu terbaru. Silakan cek kembali nanti!' }}
                     </p>
                 @else
                     <p class="text-gray-400 mb-8 leading-relaxed text-xs sm:text-sm">
-                        Song Tutorial access is available exclusively for the <strong class="text-white font-bold">Intermediate Student</strong> tier. Upgrade your package to unlock song library breakdowns.
+                        {{ $isEn ? 'Song Tutorial access is available exclusively for the' : 'Akses Tutorial Lagu tersedia secara eksklusif untuk paket' }} <strong class="text-white font-bold">Intermediate Student</strong>. {{ $isEn ? 'Upgrade your package to unlock song library breakdowns.' : 'Tingkatkan paketmu untuk membuka pustaka tutorial lagu.' }}
                     </p>
                     <a href="{{ route('registerclass') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-105 transition-all">
-                        <span>View Packages</span>
+                        <span>{{ $isEn ? 'View Packages' : 'Lihat Pilihan Paket' }}</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
                 @endif
             @else
                 <p class="text-gray-400 mb-8 leading-relaxed text-xs sm:text-sm">
-                    Sign in with an account that has the Intermediate package to access the Song Tutorial library.
+                    {{ $isEn ? 'Sign in with an account that has the Intermediate package to access the Song Tutorial library.' : 'Masuk dengan akun yang memiliki paket Intermediate untuk mengakses pustaka Tutorial Lagu.' }}
                 </p>
                 <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-105 transition-all">
                     <i class="fa-solid fa-right-to-bracket text-xs"></i>
-                    <span>Log in</span>
+                    <span>{{ $isEn ? 'Log in' : 'Masuk' }}</span>
                 </a>
             @endauth
         </div>

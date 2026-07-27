@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Choose Package - Guitarclassbynde')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
+
+@section('title', $isEn ? 'Choose Package - Guitarclassbynde' : 'Pilih Paket Kelas - Guitarclassbynde')
 
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,14 +65,14 @@
                         <i class="fa-solid fa-envelope-circle-check text-base"></i>
                     </div>
                     <div>
-                        <strong class="text-white block font-bold text-xs">Email Verification Sent!</strong>
-                        <span class="text-gray-300">A verification link was sent to <u class="text-blue-400 font-semibold">{{ auth()->user()->email }}</u>. Please verify to activate full course access.</span>
+                        <strong class="text-white block font-bold text-xs">{{ $isEn ? 'Email Verification Sent!' : 'Verifikasi Email Terkirim!' }}</strong>
+                        <span class="text-gray-300">{{ $isEn ? 'A verification link was sent to' : 'Link verifikasi telah dikirimkan ke' }} <u class="text-blue-400 font-semibold">{{ auth()->user()->email }}</u>. {{ $isEn ? 'Please verify to activate full course access.' : 'Silakan verifikasi email kamu untuk mengaktifkan akses penuh.' }}</span>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('verification.send') }}" class="shrink-0">
                     @csrf
                     <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] uppercase tracking-wider transition shadow-md hover:scale-105 active:scale-95 cursor-pointer">
-                        Resend
+                        {{ $isEn ? 'Resend' : 'Kirim Ulang' }}
                     </button>
                 </form>
             </div>
@@ -76,13 +80,17 @@
 
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
             <i class="fa-solid fa-sparkles text-[11px]"></i>
-            <span>CHOOSE YOUR LEARNING PACKAGE</span>
+            <span>{{ $isEn ? 'CHOOSE YOUR LEARNING PACKAGE' : 'PILIH PAKET BELAJAR KAMU' }}</span>
         </div>
         <h1 class="font-display text-4xl sm:text-6xl text-white tracking-wide uppercase leading-none">
-            The Final Step to <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-500">Start Your Journey.</span>
+            @if($isEn)
+                The Final Step to <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-500">Start Your Journey.</span>
+            @else
+                Langkah Terakhir untuk <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-500">Memulai Perjalananmu.</span>
+            @endif
         </h1>
         <p class="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
-            Choose the package that best fits your goals. Get lifetime access to video modules, structured lessons, and personalized 1-on-1 coaching.
+            {{ $isEn ? 'Choose the package that best fits your goals. Get lifetime access to video modules, structured lessons, and personalized 1-on-1 coaching.' : 'Pilih paket yang paling sesuai dengan tujuanmu. Dapatkan akses seumur hidup ke modul video, materi terstruktur, dan bimbingan 1-on-1.' }}
         </p>
     </section>
 
@@ -99,172 +107,101 @@
             if (str_contains($slug, 'beginner') || str_contains($name, 'beginner')) {
                 return 2;
             }
-            if (str_contains($slug, 'ticket') || str_contains($slug, 'coaching') || str_contains($name, 'ticket')) {
-                return 0;
-            }
-            return 99;
+
+            return 0;
         })->values();
     @endphp
 
     <!-- Package Cards Grid -->
-    <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-            @foreach($orderedPackages as $i => $pkg)
+    <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            
+            @foreach ($orderedPackages as $pkg)
                 @php
-                    $paymentLink = auth()->check()
-                        ? ($paymentBase ? ($paymentBase . '?package_id=' . $pkg->id . '&package_qty=1') : '#')
-                        : route('register', ['package_id' => $pkg->id, 'package_qty' => 1]);
-
-                    $isFeatured = ($pkg->slug ?? null) === 'intermediate';
+                    $isTicket = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
+                    $isFeatured = str_contains(strtolower((string)($pkg->slug ?? '')), 'intermediate') || str_contains(strtolower((string)($pkg->name ?? '')), 'intermediate');
                     $benefits = array_filter(array_map('trim', explode("\n", $pkg->benefits ?? '')));
-                    
-                    $isUserBeginner = auth()->check() && auth()->user()->isBeginnerMember();
-                    $rawPrice = $pkg->price;
-                    $isUpgradeDeal = false;
-                    if (($pkg->slug ?? null) === 'intermediate' && $isUserBeginner) {
-                        $rawPrice = 150000;
-                        $isUpgradeDeal = true;
-                    }
-                    $price = number_format($rawPrice, 0, ',', '.');
-
-                    $isTicketPkg = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
-                    $pricingUnit = $isTicketPkg ? '/ 1x' : ($isUpgradeDeal ? '/ upgrade' : '/ lifetime');
-
-                    $imgSrc = 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=600&q=80';
-                    if (! empty($pkg->image)) {
-                        $imgSrc = str_starts_with($pkg->image, 'http') ? $pkg->image : asset('storage/' . ltrim($pkg->image, '/'));
-                    } elseif (($pkg->slug ?? '') === 'beginner') {
-                        $imgSrc = asset('compro/img/nde1.webp');
-                    } elseif (($pkg->slug ?? '') === 'intermediate') {
-                        $imgSrc = asset('compro/img/ndehero.webp');
-                    } elseif ($isTicketPkg) {
-                        $imgSrc = 'https://images.unsplash.com/photo-1525201548942-d8732f6617a0?auto=format&fit=crop&w=600&q=80';
-                    }
+                    $imgSrc = $pkg->image ? asset('storage/'.$pkg->image) : asset('pictures/'.$pkg->slug.'.jpg');
+                    $pricingUnit = $isTicket ? ($isEn ? '/ 1x session' : '/ 1x sesi') : ($isEn ? '/ lifetime' : '/ seumur hidup');
                 @endphp
 
-
-                @if($isFeatured)
-                <!-- Featured Glass Card (Intermediate) -->
-                <div class="group relative flex flex-col bg-zinc-950/70 border-2 border-blue-500/50 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_0_60px_-15px_rgba(59,130,246,0.35)] transition-all duration-300 hover:scale-[1.02] hover:border-blue-400">
+                <div class="bg-zinc-950/60 border rounded-[2rem] p-6 sm:p-7 backdrop-blur-2xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 group hover:-translate-y-1.5 shadow-2xl {{ $isFeatured ? 'border-blue-500/50 shadow-[0_0_50px_rgba(59,130,246,0.25)] ring-1 ring-blue-500/30' : 'border-white/10 hover:border-white/20' }}">
                     
-                    <!-- Top Gradient Line -->
-                    <div class="h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400"></div>
+                    <!-- Inner Top Accent Border -->
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r {{ $isFeatured ? 'from-blue-500 via-indigo-400 to-cyan-400' : 'from-transparent via-white/20 to-transparent' }}"></div>
 
-                    <!-- Best Value Floating Badge -->
-                    <div class="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-[10px] uppercase tracking-wider shadow-lg shadow-blue-600/40 border border-blue-400/30 flex items-center gap-1.5">
-                        <i class="fa-solid fa-crown text-[10px]"></i>
-                        <span>{{ $isUpgradeDeal ? 'SPECIAL UPGRADE' : 'BEST VALUE' }}</span>
-                    </div>
+                    @if($isFeatured)
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
+                            {{ $isEn ? 'RECOMMENDED' : 'REKOMENDASI' }}
+                        </div>
+                    @endif
 
-                    <!-- Card Header Image -->
-                    <div class="relative h-44 w-full overflow-hidden bg-zinc-900">
-                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#08080a] via-[#08080a]/40 to-transparent"></div>
-                    </div>
-
-                    <!-- Card Body -->
-                    <div class="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-6 -mt-8 relative z-10">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-blue-400 text-[11px] font-bold uppercase tracking-wider block">Recommended</span>
-                                @if($isUpgradeDeal)
-                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-extrabold text-[9px] uppercase">Upgrade Deal</span>
-                                @endif
-                            </div>
-                            <h3 class="font-display text-3xl text-white uppercase tracking-wide leading-tight mb-2">{{ $pkg->name }}</h3>
+                    <div class="space-y-6">
+                        <!-- Package Header Image & Badges -->
+                        <div class="relative w-full h-40 rounded-2xl overflow-hidden bg-zinc-900 border border-white/10">
+                            <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
                             
-                            <div class="flex items-baseline gap-1 my-3">
-                                @if($isUpgradeDeal)
-                                    <span class="text-xs text-gray-500 line-through mr-1">Rp 250.000</span>
-                                @endif
-                                <span class="text-xs font-bold text-gray-400">Rp</span>
-                                <span class="text-3xl font-extrabold text-white tracking-tight">{{ $price }}</span>
-                                <span class="text-xs text-gray-400 font-normal ml-1">{{ $pricingUnit }}</span>
-                            </div>
-
-
-                            <p class="text-gray-400 text-xs leading-relaxed mb-5">
-                                {{ $pkg->description ?? 'Full access to intermediate modules, advanced techniques, practice tools, and personal coaching.' }}
-                            </p>
-
-                            <!-- Benefits List -->
-                            <div class="space-y-2.5 pt-3 border-t border-white/10">
-                                @foreach($benefits as $benefit)
-                                <div class="flex items-center gap-2.5 text-xs text-gray-200">
-                                    <div class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30 text-[10px]">
-                                        <i class="fa-solid fa-check"></i>
-                                    </div>
-                                    <span>{{ $benefit }}</span>
-                                </div>
-                                @endforeach
+                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-zinc-950/80 border border-white/10 backdrop-blur-md text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                    {{ $pkg->slug }}
+                                </span>
                             </div>
                         </div>
 
-                        <!-- CTA Button -->
-                        <a href="{{ $paymentLink }}" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider text-center shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                            <span>{{ $isUpgradeDeal ? 'Upgrade to Intermediate' : 'Get Access Now' }}</span>
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </a>
-                    </div>
-                </div>
-
-                @else
-                <!-- Regular Glass Card -->
-                <div class="group relative flex flex-col bg-zinc-950/50 border border-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-white/20 hover:bg-zinc-950/80">
-                    
-                    <!-- Card Header Image -->
-                    <div class="relative h-44 w-full overflow-hidden bg-zinc-900">
-                        <img src="{{ $imgSrc }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#08080a] via-[#08080a]/40 to-transparent"></div>
-                    </div>
-
-                    <!-- Card Body -->
-                    <div class="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-6 -mt-8 relative z-10">
-                        <div>
-                            <span class="text-gray-400 text-[11px] font-semibold uppercase tracking-wider block mb-1">Standard Package</span>
-                            <h3 class="font-display text-3xl text-white uppercase tracking-wide leading-tight mb-2">{{ $pkg->name }}</h3>
-                            
-                            <div class="flex items-baseline gap-1 my-3">
-                                <span class="text-xs font-bold text-gray-400">Rp</span>
-                                <span class="text-3xl font-extrabold text-white tracking-tight">{{ $price }}</span>
-                                <span class="text-xs text-gray-400 font-normal ml-1">{{ $pricingUnit }}</span>
-                            </div>
-
-
-                            <p class="text-gray-400 text-xs leading-relaxed mb-5">
-                                {{ $pkg->description ?? 'Get started with video lessons and personal coaching session.' }}
-                            </p>
-
-                            <!-- Benefits List -->
-                            <div class="space-y-2.5 pt-3 border-t border-white/10">
-                                @foreach($benefits as $benefit)
-                                <div class="flex items-center gap-2.5 text-xs text-gray-300">
-                                    <div class="w-4 h-4 rounded-full bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30 text-[10px]">
-                                        <i class="fa-solid fa-check"></i>
-                                    </div>
-                                    <span>{{ $benefit }}</span>
-                                </div>
-                                @endforeach
+                        <!-- Title & Pricing -->
+                        <div class="space-y-2">
+                            <h3 class="font-display text-3xl text-white tracking-wide uppercase leading-tight">{{ $pkg->name }}</h3>
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="text-xs text-gray-400 font-medium">Rp</span>
+                                <span class="font-display text-4xl sm:text-5xl text-white tracking-tight">{{ number_format($pkg->price, 0, '', '.') }}</span>
+                                <span class="text-[11px] text-gray-400 font-normal">{{ $pricingUnit }}</span>
                             </div>
                         </div>
 
-                        <!-- CTA Button -->
-                        <a href="{{ $paymentLink }}" class="w-full py-3.5 px-6 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs uppercase tracking-wider text-center transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                            <span>Choose Package</span>
-                            <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-                        </a>
+                        <!-- Divider -->
+                        <div class="h-px w-full bg-white/10"></div>
+
+                        <!-- Benefits List -->
+                        <div class="space-y-3">
+                            <div class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{{ $isEn ? 'WHAT\'S INCLUDED:' : 'FASILITAS YANG DIDAPAT:' }}</div>
+                            <ul class="space-y-2.5 text-xs text-gray-300 font-medium">
+                                @foreach($benefits as $b)
+                                    <li class="flex items-start gap-2.5">
+                                        <i class="fa-solid fa-circle-check text-blue-400 text-xs mt-0.5 shrink-0"></i>
+                                        <span class="leading-relaxed">{{ $b }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
+
+                    <!-- CTA Action Button -->
+                    <div class="pt-8 space-y-3">
+                        @if($paymentBase)
+                            <a href="{{ $paymentBase }}?package_id={{ $pkg->id }}&package_qty=1" 
+                               class="w-full py-4 rounded-xl font-display text-xl tracking-widest text-center flex items-center justify-center gap-2.5 shadow-xl transition-all duration-300 cursor-pointer {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 hover:scale-[1.02]' : 'bg-white/10 hover:bg-white/15 border border-white/10 text-white' }}">
+                                <span>{{ $isEn ? 'PAY WITH MIDTRANS' : 'BAYAR DENGAN MIDTRANS' }}</span>
+                                <i class="fa-solid fa-arrow-right text-sm"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('register') }}?package_id={{ $pkg->id }}&package_qty=1" 
+                               class="w-full py-4 rounded-xl font-display text-xl tracking-widest text-center flex items-center justify-center gap-2.5 shadow-xl transition-all duration-300 cursor-pointer {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 hover:scale-[1.02]' : 'bg-white/10 hover:bg-white/15 border border-white/10 text-white' }}">
+                                <span>{{ $isEn ? 'SELECT PACKAGE' : 'PILIH PAKET INI' }}</span>
+                                <i class="fa-solid fa-arrow-right text-sm"></i>
+                            </a>
+                        @endif
+
+                        <div class="text-center text-[10px] text-gray-500 font-semibold flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                            <span>{{ $isEn ? '100% Secure Payment via Midtrans' : '100% Pembayaran Aman via Midtrans' }}</span>
+                        </div>
+                    </div>
+
                 </div>
-                @endif
             @endforeach
-        </div>
 
-        @if(!$paymentBase)
-            <div class="mt-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400 text-xs text-center flex items-center justify-center gap-2">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>No course material is currently available for checkout. Please contact support.</span>
-            </div>
-        @endif
+        </div>
     </main>
 
 </div>

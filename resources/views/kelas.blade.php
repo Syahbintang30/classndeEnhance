@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Kelas Guitar')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
+
+@section('title', $isEn ? 'Guitar Course' : 'Kelas Gitar')
 
 @section('content')
 @push('head')
@@ -173,7 +177,7 @@
         <aside class="sidebar w-full md:w-80 flex-shrink-0 bg-zinc-950/80 backdrop-blur-md border-t md:border-t-0 md:border-r border-white/10 order-2 md:order-1 relative p-4 md:p-0">
             <div class="p-4 md:p-5 border-b border-white/10 flex items-center justify-between">
                 <h3 class="font-display text-2xl text-white tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-list-ul text-blue-500"></i> Course Syllabus
+                    <i class="fa-solid fa-list-ul text-blue-500"></i> {{ $isEn ? 'Course Syllabus' : 'Silabus Modul Kelas' }}
                 </h3>
             </div>
             

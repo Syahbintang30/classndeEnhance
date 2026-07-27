@@ -36,7 +36,8 @@
 
 @section('content')
 @php
-    $defaultFaqs = [
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+    $defaultFaqs = $isEn ? [
         [
             'category' => 'Courses & Access',
             'question' => 'What is Guitarclassbynde?',
@@ -57,41 +58,48 @@
             'question' => 'How do 1-on-1 Coaching Sessions work?',
             'answer' => 'Coaching sessions are conducted live directly inside our platform’s built-in interactive Video Call Room! After purchasing a package or coaching ticket, pick an open date & time slot in your dashboard. When your session time arrives, simply click "Join Video Session" to enter the live room with Nde!'
         ],
-
-        [
-            'category' => 'Coaching',
-            'question' => 'Can I reschedule a 1-on-1 Coaching appointment?',
-            'answer' => 'Yes, you can request a schedule change or cancel your appointment directly in your dashboard up to 24 hours prior to your scheduled session.'
-        ],
         [
             'category' => 'Payments & Pricing',
             'question' => 'What payment channels are supported?',
             'answer' => 'We accept instant, automated payments via Midtrans including Bank Transfer (Virtual Accounts for BCA, Mandiri, BNI, BRI), QRIS, GoPay, ShopeePay, and major Credit Cards.'
         ],
+    ] : [
         [
-            'category' => 'Payments & Pricing',
-            'question' => 'Are there any hidden recurring subscription fees?',
-            'answer' => 'No! All course packages are one-time payments for lifetime access. There are no monthly recurring fees or hidden charges.'
+            'category' => 'Kelas & Akses',
+            'question' => 'Apa itu Guitarclassbynde?',
+            'answer' => 'Guitarclassbynde adalah platform belajar gitar online elit terstruktur yang didirikan oleh Nde. Menggabungkan kelas video bertahap, tools latihan interaktif (Tuner, Metronom, Chord & Scale visualizer), tutorial lagu, dan sesi coaching live 1-on-1.'
         ],
         [
-            'category' => 'Technical',
-            'question' => 'Which devices can I use to access Guitarclassbynde?',
-            'answer' => 'Guitarclassbynde works smoothly on all devices including modern desktop computers, laptops, iPads, tablets, and mobile smartphones. All practice tools (like the tuner and metronome) run directly in your browser.'
+            'category' => 'Kelas & Akses',
+            'question' => 'Berapa lama saya mendapatkan akses kelas yang sudah dibeli?',
+            'answer' => 'Setelah mendaftar, kamu mendapatkan akses seumur hidup (lifetime access) ke seluruh modul kelas, materi, dan tools latihan yang ada pada paketmu. Kamu bisa belajar kapan saja sesuai kecepatanmu sendiri.'
         ],
         [
-            'category' => 'Technical',
-            'question' => 'Do I need a special microphone for the Guitar Tuner?',
-            'answer' => 'No special equipment is required! The built-in Guitar Tuner uses your device’s standard microphone with Web Audio API pitch detection.'
-        ]
+            'category' => 'Kelas & Akses',
+            'question' => 'Apakah saya butuh pengalaman main gitar sebelumnya?',
+            'answer' => 'Tidak perlu pengalaman sama sekali! Kelas kami dimulai dari dasar paling awal (cara memegang gitar, chord open, strumming dasar) hingga teknik solo, picking cepat, dan teori fretboard.'
+        ],
+        [
+            'category' => 'Coaching',
+            'question' => 'Bagaimana cara kerja Sesi Coaching 1-on-1?',
+            'answer' => 'Sesi coaching dilakukan secara live langsung di dalam website kami via Video Call Room interaktif! Kamu tinggal pilih jadwal yang tersedia di dashboard, dan saat sesi dimulai, klik "Masuk Sesi Video" untuk bertatap muka langsung dengan Nde.'
+        ],
+        [
+            'category' => 'Pembayaran',
+            'question' => 'Metode pembayaran apa saja yang didukung?',
+            'answer' => 'Kami menerima pembayaran otomatis serba instan via Midtrans meliputi Transfer Bank (Virtual Account BCA, Mandiri, BNI, BRI), QRIS, GoPay, ShopeePay, dan Kartu Kredit.'
+        ],
     ];
 
     $allFaqs = [];
     if (isset($faq_items) && count($faq_items) > 0) {
         foreach ($faq_items as $item) {
+            $q = method_exists($item, 'getQuestionForLocale') ? $item->getQuestionForLocale($isEn ? 'en' : 'id') : ($item->question ?? '');
+            $a = method_exists($item, 'getAnswerForLocale') ? $item->getAnswerForLocale($isEn ? 'en' : 'id') : ($item->answer ?? '');
             $allFaqs[] = [
-                'category' => $item->category ?? 'General',
-                'question' => $item->question ?? $item->title ?? '',
-                'answer' => $item->answer ?? $item->content ?? ''
+                'category' => $item->category ?? ($isEn ? 'General' : 'Umum'),
+                'question' => $q,
+                'answer' => $a,
             ];
         }
     } else {

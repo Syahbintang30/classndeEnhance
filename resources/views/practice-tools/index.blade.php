@@ -69,6 +69,9 @@
 @endpush
 
 @section('content')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
 <div class="tw-dash min-h-screen flex flex-col antialiased bg-[#08080a] text-gray-200 relative overflow-hidden" 
      x-data="{ mobileMenuOpen: false, playingNote: null }">
 
@@ -86,7 +89,7 @@
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">
-                    <i class="fa-solid fa-toolbox"></i> Interactive Utility Suite
+                    <i class="fa-solid fa-toolbox"></i> {{ $isEn ? 'Interactive Utility Suite' : 'Suite Tools Latihan Interaktif' }}
                 </div>
                 
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl tracking-wide text-white uppercase leading-none">
@@ -94,7 +97,7 @@
                 </h1>
                 
                 <p class="text-gray-400 text-sm max-w-xl mt-2 leading-relaxed">
-                    Sharpen your skills with our suite of built-in practice utilities. Stay in tune, keep in time, and master the fretboard without ever leaving your dashboard.
+                    {{ $isEn ? 'Sharpen your skills with our suite of built-in practice utilities. Stay in tune, keep in time, and master the fretboard without ever leaving your dashboard.' : 'Asah keahlianmu dengan koleksi alat latihan interaktif kami. Setem gitar, jaga ketukan ritme, dan kuasai fretboard langsung dari dashboard.' }}
                 </p>
             </div>
 

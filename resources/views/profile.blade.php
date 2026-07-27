@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'My Profile - Guitarclassbynde')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
+
+@section('title', $isEn ? 'My Profile - Guitarclassbynde' : 'Profil Saya - Guitarclassbynde')
 
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,7 +70,7 @@
 
                 <div class="space-y-1">
                     <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest">
-                        {{ auth()->user()->hasIntermediateAccess() ? 'Intermediate Student' : 'Student Member' }}
+                        {{ auth()->user()->hasIntermediateAccess() ? ($isEn ? 'Intermediate Student' : 'Murid Intermediate') : ($isEn ? 'Student Member' : 'Anggota Murid') }}
                     </div>
                     <h1 class="font-display text-3xl sm:text-4xl text-white tracking-wide uppercase">{{ auth()->user()->name }}</h1>
                     <p class="text-xs text-gray-400 font-medium">{{ auth()->user()->email }}</p>
@@ -76,7 +80,7 @@
             <div class="flex items-center gap-3">
                 <a href="{{ route('profile.edit') }}" class="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition hover:scale-105 inline-flex items-center gap-2">
                     <i class="fa-solid fa-pen-to-square text-xs"></i>
-                    <span>Edit Account</span>
+                    <span>{{ $isEn ? 'Edit Account' : 'Edit Akun' }}</span>
                 </a>
             </div>
         </div>
@@ -89,8 +93,8 @@
                         <i class="fa-solid fa-user-gear"></i>
                     </div>
                     <div>
-                        <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">Edit Profile</div>
-                        <div class="text-[10px] text-gray-400">Name &amp; Avatar photo</div>
+                        <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">{{ $isEn ? 'Edit Profile' : 'Edit Profil' }}</div>
+                        <div class="text-[10px] text-gray-400">{{ $isEn ? 'Name & Avatar photo' : 'Nama & Foto Profil' }}</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-right text-xs text-gray-500 group-hover:text-white transition-transform group-hover:translate-x-1"></i>
@@ -102,8 +106,8 @@
                         <i class="fa-solid fa-key"></i>
                     </div>
                     <div>
-                        <div class="text-xs font-bold text-white group-hover:text-purple-400 transition-colors">Change Password</div>
-                        <div class="text-[10px] text-gray-400">Security &amp; Auth</div>
+                        <div class="text-xs font-bold text-white group-hover:text-purple-400 transition-colors">{{ $isEn ? 'Change Password' : 'Ubah Kata Sandi' }}</div>
+                        <div class="text-[10px] text-gray-400">{{ $isEn ? 'Security & Auth' : 'Keamanan & Login' }}</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-right text-xs text-gray-500 group-hover:text-white transition-transform group-hover:translate-x-1"></i>
@@ -115,8 +119,8 @@
                         <i class="fa-solid fa-share-nodes"></i>
                     </div>
                     <div>
-                        <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">My Referrals</div>
-                        <div class="text-[10px] text-gray-400">Referral rewards</div>
+                        <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">{{ $isEn ? 'My Referrals' : 'Kode Referral Saya' }}</div>
+                        <div class="text-[10px] text-gray-400">{{ $isEn ? 'Referral rewards' : 'Komisi & Hadiah' }}</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-right text-xs text-gray-500 group-hover:text-white transition-transform group-hover:translate-x-1"></i>
@@ -131,15 +135,15 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-ticket"></i> Your Referral Code
+                        <i class="fa-solid fa-ticket"></i> {{ $isEn ? 'Your Referral Code' : 'Kode Referral Kamu' }}
                     </div>
-                    <h3 class="font-display text-2xl text-white tracking-wide uppercase">Invite Friends &amp; Share Benefits</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Share your unique code with friends to enjoy learning discounts together.</p>
+                    <h3 class="font-display text-2xl text-white tracking-wide uppercase">{{ $isEn ? 'Invite Friends & Share Benefits' : 'Undang Teman & Dapatkan Benefit' }}</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ $isEn ? 'Share your unique code with friends to enjoy learning discounts together.' : 'Bagikan kode unikmu kepada teman untuk mendapatkan diskon belajar bersama.' }}</p>
                 </div>
 
                 <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-2 px-4 shrink-0">
                     <span class="font-mono font-bold text-lg text-emerald-400 tracking-wider">{{ auth()->user()->referral_code ?? '—' }}</span>
-                    <button onclick="copyCode('{{ auth()->user()->referral_code ?? '' }}', this)" class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-white transition cursor-pointer" title="Copy Referral Code">
+                    <button onclick="copyCode('{{ auth()->user()->referral_code ?? '' }}', this)" class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-white transition cursor-pointer" title="{{ $isEn ? 'Copy Referral Code' : 'Salin Kode Referral' }}">
                         <i class="fa-regular fa-copy text-xs"></i>
                     </button>
                 </div>
