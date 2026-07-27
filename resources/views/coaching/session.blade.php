@@ -2262,9 +2262,9 @@
                 const displayName = encodeURIComponent("{{ $participantName }}");
                 grid.innerHTML = `
                     <iframe 
-                        src="https://meet.jit.si/${jitsiRoom}#userInfo.displayName=%22${displayName}%22"
+                        src="https://meet.jit.si/${jitsiRoom}#userInfo.displayName=%22${displayName}%22&config.prejoinPageEnabled=false&interfaceConfig.SHOW_JITSI_WATERMARK=false"
                         allow="camera; microphone; display-capture; autoplay; clipboard-write"
-                        style="width:100%; height:100%; min-height:520px; border:none; border-radius:16px; background:#090d16;"
+                        style="width:100%; height:100%; min-height:650px; border:none; border-radius:16px; background:#090d16;"
                     ></iframe>
                 `;
             }
