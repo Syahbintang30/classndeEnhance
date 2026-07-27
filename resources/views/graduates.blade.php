@@ -112,17 +112,31 @@
 
         <!-- Graduates Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            @forelse($graduates as $grad)
-                <div class="grad-card rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden shadow-lg">
+            @forelse($graduates as $index => $grad)
+                @php
+                    $isSelf = auth()->check() && auth()->id() === $grad->id;
+                @endphp
+                <div class="grad-card rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden shadow-lg border {{ $isSelf ? 'border-amber-500/50 bg-amber-500/5' : 'border-white/10 bg-zinc-950/60' }}">
                     <div class="absolute -top-10 -right-10 w-28 h-28 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
 
                     <div>
                         <!-- Top Row: Badge & Cert Code -->
                         <div class="flex items-center justify-between gap-2 mb-4">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
-                                <i class="fa-solid fa-circle-check text-[9px]"></i>
-                                <span>VERIFIED GRADUATE</span>
-                            </span>
+                            <div class="flex items-center gap-1.5">
+                                @if($index === 0)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-extrabold">
+                                        <i class="fa-solid fa-crown text-amber-400"></i> #1 GRADUATE
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                                        <i class="fa-solid fa-circle-check text-[9px]"></i> VERIFIED
+                                    </span>
+                                @endif
+                                @if($isSelf)
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-extrabold uppercase">YOU</span>
+                                @endif
+                            </div>
+
                             <span class="font-mono text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
                                 {{ $grad->cert_code }}
                             </span>
@@ -157,10 +171,18 @@
                         <span class="text-[11px] text-gray-400">
                             <i class="fa-regular fa-calendar me-1"></i> {{ $grad->completed_at }}
                         </span>
-                        <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-semibold transition">
-                            <span>Certificate</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
+
+                        @if($isSelf)
+                            <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold border border-amber-400/40 text-xs shadow-md shadow-amber-500/20 transition">
+                                <span>My Certificate</span>
+                                <i class="fa-solid fa-award text-[10px]"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 text-xs font-semibold transition">
+                                <span>Verify Record</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
             @empty

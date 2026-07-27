@@ -129,6 +129,17 @@
 
                     $isTicketPkg = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
                     $pricingUnit = $isTicketPkg ? '/ 1x' : ($isUpgradeDeal ? '/ upgrade' : '/ lifetime');
+
+                    $imgSrc = 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=600&q=80';
+                    if (! empty($pkg->image)) {
+                        $imgSrc = str_starts_with($pkg->image, 'http') ? $pkg->image : asset('storage/' . ltrim($pkg->image, '/'));
+                    } elseif (($pkg->slug ?? '') === 'beginner') {
+                        $imgSrc = asset('compro/img/nde1.webp');
+                    } elseif (($pkg->slug ?? '') === 'intermediate') {
+                        $imgSrc = asset('compro/img/ndehero.webp');
+                    } elseif ($isTicketPkg) {
+                        $imgSrc = 'https://images.unsplash.com/photo-1525201548942-d8732f6617a0?auto=format&fit=crop&w=600&q=80';
+                    }
                 @endphp
 
 

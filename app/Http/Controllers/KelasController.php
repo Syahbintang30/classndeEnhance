@@ -40,14 +40,7 @@ class KelasController extends Controller
             return redirect()->route('compro');
         }
 
-        if (! $user->hasLmsAccess()) {
-            if (method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
-                return redirect()->route('coaching.upcoming');
-            }
-            return redirect()->route('lms.pending');
-        }
-
-        // Redirect to LMS customer dashboard for users with course access
+        // Allow all authenticated users (Free Trial + Paid) to access LMS customer dashboard
         return redirect()->route('lms.dashboard');
     }
 
@@ -61,10 +54,6 @@ class KelasController extends Controller
 
         if (! $user) {
             return redirect()->route('login');
-        }
-
-        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
-            return redirect()->route('lms.pending');
         }
 
         $firstLesson = Lesson::where('type', 'course')
@@ -88,10 +77,6 @@ class KelasController extends Controller
         $user = $request->user();
         if (! $user) {
             return redirect()->route('login');
-        }
-
-        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
-            return redirect()->route('lms.pending');
         }
 
         $courseLessons = Lesson::where('type', 'course')
@@ -167,6 +152,12 @@ class KelasController extends Controller
             ->where('is_used', false)
             ->count();
 
+        $latestMentorReview = CoachingBooking::query()
+            ->where('user_id', $user->id)
+            ->whereNotNull('review_video_url')
+            ->latest('updated_at')
+            ->first();
+
         return view('lms.dashboard', [
             'progressPercent' => $progressPercent,
             'completedTopics' => $completedTopics,
@@ -177,6 +168,7 @@ class KelasController extends Controller
             'hasSongTutorialAccess' => $user->hasIntermediateAccess(),
             'upcomingCoachingCount' => $upcomingCoachingCount,
             'availableTicketCount' => $availableTicketCount,
+            'latestMentorReview' => $latestMentorReview,
         ]);
     }
 
@@ -295,8 +287,10 @@ class KelasController extends Controller
             return redirect()->route('login');
         }
 
-        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
-            return redirect()->route('lms.pending');
+        // Check if free trial user can access this lesson (Modul 1 is position 1, unlocked for all)
+        if (method_exists($user, 'canAccessLesson') && ! $user->canAccessLesson($lesson)) {
+            return redirect()->route('registerclass')
+                ->with('warning', 'Modul 2 & modul seterusnya khusus untuk Member Paid! Upgrade paket kamu sekarang untuk membuka seluruh modul masterclass & 1-on-1 coaching.');
         }
 
         // load topics ordered by position
@@ -324,8 +318,8 @@ class KelasController extends Controller
             abort(401);
         }
 
-        if (! (($user->is_admin ?? false) || ($user->is_superadmin ?? false) || $user->hasLmsAccess())) {
-            abort(403);
+        if (method_exists($user, 'canAccessLesson') && ! $user->canAccessLesson($lesson)) {
+            return view('kelas._lesson_locked', compact('lesson'));
         }
 
         // Only return content for lessons of type 'course'
@@ -989,6 +983,8 @@ class KelasController extends Controller
 
         $completedDate = $lastProgress ? $lastProgress->updated_at->format('d F Y') : now()->format('d F Y');
 
+        $isOwner = auth()->check() && (auth()->id() === $user->id || (auth()->user()->is_admin ?? false) || (auth()->user()->is_superadmin ?? false));
+
         return view('certificate.verify', compact(
             'user',
             'certCode',
@@ -996,7 +992,8 @@ class KelasController extends Controller
             'completedCount',
             'totalCourseTopics',
             'userPhoto',
-            'completedDate'
+            'completedDate',
+            'isOwner'
         ));
     }
 }

@@ -159,6 +159,10 @@
                                     <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Log out
                                 </button>
                             </form>
+
+                            <div class="border-t border-white/5 mt-2 pt-2 text-[9px] text-gray-500 font-semibold text-center uppercase tracking-wider">
+                                &copy; {{ date('Y') }} WardellTech. All Rights Reserved.
+                            </div>
                         </div>
                     </div>
                 </div>

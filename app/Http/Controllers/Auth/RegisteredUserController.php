@@ -107,8 +107,8 @@ class RegisteredUserController extends Controller
             return redirect()->route('kelas.payment', ['lesson' => $firstLessonId, 'package_id' => $selectedPkg]);
         }
 
-        return redirect()->route('kelas.buy', ['lesson' => $firstLessonId])
-            ->with('status', 'Registration successful! Choose your package below to start learning.');
+        return redirect()->route('lms.dashboard')
+            ->with('status', 'Selamat datang di Guitarclassbynde! Kamu masuk dalam mode Free Trial (Level 1 Unlocked).');
     }
 
 

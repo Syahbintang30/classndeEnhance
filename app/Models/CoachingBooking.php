@@ -19,6 +19,9 @@ class CoachingBooking extends Model
         'session_duration_minutes',
         'notes',
         'admin_note',
+        'review_video_url',
+        'review_title',
+        'review_tag',
     ];
 
     protected $dates = ['booking_time'];

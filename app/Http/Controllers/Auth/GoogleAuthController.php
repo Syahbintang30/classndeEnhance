@@ -127,7 +127,7 @@ class GoogleAuthController extends Controller
         } elseif (method_exists($user, 'hasCoachingAccess') && $user->hasCoachingAccess()) {
             $defaultRoute = route('coaching.upcoming');
         } else {
-            $defaultRoute = route('registerclass');
+            $defaultRoute = route('lms.dashboard');
         }
 
         $intended = (string) $request->session()->get('url.intended', '');

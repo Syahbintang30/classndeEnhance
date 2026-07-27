@@ -620,11 +620,12 @@
     </section>
 
     <!-- FOOTER COPYRIGHT -->
-    <footer class="py-8 text-center text-xs text-gray-500 border-t border-white/5 relative z-10">
-        <p>&copy; {{ date('Y') }} GUITARCLASSBYNDE. All rights reserved.</p>
+    <footer class="py-8 text-center text-xs text-gray-400 border-t border-white/5 relative z-10">
+        <p>&copy; {{ date('Y') }} GUITARCLASSBYNDE. All rights reserved. Developed by <strong class="text-white font-bold me-1">WardellTech</strong></p>
     </footer>
 
-    @include('components.ai_chatbot')
+    {{-- @include('components.ai_chatbot') --}}
+    @include('components.whatsapp_support')
 </body>
 </html>
 

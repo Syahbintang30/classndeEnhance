@@ -47,12 +47,19 @@ class SongTabController extends Controller
             ];
         }
 
+        $audioUrl = null;
+        if ($request->hasFile('audio_file')) {
+            $path = $request->file('audio_file')->store('song_tabs', 'public');
+            $audioUrl = asset('storage/' . $path);
+        }
+
         SongTab::create([
             'title' => $validated['title'],
             'artist' => $validated['artist'],
             'bpm' => $validated['bpm'],
             'difficulty' => $validated['difficulty'],
             'track_name' => $validated['track_name'],
+            'audio_url' => $audioUrl,
             'tab_data' => $tabData,
             'is_published' => true,
         ]);

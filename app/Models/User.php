@@ -136,6 +136,33 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check whether user is a paid member (has purchased a paid course package).
+     */
+    public function isPaidMember(): bool
+    {
+        if (($this->is_admin ?? false) || ($this->is_superadmin ?? false)) {
+            return true;
+        }
+        return $this->hasLmsAccess();
+    }
+
+    /**
+     * Check if user can access a specific lesson.
+     * Paid members can access all lessons.
+     * Free Trial members can ONLY access Lesson at position 1 (Modul 1 / Level 1).
+     */
+    public function canAccessLesson(?\App\Models\Lesson $lesson): bool
+    {
+        if ($this->isPaidMember()) {
+            return true;
+        }
+        if (! $lesson) {
+            return false;
+        }
+        return (int) $lesson->position === 1;
+    }
+
+    /**
      * Check whether user should be allowed to enter LMS course pages.
      */
     public function hasLmsAccess(): bool

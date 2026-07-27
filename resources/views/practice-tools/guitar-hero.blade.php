@@ -244,6 +244,11 @@
         currentMeasure = 0;
         currentBeat = 0;
         playheadX = 140;
+
+        if (song && song.measures) {
+            canvas.width = Math.max(1100, 140 + song.measures.length * 220 + 80);
+        }
+
         drawSongsterrSheet();
     }
 

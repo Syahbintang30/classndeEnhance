@@ -16,6 +16,13 @@ class MediaStreamController extends Controller
             return response()->json(['url' => null]);
         }
 
+        $user = auth()->user();
+        if ($user && method_exists($user, 'canAccessLesson') && $topicModel->lesson) {
+            if (! $user->canAccessLesson($topicModel->lesson)) {
+                return response()->json(['url' => null, 'error' => 'Upgrade package required to stream this topic.']);
+            }
+        }
+
         if ($topicModel->bunny_guid) {
             // If bunny_guid accidentally contains a full URL, return it directly.
             if (preg_match('#^https?://#i', $topicModel->bunny_guid)) {

@@ -120,6 +120,31 @@
             <!-- LEFT COLUMN: PROGRESS & MENTOR REVIEW (8 Cols) -->
             <div class="lg:col-span-7 xl:col-span-8 space-y-8">
                 
+                @if(! auth()->check() || ! auth()->user()->isPaidMember())
+                    <!-- FREE TRIAL MEMBER BANNER -->
+                    <div class="glass-panel p-5 border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-zinc-950 to-blue-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-lock-open"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-extrabold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-widest">Free Trial</span>
+                                    <span class="text-xs text-gray-400 font-semibold">Preview Unlocked</span>
+                                </div>
+                                <h4 class="text-base font-bold text-white mt-1">You are currently in Free Trial Mode</h4>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Enjoy free preview lessons. Upgrade your membership to get Full Access.
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('registerclass') }}" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition transform hover:scale-105 shrink-0 flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Get Full Access</span>
+                        </a>
+                    </div>
+                @endif
+
                 <!-- ROADMAP & PROGRESS CARD -->
                 <div class="glass-panel p-6 sm:p-8 relative overflow-hidden">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -159,39 +184,67 @@
                     </div>
                 </div>
 
-                <!-- LATEST MENTOR FEEDBACK -->
+                <!-- RECOMMENDED PRACTICE ROUTINE CARD -->
                 <div class="glass-panel p-6 sm:p-8">
                     <div class="flex items-center justify-between mb-5">
-                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-comment-dots text-blue-400"></i> Latest Mentor Video Review
-                        </h4>
-                        <span class="text-xs font-semibold text-gray-400 bg-white/5 px-3 py-1 rounded-full">Personalized</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs uppercase font-bold text-blue-400 tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-fire text-amber-400"></i> Daily Practice Routine
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-extrabold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">Recommended</span>
                     </div>
 
-                    <div class="bg-zinc-950/60 border border-white/5 rounded-2xl p-5 flex flex-col sm:flex-row gap-5 items-center">
-                        <div class="w-full sm:w-44 h-32 bg-zinc-900 rounded-xl relative overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/5 group cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" alt="Video Review">
-                            <div class="absolute inset-0 bg-blue-950/30 flex items-center justify-center">
-                                <div class="w-11 h-11 rounded-full bg-blue-600/90 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-play text-sm"></i>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Routine Item 1 -->
+                        <div class="bg-zinc-950/60 border border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-3 group hover:border-blue-500/30 transition">
+                            <div class="flex items-center justify-between">
+                                <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-guitar"></i>
                                 </div>
+                                <span class="text-[10px] font-bold text-gray-500">STEP 01</span>
                             </div>
+                            <div>
+                                <h5 class="text-xs font-bold text-white mb-1">Standard Tuning</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">Check guitar tuning with mic pitch detection.</p>
+                            </div>
+                            <a href="{{ route('practice.tuner') }}" class="text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                                <span>Tune Guitar</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         </div>
 
-                        <div class="space-y-2 flex-1 text-center sm:text-left">
-                            <div class="flex items-center justify-center sm:justify-between gap-2">
-                                <span class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">INFO</span>
-                                <span class="text-xs text-gray-400">Mentor: <strong class="text-white">Nde</strong></span>
+                        <!-- Routine Item 2 -->
+                        <div class="bg-zinc-950/60 border border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-3 group hover:border-emerald-500/30 transition">
+                            <div class="flex items-center justify-between">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-stopwatch"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-gray-500">STEP 02</span>
                             </div>
-                            <h5 class="text-base font-bold text-white">How Video Review Works</h5>
-                            <p class="text-xs text-gray-400 leading-relaxed">
-                                Submit your practice video or join 1-on-1 coaching for personalized picking technique and speed feedback directly from Mentor Nde.
-                            </p>
-                            <div class="pt-2">
-                                <a href="{{ route('coaching.upcoming') }}" class="text-xs text-blue-400 hover:text-blue-300 font-bold transition inline-flex items-center gap-1.5">
-                                    <span>Book a session now</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                                </a>
+                            <div>
+                                <h5 class="text-xs font-bold text-white mb-1">Rhythm & Speed</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">Practice alternate picking with metronome click.</p>
                             </div>
+                            <a href="{{ route('practice.metronome') }}" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition">
+                                <span>Launch Metronome</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
+                        </div>
+
+                        <!-- Routine Item 3 -->
+                        <div class="bg-zinc-950/60 border border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-3 group hover:border-amber-500/30 transition">
+                            <div class="flex items-center justify-between">
+                                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-user-ninja"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-gray-500">STEP 03</span>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-bold text-white mb-1">Mentor Feedback</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">Join 1-on-1 private video review session.</p>
+                            </div>
+                            <a href="{{ route('coaching.upcoming') }}" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition">
+                                <span>Book Session</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -349,5 +402,71 @@ function lmsApp() {
         }
     }
 }
+</script>
+
+<!-- MENTOR VIDEO REVIEW MODAL -->
+<div id="mentorVideoModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6">
+    <div class="bg-[#181822] border border-white/10 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl relative">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-circle-play text-blue-400"></i> <span id="mentorModalTitle">Mentor Video Review</span>
+            </h3>
+            <button onclick="closeMentorVideoModal()" class="text-gray-400 hover:text-white p-2 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <div class="p-4 sm:p-6 bg-black">
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center">
+                <iframe id="mentorVideoIframe" class="w-full h-full border-0 hidden" allowfullscreen allow="autoplay"></iframe>
+                <video id="mentorVideoPlayer" class="w-full h-full hidden" controls autoplay></video>
+                <div id="mentorVideoFallback" class="text-center p-8 hidden">
+                    <i class="fa-solid fa-video-slash text-4xl text-gray-500 mb-3"></i>
+                    <p class="text-sm text-gray-400">Video review stream is loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openMentorVideoModal(url, title) {
+        const modal = document.getElementById('mentorVideoModal');
+        const modalTitle = document.getElementById('mentorModalTitle');
+        const iframe = document.getElementById('mentorVideoIframe');
+        const video = document.getElementById('mentorVideoPlayer');
+        const fallback = document.getElementById('mentorVideoFallback');
+
+        if (title) modalTitle.textContent = title;
+
+        iframe.classList.add('hidden');
+        video.classList.add('hidden');
+        fallback.classList.add('hidden');
+
+        if (!url || url === '' || url === 'null') {
+            fallback.classList.remove('hidden');
+        } else if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('bunny.net') || url.includes('iframe') || url.includes('embed')) {
+            iframe.src = url.includes('watch?v=') ? url.replace('watch?v=', 'embed/') : url;
+            iframe.classList.remove('hidden');
+        } else {
+            video.src = url;
+            video.classList.remove('hidden');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeMentorVideoModal() {
+        const modal = document.getElementById('mentorVideoModal');
+        const iframe = document.getElementById('mentorVideoIframe');
+        const video = document.getElementById('mentorVideoPlayer');
+
+        iframe.src = '';
+        video.pause();
+        video.src = '';
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 </script>
 @endsection

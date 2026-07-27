@@ -110,66 +110,13 @@
             </div>
         </header>
 
-        <!-- 5-CARD PRACTICE SUITE GRID (CENTERED BOTTOM ROW) -->
-        <div class="flex flex-wrap justify-center gap-6">
+        <!-- 4-CARD PRACTICE SUITE GRID (CLEAN & BALANCED) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <!-- 0. Interactive Guitar Pitch Quiz Card -->
-            <a href="{{ route('practice.quiz') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
-                <div class="w-full flex items-center justify-between">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20">Gamified Rank Test</span>
-                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                    </div>
-                </div>
-
-                <div class="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:bg-gradient-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-black flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-amber-500/10 group-hover:shadow-amber-500/30 group-hover:scale-105">
-                    <i class="fa-solid fa-gamepad"></i>
-                </div>
-                
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Guitar Pitch Quiz</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Play your real guitar to answer live note challenges. Earn XP, gain combos, and push your Guitarist Rank!
-                </p>
-                
-                <div class="w-full py-3 rounded-xl bg-amber-500/20 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-orange-500 border border-amber-500/30 text-amber-300 group-hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>Play Pitch Quiz</span>
-                    <i class="fa-solid fa-play text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- 0.5. Songsterr-Style Interactive TAB Player Card -->
-            <a href="{{ route('practice.guitarHero') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
-                <div class="w-full flex items-center justify-between">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20">Songsterr-Style Player</span>
-                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-amber-400 rounded-full bar-anim"></span>
-                    </div>
-                </div>
-
-                <div class="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:bg-gradient-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-black flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-amber-500/10 group-hover:shadow-amber-500/30 group-hover:scale-105">
-                    <i class="fa-solid fa-guitar"></i>
-                </div>
-                
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Interactive TAB Player</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Songsterr-style TAB player for Black Label Society, Sweet Child O' Mine & Sal Priadi with moving playhead and speed controls!
-                </p>
-                
-                <div class="w-full py-3 rounded-xl bg-amber-500/20 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-orange-500 border border-amber-500/30 text-amber-300 group-hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>Open TAB Player</span>
-                    <i class="fa-solid fa-play text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
             <!-- 1. Guitar Tuner Card -->
-            <a href="{{ route('practice.tuner') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
+            <a href="{{ route('practice.tuner') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)]">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20">Mic Pitch Detection</span>
-                    <!-- Equalizer animation -->
                     <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
                         <span class="w-1 bg-blue-400 rounded-full bar-anim"></span>
                         <span class="w-1 bg-blue-400 rounded-full bar-anim"></span>
@@ -177,26 +124,25 @@
                     </div>
                 </div>
 
-                <div class="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:bg-gradient-to-br group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-blue-500/10 group-hover:shadow-blue-600/30 group-hover:scale-105">
+                <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:bg-gradient-to-br group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white flex items-center justify-center text-2xl my-5 transition-all duration-300 shadow-lg shadow-blue-500/10 group-hover:shadow-blue-600/30 group-hover:scale-105">
                     <i class="fa-solid fa-guitar"></i>
                 </div>
                 
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Guitar Tuner</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Tune your guitar instantly using your microphone. Features highly accurate pitch detection and visual feedback.
+                <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Guitar Tuner</h2>
+                <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                    Tune your guitar instantly using your microphone with highly accurate pitch detection.
                 </p>
                 
-                <div class="w-full py-3 rounded-xl bg-blue-600/20 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 border border-blue-500/30 text-blue-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
+                <div class="w-full py-2.5 rounded-xl bg-blue-600/20 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 border border-blue-500/30 text-blue-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
                     <span>Launch Tuner</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
             <!-- 2. Metronome Card -->
-            <a href="{{ route('practice.metronome') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
+            <a href="{{ route('practice.metronome') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)]">
                 <div class="w-full flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">Audio Engine</span>
-                    <!-- Equalizer animation -->
                     <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
                         <span class="w-1 bg-emerald-400 rounded-full bar-anim"></span>
                         <span class="w-1 bg-emerald-400 rounded-full bar-anim"></span>
@@ -204,101 +150,126 @@
                     </div>
                 </div>
 
-                <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:bg-gradient-to-br group-hover:from-emerald-500 group-hover:to-teal-600 group-hover:text-black flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-emerald-500/10 group-hover:shadow-emerald-500/30 group-hover:scale-105">
+                <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:bg-gradient-to-br group-hover:from-emerald-500 group-hover:to-teal-600 group-hover:text-black flex items-center justify-center text-2xl my-5 transition-all duration-300 shadow-lg shadow-emerald-500/10 group-hover:shadow-emerald-500/30 group-hover:scale-105">
                     <i class="fa-solid fa-stopwatch"></i>
                 </div>
                 
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Metronome</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Build your internal clock and practice rhythm with a precision metronome. Adjustable BPM, time signatures, and accents.
+                <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Metronome</h2>
+                <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                    Build your internal clock and practice rhythm with a precision metronome and adjustable BPM.
                 </p>
                 
-                <div class="w-full py-3 rounded-xl bg-emerald-500/20 group-hover:bg-gradient-to-r group-hover:from-emerald-500 group-hover:to-teal-500 border border-emerald-500/30 text-emerald-300 group-hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
+                <div class="w-full py-2.5 rounded-xl bg-emerald-500/20 group-hover:bg-gradient-to-r group-hover:from-emerald-500 group-hover:to-teal-500 border border-emerald-500/30 text-emerald-300 group-hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
                     <span>Launch Metronome</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
-            <!-- 3. Chord Library Card -->
-            <a href="{{ route('practice.chords') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
-                <div class="w-full flex items-center justify-between">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20">Interactive Fretboard</span>
-                    <!-- Equalizer animation -->
-                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
-                    </div>
-                </div>
+            @php $isPaidMember = auth()->check() && auth()->user()->isPaidMember(); @endphp
 
-                <div class="w-20 h-20 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:bg-gradient-to-br group-hover:from-purple-600 group-hover:to-indigo-600 group-hover:text-white flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-purple-500/10 group-hover:shadow-purple-600/30 group-hover:scale-105">
-                    <i class="fa-solid fa-music"></i>
-                </div>
-                
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Chord Library</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Explore an interactive fretboard to learn and visualize thousands of chord shapes and voicings across the neck.
-                </p>
-                
-                <div class="w-full py-3 rounded-xl bg-purple-600/20 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-indigo-600 border border-purple-500/30 text-purple-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>Browse Chords</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
+            <!-- 3. Chord Library Card -->
+            @if($isPaidMember)
+                <a href="{{ route('practice.chords') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]">
+                    <div class="w-full flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20">Fretboard Chords</span>
+                        <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                            <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
+                            <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
+                            <span class="w-1 bg-purple-400 rounded-full bar-anim"></span>
+                        </div>
+                    </div>
+
+                    <div class="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:bg-gradient-to-br group-hover:from-purple-600 group-hover:to-indigo-600 group-hover:text-white flex items-center justify-center text-2xl my-5 transition-all duration-300 shadow-lg shadow-purple-500/10 group-hover:shadow-purple-600/30 group-hover:scale-105">
+                        <i class="fa-solid fa-music"></i>
+                    </div>
+                    
+                    <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Chord Library</h2>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                        Explore an interactive fretboard to learn and visualize chord shapes and voicings across the neck.
+                    </p>
+                    
+                    <div class="w-full py-2.5 rounded-xl bg-purple-600/20 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-indigo-600 border border-purple-500/30 text-purple-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
+                        <span>Browse Chords</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </a>
+            @else
+                <!-- Locked Chord Library Card -->
+                <a href="{{ route('registerclass') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 border-amber-500/30 bg-gradient-to-b from-zinc-950 via-zinc-950/90 to-amber-950/20 hover:border-amber-400 shadow-lg hover:shadow-amber-500/10">
+                    <div class="w-full flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 flex items-center gap-1">
+                            <i class="fa-solid fa-lock text-[9px]"></i> Paid Member Only
+                        </span>
+                        <span class="text-[10px] font-bold text-amber-400 uppercase">Locked</span>
+                    </div>
+
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl my-5 shadow-lg shadow-amber-500/10 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    
+                    <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Chord Library</h2>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                        Upgrade your membership to unlock interactive fretboard chord shapes and voicings.
+                    </p>
+                    
+                    <div class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 group-hover:from-amber-400 group-hover:to-amber-500 text-black text-xs font-extrabold transition-all flex items-center justify-center gap-2 shadow-md uppercase tracking-wider">
+                        <span>Upgrade Full Access</span>
+                        <i class="fa-solid fa-bolt text-[10px]"></i>
+                    </div>
+                </a>
+            @endif
 
             <!-- 4. Scale Visualizer Card -->
-            <a href="{{ route('practice.scales') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
-                <div class="w-full flex items-center justify-between">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20">Solo & Improvisation</span>
-                    <!-- Equalizer animation -->
-                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
+            @if($isPaidMember)
+                <a href="{{ route('practice.scales') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+                    <div class="w-full flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20">Scales & Improvisation</span>
+                        <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                            <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
+                            <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
+                            <span class="w-1 bg-cyan-400 rounded-full bar-anim"></span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 group-hover:bg-gradient-to-br group-hover:from-cyan-600 group-hover:to-blue-600 group-hover:text-white flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-cyan-500/10 group-hover:shadow-cyan-600/30 group-hover:scale-105">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-                
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Scale Visualizer</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Master scale patterns across 12 frets. Learn Pentatonic, Blues, Dorian, and Major scales with ascending audio playback.
-                </p>
-                
-                <div class="w-full py-3 rounded-xl bg-cyan-600/20 group-hover:bg-gradient-to-r group-hover:from-cyan-600 group-hover:to-blue-600 border border-cyan-500/30 text-cyan-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>Explore Scale Patterns</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- 5. Trainer Quiz Card -->
-            <a href="{{ route('practice.trainer') }}" class="group glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 hover:border-rose-500/40 hover:shadow-[0_0_40px_rgba(244,63,94,0.15)] w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] max-w-md lg:max-w-none">
-                <div class="w-full flex items-center justify-between">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20">Ear & Memory Game</span>
-                    <!-- Equalizer animation -->
-                    <div class="flex items-end gap-1 h-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span class="w-1 bg-rose-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-rose-400 rounded-full bar-anim"></span>
-                        <span class="w-1 bg-rose-400 rounded-full bar-anim"></span>
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 group-hover:bg-gradient-to-br group-hover:from-cyan-600 group-hover:to-blue-600 group-hover:text-white flex items-center justify-center text-2xl my-5 transition-all duration-300 shadow-lg shadow-cyan-500/10 group-hover:shadow-cyan-600/30 group-hover:scale-105">
+                        <i class="fa-solid fa-graduation-cap"></i>
                     </div>
-                </div>
+                    
+                    <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Scale Visualizer</h2>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                        Master scale patterns across 12 frets. Learn Pentatonic, Blues, and Major scales with audio.
+                    </p>
+                    
+                    <div class="w-full py-2.5 rounded-xl bg-cyan-600/20 group-hover:bg-gradient-to-r group-hover:from-cyan-600 group-hover:to-blue-600 border border-cyan-500/30 text-cyan-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
+                        <span>Explore Scales</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </a>
+            @else
+                <!-- Locked Scale Visualizer Card -->
+                <a href="{{ route('registerclass') }}" class="group glass-panel p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 border-amber-500/30 bg-gradient-to-b from-zinc-950 via-zinc-950/90 to-amber-950/20 hover:border-amber-400 shadow-lg hover:shadow-amber-500/10">
+                    <div class="w-full flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 flex items-center gap-1">
+                            <i class="fa-solid fa-lock text-[9px]"></i> Paid Member Only
+                        </span>
+                        <span class="text-[10px] font-bold text-amber-400 uppercase">Locked</span>
+                    </div>
 
-                <div class="w-20 h-20 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 group-hover:bg-gradient-to-br group-hover:from-rose-600 group-hover:to-amber-500 group-hover:text-white flex items-center justify-center text-3xl my-6 transition-all duration-300 shadow-lg shadow-rose-500/10 group-hover:shadow-rose-600/30 group-hover:scale-105">
-                    <i class="fa-solid fa-gamepad"></i>
-                </div>
-                
-                <h2 class="font-display text-3xl text-white mb-2 tracking-wide uppercase">Trainer Quiz Game</h2>
-                <p class="text-gray-400 text-xs leading-relaxed mb-8 flex-1">
-                    Test your ear and fretboard note memory with interactive audio quizzes, live scoring, and streak multipliers.
-                </p>
-                
-                <div class="w-full py-3 rounded-xl bg-rose-600/20 group-hover:bg-gradient-to-r group-hover:from-rose-600 group-hover:to-amber-500 border border-rose-500/30 text-rose-300 group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>Start Trainer Challenge</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl my-5 shadow-lg shadow-amber-500/10 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    
+                    <h2 class="font-display text-2xl text-white mb-2 tracking-wide uppercase">Scale Visualizer</h2>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-6 flex-1">
+                        Upgrade your membership to unlock scale patterns across 12 frets and soloing diagrams.
+                    </p>
+                    
+                    <div class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 group-hover:from-amber-400 group-hover:to-amber-500 text-black text-xs font-extrabold transition-all flex items-center justify-center gap-2 shadow-md uppercase tracking-wider">
+                        <span>Upgrade Full Access</span>
+                        <i class="fa-solid fa-bolt text-[10px]"></i>
+                    </div>
+                </a>
+            @endif
 
         </div>
 

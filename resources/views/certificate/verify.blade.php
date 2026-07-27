@@ -146,10 +146,17 @@
             </a>
 
             <div class="flex items-center gap-2">
-                <button id="btn-download-png" onclick="downloadCertificatePNG()" class="inline-flex items-center gap-2 px-4.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition shadow-lg shadow-amber-500/20 border border-amber-400/40 cursor-pointer">
-                    <i class="fa-solid fa-download"></i>
-                    <span>Download Certificate (PNG)</span>
-                </button>
+                @if(isset($isOwner) && $isOwner)
+                    <button id="btn-download-png" onclick="downloadCertificatePNG()" class="inline-flex items-center gap-2 px-4.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition shadow-lg shadow-amber-500/20 border border-amber-400/40 cursor-pointer">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download My Certificate (PNG)</span>
+                    </button>
+                @else
+                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Verified Public Record</span>
+                    </span>
+                @endif
                 
                 <a href="https://www.tiktok.com/@nde_guitar" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-white text-xs font-bold transition shadow-lg">
                     <i class="fa-brands fa-tiktok"></i>

@@ -18,21 +18,32 @@ class AdminFeedbackController extends Controller
     public function update(Request $request, \App\Models\CoachingBooking $booking)
     {
         $this->authorize('admin');
-        $adminActionMaxLength = config('constants.business_logic.admin_action_max_length');
+        $adminActionMaxLength = config('constants.business_logic.admin_action_max_length', 5000);
         
-        $data = $request->validate(['admin_action' => "nullable|string|max:{$adminActionMaxLength}"]);
-        // store admin action into booking.admin_note (if column exists) else append to notes
+        $data = $request->validate([
+            'admin_action' => "nullable|string|max:{$adminActionMaxLength}",
+            'review_video_url' => "nullable|string|max:255",
+            'review_title' => "nullable|string|max:255",
+            'review_tag' => "nullable|string|max:100",
+        ]);
+
         try {
-            if (isset($booking->admin_note)) {
-                $booking->admin_note = $data['admin_action'] ?? null;
-            } else {
-                $existing = $booking->notes ?? '';
-                $booking->notes = trim(($existing ? $existing . "\n\n" : '') . ($data['admin_action'] ?? ''));
+            if (array_key_exists('admin_action', $data)) {
+                $booking->admin_note = $data['admin_action'];
+            }
+            if (array_key_exists('review_video_url', $data)) {
+                $booking->review_video_url = $data['review_video_url'];
+            }
+            if (array_key_exists('review_title', $data)) {
+                $booking->review_title = $data['review_title'];
+            }
+            if (array_key_exists('review_tag', $data)) {
+                $booking->review_tag = $data['review_tag'];
             }
             $booking->save();
         } catch (\Throwable $e) {
             logger()->warning('Failed to save admin action to booking', ['err' => $e->getMessage()]);
         }
-        return redirect()->back()->with('success','Recommendation saved');
+        return redirect()->back()->with('success', 'Mentor Video Review saved successfully!');
     }
 }

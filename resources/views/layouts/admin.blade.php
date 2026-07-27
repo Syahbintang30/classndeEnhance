@@ -400,12 +400,8 @@
     <div class="admin-app">
         <aside id="adminSidebar" class="admin-sidebar">
             <div>
-                <a class="brand" href="{{ route('admin.dashboard') }}">
-                    <span class="brand-badge"><i class="fa-solid fa-guitar text-base"></i></span>
-                    <div>
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #0F172A; line-height: 1.2;">Guitarclassbynde</div>
-                        <span style="font-size: 0.65rem; padding: 2px 8px; border-radius: 9999px; background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 700; display: inline-block;">Admin Panel</span>
-                    </div>
+                <a class="brand" href="{{ route('compro') }}" style="justify-content: center;">
+                    <img src="{{ asset('compro/img/logo_styled.png') }}" alt="Guitarclassbynde Logo" style="height: 50px; width: auto; object-fit: contain; filter: brightness(0);">
                 </a>
 
                 <div class="menu-label">MAIN MENU</div>
@@ -498,14 +494,19 @@
 
             <div class="sidebar-footer">
                 <div class="status-box">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="position-relative d-inline-flex" style="width: 8px; height: 8px;">
-                            <span class="position-absolute w-100 h-100 rounded-circle bg-success opacity-75 animate-ping"></span>
-                            <span class="position-relative w-100 h-100 rounded-circle bg-success"></span>
-                        </span>
-                        <span style="font-size: 0.75rem; font-weight: 600; color: #334155;">Live System Online</span>
+                    <div class="d-flex align-items-center justify-content-between w-100 mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="position-relative d-inline-flex" style="width: 8px; height: 8px;">
+                                <span class="position-absolute w-100 h-100 rounded-circle bg-success opacity-75 animate-ping"></span>
+                                <span class="position-relative w-100 h-100 rounded-circle bg-success"></span>
+                            </span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #334155;">Live System</span>
+                        </div>
+                        <span style="font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: #ffffff; color: #475569; border: 1px solid #CBD5E1; font-weight: 700; font-family: monospace; display: inline-block;">v2.4</span>
                     </div>
-                    <span style="font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: #ffffff; color: #475569; border: 1px solid #CBD5E1; font-weight: 700; font-family: monospace; display: inline-block;">v2.4</span>
+                    <div style="font-size: 0.68rem; color: #64748B; font-weight: 600; text-align: center; border-top: 1px solid #E2E8F0; pt: 4px; margin-top: 4px;">
+                        &copy; {{ date('Y') }} WardellTech. All Rights Reserved.
+                    </div>
                 </div>
             </div>
         </aside>

@@ -194,16 +194,24 @@
                      x-data="{ activeSection: {{ $activeLessonIndex }} }"
                      @open-section.window="activeSection = $event.detail">
                     @forelse($lessons as $index => $ls)
-                        @php $topics = $ls->topics ?? collect(); @endphp
+                        @php 
+                            $topics = $ls->topics ?? collect();
+                            $isLessonLocked = ! auth()->user()->isPaidMember() && ((int)$ls->position > 1);
+                        @endphp
                         <div>
                             <!-- Accordion Header Button -->
                             <button @click="activeSection = (activeSection === {{ $index }} ? null : {{ $index }})" type="button" class="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition group cursor-pointer">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">
-                                        <i class="fa-solid fa-book-open"></i>
+                                    <div class="w-8 h-8 rounded-xl {{ $isLessonLocked ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' : 'bg-blue-500/10 border border-blue-500/20 text-blue-400' }} flex items-center justify-center text-xs flex-shrink-0">
+                                        <i class="fa-solid {{ $isLessonLocked ? 'fa-lock' : 'fa-book-open' }}"></i>
                                     </div>
                                     <div class="truncate">
-                                        <span class="font-bold text-sm text-white group-hover:text-blue-400 transition block truncate">{{ $ls->title }}</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="font-bold text-sm text-white group-hover:text-blue-400 transition block truncate">{{ $ls->title }}</span>
+                                            @if($isLessonLocked)
+                                                <span class="text-[9px] font-black text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 uppercase tracking-widest shrink-0">LOCKED</span>
+                                            @endif
+                                        </div>
                                         <span class="text-[10px] text-gray-400 font-medium">{{ count($topics) }} Topics</span>
                                     </div>
                                 </div>
@@ -215,14 +223,25 @@
                             <!-- Collapsible Topics Body -->
                             <div x-show="activeSection === {{ $index }}" x-transition.opacity class="p-3 pt-2 space-y-1 bg-black/50 border-t border-white/5">
                                 @forelse($topics as $tIndex => $topic)
-                                    <div class="topic-item cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition flex items-center gap-2.5" 
-                                         data-bunny-guid="{{ $topic->bunny_guid }}"
-                                         data-description="{{ $topic->description }}"
-                                         data-topic-id="{{ $topic->id }}"
-                                         data-lesson-index="{{ $index }}">
-                                        <input type="checkbox" class="topic-check cursor-pointer" style="cursor: pointer;">
-                                        <span class="truncate">{{ $topic->title }}</span>
-                                    </div>
+                                    @if($isLessonLocked)
+                                        <div onclick="window.location.href='{{ route('registerclass') }}'" 
+                                             class="cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-500 hover:text-amber-400 hover:bg-amber-500/10 border border-transparent transition flex items-center justify-between gap-2.5 group">
+                                            <div class="flex items-center gap-2.5 truncate">
+                                                <i class="fa-solid fa-lock text-[10px] text-amber-400/70"></i>
+                                                <span class="truncate">{{ $topic->title }}</span>
+                                            </div>
+                                            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition">Upgrade</span>
+                                        </div>
+                                    @else
+                                        <div class="topic-item cursor-pointer px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition flex items-center gap-2.5" 
+                                             data-bunny-guid="{{ $topic->bunny_guid }}"
+                                             data-description="{{ $topic->description }}"
+                                             data-topic-id="{{ $topic->id }}"
+                                             data-lesson-index="{{ $index }}">
+                                            <input type="checkbox" class="topic-check cursor-pointer" style="cursor: pointer;">
+                                            <span class="truncate">{{ $topic->title }}</span>
+                                        </div>
+                                    @endif
                                 @empty
                                     <div class="text-xs text-gray-500 italic px-2 py-1">No topics available</div>
                                 @endforelse
