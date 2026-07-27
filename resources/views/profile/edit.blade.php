@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@php
+    $user = $user ?? auth()->user();
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
+@endphp
+
 @section('title', 'Edit Profile - Guitarclassbynde')
 
 @push('head')
@@ -99,7 +105,7 @@
         </div>
 
         <!-- Flash Messages -->
-        @if(session('status') || session('success') || session('error') || $errors->any())
+        @if(session('status') || session('success') || session('error') || (isset($errors) && $errors->any()))
         <div class="space-y-3">
             @if(session('status') === 'profile-updated' || session('success'))
                 <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-3">
@@ -148,14 +154,17 @@
 
             <!-- Avatar Uploader Row -->
             <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
-                @php $avatar = $user->photoUrl(); @endphp
+                @php 
+                    $u = $user ?? auth()->user(); 
+                    $avatar = $u ? $u->photoUrl() : null; 
+                @endphp
                 <div class="relative shrink-0">
                     <div class="w-20 h-20 rounded-full bg-zinc-900 border-2 border-white/20 shadow-xl overflow-hidden shrink-0 relative block" style="width:80px;height:80px;border-radius:9999px;padding:0;margin:0;">
                         @if($avatar)
-                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $user->name }}" style="position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;min-width:100% !important;min-height:100% !important;max-width:none !important;max-height:none !important;object-fit:cover !important;object-position:center 35% !important;border-radius:9999px !important;display:block !important;margin:0 !important;padding:0 !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                            <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                            <img id="photo-preview" src="{{ $avatar }}" alt="{{ $u->name ?? '' }}" style="position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;min-width:100% !important;min-height:100% !important;max-width:none !important;max-height:none !important;object-fit:cover !important;object-position:center 35% !important;border-radius:9999px !important;display:block !important;margin:0 !important;padding:0 !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <span class="fallback-avatar hidden w-full h-full items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($u->name ?? 'U', 0, 1) }}</span>
                         @else
-                            <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($user->name ?? 'U', 0, 1) }}</span>
+                            <span id="photo-preview" class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-2xl rounded-full">{{ mb_substr($u->name ?? 'U', 0, 1) }}</span>
                         @endif
                     </div>
                 </div>
@@ -185,17 +194,17 @@
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-gray-300" for="name">Full Name</label>
                     <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255" class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
-                    @if($errors->has('name'))
-                        <p class="text-xs text-rose-400 font-medium">{{ $errors->first('name') }}</p>
-                    @endif
+                    @error('name')
+                        <p class="text-xs text-rose-400 font-medium">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-gray-300" for="email">Email Address</label>
-                    <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255" class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
-                    @if($errors->has('email'))
-                        <p class="text-xs text-rose-400 font-medium">{{ $errors->first('email') }}</p>
-                    @endif
+                    <input id="email" name="email" type="email" value="{{ old('email', $user->email ?? '') }}" required maxlength="255" class="w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                    @error('email')
+                        <p class="text-xs text-rose-400 font-medium">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center gap-3 pt-2">

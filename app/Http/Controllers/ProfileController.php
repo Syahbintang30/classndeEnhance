@@ -186,7 +186,10 @@ class ProfileController extends Controller
      */
     public function referrals(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user() ?? auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $referred = \App\Models\User::where('referred_by', $user->id)->orderByDesc('id')->get();
         $availableUnits = \App\Services\ReferralService::availableCoachingUnits($user);
         $referralDiscountPercent = \App\Services\ReferralService::referrerCoachingDiscountPercent($user);

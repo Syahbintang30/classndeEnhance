@@ -471,7 +471,7 @@
                             <span>Vouchers</span>
                         </div>
                     </a>
-                    <a class="side-link {{ request()->is('admin/referrals*') ? 'active' : '' }}" href="{{ route('admin.referrals.index') }}">
+                    <a class="side-link {{ request()->is('admin/referral*') ? 'active' : '' }}" href="{{ Route::has('admin.referral.leaderboard') ? route('admin.referral.leaderboard') : (Route::has('admin.referral.settings') ? route('admin.referral.settings') : '#') }}">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fa-solid fa-share-nodes"></i>
                             <span>Referral</span>
