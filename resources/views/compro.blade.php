@@ -77,13 +77,14 @@
     @include('layouts.lms_header')
 
     @php
-    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
-    $isLoggedIn = auth()->check();
-    $lmsUrl = route('lms.dashboard');
-    $firstLesson = \App\Models\Lesson::orderBy('position')->first();
-    $lessonId = $firstLesson ? $firstLesson->id : 9;
-    $totalStudentsCount = number_format(1200 + \App\Models\User::count());
-@endphp
+        $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+        $isLoggedIn = auth()->check();
+        $lmsUrl = route('lms.dashboard');
+        $firstLesson = \App\Models\Lesson::orderBy('position')->first();
+        $lessonId = $firstLesson ? $firstLesson->id : 9;
+        $recentStudents = \App\Models\User::orderBy('id', 'desc')->take(3)->get();
+        $totalStudentsCount = number_format(\App\Models\User::count());
+    @endphp
 
     <!-- ─── HERO SECTION (HIGH CONVERTING SALES HOOK) ───────────────────── -->
     <header class="relative pt-12 pb-20 lg:pt-20 lg:pb-32 px-4 lg:px-8 max-w-7xl mx-auto z-10">
@@ -131,9 +132,16 @@
                 <div class="pt-6 border-t border-white/10 flex flex-wrap items-center gap-6 text-xs text-gray-400">
                     <div class="flex items-center gap-2">
                         <div class="flex -space-x-2">
-                            <img src="https://i.pravatar.cc/100?img=12" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                            <img src="https://i.pravatar.cc/100?img=33" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                            <img src="https://i.pravatar.cc/100?img=47" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
+                            @foreach($recentStudents as $s)
+                                @php $sAvatar = method_exists($s, 'photoUrl') ? $s->photoUrl() : null; @endphp
+                                @if($sAvatar)
+                                    <img src="{{ $sAvatar }}" alt="{{ $s->name }}" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
+                                @else
+                                    <div class="w-8 h-8 rounded-full border-2 border-zinc-900 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs uppercase shadow-md">
+                                        {{ mb_substr($s->name ?? 'U', 0, 1) }}
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                         <span class="font-bold text-white">{{ $totalStudentsCount }}+ <span class="font-normal text-gray-400">{{ $isEn ? 'Students Mentored' : 'Murid Dibimbing' }}</span></span>
                     </div>
