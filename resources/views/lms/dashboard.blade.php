@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Student Dashboard')
+@php
+    $isEn = (session('app_lang', request('lang', 'id')) === 'en');
+@endphp
+
+@section('title', $isEn ? 'Student Dashboard' : 'Dashboard Murid')
 
 @push('head')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -85,14 +89,18 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">
-                    <i class="fa-solid fa-bolt text-blue-400"></i> Keep Up The Momentum
+                    <i class="fa-solid fa-bolt text-blue-400"></i> {{ $isEn ? 'Keep Up The Momentum' : 'Pertahankan Semangat Latihan' }}
                 </div>
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl text-white tracking-wide uppercase leading-none">
-                    @php $firstName = explode(' ', auth()->user()->name ?? 'STUDENT')[0]; @endphp
-                    WELCOME BACK, <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-white">{{ $firstName }}</span>!
+                    @php $firstName = strtoupper(explode(' ', auth()->user()->name ?? 'STUDENT')[0]); @endphp
+                    @if($isEn)
+                        WELCOME BACK, <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-white">{{ $firstName }}</span>!
+                    @else
+                        SELAMAT DATANG, <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-white">{{ $firstName }}</span>!
+                    @endif
                 </h1>
                 <p class="text-gray-400 text-sm mt-2 max-w-xl">
-                    You're on track to master the guitar. Practice for 15 minutes today to keep your streak alive!
+                    {{ $isEn ? 'You\'re on track to master the guitar. Practice for 15 minutes today to keep your streak alive!' : 'Kamu sudah berada di alur yang benar untuk menguasai gitar. Luangkan 15 menit latihan hari ini!' }}
                 </p>
             </div>
 
@@ -102,12 +110,12 @@
                     <i class="fa-solid fa-play ml-0.5"></i>
                 </div>
                 <div class="min-w-0">
-                    <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Resume Lesson</div>
-                    <div class="text-sm font-bold text-white truncate" title="{{ $resumeTopic->title ?? 'Continue Learning' }}">
-                        {{ $resumeTopic->title ?? 'Continue Learning' }}
+                    <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">{{ $isEn ? 'Resume Lesson' : 'Lanjutkan Modul' }}</div>
+                    <div class="text-sm font-bold text-white truncate" title="{{ $resumeTopic->title ?? ($isEn ? 'Continue Learning' : 'Lanjutkan Belajar') }}">
+                        {{ $resumeTopic->title ?? ($isEn ? 'Continue Learning' : 'Lanjutkan Belajar') }}
                     </div>
-                    <div class="text-xs text-gray-400 truncate" title="{{ $resumeLesson->title ?? 'Pick up where you left off' }}">
-                        {{ $resumeLesson->title ?? 'Pick up where you left off' }}
+                    <div class="text-xs text-gray-400 truncate" title="{{ $resumeLesson->title ?? ($isEn ? 'Pick up where you left off' : 'Mulai dari materi terakhirmu') }}">
+                        {{ $resumeLesson->title ?? ($isEn ? 'Pick up where you left off' : 'Mulai dari materi terakhirmu') }}
                     </div>
                 </div>
             </a>
@@ -130,17 +138,17 @@
                             <div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-extrabold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-widest">Free Trial</span>
-                                    <span class="text-xs text-gray-400 font-semibold">Preview Unlocked</span>
+                                    <span class="text-xs text-gray-400 font-semibold">{{ $isEn ? 'Preview Unlocked' : 'Pratinjau Terbuka' }}</span>
                                 </div>
-                                <h4 class="text-base font-bold text-white mt-1">You are currently in Free Trial Mode</h4>
+                                <h4 class="text-base font-bold text-white mt-1">{{ $isEn ? 'You are currently in Free Trial Mode' : 'Kamu saat ini dalam Mode Akses Gratis (Free Trial)' }}</h4>
                                 <p class="text-xs text-gray-400 leading-relaxed">
-                                    Enjoy free preview lessons. Upgrade your membership to get Full Access.
+                                    {{ $isEn ? 'Enjoy free preview lessons. Upgrade your membership to get Full Access.' : 'Nikmati modul pratinjau gratis. Tingkatkan paketmu untuk mendapatkan Akses Penuh.' }}
                                 </p>
                             </div>
                         </div>
                         <a href="{{ route('registerclass') }}" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition transform hover:scale-105 shrink-0 flex items-center gap-2 shadow-lg shadow-amber-500/20">
                             <i class="fa-solid fa-bolt"></i>
-                            <span>Get Full Access</span>
+                            <span>{{ $isEn ? 'Get Full Access' : 'Beli Akses Penuh' }}</span>
                         </a>
                     </div>
                 @endif
@@ -150,13 +158,13 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
                             <div class="text-xs uppercase font-bold text-blue-400 tracking-wider flex items-center gap-2 mb-1">
-                                <i class="fa-solid fa-graduation-cap"></i> Curriculum Progress
+                                <i class="fa-solid fa-graduation-cap"></i> {{ $isEn ? 'Curriculum Progress' : 'Progres Kurikulum' }}
                             </div>
-                            <h3 class="text-2xl font-bold text-white">Guitar Mastery Roadmap</h3>
+                            <h3 class="text-2xl font-bold text-white">{{ $isEn ? 'Guitar Mastery Roadmap' : 'Peta Jalan Penguasaan Gitar' }}</h3>
                         </div>
                         <div class="flex items-baseline gap-2">
                             <span class="font-display text-5xl text-blue-400">{{ $progressPercent ?? 0 }}%</span>
-                            <span class="text-xs text-gray-400 font-semibold">({{ $completedTopics ?? 0 }}/{{ $totalTopics ?? 0 }} Completed)</span>
+                            <span class="text-xs text-gray-400 font-semibold">({{ $completedTopics ?? 0 }}/{{ $totalTopics ?? 0 }} {{ $isEn ? 'Completed' : 'Selesai' }})</span>
                         </div>
                     </div>
 
@@ -168,17 +176,17 @@
                     <!-- Stats Strip inside Roadmap -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/5">
                         <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5">
-                            <span class="text-xs text-gray-400 block mb-1">Completed Topics</span>
+                            <span class="text-xs text-gray-400 block mb-1">{{ $isEn ? 'Completed Topics' : 'Materi Selesai' }}</span>
                             <span class="font-bold text-white text-lg">{{ $completedTopics ?? 0 }}</span>
                         </div>
                         <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5">
-                            <span class="text-xs text-gray-400 block mb-1">Remaining</span>
+                            <span class="text-xs text-gray-400 block mb-1">{{ $isEn ? 'Remaining' : 'Tersisa' }}</span>
                             <span class="font-bold text-gray-300 text-lg">{{ max(0, ($totalTopics ?? 0) - ($completedTopics ?? 0)) }}</span>
                         </div>
                         <div class="bg-zinc-950/40 rounded-xl p-3 border border-white/5 col-span-2 sm:col-span-1">
-                            <span class="text-xs text-gray-400 block mb-1">Next Step</span>
+                            <span class="text-xs text-gray-400 block mb-1">{{ $isEn ? 'Next Step' : 'Langkah Selanjutnya' }}</span>
                             <a href="{{ route('kelas') }}" class="font-bold text-blue-400 text-sm hover:underline flex items-center gap-1 mt-0.5">
-                                Go to Lessons <i class="fa-solid fa-arrow-right text-xs"></i>
+                                {{ $isEn ? 'Go to Lessons' : 'Buka Modul Kelas' }} <i class="fa-solid fa-arrow-right text-xs"></i>
                             </a>
                         </div>
                     </div>
@@ -189,10 +197,10 @@
                     <div class="flex items-center justify-between mb-5">
                         <div class="flex items-center gap-2">
                             <span class="text-xs uppercase font-bold text-blue-400 tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-fire text-amber-400"></i> Daily Practice Routine
+                                <i class="fa-solid fa-fire text-amber-400"></i> {{ $isEn ? 'Daily Practice Routine' : 'Rutinitas Latihan Harian' }}
                             </span>
                         </div>
-                        <span class="text-[10px] font-extrabold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">Recommended</span>
+                        <span class="text-[10px] font-extrabold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">{{ $isEn ? 'Recommended' : 'Rekomendasi' }}</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -205,11 +213,11 @@
                                 <span class="text-[10px] font-bold text-gray-500">STEP 01</span>
                             </div>
                             <div>
-                                <h5 class="text-xs font-bold text-white mb-1">Standard Tuning</h5>
-                                <p class="text-[11px] text-gray-400 leading-relaxed">Check guitar tuning with mic pitch detection.</p>
+                                <h5 class="text-xs font-bold text-white mb-1">{{ $isEn ? 'Standard Tuning' : 'Setem Gitar' }}</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">{{ $isEn ? 'Check guitar tuning with mic pitch detection.' : 'Setem gitar dengan deteksi nada mikrofon presisi.' }}</p>
                             </div>
                             <a href="{{ route('practice.tuner') }}" class="text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
-                                <span>Tune Guitar</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                                <span>{{ $isEn ? 'Tune Guitar' : 'Setem Gitar' }}</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
                             </a>
                         </div>
 
@@ -222,11 +230,11 @@
                                 <span class="text-[10px] font-bold text-gray-500">STEP 02</span>
                             </div>
                             <div>
-                                <h5 class="text-xs font-bold text-white mb-1">Rhythm & Speed</h5>
-                                <p class="text-[11px] text-gray-400 leading-relaxed">Practice alternate picking with metronome click.</p>
+                                <h5 class="text-xs font-bold text-white mb-1">{{ $isEn ? 'Rhythm & Speed' : 'Ritme & Kecepatan' }}</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">{{ $isEn ? 'Practice alternate picking with metronome click.' : 'Latih ketukan & picking dengan ketukan metronom.' }}</p>
                             </div>
                             <a href="{{ route('practice.metronome') }}" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition">
-                                <span>Launch Metronome</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                                <span>{{ $isEn ? 'Launch Metronome' : 'Buka Metronom' }}</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
                             </a>
                         </div>
 
@@ -239,11 +247,11 @@
                                 <span class="text-[10px] font-bold text-gray-500">STEP 03</span>
                             </div>
                             <div>
-                                <h5 class="text-xs font-bold text-white mb-1">Mentor Feedback</h5>
-                                <p class="text-[11px] text-gray-400 leading-relaxed">Join 1-on-1 private video review session.</p>
+                                <h5 class="text-xs font-bold text-white mb-1">{{ $isEn ? 'Mentor Feedback' : 'Bimbingan Mentor' }}</h5>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">{{ $isEn ? 'Join 1-on-1 private video review session.' : 'Ikuti sesi video call review privat 1-on-1.' }}</p>
                             </div>
                             <a href="{{ route('coaching.upcoming') }}" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition">
-                                <span>Book Session</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                                <span>{{ $isEn ? 'Book Session' : 'Jadwalkan Sesi' }}</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
                             </a>
                         </div>
                     </div>
@@ -255,7 +263,7 @@
             <div class="lg:col-span-5 xl:col-span-4 space-y-6">
                 
                 <div class="text-xs uppercase font-bold text-gray-400 tracking-wider flex items-center gap-2 px-1">
-                    <i class="fa-solid fa-sliders text-indigo-400"></i> Quick Hub & Tools
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> {{ $isEn ? 'Quick Hub & Tools' : 'Menu & Tools Cepat' }}
                 </div>
 
                 <!-- FLOATING HUB ITEM 1: 1-ON-1 COACHING & TICKETS -->
@@ -266,25 +274,29 @@
                                 <i class="fa-solid fa-ticket"></i>
                             </div>
                             <div>
-                                <h4 class="text-sm font-bold text-white">1-on-1 Coaching</h4>
-                                <div class="text-xs text-gray-400">Personal Video Session</div>
+                                <h4 class="text-sm font-bold text-white">Coaching 1-on-1</h4>
+                                <div class="text-xs text-gray-400">{{ $isEn ? 'Personal Video Session' : 'Sesi Video Call Privat' }}</div>
                             </div>
                         </div>
                         <span class="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
-                            {{ $availableTicketCount ?? 0 }} Tickets
+                            {{ $availableTicketCount ?? 0 }} {{ $isEn ? 'Tickets' : 'Tiket Sesi' }}
                         </span>
                     </div>
 
                     <div class="bg-zinc-950/50 rounded-xl p-3 my-3 border border-white/5 flex items-center justify-between text-xs">
-                        <span class="text-gray-400">Scheduled Session:</span>
+                        <span class="text-gray-400">{{ $isEn ? 'Scheduled Session:' : 'Jadwal Sesi:' }}</span>
                         <span class="font-semibold {{ ($upcomingCoachingCount ?? 0) > 0 ? 'text-emerald-400' : 'text-gray-400' }}">
-                            {{ ($upcomingCoachingCount ?? 0) > 0 ? ($upcomingCoachingCount.' Upcoming') : 'None Booked' }}
+                            @if(($upcomingCoachingCount ?? 0) > 0)
+                                {{ $upcomingCoachingCount }} {{ $isEn ? 'Upcoming' : 'Terjadwal' }}
+                            @else
+                                {{ $isEn ? 'None Booked' : 'Belum Ada Jadwal' }}
+                            @endif
                         </span>
                     </div>
 
                     <a href="{{ route('coaching.upcoming') }}" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 border border-amber-500/30 text-amber-300 text-xs font-bold transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-calendar-plus text-[10px]"></i>
-                        <span>Book Session / View Details</span>
+                        <span>{{ $isEn ? 'Book Session / View Details' : 'Pesan Sesi / Lihat Detail' }}</span>
                     </a>
                 </div>
 
@@ -296,26 +308,26 @@
                                 <i class="fa-solid fa-compact-disc"></i>
                             </div>
                             <div>
-                                <h4 class="text-sm font-bold text-white">Song Vault</h4>
-                                <div class="text-xs text-gray-400">Interactive TABS & Tracks</div>
+                                <h4 class="text-sm font-bold text-white">{{ $isEn ? 'Song Vault' : 'Pustaka Lagu' }}</h4>
+                                <div class="text-xs text-gray-400">{{ $isEn ? 'Interactive TABS & Tracks' : 'TAB & Tutorial Interaktif' }}</div>
                             </div>
                         </div>
                         @if(auth()->check() && auth()->user()->hasIntermediateAccess())
-                            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Unlocked</span>
+                            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">{{ $isEn ? 'Unlocked' : 'Terbuka' }}</span>
                         @else
-                            <span class="text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full">Locked</span>
+                            <span class="text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full">{{ $isEn ? 'Locked' : 'Terkunci' }}</span>
                         @endif
                     </div>
 
                     @if(auth()->check() && auth()->user()->hasIntermediateAccess())
                         <a href="{{ route('song.tutorial.index') }}" class="w-full py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-bold transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-guitar text-[10px]"></i>
-                            <span>Explore Song Tutorials</span>
+                            <span>{{ $isEn ? 'Explore Song Tutorials' : 'Buka Pustaka Lagu' }}</span>
                         </a>
                     @else
                         <a href="{{ route('registerclass') }}" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-gray-300 text-xs font-bold transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-lock text-[10px]"></i>
-                            <span>Upgrade Package to Unlock</span>
+                            <span>{{ $isEn ? 'Upgrade Package to Unlock' : 'Upgrade Paket Untuk Membuka' }}</span>
                         </a>
                     @endif
                 </div>
@@ -328,18 +340,18 @@
                                 <i class="fa-solid fa-toolbox"></i>
                             </div>
                             <div>
-                                <h4 class="text-sm font-bold text-white">Practice Suite</h4>
-                                <div class="text-xs text-gray-400">Tuner, Metronome & Chords</div>
+                                <h4 class="text-sm font-bold text-white">{{ $isEn ? 'Practice Suite' : 'Tools Latihan' }}</h4>
+                                <div class="text-xs text-gray-400">{{ $isEn ? 'Tuner, Metronome & Chords' : 'Tuner, Metronom & Chord' }}</div>
                             </div>
                         </div>
                         <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-                            3 Tools
+                            {{ $isEn ? '3 Tools' : '3 Alat Latihan' }}
                         </span>
                     </div>
 
                     <a href="{{ route('practice.index') }}" class="w-full py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-sliders text-[10px]"></i>
-                        <span>Open Practice Tools Hub</span>
+                        <span>{{ $isEn ? 'Open Practice Tools Hub' : 'Buka Hub Tools Latihan' }}</span>
                     </a>
                 </div>
 

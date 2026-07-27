@@ -54,11 +54,6 @@
                         <span>{{ $isNavEn ? 'Song Library' : 'Pustaka Lagu' }}</span>
                     </a>
                     @endif
-
-                    <a href="{{ route('graduates') }}" class="{{ request()->routeIs('graduates') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5 font-semibold' }} px-4 py-1.5 rounded-full text-xs transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-trophy text-[11px] text-amber-400"></i>
-                        <span>Hall of Fame</span>
-                    </a>
                 @endif
             </nav>
         </div>
