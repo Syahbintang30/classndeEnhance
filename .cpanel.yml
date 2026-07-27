@@ -1,8 +1,8 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/username/public_html
+    - export DEPLOYPATH=/home/u650263172/domains/guitarclassbynde.id/public_html
     - /bin/cp -R * $DEPLOYPATH
-    - cd $DEPLOYPATH && php artisan migrate --force
-    - cd $DEPLOYPATH && php artisan config:cache
-    - cd $DEPLOYPATH && php artisan route:cache
-    - cd $DEPLOYPATH && php artisan view:cache
+    - cd $DEPLOYPATH && php artisan config:clear
+    - cd $DEPLOYPATH && php artisan route:clear
+    - cd $DEPLOYPATH && php artisan view:clear
+
