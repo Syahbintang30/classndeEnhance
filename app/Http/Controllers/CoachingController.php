@@ -224,9 +224,15 @@ class CoachingController extends Controller
                 }
 
                 // Cek kapasitas slot: jika admin belum mengatur jadwal khusus untuk tanggal ini, default kapasitas = 1.
+                $timeSec = $timeFormatted . ':00';
                 $capacityRowsCount = \App\Models\CoachingSlotCapacity::where('date', $date)->count();
                 $slotRow = \App\Models\CoachingSlotCapacity::where('date', $date)
-                    ->whereIn('time', [$timeFormatted, $timeDot])
+                    ->where(function($q) use ($timeFormatted, $timeDot, $timeSec) {
+                        $q->where('time', $timeFormatted)
+                          ->orWhere('time', $timeDot)
+                          ->orWhere('time', $timeSec)
+                          ->orWhereRaw("TIME_FORMAT(`time`, '%H:%i') = ?", [$timeFormatted]);
+                    })
                     ->first();
 
                 if ($capacityRowsCount > 0) {
