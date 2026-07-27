@@ -31,7 +31,7 @@ class PackageSeeder extends Seeder
                 'Akses Seumur Hidup Modul Pemula & Lanjutan (Video HD)',
                 'Akses Eksklusif Pustaka Tutorial Lagu & Song TAB',
                 'Practice Suite Lengkap (Tuner, Metronom, Chords, Scales)',
-                '1x Gratis Tiket Sesi Coaching Live 1-on-1',
+                '2x Gratis Tiket Sesi Coaching Live 1-on-1 Privat',
                 'Dukungan Komunitas & Prioritas Tanya Jawab',
             ]),
         ]);
