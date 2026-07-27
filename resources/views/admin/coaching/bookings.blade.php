@@ -675,11 +675,10 @@
                                                 <span>Room #{{ substr($b->twilio_room_sid, 0, 8) }}</span>
                                             </div>
                                         @endif
-                                        <div>
-                                            <a class="btn-session-pending open-session-btn w-100 justify-content-center d-flex align-items-center gap-2" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#" style="font-size: 0.78rem; border-radius: 8px; padding: 7px 12px; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; pointer-events: none; opacity: 0.6; background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1;">
-                                                <i class="fa-regular fa-clock text-xs"></i>
-                                                <span>Belum Dimulai</span>
-                                            </a>
+                                        <a class="btn-session-pending open-session-btn w-100 justify-content-center d-flex align-items-center gap-2" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="{{ $sessionUrl }}" style="font-size: 0.78rem; border-radius: 8px; padding: 7px 12px; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; pointer-events: none; opacity: 0.6; background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1;">
+                                            <i class="fa-regular fa-clock text-xs"></i>
+                                            <span>Belum Dimulai</span>
+                                        </a>
                                         </div>
                                     </div>
                                 </td>

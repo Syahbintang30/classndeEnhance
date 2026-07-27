@@ -368,13 +368,13 @@
                                                   @endif
                                               @endif
 
-                                             <div class="booking-timer-wrapper flex flex-col items-end gap-2 w-full sm:w-auto" data-booking-time="{{ $dtLocal }}" data-status="{{ $b->status }}" data-href="{{ $sessionUrl }}">
-                                                 <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/90 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block">--:--:--</span>
-                                                 <button type="button" class="start-btn w-full py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 hidden cursor-pointer" disabled>
-                                                     <i class="fa-solid fa-video text-sm animate-pulse"></i>
-                                                     <span class="start-label">Join Session</span>
-                                                 </button>
-                                             </div>
+                                              <div class="booking-timer-wrapper flex flex-col items-end gap-2 w-full sm:w-auto" data-booking-time="{{ $dtLocal }}" data-status="{{ $b->status }}" data-href="{{ $sessionUrl }}">
+                                                  <span class="countdown px-4 py-2 rounded-xl font-mono text-xs bg-zinc-950/90 text-blue-400 border border-blue-500/20 tracking-widest text-center shadow-inner inline-block">--:--:--</span>
+                                                  <a href="{{ $sessionUrl }}" target="_blank" class="start-btn w-full py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold rounded-xl text-xs transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 hidden cursor-pointer no-underline">
+                                                      <i class="fa-solid fa-video text-sm animate-pulse"></i>
+                                                      <span class="start-label">Join Session</span>
+                                                  </a>
+                                              </div>
                                          </div>
                                     @else
                                         <span class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 bg-white/5 border border-white/10 uppercase">{{ $b->status }}</span>
@@ -450,14 +450,10 @@
                         if (btn) {
                             btn.classList.remove('hidden');
                             btn.classList.add('flex');
-                            btn.disabled = false;
-                            btn.removeAttribute('disabled');
                             btn.style.opacity = '1';
-                            if (!boundClicks.has(btn)) {
-                                btn.addEventListener('click', function(){
-                                    if (href) window.location.href = href;
-                                });
-                                boundClicks.set(btn, true);
+                            btn.style.pointerEvents = 'auto';
+                            if (href) {
+                                btn.setAttribute('href', href);
                             }
                         }
                     } else if (now.getTime() > endWindow) {
