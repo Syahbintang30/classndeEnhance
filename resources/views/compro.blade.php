@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guitarclassbynde — Master Guitar 10x Faster</title>
-    <meta name="description" content="Master guitar with Nde's proven curriculum, 1-on-1 coaching, HD video lessons, and interactive practice tools.">
+    <title>Guitarclassbynde — Jago Main Gitar 10x Lebih Cepat</title>
+    <meta name="description" content="Kuasai gitar dengan kurikulum terstruktur dari Nde, coaching 1-on-1, video materi HD, dan alat latihan interaktif.">
     <link rel="icon" type="image/png" href="{{ asset('compro/img/logo_icon.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -93,30 +93,30 @@
                 <!-- Tag Badge -->
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
                     <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-                    <span>Exclusive Guitar Mentorship Program</span>
+                    <span>Program Mentorship Gitar Eksklusif</span>
                 </div>
 
                 <!-- Main Hook Heading -->
                 <h1 class="font-display text-5xl sm:text-6xl md:text-7xl text-white tracking-wide uppercase leading-none">
-                    Play Guitar Like A Pro <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">10x Faster</span> With Nde
+                    Bisa Main Gitar Jago <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">10x Lebih Cepat</span> Bersama Nde
                 </h1>
 
                 <!-- Body Paragraph -->
                 <p class="text-gray-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-                    Stop wasting months on confusing YouTube tutorials. Access Nde's proven step-by-step video curriculum, 1-on-1 live video coaching, and interactive practice tools in one unified platform.
+                    Stop buang-buang waktu berbulan-bulan nonton tutorial YouTube yang bikin bingung. Dapatkan kurikulum video terstruktur dari Nde, coaching video call 1-on-1, dan tools latihan interaktif dalam satu platform.
                 </p>
 
                 <!-- Sales Action Buttons -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
                     <a href="{{ $isLoggedIn ? $lmsUrl : url('/registerclass') }}" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl text-sm shadow-xl shadow-blue-600/30 transition-all hover:scale-105 flex items-center justify-center gap-3">
-                        <span>{{ $isLoggedIn ? 'Enter Student LMS' : 'Claim Your Access Now' }}</span>
+                        <span>{{ $isLoggedIn ? 'Masuk ke LMS Murid' : 'Daftar & Ambil Akses Sekarang' }}</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
 
                     <a href="#packages" class="px-7 py-4 bg-zinc-950/60 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-bold rounded-2xl text-sm transition backdrop-blur-md flex items-center justify-center gap-2">
                         <i class="fa-solid fa-tags text-blue-400"></i>
-                        <span>Explore Packages</span>
+                        <span>Lihat Pilihan Paket</span>
                     </a>
                 </div>
 
@@ -124,11 +124,11 @@
                 <div class="pt-6 border-t border-white/10 flex flex-wrap items-center gap-6 text-xs text-gray-400">
                     <div class="flex items-center gap-2">
                         <div class="flex -space-x-2">
-                            <img src="https://i.pravatar.cc/100?img=12" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                            <img src="https://i.pravatar.cc/100?img=33" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
-                            <img src="https://i.pravatar.cc/100?img=47" alt="Student" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
+                            <img src="https://i.pravatar.cc/100?img=12" alt="Murid" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
+                            <img src="https://i.pravatar.cc/100?img=33" alt="Murid" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
+                            <img src="https://i.pravatar.cc/100?img=47" alt="Murid" class="w-8 h-8 rounded-full border-2 border-zinc-900 object-cover" />
                         </div>
-                        <span class="font-bold text-white">1,200+ <span class="font-normal text-gray-400">Students Mentored</span></span>
+                        <span class="font-bold text-white">1.200+ <span class="font-normal text-gray-400">Murid Dibimbing</span></span>
                     </div>
 
                     <div class="h-4 w-px bg-white/10 hidden sm:block"></div>
@@ -142,7 +142,7 @@
 
                     <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
                         <i class="fa-solid fa-shield-halved"></i>
-                        <span>100% Guaranteed Results</span>
+                        <span>100% Garansi Hasil</span>
                     </div>
                 </div>
             </div>
@@ -156,8 +156,8 @@
                         <!-- Floating Glass Badge -->
                         <div class="absolute bottom-4 left-4 right-4 bg-zinc-950/80 border border-white/10 rounded-xl p-4 backdrop-blur-md flex items-center justify-between">
                             <div>
-                                <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Mentored by Nde</div>
-                                <div class="text-xs font-bold text-white">Personalized 1-on-1 Feedback Session</div>
+                                <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Bimbingan Langsung Nde</div>
+                                <div class="text-xs font-bold text-white">Sesi Feedback 1-on-1 Privat</div>
                             </div>
                             <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">LIVE ON AIR</span>
                         </div>
@@ -173,19 +173,19 @@
         <div class="max-w-7xl mx-auto px-4 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-white">100+</div>
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">HD Video Lessons</div>
+                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Video Materi HD</div>
             </div>
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-blue-400">1-on-1</div>
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Live Coaching Calls</div>
+                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Sesi Coaching Live</div>
             </div>
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-purple-400">5 Suite</div>
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Interactive Practice Tools</div>
+                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Tools Latihan Interaktif</div>
             </div>
             <div>
                 <div class="font-display text-4xl sm:text-5xl text-emerald-400">∞</div>
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Lifetime LMS Access</div>
+                <div class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Akses LMS Seumur Hidup</div>
             </div>
         </div>
     </section>
@@ -193,12 +193,12 @@
     <!-- ─── 3 CORE PILLARS SHOWCASE SECTION ───────────────────────────── -->
     <section id="features" class="py-20 px-4 lg:px-8 max-w-7xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">The Ultimate Learning Ecosystem</span>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">Ekosistem Belajar Gitar Terlengkap</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                3 Core Pillars of <span class="text-blue-500">Guitarclassbynde</span>
+                3 Pilar Utama <span class="text-blue-500">Guitarclassbynde</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                The most effective guitar learning system combining video flexibility, 1-on-1 live coaching, and song tutorials.
+                Sistem belajar gitar paling efektif yang menggabungkan fleksibilitas video, coaching live 1-on-1, dan tutorial lagu.
             </p>
         </div>
 
@@ -210,15 +210,15 @@
                     <i class="fa-solid fa-laptop-code"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Pillar 1 • Lifetime Access</span>
-                    <h3 class="font-display text-3xl text-white">Video Lessons 24/7</h3>
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Pilar 1 • Akses Seumur Hidup</span>
+                    <h3 class="font-display text-3xl text-white">Video Materi 24/7</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Access structured HD video modules that you can learn <strong class="text-white">anytime and anywhere</strong> at your own pace across all devices.
+                    Akses modul video HD terstruktur yang bisa kamu pelajari <strong class="text-white">kapan saja dan di mana saja</strong> sesuai kecepatanmu sendiri.
                 </p>
                 <div class="pt-2 text-xs font-bold text-blue-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Unlimited Rewatch Access</span>
+                    <span>Akses Nonton Ulang Tanpa Batas</span>
                 </div>
             </div>
 
@@ -228,15 +228,15 @@
                     <i class="fa-solid fa-video"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Pillar 2 • On-Website Video Call</span>
+                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Pilar 2 • Video Call di Web</span>
                     <h3 class="font-display text-3xl text-white">1-on-1 Live Coaching</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Live 1-on-1 <strong class="text-white">video call coaching inside the website</strong> with Nde for real-time technique & finger placement correction.
+                    Sesi coaching <strong class="text-white">video call 1-on-1 langsung di dalam website</strong> bersama Nde untuk koreksi teknik & posisi jari secara real-time.
                 </p>
                 <div class="pt-2 text-xs font-bold text-purple-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Integrated Booking Schedule</span>
+                    <span>Jadwal Booking Terintegrasi</span>
                 </div>
             </div>
 
@@ -246,15 +246,15 @@
                     <i class="fa-solid fa-compact-disc"></i>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Pillar 3 • Intermediate Tier</span>
-                    <h3 class="font-display text-3xl text-white">Song Tutorial Library</h3>
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Pilar 3 • Tingkat Intermediate</span>
+                    <h3 class="font-display text-3xl text-white">Pustaka Tutorial Lagu</h3>
                 </div>
                 <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    Exclusive song breakdown library for <strong class="text-white">Intermediate Students</strong> to master popular song arrangements, strumming, and advanced chords.
+                    Pustaka bedah lagu eksklusif untuk <strong class="text-white">Murid Intermediate</strong> agar menguasai aransemen lagu populer, strumming, dan chord tingkat lanjut.
                 </p>
                 <div class="pt-2 text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Regular Song Updates</span>
+                    <span>Update Lagu Berkala</span>
                 </div>
             </div>
 
@@ -264,9 +264,9 @@
     <!-- ─── PROBLEM VS SOLUTION (THE SALES COMPARISON) ───────────────────── -->
     <section class="py-20 px-4 lg:px-8 max-w-6xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">Why Most Guitar Learners Fail</span>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">Mengapa Banyak Orang Gagal Belajar Gitar</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                The Old Way vs <span class="text-blue-500">The Nde System</span>
+                Cara Lama Vs <span class="text-blue-500">Sistem Nde</span>
             </h2>
         </div>
 
@@ -280,30 +280,30 @@
                             <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-base shrink-0">
                                 <i class="fa-solid fa-xmark"></i>
                             </div>
-                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Frustrating Old Way</h3>
+                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">Cara Lama Yang Bikin Frustrasi</h3>
                         </div>
-                        <span class="px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">High Risk</span>
+                        <span class="px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">Risiko Tinggi</span>
                     </div>
 
                     <ul class="space-y-4 text-xs sm:text-sm text-gray-400">
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">Watching random YouTube tutorials with no clear structure or path.</span>
+                            <span class="leading-relaxed">Nonton tutorial YouTube acak tanpa struktur atau alur yang jelas.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">No feedback from a mentor, leading to bad finger habits and pain.</span>
+                            <span class="leading-relaxed">Tidak ada umpan balik dari mentor, bikin kebiasaan jari salah dan pegal.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-xmark text-red-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">Stuck on basic chord switching for months without progress.</span>
+                            <span class="leading-relaxed">Stuck di perpindahan chord dasar berbulan-bulan tanpa kemajuan.</span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="pt-4 border-t border-red-500/10 flex items-center gap-2 text-xs font-bold text-red-400/80">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>90% Quit Within 3 Months</span>
+                    <span>90% Menyerah Dalam 3 Bulan</span>
                 </div>
             </div>
 
@@ -315,30 +315,30 @@
                             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0">
                                 <i class="fa-solid fa-check"></i>
                             </div>
-                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">The Guitarclassbynde System</h3>
+                            <h3 class="font-display text-2xl text-white tracking-wide uppercase">Sistem Guitarclassbynde</h3>
                         </div>
-                        <span class="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">Recommended</span>
+                        <span class="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">Rekomendasi Utama</span>
                     </div>
 
                     <ul class="space-y-4 text-xs sm:text-sm text-gray-300 font-medium">
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">Structured 100% step-by-step video curriculum from zero to advanced.</span>
+                            <span class="leading-relaxed">Kurikulum video terstruktur 100% dari nol hingga tingkat lanjut.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">Direct 1-on-1 live video coaching calls with Nde for instant fixes.</span>
+                            <span class="leading-relaxed">Sesi video call coaching 1-on-1 langsung dengan Nde untuk perbaikan instan.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
-                            <span class="leading-relaxed">Built-in 5 Suite Practice Tools (Tuner, Metronome, Chord/Scale, Quiz).</span>
+                            <span class="leading-relaxed">5 Tools Latihan Interaktif bawaan (Tuner, Metronom, Chord/Scale Visualizer).</span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="pt-4 border-t border-emerald-500/10 flex items-center gap-2 text-xs font-bold text-emerald-400">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span>98% Success Rate Guaranteed</span>
+                    <span>Garansi Tingkat Keberhasilan 98%</span>
                 </div>
             </div>
 
@@ -348,12 +348,12 @@
     <!-- ─── INTEGRATED PRACTICE TOOLS SHOWCASE ─────────────────────────── -->
     <section id="tools" class="py-20 px-4 lg:px-8 max-w-7xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
-            <span class="text-xs font-bold text-purple-400 uppercase tracking-widest block">Integrated Practice Suite</span>
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-widest block">Suite Latihan Interaktif</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                5 Interactive <span class="text-purple-400">Practice Tools Included</span>
+                5 Tools Latihan <span class="text-purple-400">Interaktif Terpasang</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                No need to buy external tuner or metronome apps. All tools are built directly inside your student dashboard.
+                Tidak perlu beli aplikasi tuner atau metronom terpisah. Semua alat sudah terpasang langsung di dashboard murid kamu.
             </p>
         </div>
 
@@ -365,7 +365,7 @@
                     <i class="fa-solid fa-guitar"></i>
                 </div>
                 <h3 class="font-display text-2xl text-white">Guitar Tuner</h3>
-                <p class="text-gray-400 text-xs leading-relaxed">Mic pitch detection for accurate guitar tuning visual feedback.</p>
+                <p class="text-gray-400 text-xs leading-relaxed">Deteksi nada mikrofon untuk visual setem gitar yang akurat.</p>
             </div>
 
             <!-- 2. Metronome -->
@@ -373,8 +373,8 @@
                 <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
                     <i class="fa-solid fa-stopwatch"></i>
                 </div>
-                <h3 class="font-display text-2xl text-white">Precision Metronome</h3>
-                <p class="text-gray-400 text-xs leading-relaxed">Tap tempo, time signatures, and custom beat sound engines.</p>
+                <h3 class="font-display text-2xl text-white">Metronom Presisi</h3>
+                <p class="text-gray-400 text-xs leading-relaxed">Tap tempo, birama rhythm, dan mesin suara ketukan kustom.</p>
             </div>
 
             <!-- 3. Chord Library -->
@@ -383,7 +383,7 @@
                     <i class="fa-solid fa-music"></i>
                 </div>
                 <h3 class="font-display text-2xl text-white">Chord Library</h3>
-                <p class="text-gray-400 text-xs leading-relaxed">Interactive Rosewood fretboard with audio strum audio playback.</p>
+                <p class="text-gray-400 text-xs leading-relaxed">Fretboard Rosewood interaktif lengkap dengan audio petikan chord.</p>
             </div>
         </div>
 
@@ -395,7 +395,7 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <h3 class="font-display text-2xl text-white">Scale Visualizer</h3>
-                <p class="text-gray-400 text-xs leading-relaxed">Master Pentatonic, Blues, and Major scales with ascending audio.</p>
+                <p class="text-gray-400 text-xs leading-relaxed">Kuasai tangga nada Pentatonik, Blues, dan Major dengan audio tangga nada.</p>
             </div>
 
             <!-- 5. Trainer Quiz Game -->
@@ -404,7 +404,7 @@
                     <i class="fa-solid fa-gamepad"></i>
                 </div>
                 <h3 class="font-display text-2xl text-white">Trainer Quiz Game</h3>
-                <p class="text-gray-400 text-xs leading-relaxed">Interactive audio ear pitch quiz and fretboard note memory game.</p>
+                <p class="text-gray-400 text-xs leading-relaxed">Kuis latihan pendengaran nada dan ingatan letak not fretboard.</p>
             </div>
         </div>
     </section>
@@ -412,12 +412,12 @@
     <!-- ─── PRICING PACKAGES (HIGH CONVERTING PURE SALES) ────────────────── -->
     <section id="packages" class="py-20 px-4 lg:px-8 max-w-7xl mx-auto relative z-10 space-y-12">
         <div class="text-center space-y-3">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">Choose Your Membership Tier</span>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block">Pilih Tingkat Keanggotaan Kamu</span>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                Simple <span class="text-blue-500">Transparent Pricing</span>
+                Harga <span class="text-blue-500">Transparan & Terjangkau</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                Once in a lifetime investment. No hidden monthly subscriptions.
+                Investasi sekali seumur hidup. Tanpa biaya langganan bulanan tersembunyi.
             </p>
         </div>
 
@@ -443,7 +443,7 @@
                     
                     @if($isFeatured)
                         <div class="absolute top-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold px-4 py-1.5 rounded-bl-2xl uppercase tracking-wider">
-                            Best Value & Recommended
+                            Paket Paling Populer & Direkomendasikan
                         </div>
                     @endif
 
@@ -455,7 +455,7 @@
 
                         @php
                             $isTicketPkg = str_contains(strtolower((string)($pkg->slug ?? '')), 'ticket') || str_contains(strtolower((string)($pkg->name ?? '')), 'ticket');
-                            $pricingUnit = $isTicketPkg ? '/ 1x' : '/ lifetime';
+                            $pricingUnit = $isTicketPkg ? '/ 1x sesi' : '/ seumur hidup';
                         @endphp
                         <div>
                             <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ $pkg->slug }}</div>
@@ -486,13 +486,13 @@
                         @if($userHasLmsAccess && !$isCoachingPkg)
                             <a href="{{ route('lms.dashboard') }}"
                                class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30">
-                                <span>Access Your Course</span>
+                                <span>Akses Kelas Kamu</span>
                                 <i class="fa-solid fa-graduation-cap text-[10px]"></i>
                             </a>
                         @else
                             <a href="{{ $isLoggedIn ? route('kelas.buy',$lessonId).'?package_id='.$pkg->id.'&package_qty=1' : route('register').'?package_id='.$pkg->id.'&package_qty=1' }}"
                                class="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg transition-all {{ $isFeatured ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-600/30 hover:scale-105' : 'bg-zinc-900 border border-white/10 hover:bg-white/5 text-white' }}">
-                                <span>Get Enrolled Now</span>
+                                <span>Ambil Akses Sekarang</span>
                                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
                             </a>
                         @endif
@@ -507,38 +507,37 @@
     <section id="faq" class="py-20 px-4 lg:px-8 max-w-5xl mx-auto space-y-12 relative z-10">
         <div class="text-center space-y-3">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
-                Got Questions?
+                Ada Pertanyaan?
             </div>
             <h2 class="font-display text-4xl sm:text-5xl text-white tracking-wide uppercase">
-                Frequently Asked <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Questions</span>
+                Pertanyaan Yang <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Sering Diajukan</span>
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-                Everything you need to know about Guitarclassbynde, course access, practice tools, and 1-on-1 coaching.
+                Segala hal yang perlu kamu ketahui tentang Guitarclassbynde, akses kelas, tools latihan, dan coaching 1-on-1.
             </p>
         </div>
 
         @php
             $defaultFaqs = [
                 [
-                    'question' => 'What is Guitarclassbynde?',
-                    'answer' => 'Guitarclassbynde is an elite, structured online guitar learning platform founded by Nde. It combines step-by-step video courses, interactive practice tools (Tuner, Metronome, Chord & Scale visualizers), song library tutorials, and live 1-on-1 coaching sessions.'
+                    'question' => 'Apa itu Guitarclassbynde?',
+                    'answer' => 'Guitarclassbynde adalah platform belajar gitar online elit terstruktur yang didirikan oleh Nde. Menggabungkan kelas video bertahap, tools latihan interaktif (Tuner, Metronom, Chord & Scale visualizer), tutorial lagu, dan sesi coaching live 1-on-1.'
                 ],
                 [
-                    'question' => 'How long do I get access to my purchased courses?',
-                    'answer' => 'Once enrolled, you get lifetime access to all course modules, materials, and practice suite tools included in your package. You can learn at your own pace whenever you want.'
+                    'question' => 'Berapa lama saya mendapatkan akses kelas yang sudah dibeli?',
+                    'answer' => 'Setelah mendaftar, kamu mendapatkan akses seumur hidup (lifetime access) ke seluruh modul kelas, materi, dan tools latihan yang ada pada paketmu. Kamu bisa belajar kapan saja sesuai kecepatanmu sendiri.'
                 ],
                 [
-                    'question' => 'Do I need prior guitar experience to get started?',
-                    'answer' => 'No experience needed! Our courses start from absolute beginner fundamentals (holding the guitar, open chords, basic strumming) all the way up to advanced soloing, speed picking, and fretboard theory.'
+                    'question' => 'Apakah saya butuh pengalaman main gitar sebelumnya?',
+                    'answer' => 'Tidak perlu pengalaman sama sekali! Kelas kami dimulai dari dasar paling awal (cara memegang gitar, chord open, strumming dasar) hingga teknik solo, picking cepat, dan teori fretboard.'
                 ],
                 [
-                    'question' => 'How do 1-on-1 Coaching Sessions work?',
-                    'answer' => 'Coaching sessions are conducted live directly inside our platform’s built-in interactive Video Call Room! Pick an open time slot in your dashboard, and when your session starts, click "Join Video Session" to meet live with Nde.'
+                    'question' => 'Bagaimana cara kerja Sesi Coaching 1-on-1?',
+                    'answer' => 'Sesi coaching dilakukan secara live langsung di dalam website kami via Video Call Room interaktif! Kamu tinggal pilih jadwal yang tersedia di dashboard, dan saat sesi dimulai, klik "Masuk Sesi Video" untuk bertatap muka langsung dengan Nde.'
                 ],
-
                 [
-                    'question' => 'What payment channels are supported?',
-                    'answer' => 'We accept instant, automated payments via Midtrans including Bank Transfer (Virtual Accounts for BCA, Mandiri, BNI, BRI), QRIS, GoPay, ShopeePay, and major Credit Cards.'
+                    'question' => 'Metode pembayaran apa saja yang didukung?',
+                    'answer' => 'Kami menerima pembayaran otomatis serba instan via Midtrans meliputi Transfer Bank (Virtual Account BCA, Mandiri, BNI, BRI), QRIS, GoPay, ShopeePay, dan Kartu Kredit.'
                 ],
             ];
 
@@ -592,7 +591,7 @@
         <!-- View All FAQs Button -->
         <div class="text-center pt-2">
             <a href="{{ route('faq') }}" class="inline-flex items-center gap-2.5 py-3 px-8 rounded-full bg-white/5 border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10 text-xs font-bold text-gray-300 hover:text-white transition-all shadow-md group">
-                <span>View All FAQs</span>
+                <span>Lihat Semua FAQ</span>
                 <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
@@ -603,16 +602,16 @@
         <div class="glass-panel p-10 sm:p-16 text-center space-y-8 relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-zinc-950 to-indigo-900/20 border-blue-500/30">
             <div class="max-w-2xl mx-auto space-y-4">
                 <h2 class="font-display text-4xl sm:text-6xl text-white tracking-wide uppercase leading-none">
-                    Ready to Play Guitar <span class="text-blue-400">Confidently?</span>
+                    Siap Main Gitar <span class="text-blue-400">Dengan Percaya Diri?</span>
                 </h2>
                 <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
-                    Join over 1,200+ students who have transformed their guitar playing with Nde's direct mentorship.
+                    Bergabunglah bersama 1.200+ murid yang telah mentransformasi permainan gitar mereka bersama bimbingan langsung dari Nde.
                 </p>
             </div>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ url('/registerclass') }}" class="px-9 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl text-sm shadow-xl shadow-blue-600/30 transition-all hover:scale-105 flex items-center justify-center gap-3">
-                    <span>Get Instant Enrollment Access</span>
+                    <span>Dapatkan Akses Kelas Sekarang</span>
                     <i class="fa-solid fa-rocket"></i>
                 </a>
             </div>
@@ -621,12 +620,10 @@
 
     <!-- FOOTER COPYRIGHT -->
     <footer class="py-8 text-center text-xs text-gray-400 border-t border-white/5 relative z-10">
-        <p>&copy; {{ date('Y') }} GUITARCLASSBYNDE. All rights reserved. Developed by <strong class="text-white font-bold me-1">WardellTech</strong></p>
+        <p>&copy; {{ date('Y') }} GUITARCLASSBYNDE. Hak cipta dilindungi undang-undang. Developed by <strong class="text-white font-bold me-1">WardellTech</strong></p>
     </footer>
 
     {{-- @include('components.ai_chatbot') --}}
     @include('components.whatsapp_support')
 </body>
 </html>
-
-
