@@ -1286,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </p>
 
         <!-- Action Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             
             <button onclick="downloadStoryCard()" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-amber-500/40 text-left transition group cursor-pointer">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
@@ -1295,14 +1295,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h4 class="font-bold text-sm text-white mb-0.5">TikTok Story Card</h4>
                 <p class="text-[11px] text-gray-400 leading-tight">Download 9:16 card to post & tag @nde_guitar</p>
             </button>
-
-            <a href="{{ route('certificate.verify', 'NDE-GRAD-' . str_pad((string)(auth()->id() ?? 0), 4, '0', STR_PAD_LEFT)) }}" target="_blank" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 text-left transition group">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">
-                    <i class="fa-solid fa-file-contract"></i>
-                </div>
-                <h4 class="font-bold text-sm text-white mb-0.5">Official Certificate</h4>
-                <p class="text-[11px] text-gray-400 leading-tight">View & print verified QR code certificate</p>
-            </a>
 
             <a href="{{ route('graduates') }}" class="p-4 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 text-left transition group">
                 <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition">

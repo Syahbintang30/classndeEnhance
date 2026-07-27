@@ -171,18 +171,9 @@
                         <span class="text-[11px] text-gray-400">
                             <i class="fa-regular fa-calendar me-1"></i> {{ $grad->completed_at }}
                         </span>
-
-                        @if($isSelf)
-                            <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold border border-amber-400/40 text-xs shadow-md shadow-amber-500/20 transition">
-                                <span>My Certificate</span>
-                                <i class="fa-solid fa-award text-[10px]"></i>
-                            </a>
-                        @else
-                            <a href="{{ route('certificate.verify', $grad->cert_code) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 text-xs font-semibold transition">
-                                <span>Verify Record</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                            </a>
-                        @endif
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-[10px] uppercase">
+                            <i class="fa-solid fa-check text-[9px]"></i> Graduated
+                        </span>
                     </div>
                 </div>
             @empty
