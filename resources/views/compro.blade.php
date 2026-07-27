@@ -41,11 +41,14 @@
     </script>
 
     <style>
-        body {
+        html, body {
             background-color: #08080a !important;
             color: #f3f4f6 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            overflow-x: hidden;
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+            position: relative !important;
         }
         .font-display {
             font-family: 'Bebas Neue', cursive !important;
@@ -66,12 +69,14 @@
     </style>
 </head>
 
-<body class="bg-[#08080a] text-gray-100 antialiased relative selection:bg-blue-600 selection:text-white" x-data="{ mobileMenuOpen: false }">
+<body class="bg-[#08080a] text-gray-100 antialiased relative selection:bg-blue-600 selection:text-white overflow-x-hidden" x-data="{ mobileMenuOpen: false }">
 
     {{-- Ambient Mesh Background Glows --}}
-    <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute top-[800px] -right-32 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute top-[1800px] -left-32 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[140px]"></div>
+        <div class="absolute top-[800px] -right-32 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px]"></div>
+        <div class="absolute top-[1800px] -left-32 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[140px]"></div>
+    </div>
 
     {{-- ─── LMS FLOATING GLASS PILL NAVBAR ───────────────────────────────── --}}
     @include('layouts.lms_header')

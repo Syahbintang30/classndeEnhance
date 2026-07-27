@@ -38,7 +38,11 @@
     <link href="{{ asset('css/payment-grid.css') }}" rel="stylesheet" type="text/css" media="all" />
 
     <style>
-        html, body { overflow-x: hidden; }
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+        }
         .nav-logo-dark { display: block; }
         .nav-logo-light { display: none; }
         :root[data-theme="light"] .nav-logo-dark { display: none; }
