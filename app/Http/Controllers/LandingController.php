@@ -10,6 +10,14 @@ class LandingController extends Controller
 {
     public function index()
     {
+        if (request()->has('lang')) {
+            $reqLang = strtolower(request('lang'));
+            if (in_array($reqLang, ['id', 'en'])) {
+                session(['app_lang' => $reqLang]);
+            }
+        }
+
+        $lang = session('app_lang', 'id');
         // Landing page / compro butuh data marketing yang bisa diubah dari setting tanpa edit view.
         $promoGuid = Setting::get('nde.promo_bunny_guid', null);
         $promoTitle = Setting::get('nde.promo_title', null);

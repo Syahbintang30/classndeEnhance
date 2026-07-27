@@ -63,7 +63,26 @@
         </div>
 
         <!-- Right Side User Menu / Guest Actions -->
-        <div class="flex items-center justify-end min-w-[200px] sm:min-w-[240px] shrink-0 space-x-3">
+        <div class="flex items-center justify-end min-w-[200px] sm:min-w-[240px] shrink-0 gap-2.5">
+            
+            <!-- Language Switcher Toggle (ID 🇮🇩 / EN 🇬🇧) -->
+            @php
+                $currentLang = session('app_lang', request('lang', 'id'));
+                $nextLang = ($currentLang === 'en') ? 'id' : 'en';
+                $toggleUrl = request()->fullUrlWithQuery(['lang' => $nextLang]);
+            @endphp
+            <a href="{{ $toggleUrl }}" 
+               title="Switch to {{ strtoupper($nextLang) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-950/80 border border-white/10 hover:border-blue-500/40 text-xs font-bold text-gray-300 hover:text-white transition-all shadow-md shrink-0">
+                @if($currentLang === 'en')
+                    <span class="text-sm leading-none">🇬🇧</span>
+                    <span class="text-[11px] font-extrabold text-blue-400">EN</span>
+                @else
+                    <span class="text-sm leading-none">🇮🇩</span>
+                    <span class="text-[11px] font-extrabold text-emerald-400">ID</span>
+                @endif
+                <i class="fa-solid fa-repeat text-[9px] text-gray-400"></i>
+            </a>
             {{-- Mobile hamburger button --}}
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition cursor-pointer border border-white/10 flex items-center justify-center">
                 <i class="fa-solid" :class="mobileMenuOpen ? 'fa-xmark text-xl' : 'fa-bars text-lg'"></i>
