@@ -26,7 +26,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Ensure PHP's default timezone matches the app configuration (useful for date() and other PHP functions)
+        // Ensure framework storage directories exist automatically
+        $requiredDirs = [
+            storage_path('framework/views'),
+            storage_path('framework/cache/data'),
+            storage_path('framework/sessions'),
+            storage_path('logs'),
+        ];
+        foreach ($requiredDirs as $dir) {
+            if (! is_dir($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+        }
+
+        // Ensure PHP's default timezone matches the app configuration
         date_default_timezone_set(config('app.timezone'));
         
         // Register user observer to ensure programmatic user creation also receives a free ticket
