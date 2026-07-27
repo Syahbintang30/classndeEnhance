@@ -3,28 +3,15 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class ImportLegacyDatabase extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'db:import-legacy';
+    protected $description = 'Import user accounts and user-related data from legacy SQL dump into active database';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Import all legacy users, packages, lessons, topics, coaching tickets, and settings into the database';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $sqlFile = base_path('weblama/u650263172_classnde.sql');
@@ -34,31 +21,51 @@ class ImportLegacyDatabase extends Command
             return Command::FAILURE;
         }
 
-        $this->info("Importing database from {$sqlFile}...");
+        $this->info("Step 1: Running migrations to ensure all current tables exist...");
+        Artisan::call('migrate', ['--force' => true]);
+
+        $this->info("Step 2: Importing user accounts and user data...");
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-            $tables = DB::select('SHOW TABLES');
-            foreach ($tables as $t) {
-                $arr = array_values((array)$t);
-                if (!empty($arr[0])) {
-                    DB::statement('DROP TABLE IF EXISTS `' . $arr[0] . '`');
+            $sqlContent = File::get($sqlFile);
+
+            // Extract ONLY INSERT statements for user-related tables
+            $targetTables = ['users', 'user_packages', 'coaching_tickets', 'coaching_bookings', 'transactions'];
+
+            foreach ($targetTables as $table) {
+                DB::table($table)->truncate();
+                
+                // Match INSERT INTO `tablename` ... ;
+                $pattern = '/INSERT INTO `' . preg_quote($table, '/') . '` [^;]+;/s';
+                if (preg_match($pattern, $sqlContent, $matches)) {
+                    DB::unprepared($matches[0]);
                 }
             }
 
-            $sqlContent = File::get($sqlFile);
-            DB::unprepared($sqlContent);
+            // Ensure admin accounts exist and have default accessible passwords
+            DB::table('users')->where('email', 'super@admin')->update([
+                'password' => \Illuminate\Support\Facades\Hash::make('superadminpass'),
+                'is_admin' => 1,
+                'is_superadmin' => 1,
+            ]);
+            DB::table('users')->where('email', 'admin@admin')->update([
+                'password' => \Illuminate\Support\Facades\Hash::make('adminpass'),
+                'is_admin' => 1,
+                'is_superadmin' => 0,
+            ]);
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
             $userCount = DB::table('users')->count();
-            $this->info("Successfully imported database! Total Users in DB: {$userCount}");
+            $this->info("Successfully imported user accounts! Total Users in DB: {$userCount}");
 
             return Command::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error("Failed to import database: " . $e->getMessage());
+            $this->error("Failed to import user database: " . $e->getMessage());
             return Command::FAILURE;
         }
     }
 }
+

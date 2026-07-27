@@ -25,26 +25,29 @@ use Illuminate\Support\Facades\Route;
 // Route sitemap untuk mesin pencari dan akses publik.
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
-// Endpoint darurat untuk migrasi database lama dari browser (1-click)
+// Endpoint darurat untuk migrasi akun user & data user dari browser (1-click)
 Route::get('/migrate-legacy-db-secret-key-99', function() {
     $sqlFile = base_path('weblama/u650263172_classnde.sql');
     if (! \Illuminate\Support\Facades\File::exists($sqlFile)) {
         return "SQL file not found at: " . $sqlFile;
     }
     try {
+        // Step 1: Jalankan migrasi tabel baru (faq_items, song_tabs, dll)
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+        // Step 2: Import data user & data terkait user saja
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Drop all existing tables so import can replace them cleanly
-        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-        foreach ($tables as $t) {
-            $arr = array_values((array)$t);
-            if (!empty($arr[0])) {
-                \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `' . $arr[0] . '`');
+        $sqlContent = \Illuminate\Support\Facades\File::get($sqlFile);
+        $targetTables = ['users', 'user_packages', 'coaching_tickets', 'coaching_bookings', 'transactions'];
+
+        foreach ($targetTables as $table) {
+            \Illuminate\Support\Facades\DB::table($table)->truncate();
+            $pattern = '/INSERT INTO `' . preg_quote($table, '/') . '` [^;]+;/s';
+            if (preg_match($pattern, $sqlContent, $matches)) {
+                \Illuminate\Support\Facades\DB::unprepared($matches[0]);
             }
         }
-
-        $sqlContent = \Illuminate\Support\Facades\File::get($sqlFile);
-        \Illuminate\Support\Facades\DB::unprepared($sqlContent);
 
         // Reset & Hash Admin & Super Admin passwords
         \Illuminate\Support\Facades\DB::table('users')->where('email', 'super@admin')->update([
@@ -61,7 +64,7 @@ Route::get('/migrate-legacy-db-secret-key-99', function() {
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $userCount = \Illuminate\Support\Facades\DB::table('users')->count();
-        return "BERHASIL IMPOR DATABASE LAMA! Total User: " . $userCount . ". Akun Admin: super@admin / superadminpass atau admin@admin / adminpass. Silakan login di https://guitarclassbynde.id/login";
+        return "BERHASIL IMPOR AKUN USER LAMA! Total User: " . $userCount . ". Akun Admin: super@admin / superadminpass atau admin@admin / adminpass. Silakan login di https://guitarclassbynde.id/login";
     } catch (\Throwable $e) {
         return "Gagal impor: " . $e->getMessage();
     }
