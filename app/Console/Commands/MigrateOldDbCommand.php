@@ -20,7 +20,7 @@ class MigrateOldDbCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Safely migrate existing user account credentials from old database SQL dump without touching course content or new system tables';
+    protected $description = 'Migrate all user accounts, transactions, coaching tickets, bookings, and package data from old database SQL dump into current database';
 
     /**
      * Execute the console command.
@@ -37,24 +37,33 @@ class MigrateOldDbCommand extends Command
         $this->info("Reading SQL dump file: {$filePath}...");
         $sqlContent = File::get($filePath);
 
-        DB::beginTransaction();
+        // Temporarily disable foreign key checks for clean bulk import
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         try {
-            // STRICTLY MIGRATE USER ACCOUNTS ONLY
-            $userCount = $this->migrateUsersOnly($sqlContent);
+            $userCount = $this->migrateUsers($sqlContent);
+            $txCount = $this->migrateTransactions($sqlContent);
+            $bookingCount = $this->migrateCoachingBookings($sqlContent);
+            $ticketCount = $this->migrateCoachingTickets($sqlContent);
+            $userPkgCount = $this->migrateUserPackages($sqlContent);
+            $voucherCount = $this->migrateVouchers($sqlContent);
 
-            DB::commit();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
             $this->info("=================================================");
-            $this->info(" SUCCESS: User Accounts Migrated Safely!         ");
-            $this->info(" - Total Existing Users Migrated/Synced: {$userCount} ");
-            $this->info(" - Course lessons, topics & new features: UNTOUCHED ");
+            $this->info(" SUCCESS: All Old Database Data Migrated!        ");
+            $this->info(" - Users Synced: {$userCount}");
+            $this->info(" - Transactions Synced: {$txCount}");
+            $this->info(" - Coaching Bookings Synced: {$bookingCount}");
+            $this->info(" - Coaching Tickets Synced: {$ticketCount}");
+            $this->info(" - User Packages Synced: {$userPkgCount}");
+            $this->info(" - Vouchers Synced: {$voucherCount}");
             $this->info("=================================================");
 
             return 0;
         } catch (\Throwable $e) {
-            DB::rollBack();
-            $this->error("User migration failed: " . $e->getMessage());
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            $this->error("Database migration failed: " . $e->getMessage());
             return 1;
         }
     }
@@ -150,10 +159,9 @@ class MigrateOldDbCommand extends Command
         }, $values);
     }
 
-    private function migrateUsersOnly(string $sql): int
+    private function migrateUsers(string $sql): int
     {
         $rows = $this->extractInsertValues($sql, 'users');
-        $validPackageIds = DB::table('packages')->pluck('id')->toArray();
         $count = 0;
 
         foreach ($rows as $rowStr) {
@@ -165,10 +173,7 @@ class MigrateOldDbCommand extends Command
             $email = strtolower(trim((string)($cols[2] ?? '')));
             $photo = $cols[3] ?? null;
             $phone = $cols[4] ?? null;
-            
-            $rawPackageId = is_numeric($cols[5]) ? (int)$cols[5] : null;
-            $packageId = ($rawPackageId && in_array($rawPackageId, $validPackageIds)) ? $rawPackageId : null;
-
+            $packageId = is_numeric($cols[5]) ? (int)$cols[5] : null;
             $emailVerifiedAt = $cols[6] ?? null;
             $password = $cols[7] ?? '';
             $isAdmin = (bool) ($cols[8] ?? 0);
@@ -180,9 +185,6 @@ class MigrateOldDbCommand extends Command
             $updatedAt = $cols[14] ?? now()->toDateTimeString();
 
             if (empty($email)) continue;
-
-            // Auto-grant LMS access for users who bought packages or are admins
-            $hasLmsAccess = ($isAdmin || $isSuperAdmin || ! empty($packageId));
 
             $existing = DB::table('users')->where('email', $email)->first();
 
@@ -208,6 +210,229 @@ class MigrateOldDbCommand extends Command
                 $updateData['id'] = $id;
                 $updateData['email'] = $email;
                 DB::table('users')->insert($updateData);
+            }
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function migrateTransactions(string $sql): int
+    {
+        $rows = $this->extractInsertValues($sql, 'transactions');
+        $count = 0;
+
+        foreach ($rows as $rowStr) {
+            $cols = $this->parseCsvRow($rowStr);
+            if (count($cols) < 8) continue;
+
+            $id = (int) $cols[0];
+            $orderId = $cols[1] ?? '';
+            $userId = is_numeric($cols[2]) ? (int)$cols[2] : null;
+            $packageId = is_numeric($cols[3]) ? (int)$cols[3] : null;
+            $referrerUserId = is_numeric($cols[4] ?? null) ? (int)$cols[4] : null;
+            $referralCode = $cols[5] ?? null;
+            $method = $cols[6] ?? null;
+            $amount = is_numeric($cols[7] ?? 0) ? (float)$cols[7] : 0.0;
+            $originalAmount = is_numeric($cols[8] ?? null) ? (int)$cols[8] : null;
+            $status = $cols[9] ?? 'settlement';
+            $rawMidtrans = $cols[10] ?? null;
+            $midtransResponse = null;
+            if (! empty($rawMidtrans)) {
+                $cleanStr = stripslashes(trim($rawMidtrans, '"\''));
+                $decoded = json_decode($cleanStr, true);
+                if ($decoded && is_array($decoded)) {
+                    $midtransResponse = json_encode($decoded);
+                } else {
+                    $decodedRaw = json_decode($rawMidtrans, true);
+                    if ($decodedRaw && is_array($decodedRaw)) {
+                        $midtransResponse = json_encode($decodedRaw);
+                    }
+                }
+            }
+            $createdAt = $cols[11] ?? now()->toDateTimeString();
+            $updatedAt = $cols[12] ?? now()->toDateTimeString();
+
+            if (empty($orderId)) continue;
+
+            $existing = DB::table('transactions')->where('order_id', $orderId)->first();
+            $updateData = [
+                'user_id' => $userId,
+                'package_id' => $packageId,
+                'referrer_user_id' => $referrerUserId,
+                'referral_code' => $referralCode,
+                'method' => $method,
+                'amount' => $amount,
+                'original_amount' => $originalAmount,
+                'status' => $status,
+                'midtrans_response' => $midtransResponse,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ];
+
+            if ($existing) {
+                DB::table('transactions')->where('order_id', $orderId)->update($updateData);
+            } else {
+                $updateData['id'] = $id;
+                $updateData['order_id'] = $orderId;
+                DB::table('transactions')->insert($updateData);
+            }
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function migrateCoachingBookings(string $sql): int
+    {
+        $rows = $this->extractInsertValues($sql, 'coaching_bookings');
+        $count = 0;
+
+        foreach ($rows as $rowStr) {
+            $cols = $this->parseCsvRow($rowStr);
+            if (count($cols) < 5) continue;
+
+            $id = (int) $cols[0];
+            $userId = is_numeric($cols[1]) ? (int)$cols[1] : null;
+            $bookingDate = $cols[2] ?? now()->toDateString();
+            $timeSlot = $cols[3] ?? '19:00';
+            $notes = $cols[4] ?? null;
+            $status = $cols[5] ?? 'pending';
+            $createdAt = $cols[6] ?? now()->toDateTimeString();
+            $updatedAt = $cols[7] ?? now()->toDateTimeString();
+
+            $existing = DB::table('coaching_bookings')->where('id', $id)->first();
+            $updateData = [
+                'user_id' => $userId,
+                'booking_date' => $bookingDate,
+                'time_slot' => $timeSlot,
+                'notes' => $notes,
+                'status' => $status,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ];
+
+            if ($existing) {
+                DB::table('coaching_bookings')->where('id', $id)->update($updateData);
+            } else {
+                $updateData['id'] = $id;
+                DB::table('coaching_bookings')->insert($updateData);
+            }
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function migrateCoachingTickets(string $sql): int
+    {
+        $rows = $this->extractInsertValues($sql, 'coaching_tickets');
+        $count = 0;
+
+        foreach ($rows as $rowStr) {
+            $cols = $this->parseCsvRow($rowStr);
+            if (count($cols) < 3) continue;
+
+            $id = (int) $cols[0];
+            $userId = is_numeric($cols[1]) ? (int)$cols[1] : null;
+            $isUsed = (bool) ($cols[2] ?? 0);
+            $source = $cols[3] ?? 'migration';
+            $createdAt = $cols[4] ?? now()->toDateTimeString();
+            $updatedAt = $cols[5] ?? now()->toDateTimeString();
+
+            $existing = DB::table('coaching_tickets')->where('id', $id)->first();
+            $updateData = [
+                'user_id' => $userId,
+                'is_used' => $isUsed,
+                'source' => $source,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ];
+
+            if ($existing) {
+                DB::table('coaching_tickets')->where('id', $id)->update($updateData);
+            } else {
+                $updateData['id'] = $id;
+                DB::table('coaching_tickets')->insert($updateData);
+            }
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function migrateUserPackages(string $sql): int
+    {
+        $rows = $this->extractInsertValues($sql, 'user_packages');
+        $count = 0;
+
+        foreach ($rows as $rowStr) {
+            $cols = $this->parseCsvRow($rowStr);
+            if (count($cols) < 3) continue;
+
+            $id = (int) $cols[0];
+            $userId = is_numeric($cols[1]) ? (int)$cols[1] : null;
+            $packageId = is_numeric($cols[2]) ? (int)$cols[2] : null;
+            $createdAt = $cols[3] ?? now()->toDateTimeString();
+            $updatedAt = $cols[4] ?? now()->toDateTimeString();
+
+            $existing = DB::table('user_packages')->where('id', $id)->first();
+            $updateData = [
+                'user_id' => $userId,
+                'package_id' => $packageId,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ];
+
+            if ($existing) {
+                DB::table('user_packages')->where('id', $id)->update($updateData);
+            } else {
+                $updateData['id'] = $id;
+                DB::table('user_packages')->insert($updateData);
+            }
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function migrateVouchers(string $sql): int
+    {
+        $rows = $this->extractInsertValues($sql, 'vouchers');
+        $count = 0;
+
+        foreach ($rows as $rowStr) {
+            $cols = $this->parseCsvRow($rowStr);
+            if (count($cols) < 3) continue;
+
+            $id = (int) $cols[0];
+            $code = $cols[1] ?? '';
+            $discountType = $cols[2] ?? 'fixed';
+            $discountValue = is_numeric($cols[3] ?? 0) ? (float)$cols[3] : 0.0;
+            $createdAt = $cols[4] ?? now()->toDateTimeString();
+            $updatedAt = $cols[5] ?? now()->toDateTimeString();
+
+            if (empty($code)) continue;
+
+            $existing = DB::table('vouchers')->where('code', $code)->first();
+            $updateData = [
+                'discount_type' => $discountType,
+                'discount_value' => $discountValue,
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ];
+
+            if ($existing) {
+                DB::table('vouchers')->where('code', $code)->update($updateData);
+            } else {
+                $updateData['id'] = $id;
+                $updateData['code'] = $code;
+                DB::table('vouchers')->insert($updateData);
             }
 
             $count++;
