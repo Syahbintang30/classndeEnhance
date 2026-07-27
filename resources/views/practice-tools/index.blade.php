@@ -104,11 +104,11 @@
             <!-- Feature Specs Badge -->
             <div class="flex items-center gap-3 bg-zinc-950/60 border border-white/10 rounded-2xl p-3 px-4 backdrop-blur-md self-start md:self-auto">
                 <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
-                    <i class="fa-solid fa-microchip"></i>
+                    <i class="fa-solid fa-sliders"></i>
                 </div>
                 <div>
-                    <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Audio Engine</div>
-                    <div class="text-xs font-bold text-white">Web Audio API Precision</div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ $isEn ? 'PRACTICE SUITE' : 'SUITE LATIHAN' }}</div>
+                    <div class="text-xs font-bold text-white">{{ $isEn ? '4 Interactive Utilities' : '4 Tools Interaktif' }}</div>
                 </div>
             </div>
         </header>
