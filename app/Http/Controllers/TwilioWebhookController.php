@@ -146,9 +146,7 @@ class TwilioWebhookController extends Controller
                 } catch (\Throwable $_) { /* ignore meta encoding issues */ }
 
                 if ($booking) {
-                    $existing = $booking->notes ?? '';
-                    $booking->notes = trim(($existing ? $existing . "\n\n" : '') . $line);
-                    $booking->save();
+                    Log::info("Twilio webhook event for booking #{$booking->id}: {$line}");
                 } else {
                     // No booking found; log for investigation.
                     Log::info('Twilio webhook: no booking matched for RoomSid ' . $roomSidVal, $payload);
