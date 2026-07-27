@@ -668,22 +668,19 @@
 
                                 <!-- Room Column -->
                                 <td>
-                                    <div class="d-flex flex-column gap-2" style="max-width: 200px;">
+                                    <div class="d-flex flex-column gap-1.5" style="max-width: 200px;">
                                         @if($b->twilio_room_sid)
-                                            <div class="badge-room justify-content-center" title="Room SID: {{ $b->twilio_room_sid }}">
+                                            <div class="badge-room justify-content-center mb-1" title="Room SID: {{ $b->twilio_room_sid }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
                                                 <span>Room #{{ substr($b->twilio_room_sid, 0, 8) }}</span>
                                             </div>
-                                            <div>
-                                                <a class="btn-session-pending open-session-btn w-100" data-booking-time="{{ $btLocal }}" data-href="{{ $sessionUrl }}" target="_blank" href="#">
-                                                    <span>Belum Dimulai</span>
-                                                </a>
-                                            </div>
-                                        @else
-                                            <form method="POST" action="{{ url('/admin/coaching/bookings/'.$b->id.'/create-room') }}" class="m-0">@csrf
-                                                <button class="btn btn-sm btn-outline-primary fw-semibold btn-icon-text w-100 justify-content-center" style="font-size: 0.78rem; border-radius: 6px; padding: 6px 12px; gap: 8px;"><i class="fa-solid fa-plus flex-shrink-0"></i> <span>Buat Room</span></button>
-                                            </form>
                                         @endif
+                                        <div>
+                                            <a class="btn btn-sm btn-primary fw-semibold w-100 justify-content-center d-flex align-items-center gap-2 shadow-sm" style="font-size: 0.8rem; border-radius: 8px; padding: 7px 12px; background: linear-gradient(135deg, #2563EB, #4F46E5); border: none; color: #fff; text-decoration: none;" target="_blank" href="{{ $sessionUrl }}">
+                                                <i class="fa-solid fa-video text-xs"></i>
+                                                <span>Masuk Sesi Video</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
